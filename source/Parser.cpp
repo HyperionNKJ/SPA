@@ -340,27 +340,51 @@ bool Parser::checkCondExpr(string condExpr) {
 		cout << "Found unexpected token when expecting ( and ) around conditional expression at line " << statementNumber << endl;
 		return false;
 	}
-	//search for first !, && or || operator
-	size_t andOperatorPos = condExpr.find("&&");
-	size_t orOperatorPos = condExpr.find("||");
-	size_t notOperatorPos = condExpr.find("!");
-	if (notOperatorPos < andOperatorPos && notOperatorPos < orOperatorPos) {
-		size_t openBracketPos = condExpr.find_first_of("(");
-		size_t closeBracketPos = condExpr.find_last_of(")");
-		string internalCondExpr = condExpr.substr(openBracketPos, closeBracketPos - openBracketPos - 1);
-		return checkCondExpr(internalCondExpr);
+	/*removing external brackets, look for an expected ! operator
+	or if finding brackets, track in stack until we exit the brackets, and look for && or ||
+	or if something else found, it should imply a rel expr*/
+	int bracketCount = 0;
+	bool startOfExpr = true;
+	bool lookForAndOr = false;
+	bool noBrackets = true;
+	for (int pos = 1; pos < condExpr.length - 1; pos++) {
+		if (startOfExpr) {
+			if (condExpr[pos] == '!') {
+				//extract out the internal expr
+				string nextCondExpr = condExpr.substr(pos + 1, condExpr.length - 2);
+				return checkCondExpr(nextCondExpr);
+			}
+			else if (condExpr[pos] == '(') {
+				startOfExpr = false;
+				noBrackets = false;
+				bracketCount++;
+			}
+			else if (condExpr[pos] == ' ' || condExpr[pos] == '\t') {
+				continue;
+			}
+			else {
+				//else no delimiter expected, assume it is a rel expr and strip brackets
+				string relExpr = condExpr.substr(1, condExpr.length - 2);
+				return checkRelExpr(relExpr);
+			}
+		}
+		else {
+			if (condExpr[pos] == '(') {
+				bracketCount++;
+			}
+			else if (condExpr[pos] == ')') {
+				bracketCount--;
+				if (bracketCount == 0) {
+
+				}
+			}
+		}
+		if (bracketCount > 0) {
+			cout << "Mismatch in number of ( and ) brackets in conditional expression at line " << statementNumber << endl;
+			return false;
+		}
+		cout << "Could not successfully parse the conditional expression at line " << statementNumber << endl;
 	}
-	size_t firstDelimiterPos = std::min(andOperatorPos, orOperatorPos);
-	if (firstDelimiterPos != string::npos) {
-		string firstCondExpr = condExpr.substr(0, firstDelimiterPos);
-		string secondCondExpr = condExpr.substr(firstDelimiterPos + 2, string::npos);
-		return checkCondExpr(firstCondExpr) & checkCondExpr(secondCondExpr);
-	}
-	//else no delimiter, assume it is a rel expr and strip brackets
-	string relExpr = condExpr.substr(1, condExpr.length - 2);
-	relExpr = leftTrim(relExpr, " \r");
-	relExpr = rightTrim(relExpr, " \r");
-	return checkRelExpr(condExpr);
 
 }
 
@@ -458,7 +482,10 @@ vector<string> Parser::tokeniseString(string toTokenise, string delimiters) {
 	string currToken;
 	while (!toTokenise.empty()) {
 		size_t delimiterPos = toTokenise.find_first_of(delimiters);
-		tokenList.push_back(toTokenise.substr(0, delimiterPos));
+		string token = toTokenise.substr(0, delimiterPos);
+		if (!token.empty()) {
+			tokenList.push_back(toTokenise.substr(0, delimiterPos));
+		}
 	}
 	return tokenList;
 }
