@@ -4,6 +4,8 @@
 #include <iostream>
 #include <fstream>
 #include <regex>
+#include <vector>
+#include <string>
 
 class Parser {
 public:

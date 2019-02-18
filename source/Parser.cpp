@@ -27,12 +27,21 @@ static string openCurlyRegex = "\\{";
 
 bool withinProcedure;
 bool emptyProcedure;
+bool expectElse;
 vector<string> sourceCode;
 int statementNumber;
+vector<int> parentStack;
+vector<int> currentFollowList;
+vector<vector<int>> followStack;
 
 Parser::Parser() {
 	withinProcedure = false;
-	sourceCode.clear();
+	emptyProcedure = true;
+	expectElse = false;
+	sourceCode = vector<string>();
+	parentStack = vector<int>();
+	currentFollowList = vector<int>();
+	followStack = vector<vector<int>>();
 	statementNumber = 1;
 }
 
@@ -50,28 +59,40 @@ int Parser::Parse(string fileName) {
 				return false;
 			}
 			else {
-				if (intent == KEY_ASSIGN) {
-					result = handleAssignment(sourceCode[i]);
-				}
-				else if (intent == KEY_CLOSE_BRACKET) {
-					result = handleCloseBracket(sourceCode[i]);
-				}
-				else if (intent == KEY_IF) {
-					result = handleIf(sourceCode[i]);
-				}
-				else if (intent == KEY_WHILE) {
-					result = handleWhile(sourceCode[i]);
-				}
-				else if (intent == KEY_PRINT) {
-					result = handlePrint(sourceCode[i]);
-				}
-				else if (intent == KEY_READ) {
-				result = handleRead(sourceCode[i]);
+				if (expectElse && intent != KEY_ELSE) {
+					cout << "Expected an else statement at line " << statementNumber << endl;
+					result = -1;
 				}
 				else {
-					cout << "Statement of unknown type encountered" << endl;
-					cout << "Line is: " << sourceCode[i] << endl;
-					result = -1;
+					if (intent == KEY_ASSIGN) {
+						result = handleAssignment(sourceCode[i]);
+					}
+					else if (intent == KEY_CLOSE_BRACKET) {
+						result = handleCloseBracket(sourceCode[i]);
+					}
+					else if (intent == KEY_IF) {
+						result = handleIf(sourceCode[i]);
+					}
+					else if (intent == KEY_WHILE) {
+						result = handleWhile(sourceCode[i]);
+					}
+					else if (intent == KEY_PRINT) {
+						result = handlePrint(sourceCode[i]);
+					}
+					else if (intent == KEY_READ) {
+						result = handleRead(sourceCode[i]);
+					}
+					else if (intent == KEY_ELSE) {
+
+					}
+					else if (intent == KEY_CALL) {
+
+					}
+					else {
+						cout << "Statement of unknown type encountered" << endl;
+						cout << "Line is: " << sourceCode[i] << endl;
+						result = -1;
+					}
 				}
 			}
 		}
@@ -85,7 +106,8 @@ int Parser::Parse(string fileName) {
 
 int Parser::getStatementIntent(string line) {
 	//check assignment first for potential variable names being keywords
-	if (line.find("=", 0) != string::npos) {
+	if (line.find("=", 0) != string::npos && line.find("<=") == string::npos && line.find("==") == string::npos
+		&& line.find(">=") == string::npos && line.find("!=") == string::npos) {
 		return KEY_ASSIGN;
 	}
 	//otherwise tokenise and find first token as keyword for statement.
@@ -119,6 +141,9 @@ int Parser::getStatementIntent(string line) {
 	}
 	if (tokenLine[0] == "else") {
 		return KEY_ELSE;
+	}
+	if (tokenLine[0] == "call") {
+		return KEY_CALL;
 	}
 	if (tokenLine[0] == "}") {
 		return KEY_CLOSE_BRACKET;
@@ -336,16 +361,16 @@ int Parser::handleIf(string ifLine) {
 
 bool Parser::checkCondExpr(string condExpr) {
 	//check that brackets wrap the expression, without unexpected tokens
-	if (condExpr.find_first_of("(") != 0 || condExpr.find_last_of(")") != condExpr.length - 1) {
+	if (condExpr.find_first_of("(") != 0 || condExpr.find_last_of(")") != (condExpr.length - 1)) {
 		cout << "Found unexpected token when expecting ( and ) around conditional expression at line " << statementNumber << endl;
 		return false;
 	}
 	/*removing external brackets, look for an expected ! operator
 	or if finding brackets, track in stack until we exit the brackets, and look for && or ||
-	or if something else found, it should imply a rel expr*/
+	or if something else found, it should imply a rel expr */
 	int bracketCount = 0;
 	bool startOfExpr = true;
-	bool lookForAndOr = false;
+	bool checkForAndOr = false;
 	bool noBrackets = true;
 	for (int pos = 1; pos < condExpr.length - 1; pos++) {
 		if (startOfExpr) {
@@ -368,6 +393,23 @@ bool Parser::checkCondExpr(string condExpr) {
 				return checkRelExpr(relExpr);
 			}
 		}
+		else if (checkForAndOr) {
+			if (condExpr.substr(pos, 2) == "&&" || condExpr.substr(pos, 2) == "||") {
+				//extract out the 2 expressions
+				string firstCondExpr = condExpr.substr(0, pos);
+				string secondCondExpr = condExpr.substr(pos + 2, string::npos);
+				firstCondExpr = leftTrim(rightTrim(firstCondExpr, " \t"), " \t");
+				secondCondExpr = leftTrim(rightTrim(secondCondExpr, " \t"), " \t");
+				return checkCondExpr(firstCondExpr) & checkCondExpr(secondCondExpr);
+			}
+			else if (condExpr[pos] == ' ' || condExpr[pos] == '\t') {
+				continue;
+			}
+			else {
+				cout << "Could not successfully parse conditional expression, missing and/or operator at line " << statementNumber << endl;
+				return false;
+			}
+		}
 		else {
 			if (condExpr[pos] == '(') {
 				bracketCount++;
@@ -375,21 +417,41 @@ bool Parser::checkCondExpr(string condExpr) {
 			else if (condExpr[pos] == ')') {
 				bracketCount--;
 				if (bracketCount == 0) {
-
+					checkForAndOr = true;
 				}
 			}
 		}
-		if (bracketCount > 0) {
-			cout << "Mismatch in number of ( and ) brackets in conditional expression at line " << statementNumber << endl;
-			return false;
-		}
-		cout << "Could not successfully parse the conditional expression at line " << statementNumber << endl;
 	}
-
-}
+	if (bracketCount > 0) {
+		cout << "Mismatch in number of ( and ) brackets in conditional expression at line " << statementNumber << endl;
+		return false;
+	}
+	cout << "Could not successfully parse the conditional expression at line " << statementNumber << endl;
+	return false;
+}																
 
 bool Parser::checkRelExpr(string relExpr) {
-
+	//should have only 1 of the relational operators
+	//look for 2 character ones, then 1 character due to overlap in < and >
+	size_t relOpPos = relExpr.find("==");
+	relOpPos = min(relOpPos, relExpr.find("<="));
+	relOpPos = min(relOpPos, relExpr.find(">="));
+	relOpPos = min(relOpPos, relExpr.find("!="));
+	int offset = 2;
+	if (relOpPos == string::npos) {
+		offset = 1;
+		relOpPos = min(relOpPos, relExpr.find("<"));
+		relOpPos = min(relOpPos, relExpr.find(">"));
+	}
+	if (relOpPos != string::npos) {
+		string firstRelFactor = relExpr.substr(0, relOpPos);
+		string secondRelFactor = relExpr.substr(relOpPos + offset, string::npos);
+		firstRelFactor = leftTrim(rightTrim(firstRelFactor, " \t\r"), " \t");
+		secondRelFactor = leftTrim(rightTrim(secondRelFactor, " \t\r"), " \t");
+		return checkRelFactor(firstRelFactor) & checkRelFactor(secondRelFactor);
+	}
+	cout << "Could not find a relational operator at line " << statementNumber << endl;
+	return false;
 }
 
 bool Parser::checkRelFactor(string relFactor) {
@@ -483,6 +545,7 @@ vector<string> Parser::tokeniseString(string toTokenise, string delimiters) {
 	while (!toTokenise.empty()) {
 		size_t delimiterPos = toTokenise.find_first_of(delimiters);
 		string token = toTokenise.substr(0, delimiterPos);
+		toTokenise = toTokenise.substr(1, delimiterPos);
 		if (!token.empty()) {
 			tokenList.push_back(toTokenise.substr(0, delimiterPos));
 		}
