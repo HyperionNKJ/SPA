@@ -14,12 +14,12 @@ public:
 	void setPassed(bool);
 	bool hasAnswer();
 	unordered_map<string, list<int>> getAnswer();
+	void setAnswer(string, unordered_set<int>);
 	void setAnswer(string, unordered_set<string>);
 	void setAnswer(string, string, unordered_map<int, unordered_set<string>>);
 
 	void setAnswer(int); // to be implemented
 	void setAnswer(string); // to be implemented
-	void setAnswer(unordered_set<int>); // to be implemented
 	void setAnswer(unordered_map<int, int>); // to be implemented
 	void setAnswer(unordered_map<int, unordered_set<int>>); // to be implemented
 };

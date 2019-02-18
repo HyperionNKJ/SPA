@@ -45,3 +45,9 @@ void Result::setAnswer(string stmtSynonym, string variableSynonym, unordered_map
 	unordered_map<string, list<int>> formattedAnswer({ {stmtSynonym, stmtList}, {variableSynonym, variableIndices} });
 	this->answer = formattedAnswer;
 }
+
+void Result::setAnswer(string stmtSynonym, unordered_set<int> stmtNums) {
+	list<int> stmtList(stmtNums.begin(), stmtNums.end());
+	unordered_map<string, list<int>> formattedAnswer({ {stmtSynonym, stmtList}});
+	this->answer = formattedAnswer;
+}

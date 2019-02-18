@@ -91,5 +91,30 @@ Result* ModifiesS::evaluateSynonymVariable(string stmtSynonym, string variableSy
 	return result;
 }
 
-Result* ModifiesS::evaluateSynonymUnderscore(string, Type); // e.g. (a, _)
-Result* ModifiesS::evaluateSynonymFixed(string, string, Type); // e.g. (w, "count")
+// e.g. (a, _)
+Result* ModifiesS::evaluateSynonymUnderscore(string stmtSynonym, Type stmtType) {
+	Result* result = new Result();
+	unordered_set<int> answer = getStatementsThatModifies(stmtType);
+	if (!answer.empty()) {
+		result->setPassed(true);
+		result->setAnswer(stmtSynonym, answer);
+	}
+	else {
+		result->setPassed(false);
+	}
+	return result;
+}
+
+// e.g. (w, "count")
+Result* ModifiesS::evaluateSynonymFixed(string stmtSynonym, string varName, Type stmtType) {
+	Result* result = new Result();
+	unordered_set<int> answer = getStatementsThatModifiesVariable(varName, stmtType);
+	if (!answer.empty()) {
+		result->setPassed(true);
+		result->setAnswer(stmtSynonym, answer);
+	}
+	else {
+		result->setPassed(false);
+	}
+	return result;
+}
