@@ -1,8 +1,8 @@
 #pragma once
 #include <string>
 #include <list>
-#include <unordered_map>
 #include "DesignEntity.h"
+#include "Result.h"
 
 using namespace std;
 
@@ -16,5 +16,5 @@ protected:
 public:
 	void setParaOne(DesignEntity);
 	void setParaTwo(DesignEntity);
-	virtual unordered_map<string, list<int>> evaluate() = 0;
+	virtual Result evaluate() = 0;
 };
