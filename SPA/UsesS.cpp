@@ -1,10 +1,10 @@
-#include "ModifiesS.h"
+#include "UsesS.h"
 #include <unordered_set>
 #include <string>
 
-ModifiesS::ModifiesS(DesignEntity paraOne, DesignEntity paraTwo) : Clause(paraOne, paraTwo) {}
+UsesS::UsesS(DesignEntity paraOne, DesignEntity paraTwo) : Clause(paraOne, paraTwo) {}
 
-Result ModifiesS::evaluate() {
+Result UsesS::evaluate() {
 	Type paraOneType = paraOne.getType();
 	Type paraTwoType = paraTwo.getType();
 	string paraOneValue = paraOne.getValue();
@@ -15,7 +15,7 @@ Result ModifiesS::evaluate() {
 	if (paraOneType == FIXED) {
 		if (paraTwoType == VARIABLE) {
 			result = evaluateFixedVariable(paraOneValue, paraTwoValue);
-		} 
+		}
 		else if (paraTwoType == UNDERSCORE) {
 			result = evaluateFixedUnderscore(paraOneValue);
 		}
@@ -26,8 +26,8 @@ Result ModifiesS::evaluate() {
 			result = new Result();
 			result->setPassed(false);
 		}
-	} 
-	else if (paraOneType == STATEMENT || paraOneType == READ || paraOneType == WHILE || paraOneType == IF || paraOneType == ASSIGN) {
+	}
+	else if (paraOneType == STATEMENT || paraOneType == PRINT || paraOneType == WHILE || paraOneType == IF || paraOneType == ASSIGN) {
 		if (paraTwoType == VARIABLE) {
 			result = evaluateSynonymVariable(paraOneValue, paraTwoValue, paraOneType);
 		}
@@ -49,10 +49,10 @@ Result ModifiesS::evaluate() {
 	return *result;
 }
 
-// case Modifies(7, v)
-Result* ModifiesS::evaluateFixedVariable(string stmtNum, string variableSynonym) {
+// case Uses(7, v)
+Result* UsesS::evaluateFixedVariable(string stmtNum, string variableSynonym) {
 	Result* result = new Result();
-	unordered_set<string> answer = getVariablesModifiedByStatement(stoi(stmtNum));
+	unordered_set<string> answer = getVariablesUsedByStatement(stoi(stmtNum));
 	if (!answer.empty()) {
 		result->setPassed(true);
 		result->setAnswer(variableSynonym, answer);
@@ -63,24 +63,24 @@ Result* ModifiesS::evaluateFixedVariable(string stmtNum, string variableSynonym)
 	return result;
 }
 
-// case Modifies(7, _)
-Result* ModifiesS::evaluateFixedUnderscore(string stmtNum) {
+// case Uses(7, _)
+Result* UsesS::evaluateFixedUnderscore(string stmtNum) {
 	Result* result = new Result();
-	result->setPassed(doesStatementModifies(stoi(stmtNum)));
+	result->setPassed(doesStatementUses(stoi(stmtNum)));
 	return result;
 }
 
-// case Modifies(7, "count")
-Result* ModifiesS::evaluateFixedFixed(string stmtNum, string varName) {
+// case Uses(7, "count")
+Result* UsesS::evaluateFixedFixed(string stmtNum, string varName) {
 	Result* result = new Result();
-	result->setPassed(isModifies(stoi(stmtNum), varName));
+	result->setPassed(isUses(stoi(stmtNum), varName));
 	return result;
 }
 
-// case Modifies(w, v)
-Result* ModifiesS::evaluateSynonymVariable(string stmtSynonym, string variableSynonym, Type stmtType) {
+// case Uses(w, v)
+Result* UsesS::evaluateSynonymVariable(string stmtSynonym, string variableSynonym, Type stmtType) {
 	Result* result = new Result();
-	unordered_map<int, unordered_set<string>> answer = getModifiesStatementVariablesPairs(stmtType);
+	unordered_map<int, unordered_set<string>> answer = getUsesStatementVariablesPairs(stmtType);
 	if (!answer.empty()) {
 		result->setPassed(true);
 		result->setAnswer(stmtSynonym, variableSynonym, answer);
@@ -91,10 +91,10 @@ Result* ModifiesS::evaluateSynonymVariable(string stmtSynonym, string variableSy
 	return result;
 }
 
-// case Modifies(a, _)
-Result* ModifiesS::evaluateSynonymUnderscore(string stmtSynonym, Type stmtType) {
+// case Uses(a, _)
+Result* UsesS::evaluateSynonymUnderscore(string stmtSynonym, Type stmtType) {
 	Result* result = new Result();
-	unordered_set<int> answer = getStatementsThatModifies(stmtType);
+	unordered_set<int> answer = getStatementsThatUses(stmtType);
 	if (!answer.empty()) {
 		result->setPassed(true);
 		result->setAnswer(stmtSynonym, answer);
@@ -105,10 +105,10 @@ Result* ModifiesS::evaluateSynonymUnderscore(string stmtSynonym, Type stmtType) 
 	return result;
 }
 
-// case Modifies(w, "count")
-Result* ModifiesS::evaluateSynonymFixed(string stmtSynonym, string varName, Type stmtType) {
+// e.g. Uses(w, "count")
+Result* UsesS::evaluateSynonymFixed(string stmtSynonym, string varName, Type stmtType) {
 	Result* result = new Result();
-	unordered_set<int> answer = getStatementsThatModifiesVariable(varName, stmtType);
+	unordered_set<int> answer = getStatementsThatUsesVariable(varName, stmtType);
 	if (!answer.empty()) {
 		result->setPassed(true);
 		result->setAnswer(stmtSynonym, answer);
