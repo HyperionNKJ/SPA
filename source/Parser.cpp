@@ -10,16 +10,6 @@ using namespace std;
 
 #include "Parser.h"
 
-static int KEY_PROCEDURE = 1;
-static int KEY_ASSIGN = 2;
-static int KEY_IF = 3;
-static int KEY_ELSE = 4;
-static int KEY_WHILE = 5;
-static int KEY_READ = 6;
-static int KEY_PRINT = 7;
-static int KEY_CLOSE_BRACKET = 8;
-static int KEY_CALL = 9;
-
 static string varNameRegex = "([[:alpha:]]([[:alnum:]])*)";
 static string constantRegex = "[[:digit:]]+";
 static string spaceRegex = "[[:s:]]*";
@@ -30,19 +20,23 @@ bool emptyProcedure;
 bool expectElse;
 vector<string> sourceCode;
 int statementNumber;
-vector<int> parentStack;
-vector<int> currentFollowList;
-vector<vector<int>> followStack;
+vector<int> parentVector;
+vector<int> currentFollowVector;
+vector<vector<int>> allFollowStack;
+vector<int> containerTracker;
+string currProcedure;
 
 Parser::Parser() {
 	withinProcedure = false;
 	emptyProcedure = true;
 	expectElse = false;
 	sourceCode = vector<string>();
-	parentStack = vector<int>();
-	currentFollowList = vector<int>();
-	followStack = vector<vector<int>>();
+	parentVector = vector<int>();
+	currentFollowVector = vector<int>();
+	allFollowStack = vector<vector<int>>();
+	containerTracker = vector<int>();
 	statementNumber = 1;
+	currProcedure = "";
 }
 
 int Parser::Parse(string fileName) {
@@ -55,7 +49,7 @@ int Parser::Parse(string fileName) {
 		}
 		else {
 			if (!withinProcedure) {
-				cout << "All statements should be contained within procedures" << endl;
+				cout << "All statements should be contained within procedures. Error at line " << statementNumber << endl;
 				return false;
 			}
 			else {
@@ -66,27 +60,32 @@ int Parser::Parse(string fileName) {
 				else {
 					if (intent == KEY_ASSIGN) {
 						result = handleAssignment(sourceCode[i]);
+						statementNumber++;
 					}
 					else if (intent == KEY_CLOSE_BRACKET) {
 						result = handleCloseBracket(sourceCode[i]);
 					}
 					else if (intent == KEY_IF) {
 						result = handleIf(sourceCode[i]);
+						statementNumber++;
 					}
 					else if (intent == KEY_WHILE) {
 						result = handleWhile(sourceCode[i]);
+						statementNumber++;
 					}
 					else if (intent == KEY_PRINT) {
 						result = handlePrint(sourceCode[i]);
+						statementNumber++;
 					}
 					else if (intent == KEY_READ) {
 						result = handleRead(sourceCode[i]);
+						statementNumber++;
 					}
 					else if (intent == KEY_ELSE) {
 
 					}
 					else if (intent == KEY_CALL) {
-
+						statementNumber++;
 					}
 					else {
 						cout << "Statement of unknown type encountered" << endl;
@@ -114,7 +113,7 @@ int Parser::getStatementIntent(string line) {
 	//tokenise to split on spaces and brackets that might appear
 	vector<string> tokenLine = tokeniseString(line, " \t\n({");
 	tokenLine[0] = leftTrim(tokenLine[0], " \t\n");
-	tokenLine[1] = rightTrim(tokenLine[0], " \t\n");
+	tokenLine[0] = rightTrim(tokenLine[0], " \t\n");
 	if (tokenLine[0] == "procedure") {
 		return KEY_PROCEDURE;
 	}
@@ -171,24 +170,18 @@ int Parser::handleProcedure(string procLine) {
 	string procedureName = procLine.substr(startPos + 9, endPos - startPos - 9);
 	procedureName = leftTrim(procedureName, " \t");
 	procedureName = rightTrim(procedureName, " \t");
-	
+
+	//pkb.addProcedure(procedureName);
+	currProcedure = procedureName;
 	withinProcedure = true;
 	emptyProcedure = true;
 	return 0;
 }
 
 bool Parser::checkAssignment(string assignmentLine) {
-	//clear spaces within the line to make parsing easier
-	//also remove the semicolon since not needed to check grammar of the assign statement
-	string cleanedAssignment = "";
-	for (unsigned int i = 0; i < assignmentLine.length(); i++) {
-		if (assignmentLine[i] != ' ' && assignmentLine[i] != '\t' && assignmentLine[i] != '\n' && assignmentLine[i] != ';') {
-			cleanedAssignment += assignmentLine[i];
-		}
-	}
-	size_t equalPos = cleanedAssignment.find_first_of("=");
-	string lhsLine = cleanedAssignment.substr(0, equalPos);
-	string rhsLine = cleanedAssignment.substr(equalPos + 1, string::npos);
+	size_t equalPos = assignmentLine.find_first_of("=");
+	string lhsLine = assignmentLine.substr(0, equalPos);
+	string rhsLine = assignmentLine.substr(equalPos + 1, string::npos);
 	if (!isValidVarName(lhsLine)) {
 		cout << "Error in left hand side of assignment statement at line" << statementNumber << endl;
 		return false;
@@ -197,16 +190,12 @@ bool Parser::checkAssignment(string assignmentLine) {
 		cout << "Error in right hand side of assignment statement at line " << statementNumber << endl;
 		return false;
 	}
-	//extract info
-
-
-	statementNumber++;
 	return true;
 }
 
 bool Parser::checkExpr(string expr) {
 	//check for + or - operators to split into grammar parts
-	size_t firstDelimiterPos = expr.find_first_of("+-");
+	size_t firstDelimiterPos = expr.find_last_of("+-");
 	//neither + nor -, try to check for a single term
 	if (firstDelimiterPos == string::npos) {
 		return checkTerm(expr);
@@ -214,24 +203,18 @@ bool Parser::checkExpr(string expr) {
 	//find first minus or plus and truncate, then try to accept both parts of the statement
 	string firstLinePart = expr.substr(0, firstDelimiterPos);
 	string secondLinePart = expr.substr(firstDelimiterPos+1, string::npos);
-	if (checkExpr(firstLinePart)) {
-		return checkTerm(secondLinePart);
-	}
-	return false;
+	return checkExpr(firstLinePart) & checkTerm(secondLinePart);
 }
 
 bool Parser::checkTerm(string term) {
 	//similar logic to checkExpr
-	size_t firstDelimiterPos = term.find_first_of("*/%");
+	size_t firstDelimiterPos = term.find_last_of("*/%");
 	if (firstDelimiterPos == string::npos) {
 		return checkFactor(term);
 	}
 	string firstLinePart = term.substr(0, firstDelimiterPos);
 	string secondLinePart = term.substr(firstDelimiterPos+1, string::npos);
-	if (checkTerm(firstLinePart)) {
-		return checkFactor(secondLinePart);
-	}
-	return false;
+	return checkTerm(firstLinePart) & checkFactor(secondLinePart);
 }
 
 bool Parser::checkFactor(string factor) {
@@ -253,21 +236,40 @@ bool Parser::checkFactor(string factor) {
 }
 
 int Parser::handleAssignment(string assignmentLine) {
-	if (!checkAssignment(assignmentLine)) {
+	//clear spaces within the line to make parsing easier
+	//also remove the semicolon since not needed to check grammar of the assign statement
+	string cleanedAssignment = "";
+	for (unsigned int i = 0; i < assignmentLine.length(); i++) {
+		if (assignmentLine[i] != ' ' && assignmentLine[i] != '\t' && assignmentLine[i] != '\n' && assignmentLine[i] != ';') {
+			cleanedAssignment += assignmentLine[i];
+		}
+	}
+	if (!checkAssignment(cleanedAssignment)) {
 		return -1;
 	}
 	//do stuff to extract data from assignment statement here
-	
+	setParent(statementNumber);
+	vector<string> varConstantTokens = tokeniseString(cleanedAssignment, "=+-/*(); ");
+	string lhsVar = varConstantTokens[0];
+	setModifies(statementNumber, lhsVar);
+	for (unsigned int i = 1; i < varConstantTokens.size(); i++) {
+		if (isValidVarName(varConstantTokens[i])) {
+			//pkb.addVariable(varConstantTokens[i]);
+			setUses(statementNumber, varConstantTokens[i]);
+		}
+		else {
+			//pkb.addConstant(varConstantTokens[i]);
+		}
+	}
 	emptyProcedure = false;
-	statementNumber++;
 	return 0;
 }
 
 bool Parser::checkRead(string readLine) {
-	string readRegexString = spaceRegex + "read" + spaceRegex + varNameRegex + spaceRegex;
+	string readRegexString = spaceRegex + "read" + spaceRegex + varNameRegex + spaceRegex + ";" + spaceRegex;
 	regex readRegex(readRegexString);
 	if (!regex_match(readLine, readRegex)) {
-		cout << "Read statement at is invalid at line " << statementNumber << endl;
+		cout << "Read statement is invalid at line " << statementNumber << endl;
 		return false;
 	}
 	return true;
@@ -284,13 +286,16 @@ int Parser::handleRead(string readLine) {
 	varName = leftTrim(varName, " \t");
 	varName = rightTrim(varName, " \t");
 
+	setParent(statementNumber);
+	setModifies(statementNumber, varName);
+	//pkb.addVar(varName);
+	
 	emptyProcedure = false;
-	statementNumber++;
 	return 0;
 }
 
 bool Parser::checkPrint(string printLine) {
-	string printRegexString = spaceRegex + "print" + spaceRegex + varNameRegex + spaceRegex + spaceRegex;
+	string printRegexString = spaceRegex + "print" + spaceRegex + varNameRegex + spaceRegex + ";" + spaceRegex;
 	regex printRegex(printRegexString);
 	if (!regex_match(printLine, printRegex)) {
 		cout << "Print statement is invalid at line " << statementNumber << endl;
@@ -310,8 +315,11 @@ int Parser::handlePrint(string printLine) {
 	varName = leftTrim(varName, " \t");
 	varName = rightTrim(varName, " \t");
 
+	setParent(statementNumber);
+	setUses(statementNumber, varName);
+	//pkb.addVar(varName);
 	emptyProcedure = false;
-	statementNumber++;
+	return 0;
 }
 
 bool Parser::checkWhile(string whileLine) {
@@ -319,11 +327,11 @@ bool Parser::checkWhile(string whileLine) {
 	//then call functions to check validity of the cond expr
 	size_t firstOpenBracket = whileLine.find_first_of("(");
 	size_t lastCloseBracket = whileLine.find_last_of(")");
-	string truncWhileLine = whileLine.substr(0, firstOpenBracket + 1) + whileLine.substr(lastCloseBracket, string::npos);
+	string truncWhileLine = whileLine.substr(0, firstOpenBracket) + whileLine.substr(lastCloseBracket+1, string::npos);
 	string condExprLine = whileLine.substr(firstOpenBracket, lastCloseBracket - firstOpenBracket + 1);
-	string whileRegexString = spaceRegex + "while" + spaceRegex + "(" + spaceRegex + ")" + spaceRegex + openCurlyRegex + spaceRegex;
+	string whileRegexString = spaceRegex + "while" + spaceRegex + openCurlyRegex + spaceRegex;
 	regex whileRegex(whileRegexString);
-	if (!regex_match(whileLine, whileRegex)) {
+	if (!regex_match(truncWhileLine, whileRegex)) {
 		cout << "Unexpected tokens in the white statement at line " << statementNumber << endl;
 		return false;
 	}
@@ -335,16 +343,38 @@ int Parser::handleWhile(string whileLine) {
 		return -1;
 	}
 	//need to do things here
-	//update parent vector.
-	//place current follows vector into stack.
-	//reset the follows vector
-	//update bracket stack tracker
+	//update parent vector. OK.
+	//set parent relationship. OK.
+	//set follow relationship.
+	//place current follows vector into stack. OK.
+	//reset the follows vector OK.
+	//update container tracker. OK.
 	//extract variables, constants in the cond_expr
+	//set uses relationship.
+
+	setParent(statementNumber);
+	parentVector.push_back(statementNumber);
+	containerTracker.push_back(WHILECONTAINER);
+	allFollowStack.push_back(currentFollowVector);
+	currentFollowVector.clear();
+	return 0;
 }
 
 bool Parser::checkIf(string ifLine) {
-	//check for brackets, then do descent on the cond_expr
+	//check for brackets, then check the cond_expr
 	//practically the same as while
+	size_t firstOpenBracket = ifLine.find_first_of("(");
+	size_t lastCloseBracket = ifLine.find_last_of(")");
+	string truncIfLine = ifLine.substr(0, firstOpenBracket) + ifLine.substr(lastCloseBracket+1, string::npos);
+	string condExprLine = ifLine.substr(firstOpenBracket, lastCloseBracket - firstOpenBracket + 1);
+	string ifRegexString = spaceRegex + "if" + spaceRegex + "then" + spaceRegex + openCurlyRegex + spaceRegex;
+	regex ifRegex(ifRegexString);
+	if (!regex_match(truncIfLine, ifRegex)) {
+		cout << "Unexpected tokens in the white statement at line " << statementNumber << endl;
+		return false;
+	}
+	return checkCondExpr(condExprLine);
+	return false;
 }
 
 int Parser::handleIf(string ifLine) {
@@ -357,11 +387,18 @@ int Parser::handleIf(string ifLine) {
 	//reset follows vector
 	//update bracket stack tracker
 	//extract variables, constants in the cond_expr
+	setParent(statementNumber);
+	parentVector.push_back(statementNumber);
+	containerTracker.push_back(IFCONTAINER);
+	allFollowStack.push_back(currentFollowVector);
+	currentFollowVector.clear();
+	
+	return 0;
 }
 
 bool Parser::checkCondExpr(string condExpr) {
 	//check that brackets wrap the expression, without unexpected tokens
-	if (condExpr.find_first_of("(") != 0 || condExpr.find_last_of(")") != (condExpr.length - 1)) {
+	if (condExpr.find_first_of("(") != 0 || condExpr.find_last_of(")") != (condExpr.length() - 1)) {
 		cout << "Found unexpected token when expecting ( and ) around conditional expression at line " << statementNumber << endl;
 		return false;
 	}
@@ -372,11 +409,11 @@ bool Parser::checkCondExpr(string condExpr) {
 	bool startOfExpr = true;
 	bool checkForAndOr = false;
 	bool noBrackets = true;
-	for (int pos = 1; pos < condExpr.length - 1; pos++) {
+	for (unsigned int pos = 1; pos < condExpr.length() - 1; pos++) {
 		if (startOfExpr) {
 			if (condExpr[pos] == '!') {
 				//extract out the internal expr
-				string nextCondExpr = condExpr.substr(pos + 1, condExpr.length - 2);
+				string nextCondExpr = condExpr.substr(pos + 1, condExpr.length() - 2);
 				return checkCondExpr(nextCondExpr);
 			}
 			else if (condExpr[pos] == '(') {
@@ -389,7 +426,7 @@ bool Parser::checkCondExpr(string condExpr) {
 			}
 			else {
 				//else no delimiter expected, assume it is a rel expr and strip brackets
-				string relExpr = condExpr.substr(1, condExpr.length - 2);
+				string relExpr = condExpr.substr(1, condExpr.length() - 2);
 				return checkRelExpr(relExpr);
 			}
 		}
@@ -469,12 +506,40 @@ bool Parser::checkRelFactor(string relFactor) {
 int Parser::handleCloseBracket(string closeBracket) {
 	//currently only procedure close bracket without if or while
 	//so handle as that case
-	if (emptyProcedure) {
-		cout << "A procedure cannot be empty" << endl;
-		return -1;
+	if (containerTracker.size() < 1) {
+		if (emptyProcedure) {
+			cout << "A procedure cannot be empty" << endl;
+			return -1;
+		}
+		withinProcedure = false;
+		emptyProcedure = true;
+		return 0;
 	}
-	withinProcedure = false;
-	emptyProcedure = true;
+	else {
+		//pop from parent stack for while, else
+		//clear follow vector
+		//pop from stack of follow vectors
+		//set else checker and container for if
+		//error checking otherwise
+		currentFollowVector.clear();
+		if (containerTracker.back() == WHILECONTAINER || containerTracker.back() == ELSECONTAINER) {
+			if (parentVector.size() == 0) {
+				cout << "Unexpected error when parsing end of container statement. Parent vector is empty. At line " << statementNumber << endl;
+				return -1;
+			}
+			if (allFollowStack.size() == 0) {
+				cout << "Unexpected error when parsing end of container statement. Follow stack is empty. At line " << statementNumber << endl;
+				return -1;
+			}
+			parentVector.pop_back();
+			currentFollowVector = allFollowStack.back();
+			allFollowStack.pop_back();
+		}
+		else if (containerTracker.back() == IFCONTAINER) {
+			expectElse = true;
+		}
+		containerTracker.pop_back();
+	}
 	return 0;
 }
 
@@ -545,10 +610,51 @@ vector<string> Parser::tokeniseString(string toTokenise, string delimiters) {
 	while (!toTokenise.empty()) {
 		size_t delimiterPos = toTokenise.find_first_of(delimiters);
 		string token = toTokenise.substr(0, delimiterPos);
-		toTokenise = toTokenise.substr(1, delimiterPos);
+		if (delimiterPos == string::npos) {
+			toTokenise = "";
+		}
+		else {
+			toTokenise = toTokenise.substr(delimiterPos + 1, string::npos);
+		}
 		if (!token.empty()) {
-			tokenList.push_back(toTokenise.substr(0, delimiterPos));
+			tokenList.push_back(token);
 		}
 	}
 	return tokenList;
+}
+
+bool Parser::setParent(int currStatementNum) {
+	for (unsigned int i = 0; i < parentVector.size(); i++) {
+		//pkb.setParentT(parentVector[i], currStatementNum);
+	}
+	if (parentVector.size() > 0) {
+		//pkb.setParent(parentVector.back(), currStatementNum);
+	}
+	return true;
+}
+
+bool Parser::setFollow(int currStatementNum) {
+	for (unsigned int i = 0; i < currentFollowVector.size(); i++) {
+		//pkb.setFollowT(currentFollowVector[i], currStatementNum);
+	}
+	if (currentFollowVector.size() > 0) {
+		//pkb.setFollow(currentFollowVector.back(), currStatementNum);
+	}
+	return true;
+}
+
+bool Parser::setModifies(int currStatementNum, string varName) {
+	for (unsigned int i = 0; i < parentVector.size(); i++) {
+		//pkb.setModifies(parentVector[i], varName);
+	}
+	//pkb.setModifies(currStatementNum, varName);
+	return true;
+}
+
+bool Parser::setUses(int currStatementNum, string varName) {
+	for (unsigned int i = 0; i < parentVector.size(); i++) {
+		//pkb.setUses(parentVector[i], varName);
+	}
+	//pkb.setUsers(currStatementNum, varName);
+	return true;
 }
