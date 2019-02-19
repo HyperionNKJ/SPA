@@ -20,7 +20,7 @@ private:
 public:
 	void resetResults();
 	bool combineResults(unordered_map<string, list<int>> queryResults);
-	list<string> getResults(string selectedSynonym);
+	list<string> getResults(DesignEntity selectedSynonym);
 	void printTables(); // for debugging
 	unordered_map<string, int> getSynonymTable();
 	unordered_map<int, unordered_map<string, list<int>>> getSynonymResults();

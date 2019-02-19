@@ -22,7 +22,7 @@ unordered_map<int, unordered_map<string, list<int>>> ResultProjector::getSynonym
 	return synonymResults;
 }
 
-list<string> ResultProjector::getResults(string selectedSynonym) {
+list<string> ResultProjector::getResults(DesignEntity selectedSynonym) {
 	int tableNum = synonymTable.at(selectedSynonym);
 	list<int> results = synonymResults.at(tableNum).at(selectedSynonym);
 
