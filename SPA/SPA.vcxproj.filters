@@ -33,6 +33,15 @@
     <ClCompile Include="Clause.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ModifiesS.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Result.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UsesS.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\PKB.h">
@@ -48,6 +57,15 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="DesignEntity.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ModifiesS.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Result.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UsesS.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

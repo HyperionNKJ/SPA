@@ -17,6 +17,9 @@
     <ClCompile Include="..\source\TNode.cpp" />
     <ClCompile Include="Clause.cpp" />
     <ClCompile Include="DesignEntity.cpp" />
+    <ClCompile Include="ModifiesS.cpp" />
+    <ClCompile Include="Result.cpp" />
+    <ClCompile Include="UsesS.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\Parser.h" />
@@ -24,6 +27,9 @@
     <ClInclude Include="..\source\TNode.h" />
     <ClInclude Include="Clause.h" />
     <ClInclude Include="DesignEntity.h" />
+    <ClInclude Include="ModifiesS.h" />
+    <ClInclude Include="Result.h" />
+    <ClInclude Include="UsesS.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DC21A1EA-D2C6-4D14-A2B4-E025B64BDE81}</ProjectGuid>
