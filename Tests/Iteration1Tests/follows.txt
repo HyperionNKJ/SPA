@@ -1,0 +1,13 @@
+1 - all statements that is followed
+stmt s1;
+stmt s2;
+Select s1 such that Follows(s1, s2)
+1, 2, 3, 4, 5, 6, 9, 10, 13, 14, 15, 16, 18
+5000
+
+2 - all statements that follows
+stmt s1;
+stmt s2;
+Select s2 such that Follows(s1, s2)
+2, 3, 4, 6, 9, 10, 11, 12, 16, 17, 18, 19, 21
+5000
