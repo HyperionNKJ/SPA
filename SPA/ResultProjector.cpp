@@ -7,23 +7,32 @@ static unordered_map<int, unordered_map<string, list<int>>> synonymResults;
 static int index;
 
 // Reset tables for new query
-void resetResults() {
+void ResultProjector::resetResults()
+{
 	synonymTable.clear();
 	synonymResults.clear();
 	index = 0;
 }
 
-list<string> getResults(string selectedSynonym) {
+unordered_map<string, int> ResultProjector::getSynonymTable() {
+	return synonymTable;
+}
+
+unordered_map<int, unordered_map<string, list<int>>> ResultProjector::getSynonymResults() {
+	return synonymResults;
+}
+
+list<string> ResultProjector::getResults(string selectedSynonym) {
 	int tableNum = synonymTable.at(selectedSynonym);
 	list<int> results = synonymResults.at(tableNum).at(selectedSynonym);
-	
+
 	list<string> projectedResults;
 	// TODO: convert int to var from varTable
 
 	return projectedResults;
 }
 
-bool combineResults(unordered_map<string, list<int>> queryResults) {
+bool ResultProjector::combineResults(unordered_map<string, list<int>> queryResults) {
 	vector<string> synonyms;
 
 	for (auto synonym : queryResults)
@@ -67,25 +76,25 @@ bool combineResults(unordered_map<string, list<int>> queryResults) {
 	return true; // To be edited
 }
 
-static bool synonymExists(string synonym) {
+bool ResultProjector::synonymExists(string synonym) {
 	if (synonymTable.find(synonym) != synonymTable.end()) {
 		return true;
 	}
 	return false;
 }
 
-static void addOneSyn(string key, unordered_map<string, list<int>> results) {
+void ResultProjector::addOneSyn(string key, unordered_map<string, list<int>> results) {
 	synonymTable[key] = index;
 	synonymResults[index] = results;
 	index++;
 }
 
-static void addTwoSyn(string key1, string key2) {
+void ResultProjector::addTwoSyn(string key1, string key2) {
 
 }
 
 // Filters the synonym's results such that only overlapped results remains
-static void filterSyn(string key, list<int> queryResults) {
+void ResultProjector::filterSyn(string key, list<int> queryResults) {
 	int tableNum = synonymTable.at(key);
 	list<int>& prevResults = synonymResults.at(tableNum).at(key);
 	int index = 0;
@@ -109,17 +118,17 @@ static void filterSyn(string key, list<int> queryResults) {
 
 			if (synonymResults.at(tableNum).size() == 0)
 				synonymResults.erase(tableNum);
-				break;
+			break;
 		}
 	}
 }
 
-static bool indexDoesNotExist(int index, list<int> resultsList) {
+bool ResultProjector::indexDoesNotExist(int index, list<int> resultsList) {
 	return find(resultsList.begin(), resultsList.end(), index) == resultsList.end();
 }
 
 // Delete dependent variables' index in the same table as the deleted item
-static void eraseTableRow(int index, unordered_map<string, list<int>>& synResTable, string key) {
+void ResultProjector::eraseTableRow(int index, unordered_map<string, list<int>>& synResTable, string key) {
 	list<int>::iterator itr;
 
 	for (auto synonym : synResTable) {
@@ -131,16 +140,16 @@ static void eraseTableRow(int index, unordered_map<string, list<int>>& synResTab
 	}
 }
 
-static void mergeOneSyn(string existKey, string newKey) {
+void ResultProjector::mergeOneSyn(string existKey, string newKey) {
 
 }
 
-static void mergeDiffTable(string key1, string key2) {
+void ResultProjector::mergeDiffTable(string key1, string key2) {
 
 }
 
 // For debugging purposes
-void printTables() {
+void ResultProjector::printTables() {
 	cout << "SynonymTable: " << endl;
 	for (auto x : synonymTable) {
 		cout << x.first << " " << std::to_string(x.second) << endl;

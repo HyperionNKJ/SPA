@@ -6,17 +6,23 @@
 
 using namespace std;
 
-void resetResults();
-bool combineResults(unordered_map<string, list<int>> queryResults);
-list<string> getResults(string selectedSynonym);
+class ResultProjector {
+private:
+	bool synonymExists(string);
+	void addOneSyn(string, unordered_map<string, list<int>>);
+	void addTwoSyn(string, string);
+	void filterSyn(string, list<int>);
+	bool indexDoesNotExist(int, list<int>);
+	void eraseTableRow(int, unordered_map<string, list<int>>&, string);
+	void mergeOneSyn(string, string newKey);
+	void mergeDiffTable(string, string);
 
-static bool synonymExists(string);
-static void addOneSyn(string, unordered_map<string, list<int>>);
-static void addTwoSyn(string, string);
-static void filterSyn(string, list<int>);
-static void filterSyn(string, list<int>);
-static bool indexDoesNotExist(int, list<int>);
-static void eraseTableRow(int, unordered_map<string, list<int>>&, string);
-static void mergeOneSyn(string, string newKey);
-static void mergeDiffTable(string, string);
-void printTables(); // for debugging
+public:
+	void resetResults();
+	bool combineResults(unordered_map<string, list<int>> queryResults);
+	list<string> getResults(string selectedSynonym);
+	void printTables(); // for debugging
+	unordered_map<string, int> getSynonymTable();
+	unordered_map<int, unordered_map<string, list<int>>> getSynonymResults();
+
+};
