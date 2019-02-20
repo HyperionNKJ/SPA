@@ -1,6 +1,6 @@
 #include "Result.h"
 
-bool Result::isPassed() {
+bool Result::hasPassed() {
 	return this->isPassed;
 }
 

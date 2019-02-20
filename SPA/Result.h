@@ -10,7 +10,7 @@ private:
 	unordered_map<string, list<int>> answer;
 
 public:
-	bool isPassed();
+	bool hasPassed();
 	void setPassed(bool);
 	bool hasAnswer();
 	unordered_map<string, list<int>> getAnswer();
