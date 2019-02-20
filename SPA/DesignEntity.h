@@ -1,11 +1,8 @@
 #pragma once
 #include <string>
+#include "Type.h"
 
 using namespace std;
-
-enum Type {
-	STATEMENT, READ, PRINT, CALL, WHILE, IF, ASSIGN, VARIABLE, CONSTANT, PROCEDURE, UNDERSCORE, FIXED
-};
 
 class DesignEntity {
 private:
@@ -22,3 +19,4 @@ public:
 	string getValue();
 	Type getType();
 };
+
