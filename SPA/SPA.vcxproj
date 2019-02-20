@@ -16,12 +16,32 @@
     <ClCompile Include="..\source\PKB.cpp" />
     <ClCompile Include="..\source\TNode.cpp" />
     <ClCompile Include="ResultProjector.cpp" />
+    <ClCompile Include="Clause.cpp" />
+    <ClCompile Include="DesignEntity.cpp" />
+    <ClCompile Include="ModifiesS.cpp" />
+    <ClCompile Include="QueryEvaluator.cpp" />
+    <ClCompile Include="QueryProcessor.cpp" />
+    <ClCompile Include="Result.cpp" />
+    <ClCompile Include="UsesS.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\Parser.h" />
     <ClInclude Include="..\source\PKB.h" />
+    <ClInclude Include="Clause.h" />
+    <ClInclude Include="DesignEntity.h" />
+    <ClInclude Include="Follows.h" />
+    <ClInclude Include="FollowsT.h" />
+    <ClInclude Include="ModifiesS.h" />
+    <ClInclude Include="Parent.h" />
+    <ClInclude Include="ParentT.h" />
+    <ClInclude Include="Pattern.h" />
+    <ClInclude Include="QueryEvaluator.h" />
+    <ClInclude Include="QueryProcessor.h" />
+    <ClInclude Include="Result.h" />
     <ClInclude Include="..\source\TNode.h" />
     <ClInclude Include="ResultProjector.h" />
+    <ClInclude Include="Type.h" />
+    <ClInclude Include="UsesS.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DC21A1EA-D2C6-4D14-A2B4-E025B64BDE81}</ProjectGuid>
