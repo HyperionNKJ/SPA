@@ -9,6 +9,8 @@
 using namespace std;
 
 #include "Parser.h"
+#include "PKB.h"
+#include "../SPA/Type.h"
 
 static string varNameRegex = "([[:alpha:]]([[:alnum:]])*)";
 static string constantRegex = "[[:digit:]]+";
@@ -39,7 +41,7 @@ Parser::Parser() {
 	currProcedure = "";
 }
 
-int Parser::Parse(string fileName) {
+int Parser::parse(string fileName) {
 	loadFile(fileName);
 	for (unsigned int i = 0; i < sourceCode.size(); i++) {
 		int intent = getStatementIntent(sourceCode[i]);
@@ -88,8 +90,7 @@ int Parser::Parse(string fileName) {
 						statementNumber++;
 					}
 					else {
-						cout << "Statement of unknown type encountered" << endl;
-						cout << "Line is: " << sourceCode[i] << endl;
+						cout << "Statement of unknown type encountered at line " << statementNumber << endl;
 						result = -1;
 					}
 				}
@@ -254,11 +255,11 @@ int Parser::handleAssignment(string assignmentLine) {
 	setModifies(statementNumber, lhsVar);
 	for (unsigned int i = 1; i < varConstantTokens.size(); i++) {
 		if (isValidVarName(varConstantTokens[i])) {
-			//pkb.addVariable(varConstantTokens[i]);
+			PKB::insertVar(varConstantTokens[i]);
 			setUses(statementNumber, varConstantTokens[i]);
 		}
 		else {
-			//pkb.addConstant(varConstantTokens[i]);
+			PKB::insertConstant(stoi(varConstantTokens[i]));
 		}
 	}
 	emptyProcedure = false;
@@ -288,7 +289,7 @@ int Parser::handleRead(string readLine) {
 
 	setParent(statementNumber);
 	setModifies(statementNumber, varName);
-	//pkb.addVar(varName);
+	PKB::insertVar(varName);
 	
 	emptyProcedure = false;
 	return 0;
@@ -317,8 +318,7 @@ int Parser::handlePrint(string printLine) {
 
 	setParent(statementNumber);
 	setUses(statementNumber, varName);
-	//pkb.addVar(varName);
-	emptyProcedure = false;
+	PKB::insertVar(varName);
 	return 0;
 }
 
@@ -335,6 +335,13 @@ bool Parser::checkWhile(string whileLine) {
 		cout << "Unexpected tokens in the white statement at line " << statementNumber << endl;
 		return false;
 	}
+	//clean spaces or tabs to make parsing easier
+	string cleanedCondExpr = "";
+	for (unsigned int i = 0; i < condExprLine.length(); i++) {
+		if (condExprLine[i] != ' ' && condExprLine[i] != '\t') {
+			cleanedCondExpr += condExprLine[i];
+		}
+	}
 	return checkCondExpr(condExprLine);
 }
 
@@ -345,14 +352,18 @@ int Parser::handleWhile(string whileLine) {
 	//need to do things here
 	//update parent vector. OK.
 	//set parent relationship. OK.
-	//set follow relationship.
+	//set follow relationship. OK.
 	//place current follows vector into stack. OK.
 	//reset the follows vector OK.
 	//update container tracker. OK.
 	//extract variables, constants in the cond_expr
 	//set uses relationship.
 
+	//set relationships
 	setParent(statementNumber);
+	setFollow(statementNumber);
+
+	//update parent, container, follows trackers
 	parentVector.push_back(statementNumber);
 	containerTracker.push_back(WHILECONTAINER);
 	allFollowStack.push_back(currentFollowVector);
@@ -381,12 +392,15 @@ int Parser::handleIf(string ifLine) {
 	if (!checkIf(ifLine)) {
 		return -1;
 	}
-	//about same as while. just keep track that there will be an else
-	//update parent vector.
-	//place current follows vector into stack.
-	//reset follows vector
-	//update bracket stack tracker
+	//about same as while
+	//update parent vector. OK.
+	//set parent relationship. OK.
+	//set follow relationship.
+	//place current follows vector into stack. OK.
+	//reset the follows vector OK.
+	//update container tracker. OK.
 	//extract variables, constants in the cond_expr
+	//set uses relationship.
 	setParent(statementNumber);
 	parentVector.push_back(statementNumber);
 	containerTracker.push_back(IFCONTAINER);
@@ -421,9 +435,6 @@ bool Parser::checkCondExpr(string condExpr) {
 				noBrackets = false;
 				bracketCount++;
 			}
-			else if (condExpr[pos] == ' ' || condExpr[pos] == '\t') {
-				continue;
-			}
 			else {
 				//else no delimiter expected, assume it is a rel expr and strip brackets
 				string relExpr = condExpr.substr(1, condExpr.length() - 2);
@@ -438,9 +449,6 @@ bool Parser::checkCondExpr(string condExpr) {
 				firstCondExpr = leftTrim(rightTrim(firstCondExpr, " \t"), " \t");
 				secondCondExpr = leftTrim(rightTrim(secondCondExpr, " \t"), " \t");
 				return checkCondExpr(firstCondExpr) & checkCondExpr(secondCondExpr);
-			}
-			else if (condExpr[pos] == ' ' || condExpr[pos] == '\t') {
-				continue;
 			}
 			else {
 				cout << "Could not successfully parse conditional expression, missing and/or operator at line " << statementNumber << endl;
@@ -504,8 +512,7 @@ bool Parser::checkRelFactor(string relFactor) {
 }
 
 int Parser::handleCloseBracket(string closeBracket) {
-	//currently only procedure close bracket without if or while
-	//so handle as that case
+	//if no container statements tracked, assume close bracket is for procedure
 	if (containerTracker.size() < 1) {
 		if (emptyProcedure) {
 			cout << "A procedure cannot be empty" << endl;
@@ -516,11 +523,9 @@ int Parser::handleCloseBracket(string closeBracket) {
 		return 0;
 	}
 	else {
-		//pop from parent stack for while, else
+		//pop from parent stack, pop from stack of follow vectors for while, else
 		//clear follow vector
-		//pop from stack of follow vectors
 		//set else checker and container for if
-		//error checking otherwise
 		currentFollowVector.clear();
 		if (containerTracker.back() == WHILECONTAINER || containerTracker.back() == ELSECONTAINER) {
 			if (parentVector.size() == 0) {
@@ -625,36 +630,36 @@ vector<string> Parser::tokeniseString(string toTokenise, string delimiters) {
 
 bool Parser::setParent(int currStatementNum) {
 	for (unsigned int i = 0; i < parentVector.size(); i++) {
-		//pkb.setParentT(parentVector[i], currStatementNum);
+		PKB::setParentT(parentVector[i], currStatementNum);
 	}
 	if (parentVector.size() > 0) {
-		//pkb.setParent(parentVector.back(), currStatementNum);
+		PKB::setParent(parentVector.back(), currStatementNum);
 	}
 	return true;
 }
 
 bool Parser::setFollow(int currStatementNum) {
 	for (unsigned int i = 0; i < currentFollowVector.size(); i++) {
-		//pkb.setFollowT(currentFollowVector[i], currStatementNum);
+		PKB::setFollowedByT(currentFollowVector[i], currStatementNum);
 	}
 	if (currentFollowVector.size() > 0) {
-		//pkb.setFollow(currentFollowVector.back(), currStatementNum);
+		PKB::setFollowedBy(currentFollowVector.back(), currStatementNum);
 	}
 	return true;
 }
 
 bool Parser::setModifies(int currStatementNum, string varName) {
 	for (unsigned int i = 0; i < parentVector.size(); i++) {
-		//pkb.setModifies(parentVector[i], varName);
+		PKB::setModifies(parentVector[i], varName);
 	}
-	//pkb.setModifies(currStatementNum, varName);
+	PKB::setModifies(currStatementNum, varName);
 	return true;
 }
 
 bool Parser::setUses(int currStatementNum, string varName) {
 	for (unsigned int i = 0; i < parentVector.size(); i++) {
-		//pkb.setUses(parentVector[i], varName);
+		PKB::setUses(parentVector[i], varName);
 	}
-	//pkb.setUsers(currStatementNum, varName);
+	PKB::setUses(currStatementNum, varName);
 	return true;
 }

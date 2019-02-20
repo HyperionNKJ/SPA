@@ -59,7 +59,7 @@ public:
 	int handleCloseBracket(string);
 
 	int getStatementIntent(string);
-	int Parse(string);
+	int parse(string);
 	vector<string> loadFile(string);
 
 	string leftTrim(string, string);
