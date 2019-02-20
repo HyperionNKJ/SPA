@@ -32,7 +32,6 @@ private:
 	bool setUses(int, string);
 	bool setFollow(int);
 public:
-	Parser();
 
 	bool checkProcedure(string);
 	int handleProcedure(string);

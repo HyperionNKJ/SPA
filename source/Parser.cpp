@@ -17,29 +17,17 @@ static string constantRegex = "[[:digit:]]+";
 static string spaceRegex = "[[:s:]]*";
 static string openCurlyRegex = "\\{";
 
-bool withinProcedure;
-bool emptyProcedure;
-bool expectElse;
-vector<string> sourceCode;
-int statementNumber;
-vector<int> parentVector;
-vector<int> currentFollowVector;
-vector<vector<int>> allFollowStack;
-vector<int> containerTracker;
+bool withinProcedure = false;
+bool emptyProcedure = true;
+bool expectElse = false;
+vector<string> sourceCode = vector<string>();
+int statementNumber = 1;
+vector<int> parentVector = vector<int>();
+vector<int> currentFollowVector = vector<int>();
+vector<vector<int>> allFollowStack = vector<vector<int>>();
+vector<int> containerTracker = vector<int>(); 
 string currProcedure;
-
-Parser::Parser() {
-	withinProcedure = false;
-	emptyProcedure = true;
-	expectElse = false;
-	sourceCode = vector<string>();
-	parentVector = vector<int>();
-	currentFollowVector = vector<int>();
-	allFollowStack = vector<vector<int>>();
-	containerTracker = vector<int>();
-	statementNumber = 1;
-	currProcedure = "";
-}
+PKB pkb;
 
 int Parser::parse(string fileName) {
 	loadFile(fileName);
@@ -194,28 +182,62 @@ bool Parser::checkAssignment(string assignmentLine) {
 	return true;
 }
 
+//corrected idea for expr/factor/term
+//search from the back first for +/- for expr. Track brackets and ignore +/- inside matching brackets
+//upon finding + or - break into expr first, then factor second. 
+//Same idea for factor for searching for */% from the back.
+//for term can keep the same i think
 bool Parser::checkExpr(string expr) {
-	//check for + or - operators to split into grammar parts
-	size_t firstDelimiterPos = expr.find_last_of("+-");
-	//neither + nor -, try to check for a single term
-	if (firstDelimiterPos == string::npos) {
-		return checkTerm(expr);
+	//start from the back, start scanning for + or -. Track brackets and ignore + or - inside them.
+	int bracketTracker = 0;
+	for (unsigned int currPos = expr.length() - 1; currPos > 0; currPos--) {
+		if (expr[currPos] == '(') {
+			bracketTracker--;
+		}
+		else if (expr[currPos] == ')') {
+			bracketTracker++;
+		}
+		if (bracketTracker == 0) {
+			if (expr[currPos] == '+' || expr[currPos] == '-') {
+				string firstExpr = expr.substr(0, currPos);
+				string secondTerm = expr.substr(currPos + 1, string::npos);
+				return checkExpr(firstExpr) & checkTerm(secondTerm);
+			}
+		}
+		else if (bracketTracker < 0) {
+			cout << "Unexpected ( bracket encountered in assignment statement at line " << statementNumber << endl;
+			return false;
+		}
 	}
-	//find first minus or plus and truncate, then try to accept both parts of the statement
-	string firstLinePart = expr.substr(0, firstDelimiterPos);
-	string secondLinePart = expr.substr(firstDelimiterPos+1, string::npos);
-	return checkExpr(firstLinePart) & checkTerm(secondLinePart);
+	//reach the end with no + or -, check for single term
+	return checkTerm(expr);
 }
 
 bool Parser::checkTerm(string term) {
 	//similar logic to checkExpr
-	size_t firstDelimiterPos = term.find_last_of("*/%");
-	if (firstDelimiterPos == string::npos) {
-		return checkFactor(term);
+	//start from the back, start scanning for *, /, %. Track brackets and ignore delimiters inside them.
+	int bracketTracker = 0;
+	for (unsigned int currPos = term.length() - 1; currPos > 0; currPos--) {
+		if (term[currPos] == '(') {
+			bracketTracker--;
+		}
+		else if (term[currPos] == ')') {
+			bracketTracker++;
+		}
+		if (bracketTracker == 0) {
+			if (term[currPos] == '*' || term[currPos] == '/' || term[currPos] == '%') {
+				string firstTerm = term.substr(0, currPos);
+				string secondFactor = term.substr(currPos + 1, string::npos);
+				return checkExpr(firstTerm) & checkTerm(secondFactor);
+			}
+		}
+		else if (bracketTracker < 0) {
+			cout << "Unexpected ( bracket encountered in assignment statement at line " << statementNumber << endl;
+			return false;
+		}
 	}
-	string firstLinePart = term.substr(0, firstDelimiterPos);
-	string secondLinePart = term.substr(firstDelimiterPos+1, string::npos);
-	return checkTerm(firstLinePart) & checkFactor(secondLinePart);
+	//reach the end with no * / %, check for single term
+	return checkFactor(term);
 }
 
 bool Parser::checkFactor(string factor) {
@@ -229,10 +251,9 @@ bool Parser::checkFactor(string factor) {
 	size_t openBracketPos = factor.find_first_of("(");
 	size_t closeBracketPos = factor.find_first_of(")");
 	if (openBracketPos != string::npos && closeBracketPos != string::npos) {
-		string lineFirstPart = factor.substr(0, openBracketPos);
-		string lineLastPart = factor.substr(closeBracketPos + 1, string::npos);
-		return checkExpr(factor.substr(openBracketPos, closeBracketPos - openBracketPos + 1));
+		return checkExpr(factor.substr(openBracketPos+1, closeBracketPos - openBracketPos - 1));
 	}
+	cout << "Failed in parsing a Factor in RHS of assignment statement at line " << statementNumber << endl;
 	return false;
 }
 
@@ -630,36 +651,36 @@ vector<string> Parser::tokeniseString(string toTokenise, string delimiters) {
 
 bool Parser::setParent(int currStatementNum) {
 	for (unsigned int i = 0; i < parentVector.size(); i++) {
-		PKB::setParentT(parentVector[i], currStatementNum);
+		pkb.setParentT(parentVector[i], currStatementNum);
 	}
 	if (parentVector.size() > 0) {
-		PKB::setParent(parentVector.back(), currStatementNum);
+		pkb.setParent(parentVector.back(), currStatementNum);
 	}
 	return true;
 }
 
 bool Parser::setFollow(int currStatementNum) {
 	for (unsigned int i = 0; i < currentFollowVector.size(); i++) {
-		PKB::setFollowedByT(currentFollowVector[i], currStatementNum);
+		pkb.setFollowedByT(currentFollowVector[i], currStatementNum);
 	}
 	if (currentFollowVector.size() > 0) {
-		PKB::setFollowedBy(currentFollowVector.back(), currStatementNum);
+		pkb.setFollowedBy(currentFollowVector.back(), currStatementNum);
 	}
 	return true;
 }
 
 bool Parser::setModifies(int currStatementNum, string varName) {
 	for (unsigned int i = 0; i < parentVector.size(); i++) {
-		PKB::setModifies(parentVector[i], varName);
+		pkb.setModifies(parentVector[i], varName);
 	}
-	PKB::setModifies(currStatementNum, varName);
+	pkb.setModifies(currStatementNum, varName);
 	return true;
 }
 
 bool Parser::setUses(int currStatementNum, string varName) {
 	for (unsigned int i = 0; i < parentVector.size(); i++) {
-		PKB::setUses(parentVector[i], varName);
+		pkb.setUses(parentVector[i], varName);
 	}
-	PKB::setUses(currStatementNum, varName);
+	pkb.setUses(currStatementNum, varName);
 	return true;
 }
