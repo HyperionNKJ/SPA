@@ -13,5 +13,5 @@ private:
 public:
 	ModifiesS(DesignEntity, DesignEntity);
 
-	Result evaluate() override;
+	Result evaluate(PKB) override;
 };
