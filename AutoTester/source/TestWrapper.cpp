@@ -22,7 +22,8 @@ void TestWrapper::parse(std::string filename) {
 
 // method to evaluating a query
 void TestWrapper::evaluate(std::string query, std::list<std::string>& results) {
-	results.push_back(queryProcessor.evaluate(query, pkb));
+	results = queryProcessor.evaluate(query, pkb);
+
 	// call your evaluator to evaluate the query here
 	// ...code to evaluate query...
 
