@@ -21,5 +21,5 @@ std::list<std::string> QueryEvaluator::evaluate(ProcessedQuery processedQuery, P
 			return finalResult;
 		}
 	}
-	return resultProjector.getResults(processedQuery.getSelectedSynonym()); // To be clarified.
+	return resultProjector.getResults(processedQuery.getSelectedSynonym(), pkb); // To be clarified.
 }
