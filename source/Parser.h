@@ -32,6 +32,7 @@ private:
 	bool setUses(int, string);
 	bool setFollow(int);
 public:
+	PKB pkb;
 
 	bool checkProcedure(string);
 	int handleProcedure(string);
@@ -51,6 +52,8 @@ public:
 	int handleWhile(string);
 	bool checkIf(string);
 	int handleIf(string);
+	bool checkElse(string);
+	int handleElse(string);
 	bool checkCondExpr(string);
 	bool checkRelExpr(string);
 	bool checkRelFactor(string);

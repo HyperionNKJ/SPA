@@ -160,7 +160,7 @@ int Parser::handleProcedure(string procLine) {
 	procedureName = leftTrim(procedureName, " \t");
 	procedureName = rightTrim(procedureName, " \t");
 
-	//pkb.addProcedure(procedureName);
+	pkb.insertProc(procedureName);
 	currProcedure = procedureName;
 	withinProcedure = true;
 	emptyProcedure = true;
@@ -182,11 +182,6 @@ bool Parser::checkAssignment(string assignmentLine) {
 	return true;
 }
 
-//corrected idea for expr/factor/term
-//search from the back first for +/- for expr. Track brackets and ignore +/- inside matching brackets
-//upon finding + or - break into expr first, then factor second. 
-//Same idea for factor for searching for */% from the back.
-//for term can keep the same i think
 bool Parser::checkExpr(string expr) {
 	//start from the back, start scanning for + or -. Track brackets and ignore + or - inside them.
 	int bracketTracker = 0;
@@ -370,15 +365,6 @@ int Parser::handleWhile(string whileLine) {
 	if (!checkWhile(whileLine)) {
 		return -1;
 	}
-	//need to do things here
-	//update parent vector. OK.
-	//set parent relationship. OK.
-	//set follow relationship. OK.
-	//place current follows vector into stack. OK.
-	//reset the follows vector OK.
-	//update container tracker. OK.
-	//extract variables, constants in the cond_expr
-	//set uses relationship.
 
 	//set relationships
 	setParent(statementNumber);
@@ -389,6 +375,21 @@ int Parser::handleWhile(string whileLine) {
 	containerTracker.push_back(WHILECONTAINER);
 	allFollowStack.push_back(currentFollowVector);
 	currentFollowVector.clear();
+
+	//set uses relationships
+	size_t openBracketPos = whileLine.find_first_of("(");
+	size_t closeBracketPos = whileLine.find_last_of(")");
+	string condExpr = whileLine.substr(openBracketPos + 1, closeBracketPos - openBracketPos - 1);
+	vector<string> tokens = tokeniseString(condExpr, " \t&|()!");
+	for (unsigned int i = 0; i < tokens.size(); i++) {
+		if (isValidVarName(tokens[i])) {
+			pkb.insertVar(tokens[i]);
+			setUses(statementNumber, tokens[i]);
+		}
+		else if (isValidConstant(tokens[i])) {
+			pkb.insertConstant(stoi(tokens[i]));
+		}
+	}
 	return 0;
 }
 
@@ -413,21 +414,43 @@ int Parser::handleIf(string ifLine) {
 	if (!checkIf(ifLine)) {
 		return -1;
 	}
-	//about same as while
-	//update parent vector. OK.
-	//set parent relationship. OK.
-	//set follow relationship.
-	//place current follows vector into stack. OK.
-	//reset the follows vector OK.
-	//update container tracker. OK.
-	//extract variables, constants in the cond_expr
-	//set uses relationship.
+	//set follow, parent relationships
 	setParent(statementNumber);
+	setFollow(statementNumber);
+
+	//update parent, follow, container trackers
 	parentVector.push_back(statementNumber);
 	containerTracker.push_back(IFCONTAINER);
 	allFollowStack.push_back(currentFollowVector);
 	currentFollowVector.clear();
-	
+
+	//set uses relationships
+	size_t openBracketPos = ifLine.find_first_of("(");
+	size_t closeBracketPos = ifLine.find_last_of(")");
+	string condExpr = ifLine.substr(openBracketPos + 1, closeBracketPos - openBracketPos - 1);
+	vector<string> tokens = tokeniseString(condExpr, " \t&|()!");
+	for (unsigned int i = 0; i < tokens.size(); i++) {
+		if (isValidVarName(tokens[i])) {
+			pkb.insertVar(tokens[i]);
+			setUses(statementNumber, tokens[i]);
+		}
+		else if (isValidConstant(tokens[i])) {
+			pkb.insertConstant(stoi(tokens[i]));
+		}
+	}
+	return 0;
+}
+
+int Parser::handleElse(string elseLine) {
+	if (!checkElse(elseLine)) {
+		return -1;
+	}
+	//reset booleans
+	//reset follow tracker
+	//set container tracker
+	expectElse = false;
+	containerTracker.push_back(ELSECONTAINER);
+	currentFollowVector.clear();
 	return 0;
 }
 
@@ -467,8 +490,6 @@ bool Parser::checkCondExpr(string condExpr) {
 				//extract out the 2 expressions
 				string firstCondExpr = condExpr.substr(0, pos);
 				string secondCondExpr = condExpr.substr(pos + 2, string::npos);
-				firstCondExpr = leftTrim(rightTrim(firstCondExpr, " \t"), " \t");
-				secondCondExpr = leftTrim(rightTrim(secondCondExpr, " \t"), " \t");
 				return checkCondExpr(firstCondExpr) & checkCondExpr(secondCondExpr);
 			}
 			else {
