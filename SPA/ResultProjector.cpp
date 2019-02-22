@@ -43,10 +43,10 @@ list<string> ResultProjector::getResults(DesignEntity selectedSynonym, PKB pkb) 
 list<string> ResultProjector::getSelectedClauseInTable(Type type, list<int> results, PKB pkb) {
 	list<string> projectedResults;
 	switch (type) {
-		case VARIABLE:
+		case Type::VARIABLE:
 			projectedResults = convertVarIndexToVar(results, pkb);
 			break;
-		case PROCEDURE:
+		case Type::PROCEDURE:
 			projectedResults = convertProcIndexToProc(results, pkb);
 			break;
 		default: // STATEMENTS and CONSTANTS
@@ -62,42 +62,42 @@ list<string> ResultProjector::getSelectedClauseNotInTable(Type type, PKB pkb) {
 	//STATEMENT, READ, PRINT, CALL, WHILE, IF, ASSIGN, VARIABLE, CONSTANT, PROCEDURE, UNDERSCORE, FIXED
 
 	switch (type) {
-		case STATEMENT:
+		case Type::STATEMENT:
 			results = pkb.getAllStmts();
 			projectedResults = convertIndexToString(results, pkb);
 			break;
-		case READ:
+		case Type::READ:
 			results = pkb.getReadStmts();
 			projectedResults = convertIndexToString(results, pkb);
 			break;
-		case PRINT:
+		case Type::PRINT:
 			results = pkb.getPrintStmts();
 			projectedResults = convertIndexToString(results, pkb);
 			break;
-		/*case CALL:	// call statements
+		/*case Type::CALL:	// call statements
 			results = pkb.getAllVariables();
 			break;*/
-		case WHILE:
+		case Type::WHILE:
 			results = pkb.getWhileStmts();
 			projectedResults = convertIndexToString(results, pkb);
 			break;
-		case IF:
+		case Type::IF:
 			results = pkb.getIfStmts();
 			projectedResults = convertIndexToString(results, pkb);
 			break;
-		case ASSIGN:
+		case Type::ASSIGN:
 			results = pkb.getAssignStmts();
 			projectedResults = convertIndexToString(results, pkb);
 			break;
-		case VARIABLE:
+		case Type::VARIABLE:
 			results = pkb.getAllVariables();
 			projectedResults = convertVarIndexToVar(results, pkb);
 			break;
-		case CONSTANT:
+		case Type::CONSTANT:
 			results = pkb.getAllConstant();
 			projectedResults = convertIndexToString(results, pkb);
 			break;
-		case PROCEDURE:
+		case Type::PROCEDURE:
 			results = pkb.getAllProcedures();
 			projectedResults = convertProcIndexToProc(results, pkb);
 			break;
