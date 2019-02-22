@@ -27,7 +27,6 @@
     <ClCompile Include="..\source\TNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-
     <ClCompile Include="ResultProjector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -50,6 +49,36 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="QueryEvaluator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\QueryPreprocessor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\QueryPreprocessorHelper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\QueryTokenizer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\Statement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\StatementTypeFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\SuchThatClause.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\DesignEntityType.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\PatternClause.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\ProcessedQuery.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\QueryParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -103,6 +132,42 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ResultProjector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\DesignEntityType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\QueryTokenizer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\StatementType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\Statement.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\SuchThatClause.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\StatementTypeFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\QueryPreprocessor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\QueryParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\ProcessedQuery.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\PatternClause.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\ParameterType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\QueryPreprocessorHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
