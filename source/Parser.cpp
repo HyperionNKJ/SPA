@@ -27,9 +27,9 @@ vector<int> currentFollowVector = vector<int>();
 vector<vector<int>> allFollowStack = vector<vector<int>>();
 vector<int> containerTracker = vector<int>(); 
 string currProcedure;
-PKB pkb;
 
-int Parser::parse(string fileName) {
+int Parser::parse(string fileName, PKB p) {
+	pkb = p;
 	loadFile(fileName);
 	for (unsigned int i = 0; i < sourceCode.size(); i++) {
 		int intent = getStatementIntent(sourceCode[i]);
@@ -704,4 +704,8 @@ bool Parser::setUses(int currStatementNum, string varName) {
 	}
 	pkb.setUses(currStatementNum, varName);
 	return true;
+}
+
+void Parser::setWithinProcedure(bool setting) {
+	withinProcedure = setting;
 }

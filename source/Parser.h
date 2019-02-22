@@ -7,6 +7,7 @@
 #include <vector>
 #include <string>
 #include <stack>
+#include "PKB.h"
 
 using namespace std;
 
@@ -26,13 +27,13 @@ static int IFCONTAINER = 101;
 static int ELSECONTAINER = 102;
 
 class Parser {
+	PKB pkb;
 private:
 	bool setParent(int);
 	bool setModifies(int, string);
 	bool setUses(int, string);
 	bool setFollow(int);
 public:
-	PKB pkb;
 
 	bool checkProcedure(string);
 	int handleProcedure(string);
@@ -61,7 +62,7 @@ public:
 	int handleCloseBracket(string);
 
 	int getStatementIntent(string);
-	int parse(string);
+	int parse(string, PKB);
 	vector<string> loadFile(string);
 
 	string leftTrim(string, string);
@@ -69,4 +70,7 @@ public:
 	bool isValidVarName(string);
 	bool isValidConstant(string);
 	vector<string> tokeniseString(string, string);
+
+	//setter/getter functions for testing
+	void setWithinProcedure(bool);
 };
