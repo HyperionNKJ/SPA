@@ -28,6 +28,17 @@ static int ELSECONTAINER = 102;
 
 class Parser {
 	PKB * pkb;
+	bool withinProcedure = false;
+	bool emptyProcedure = true;
+	bool expectElse = false;
+	vector<string> sourceCode = vector<string>();
+	int statementNumber = 1;
+	vector<int> parentVector = vector<int>();
+	vector<int> currentFollowVector = vector<int>();
+	vector<vector<int>> allFollowStack = vector<vector<int>>();
+	vector<int> containerTracker = vector<int>();
+	string currProcedure;
+
 private:
 	bool setParent(int);
 	bool setModifies(int, string);
