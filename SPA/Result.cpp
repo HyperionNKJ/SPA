@@ -46,8 +46,32 @@ void Result::setAnswer(string stmtSynonym, string variableSynonym, unordered_map
 	this->answer = formattedAnswer;
 }
 
+void Result::setAnswer(string stmt1Synonym, string stmt2Synonym, unordered_map<int, unordered_set<int>> answer) {
+	list<int> stmt1List;
+	list<int> stmt2List;
+
+	for (auto itr = answer.begin(); itr != answer.end(); itr++) {
+		int stmt1Num = itr->first;
+		unordered_set<int> stmt2Numbers = itr->second;
+		auto it = stmt2Numbers.begin();
+		for (int i = 0; i < stmt2Numbers.size(); i++) {
+			stmt1List.push_back(stmt1Num);
+			stmt2List.push_back(*it);
+			it++;
+		}
+	}
+	unordered_map<string, list<int>> formattedAnswer({ {stmt1Synonym, stmt1List}, {stmt2Synonym, stmt2List} });
+	this->answer = formattedAnswer;
+}
+
 void Result::setAnswer(string stmtSynonym, unordered_set<int> stmtNums) {
 	list<int> stmtList(stmtNums.begin(), stmtNums.end());
 	unordered_map<string, list<int>> formattedAnswer({ {stmtSynonym, stmtList}});
+	this->answer = formattedAnswer;
+}
+
+void Result::setAnswer(string stmtSynonym, int answer) {
+	list<int> stmtList({ answer });
+	unordered_map<string, list<int>> formattedAnswer({ {stmtSynonym, stmtList} });
 	this->answer = formattedAnswer;
 }
