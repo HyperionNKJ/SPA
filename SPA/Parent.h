@@ -12,7 +12,6 @@ private:
 	Result* evaluateUnderscoreSynonym(string, Type); // Parent(_, a)
 	Result* evaluateUnderscoreUnderscore(); // Parent(_, _)
 	Result* evaluateUnderscoreFixed(string); // Parent(_, 23)
-		
 
 public:
 	Parent(DesignEntity, DesignEntity);
