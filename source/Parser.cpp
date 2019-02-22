@@ -17,17 +17,6 @@ static string constantRegex = "[[:digit:]]+";
 static string spaceRegex = "[[:s:]]*";
 static string openCurlyRegex = "\\{";
 
-bool withinProcedure = false;
-bool emptyProcedure = true;
-bool expectElse = false;
-vector<string> sourceCode = vector<string>();
-int statementNumber = 1;
-vector<int> parentVector = vector<int>();
-vector<int> currentFollowVector = vector<int>();
-vector<vector<int>> allFollowStack = vector<vector<int>>();
-vector<int> containerTracker = vector<int>(); 
-string currProcedure;
-
 int Parser::parse(string fileName, PKB& p) {
 	pkb = &p;
 	loadFile(fileName);
@@ -264,21 +253,41 @@ int Parser::handleAssignment(string assignmentLine) {
 	if (!checkAssignment(cleanedAssignment)) {
 		return -1;
 	}
-	//do stuff to extract data from assignment statement here
+	
 	setParent(statementNumber);
-	vector<string> varConstantTokens = tokeniseString(cleanedAssignment, "=+-/*(); ");
-	string lhsVar = varConstantTokens[0];
-	setModifies(statementNumber, lhsVar);
-	for (unsigned int i = 1; i < varConstantTokens.size(); i++) {
-		if (isValidVarName(varConstantTokens[i])) {
-			pkb->insertVar(varConstantTokens[i]);
-			setUses(statementNumber, varConstantTokens[i]);
-		}
-		else {
-			pkb->insertConstant(stoi(varConstantTokens[i]));
+
+	//Separate variable names, constants and operation/brackets from each other to pass to pkb
+	vector<string> assignTokens = vector<string>();
+	string lhsVar = assignmentLine.substr(0, assignmentLine.find_first_of("="));
+	string rhs = assignmentLine.substr(assignmentLine.find_first_of("=") + 1, string::npos);
+	string currToken = "";
+	for (unsigned int i = 0; i < rhs.length(); i++) {
+		//assignment should have only alphanum and bracket/op. Less than 48 in ascii must be a bracket/op
+		if (rhs[i] < 48) {
+			if (!currToken.empty()) {
+				assignTokens.push_back(currToken);
+				currToken = "";
+				assignTokens.push_back(rhs.substr(i, 1));
+			}
+			else {
+				currToken += rhs[i];
+			}
 		}
 	}
-	emptyProcedure = false;
+	if (!currToken.empty()) {
+		assignTokens.push_back(currToken);
+	}
+	setModifies(statementNumber, lhsVar);
+	for (unsigned int i = 0; i < assignTokens.size(); i++) {
+		if (isValidVarName(assignTokens[i])) {
+			pkb->insertVar(assignTokens[i]);
+			setUses(statementNumber, assignTokens[i]);
+		}
+		else if (isValidConstant(assignTokens[i])) {
+			pkb->insertConstant(stoi(assignTokens[i]));
+		}
+	}
+	//pkb->insertAssignStmt(statementNumber, lhsVar, assignTokens);
 	return 0;
 }
 
@@ -439,6 +448,16 @@ int Parser::handleIf(string ifLine) {
 		}
 	}
 	return 0;
+}
+
+bool Parser::checkElse(string elseLine) {
+	string elseRegexString = spaceRegex + "else" + spaceRegex + openCurlyRegex;
+	regex elseRegex(elseRegexString);
+	if (!regex_match(elseLine, elseRegex)) {
+		cout << "Else statement has unexpected tokens just before line " << statementNumber << endl;
+		return false;
+	}
+	return true;
 }
 
 int Parser::handleElse(string elseLine) {

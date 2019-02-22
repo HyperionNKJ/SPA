@@ -16,9 +16,9 @@ public:
 	void addSynonym(const std::string& newSynonym);
 
 	bool addSuchThatClause(const RelationshipType& type,
-		const ParameterType& paramOneType,
+		const Type& paramOneType,
 		const std::string& paramOneValue,
-		const ParameterType& paramTwoType,
+		const Type& paramTwoType,
 		const std::string& paramTwoValue);
 
 	bool addPatternClause(const DesignEntity& assign,

@@ -13,7 +13,7 @@ const std::string QueryTokenizer::WHITESPACES(" \t\f\v\n\r");
 
 // constructor initialises query
 QueryTokenizer::QueryTokenizer(const std::string& newQuery) : query(newQuery) {
-	
+
 }
 
 // returns false if any of the statement is neither a select statement or
@@ -44,18 +44,18 @@ void QueryTokenizer::format() {
 	while (oldIndex < originalLength) {
 		if (!isspace(query[oldIndex])) {
 			if (isNoLeadingSpaceChar(query[oldIndex])
-					&& newIndex > 0
-					&& isspace(query[newIndex - 1])) {
+				&& newIndex > 0
+				&& isspace(query[newIndex - 1])) {
 				query[newIndex - 1] = query[oldIndex];
 			}
 			else if (isNoPrecedingSpaceChar(query[oldIndex])
-					&& oldIndex + 1 < originalLength
-					&& isspace(query[oldIndex + 1])) {
+				&& oldIndex + 1 < originalLength
+				&& isspace(query[oldIndex + 1])) {
 				query[newIndex] = query[oldIndex];
 				newIndex++;
 				oldIndex++;
 				while (oldIndex + 1 < originalLength
-						&& isspace(query[oldIndex + 1])) {
+					&& isspace(query[oldIndex + 1])) {
 					oldIndex++;
 				}
 			}
@@ -101,7 +101,7 @@ bool QueryTokenizer::tag() {
 
 		if (isSelectStmt(statement.VALUE)) {
 			statementType = StatementType::SELECT;
-			
+
 		}
 		else if (isDeclareStmt(statement.VALUE)) {
 			statementType = StatementType::DECLARATION;

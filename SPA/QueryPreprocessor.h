@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ProcessedQuery.h"
+
 class QueryPreprocessor {
 public:
 	QueryPreprocessor(const std::string& query);
