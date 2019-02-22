@@ -9,7 +9,7 @@
 using namespace std;
 
 #include "Parser.h"
-#include "PKB.h"
+#include "pkb.h"
 #include "../SPA/Type.h"
 
 static string varNameRegex = "([[:alpha:]]([[:alnum:]])*)";
@@ -28,8 +28,8 @@ vector<vector<int>> allFollowStack = vector<vector<int>>();
 vector<int> containerTracker = vector<int>(); 
 string currProcedure;
 
-int Parser::parse(string fileName, PKB p) {
-	pkb = p;
+int Parser::parse(string fileName, PKB& p) {
+	pkb = &p;
 	loadFile(fileName);
 	for (unsigned int i = 0; i < sourceCode.size(); i++) {
 		int intent = getStatementIntent(sourceCode[i]);
@@ -160,7 +160,7 @@ int Parser::handleProcedure(string procLine) {
 	procedureName = leftTrim(procedureName, " \t");
 	procedureName = rightTrim(procedureName, " \t");
 
-	pkb.insertProc(procedureName);
+	pkb->insertProc(procedureName);
 	currProcedure = procedureName;
 	withinProcedure = true;
 	emptyProcedure = true;
@@ -271,11 +271,11 @@ int Parser::handleAssignment(string assignmentLine) {
 	setModifies(statementNumber, lhsVar);
 	for (unsigned int i = 1; i < varConstantTokens.size(); i++) {
 		if (isValidVarName(varConstantTokens[i])) {
-			PKB::insertVar(varConstantTokens[i]);
+			pkb->insertVar(varConstantTokens[i]);
 			setUses(statementNumber, varConstantTokens[i]);
 		}
 		else {
-			PKB::insertConstant(stoi(varConstantTokens[i]));
+			pkb->insertConstant(stoi(varConstantTokens[i]));
 		}
 	}
 	emptyProcedure = false;
@@ -305,7 +305,7 @@ int Parser::handleRead(string readLine) {
 
 	setParent(statementNumber);
 	setModifies(statementNumber, varName);
-	PKB::insertVar(varName);
+	pkb->insertVar(varName);
 	
 	emptyProcedure = false;
 	return 0;
@@ -334,7 +334,7 @@ int Parser::handlePrint(string printLine) {
 
 	setParent(statementNumber);
 	setUses(statementNumber, varName);
-	PKB::insertVar(varName);
+	pkb->insertVar(varName);
 	return 0;
 }
 
@@ -383,11 +383,11 @@ int Parser::handleWhile(string whileLine) {
 	vector<string> tokens = tokeniseString(condExpr, " \t&|()!");
 	for (unsigned int i = 0; i < tokens.size(); i++) {
 		if (isValidVarName(tokens[i])) {
-			pkb.insertVar(tokens[i]);
+			pkb->insertVar(tokens[i]);
 			setUses(statementNumber, tokens[i]);
 		}
 		else if (isValidConstant(tokens[i])) {
-			pkb.insertConstant(stoi(tokens[i]));
+			pkb->insertConstant(stoi(tokens[i]));
 		}
 	}
 	return 0;
@@ -431,11 +431,11 @@ int Parser::handleIf(string ifLine) {
 	vector<string> tokens = tokeniseString(condExpr, " \t&|()!");
 	for (unsigned int i = 0; i < tokens.size(); i++) {
 		if (isValidVarName(tokens[i])) {
-			pkb.insertVar(tokens[i]);
+			pkb->insertVar(tokens[i]);
 			setUses(statementNumber, tokens[i]);
 		}
 		else if (isValidConstant(tokens[i])) {
-			pkb.insertConstant(stoi(tokens[i]));
+			pkb->insertConstant(stoi(tokens[i]));
 		}
 	}
 	return 0;
@@ -672,37 +672,37 @@ vector<string> Parser::tokeniseString(string toTokenise, string delimiters) {
 
 bool Parser::setParent(int currStatementNum) {
 	for (unsigned int i = 0; i < parentVector.size(); i++) {
-		pkb.setParentT(parentVector[i], currStatementNum);
+		pkb->setParentT(parentVector[i], currStatementNum);
 	}
 	if (parentVector.size() > 0) {
-		pkb.setParent(parentVector.back(), currStatementNum);
+		pkb->setParent(parentVector.back(), currStatementNum);
 	}
 	return true;
 }
 
 bool Parser::setFollow(int currStatementNum) {
 	for (unsigned int i = 0; i < currentFollowVector.size(); i++) {
-		pkb.setFollowedByT(currentFollowVector[i], currStatementNum);
+		pkb->setFollowedByT(currentFollowVector[i], currStatementNum);
 	}
 	if (currentFollowVector.size() > 0) {
-		pkb.setFollowedBy(currentFollowVector.back(), currStatementNum);
+		pkb->setFollowedBy(currentFollowVector.back(), currStatementNum);
 	}
 	return true;
 }
 
 bool Parser::setModifies(int currStatementNum, string varName) {
 	for (unsigned int i = 0; i < parentVector.size(); i++) {
-		pkb.setModifies(parentVector[i], varName);
+		pkb->setModifies(parentVector[i], varName);
 	}
-	pkb.setModifies(currStatementNum, varName);
+	pkb->setModifies(currStatementNum, varName);
 	return true;
 }
 
 bool Parser::setUses(int currStatementNum, string varName) {
 	for (unsigned int i = 0; i < parentVector.size(); i++) {
-		pkb.setUses(parentVector[i], varName);
+		pkb->setUses(parentVector[i], varName);
 	}
-	pkb.setUses(currStatementNum, varName);
+	pkb->setUses(currStatementNum, varName);
 	return true;
 }
 

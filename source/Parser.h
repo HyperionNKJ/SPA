@@ -27,7 +27,7 @@ static int IFCONTAINER = 101;
 static int ELSECONTAINER = 102;
 
 class Parser {
-	PKB pkb;
+	PKB * pkb;
 private:
 	bool setParent(int);
 	bool setModifies(int, string);
@@ -62,7 +62,7 @@ public:
 	int handleCloseBracket(string);
 
 	int getStatementIntent(string);
-	int parse(string, PKB);
+	int parse(string, PKB&);
 	vector<string> loadFile(string);
 
 	string leftTrim(string, string);
