@@ -17,7 +17,7 @@ TestWrapper::TestWrapper() {
 
 // method for parsing the SIMPLE source
 void TestWrapper::parse(std::string filename) {
-	pkb.store(parser.parse(filename));
+	parser.parse(filename, pkb);
 }
 
 // method to evaluating a query

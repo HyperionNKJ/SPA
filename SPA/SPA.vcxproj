@@ -11,20 +11,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\DesignEntityType.cpp" />
-    <ClCompile Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\PatternClause.cpp" />
-    <ClCompile Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\ProcessedQuery.cpp" />
-    <ClCompile Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\QueryParser.cpp" />
-    <ClCompile Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\QueryPreprocessor.cpp" />
-    <ClCompile Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\QueryPreprocessorHelper.cpp" />
-    <ClCompile Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\QueryTokenizer.cpp" />
-    <ClCompile Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\Statement.cpp" />
-    <ClCompile Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\StatementTypeFactory.cpp" />
-    <ClCompile Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\SuchThatClause.cpp" />
     <ClCompile Include="..\source\DesignExtractor.cpp" />
     <ClCompile Include="..\source\Parser.cpp" />
     <ClCompile Include="..\source\PKB.cpp" />
     <ClCompile Include="..\source\TNode.cpp" />
+    <ClCompile Include="PatternClause.cpp" />
+    <ClCompile Include="ProcessedQuery.cpp" />
+    <ClCompile Include="QueryParser.cpp" />
+    <ClCompile Include="QueryPreprocessor.cpp" />
+    <ClCompile Include="QueryPreprocessorHelper.cpp" />
+    <ClCompile Include="QueryTokenizer.cpp" />
     <ClCompile Include="ResultProjector.cpp" />
     <ClCompile Include="Clause.cpp" />
     <ClCompile Include="DesignEntity.cpp" />
@@ -32,21 +28,11 @@
     <ClCompile Include="QueryEvaluator.cpp" />
     <ClCompile Include="QueryProcessor.cpp" />
     <ClCompile Include="Result.cpp" />
+    <ClCompile Include="Statement.cpp" />
+    <ClCompile Include="SuchThatClause.cpp" />
     <ClCompile Include="UsesS.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\DesignEntityType.h" />
-    <ClInclude Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\ParameterType.h" />
-    <ClInclude Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\PatternClause.h" />
-    <ClInclude Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\ProcessedQuery.h" />
-    <ClInclude Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\QueryParser.h" />
-    <ClInclude Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\QueryPreprocessor.h" />
-    <ClInclude Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\QueryPreprocessorHelper.h" />
-    <ClInclude Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\QueryTokenizer.h" />
-    <ClInclude Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\Statement.h" />
-    <ClInclude Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\StatementType.h" />
-    <ClInclude Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\StatementTypeFactory.h" />
-    <ClInclude Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\SuchThatClause.h" />
     <ClInclude Include="..\source\Parser.h" />
     <ClInclude Include="..\source\PKB.h" />
     <ClInclude Include="Clause.h" />
@@ -57,11 +43,21 @@
     <ClInclude Include="Parent.h" />
     <ClInclude Include="ParentT.h" />
     <ClInclude Include="Pattern.h" />
+    <ClInclude Include="PatternClause.h" />
+    <ClInclude Include="ProcessedQuery.h" />
     <ClInclude Include="QueryEvaluator.h" />
+    <ClInclude Include="QueryParser.h" />
+    <ClInclude Include="QueryPreprocessor.h" />
+    <ClInclude Include="QueryPreprocessorHelper.h" />
     <ClInclude Include="QueryProcessor.h" />
+    <ClInclude Include="QueryTokenizer.h" />
     <ClInclude Include="Result.h" />
     <ClInclude Include="..\source\TNode.h" />
     <ClInclude Include="ResultProjector.h" />
+    <ClInclude Include="Statement.h" />
+    <ClInclude Include="StatementType.h" />
+    <ClInclude Include="StatementTypeFactory.h" />
+    <ClInclude Include="SuchThatClause.h" />
     <ClInclude Include="Type.h" />
     <ClInclude Include="UsesS.h" />
   </ItemGroup>

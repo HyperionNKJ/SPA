@@ -44,7 +44,36 @@ bool QueryParser::parseDeclarationStatement(const Statement& statement) {
 
 	// get design entity type of this declaration statement
 	std::string typeString = statementString.substr(0, synonymIndex - 1);
-	Type type = DesignEntityType::getType(typeString);
+
+	Type type;
+	
+	if (typeString == "stmt") {
+		type = Type::STATEMENT;
+	}
+	else if (typeString == "read") {
+		type = Type::READ;
+	}
+	else if (typeString == "print") {
+		type = Type::PRINT;
+	}
+	else if (typeString == "while") {
+		type = Type::WHILE;
+	}
+	else if (typeString == "if") {
+		type = Type::IF;
+	}
+	else if (typeString == "assign") {
+		type = Type::ASSIGN;
+	}
+	else if (typeString == "variable") {
+		type = Type::VARIABLE;
+	}
+	else if (typeString == "constant") {
+		type = Type::CONSTANT;
+	}
+	else if (typeString == "procedure") {
+		type = Type::PROCEDURE;
+	}
 
 	// get synonyms of this declaration statement
 	std::string synonymsString = statementString.substr(synonymIndex);
