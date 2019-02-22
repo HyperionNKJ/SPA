@@ -16,102 +16,64 @@ Select a pattern a (_, "x")
 5
 5000
 
-4 - Select assign pattern (_, _variable)
+4 - Select assign pattern (_, _variable_)
 assign a;
-Select a pattern a (_, "_x")
-10
-5000
-
-5 - Select assign pattern (_, variable_)
-assign a;
-Select a pattern a (_, "x_")
-10
-5000
-
-6 - Select assign pattern (_, _variable_)
-assign a;
-Select a pattern a (_, "_x_")
+Select a pattern a (_, "_xx1_")
 10
 5000
 
 
 
-7 - Select assign pattern (variable, _)
+5 - Select assign pattern (variable, _)
 assign a;
 variable v;
 Select a pattern a (v, _)
 1, 2, 3, 4, 5, 10
 5000
 
-8 - Select assign pattern (variable, constant)
+6 - Select assign pattern (variable, constant)
 assign a;
 variable v;
 Select a pattern a (v, "0")
 1
 5000
 
-9 - Select assign pattern (variable, variable)
+7 - Select assign pattern (variable, variable)
 assign a;
 variable v;
 Select a pattern a (v, "x")
 5
 5000
 
-10 - Select assign pattern (variable, _variable)
+8 - Select assign pattern (variable, _variable_)
 assign a;
 variable v;
-Select a pattern a (v, "_x")
-10
-5000
-
-11 - Select assign pattern (variable, variable_)
-assign a;
-variable v;
-Select a pattern a (v, "x_")
-10
-5000
-
-12 - Select assign pattern (variable, _variable_)
-assign a;
-variable v;
-Select a pattern a (v, "_x_")
+Select a pattern a (v, "_xx1_")
 10
 5000
 
 
 
-13 - Select assign pattern (identity, _)
+9 - Select assign pattern (identity, _)
 assign a;
 Select a pattern a ("x", _)
 1
 5000
 
-14 - Select assign pattern (identity, constant)
+10 - Select assign pattern (identity, constant)
 assign a;
 Select a pattern a ("x", "0")
 1
 5000
 
-15 - Select assign pattern (identity, variable)
+11 - Select assign pattern (identity, variable)
 assign a;
 Select a pattern a ("y", "x")
 5
 5000
 
-16 - Select assign pattern (identity, _variable)
+12 - Select assign pattern (identity, _variable_)
 assign a;
-Select a pattern a ("z", "_x")
-none
-5000
-
-17 - Select assign pattern (identity, variable_)
-assign a;
-Select a pattern a ("z", "x_")
-none
-5000
-
-18 - Select assign pattern (identity, _variable_)
-assign a;
-Select a pattern a ("z", "_x_")
+Select a pattern a ("z", "_xx1_")
 10
 5000
