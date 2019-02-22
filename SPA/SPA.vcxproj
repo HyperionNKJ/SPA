@@ -65,12 +65,6 @@
     <ClInclude Include="Type.h" />
     <ClInclude Include="UsesS.h" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\QueryPreprocessor.aps" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="..\..\..\..\gdrive\NUS\CS3203\Repository\QueryPreprocessor\QueryPreprocessor\QueryPreprocessor.rc" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DC21A1EA-D2C6-4D14-A2B4-E025B64BDE81}</ProjectGuid>
     <RootNamespace>SPA</RootNamespace>

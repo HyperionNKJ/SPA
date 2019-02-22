@@ -1,8 +1,6 @@
-#include <iostream>
-#include <regex>
-#include "DesignEntityTypeFactory.h"
-#include "ParameterType.h"
-#include "QueryPreprocessorHelper.h"
+#include "Clause.h"
+#include "ModifiesS.h"
+#include "Pattern.h"
 #include "ProcessedQuery.h"
 
 ProcessedQuery::ProcessedQuery() {
@@ -10,7 +8,7 @@ ProcessedQuery::ProcessedQuery() {
 }
 
 bool ProcessedQuery::insertDeclaration(const std::string& synonym,
-		const Type& type) {
+	const Type& type) {
 	return declarations.insert({ synonym, type }).second;
 }
 
@@ -19,10 +17,10 @@ void ProcessedQuery::addSynonym(const std::string& newSynonym) {
 }
 
 bool ProcessedQuery::addSuchThatClause(const RelationshipType& type,
-		const ParameterType& paramOneType,
-		const std::string& paramOneValue,
-		const ParameterType& paramTwoType,
-		const std::string& paramTwoValue) {
+	const ParameterType& paramOneType,
+	const std::string& paramOneValue,
+	const ParameterType& paramTwoType,
+	const std::string& paramTwoValue) {
 	if (hasSuchThatClause) {
 		return false;
 	}
@@ -30,47 +28,49 @@ bool ProcessedQuery::addSuchThatClause(const RelationshipType& type,
 	hasSuchThatClause = true;
 
 	suchThatClause.type = type;
+
 	suchThatClause.paramOneType = paramOneType;
 	suchThatClause.paramTwoType = paramTwoType;
+
 	suchThatClause.paramOneValue = paramOneValue;
 	suchThatClause.paramTwoValue = paramTwoValue;
 
 	return true;
 }
 
-bool ProcessedQuery::addPatternClause(const std::string& newSynonym,
-		const ParameterType& paramOneType,
-		const std::string& paramOneValue,
-		const ParameterType& paramTwoType,
-		const std::string& paramTwoValue) {
+bool ProcessedQuery::addPatternClause(const DesignEntity& assign,
+	const DesignEntity& paramOne,
+	const DesignEntity& paramTwo) {
 	if (hasPatternClause) {
 		return false;
 	}
 
 	hasPatternClause = true;
 
-	patternClause.synonym = newSynonym;
-
-	patternClause.paramOneType = paramOneType;
-	patternClause.paramTwoType = paramTwoType;
-
-	patternClause.paramOneValue = paramOneValue;
-	patternClause.paramTwoValue = paramTwoValue;
+	patternClause.assign = assign;
+	patternClause.paramOne = paramOne;
+	patternClause.paramTwo = paramTwo;
 
 	return true;
 }
 
-void ProcessedQuery::print() {
-	// print all declarations
-	std::cout << "========== Declarations ==========" << std::endl;
-	for (auto& node : declarations) {
-		node;
+std::unordered_set<Clause> ProcessedQuery::getClauses() {
+	unordered_set<Clause> clauses;
+	if (hasSuchThatClause) {
+		if (suchThatClause.type == RelationshipType::MODIFIES_S) {
+			
+		}
+		
 	}
 
-	// print synonyms
-	std::cout << "========== Synonym ==========" << std::endl;
-	std::cout << synonym << std::endl;
+	if (hasPatternClause) {
+		Pattern pattern(patternClause.assign, patternClause.paramOne, patternClause.paramTwo);
+		clauses.insert(pattern);
+	}
 
-	suchThatClause;
-	patternClause;
+	return clauses;
+}
+
+DesignEntity ProcessedQuery::getSelectedSynonym() {
+	return DesignEntity(synonym, declarations[synonym]);
 }

@@ -1,9 +1,10 @@
 #pragma once
 
 #include <unordered_map>
+#include <unordered_set>
+#include "Clause.h"
 #include "PatternClause.h"
 #include "SuchThatClause.h"
-#include "DesignEntityType.h"
 
 class ProcessedQuery {
 public:
@@ -20,13 +21,12 @@ public:
 		const ParameterType& paramTwoType,
 		const std::string& paramTwoValue);
 
-	bool addPatternClause(const std::string& newSynonym,
-		const ParameterType& paramOneType,
-		const std::string& paramOneValue,
-		const ParameterType& paramTwoType,
-		const std::string& paramTwoValue);
+	bool addPatternClause(const DesignEntity& assign,
+		const DesignEntity& paramOne,
+		const DesignEntity& paramTwo);
 
-	void print();
+	std::unordered_set<Clause> getClauses();
+	DesignEntity getSelectedSynonym();
 private:
 	std::unordered_map<std::string, Type> declarations;
 

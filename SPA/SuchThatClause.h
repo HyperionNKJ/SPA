@@ -2,7 +2,6 @@
 
 #include <string>
 #include "ParameterType.h"
-#include "DesignEntityType.h"
 
 enum class RelationshipType {
 	MODIFIES_S, USES_S, PARENT, PARENT_T, FOLLOWS, FOLLOWS_T
