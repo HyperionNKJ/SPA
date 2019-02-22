@@ -395,8 +395,9 @@ void ResultProjector::mergeOneSyn(string existKey, string newKey, unordered_map<
 	// repeated results in old results
 	if (prevResults.size() > newKeyResultsSorted.size()) {
 		int startIndex = newKeyResultsSorted.size();
+		int endIndex = prevResults.size();
 		list<int>::iterator itr;
-		for (int i = startIndex; i < prevResults.size(); i++) {
+		for (int i = startIndex; i < endIndex; i++) {
 			itr = prevResults.begin();
 			advance(itr, i);
 			int listIndex = 0;
