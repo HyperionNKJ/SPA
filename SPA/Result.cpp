@@ -75,3 +75,18 @@ void Result::setAnswer(string stmtSynonym, int answer) {
 	unordered_map<string, list<int>> formattedAnswer({ {stmtSynonym, stmtList} });
 	this->answer = formattedAnswer;
 }
+
+void Result::setAnswer(string stmt1Synonym, string stmt2Synonym, unordered_map<int, int> answer) {
+	list<int> stmt1List;
+	list<int> stmt2List;
+
+	for (auto itr = answer.begin(); itr != answer.end(); itr++) {
+		int stmt1Num = itr->first;
+		int stmt2Num = itr->second;
+
+		stmt1List.push_back(stmt1Num);
+		stmt2List.push_back(stmt2Num);
+	}
+	unordered_map<string, list<int>> formattedAnswer({ {stmt1Synonym, stmt1List}, {stmt2Synonym, stmt2List} });
+	this->answer = formattedAnswer;
+}
