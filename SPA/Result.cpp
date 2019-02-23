@@ -90,3 +90,18 @@ void Result::setAnswer(string stmt1Synonym, string stmt2Synonym, unordered_map<i
 	unordered_map<string, list<int>> formattedAnswer({ {stmt1Synonym, stmt1List}, {stmt2Synonym, stmt2List} });
 	this->answer = formattedAnswer;
 }
+
+void Result::setAnswer(string stmtSynonym, string variableSynonym, unordered_map<int, string> answer) {
+	list<int> stmtList;
+	list<int> variableIndices;
+
+	for (auto itr = answer.begin(); itr != answer.end(); itr++) {
+		int stmtNum = itr->first;
+		string variable = itr->second;
+
+		stmtList.push_back(stmtNum);
+		variableIndices.push_back(getVariableIndex(variable));
+	}
+	unordered_map<string, list<int>> formattedAnswer({ {stmtSynonym, stmtList}, {variableSynonym, variableIndices} });
+	this->answer = formattedAnswer;
+}
