@@ -13,10 +13,10 @@ protected:
 	DesignEntity paraTwo;
 	PKB pkb;
 
-	Clause(DesignEntity, DesignEntity);
+	Clause(const DesignEntity&, const DesignEntity&);
 
 public:
-	void setParaOne(DesignEntity);
-	void setParaTwo(DesignEntity);
-	virtual Result evaluate(PKB) = 0;
+	void setParaOne(const DesignEntity&);
+	void setParaTwo(const DesignEntity&);
+	virtual Result evaluate(const PKB&) = 0;
 };

@@ -1,7 +1,6 @@
 #include <regex>
-#include <iostream>
 #include <unordered_set>
-#include "DesignEntityType.h"
+#include "DesignEntity.h"
 #include "QueryPreprocessorHelper.h"
 #include "QueryParser.h"
 
@@ -28,7 +27,8 @@ QueryParser::QueryParser(std::vector<Statement>& statements) {
 	for (Statement& statement : statements) {
 		if (statement.type == StatementType::DECLARATION) {
 			parseDeclarationStatement(statement);
-		} else {
+		}
+		else {
 			parseSelectStatement(statement);
 		}
 	}
@@ -44,7 +44,36 @@ bool QueryParser::parseDeclarationStatement(const Statement& statement) {
 
 	// get design entity type of this declaration statement
 	std::string typeString = statementString.substr(0, synonymIndex - 1);
-	Type type = DesignEntityType::getType(typeString);
+
+	Type type;
+	
+	if (typeString == "stmt") {
+		type = Type::STATEMENT;
+	}
+	else if (typeString == "read") {
+		type = Type::READ;
+	}
+	else if (typeString == "print") {
+		type = Type::PRINT;
+	}
+	else if (typeString == "while") {
+		type = Type::WHILE;
+	}
+	else if (typeString == "if") {
+		type = Type::IF;
+	}
+	else if (typeString == "assign") {
+		type = Type::ASSIGN;
+	}
+	else if (typeString == "variable") {
+		type = Type::VARIABLE;
+	}
+	else if (typeString == "constant") {
+		type = Type::CONSTANT;
+	}
+	else if (typeString == "procedure") {
+		type = Type::PROCEDURE;
+	}
 
 	// get synonyms of this declaration statement
 	std::string synonymsString = statementString.substr(synonymIndex);
@@ -84,11 +113,13 @@ bool QueryParser::parseSelectStatement(const Statement& stmt) {
 	if (match[1].matched) {
 		query.addSynonym(match[1].str());
 		return true;
-	} else if (match[2].matched) {
+	}
+	else if (match[2].matched) {
 		query.addSynonym(match[2].str());
 		firstClauseType = match[3].str();
 		firstClauseValue = match[4].str();
-	} else {
+	}
+	else {
 		query.addSynonym(match[5].str());
 		firstClauseType = match[6].str();
 		firstClauseValue = match[7].str();
@@ -99,7 +130,8 @@ bool QueryParser::parseSelectStatement(const Statement& stmt) {
 	bool status;
 	if (firstClauseType == "such that") {
 		status = parseSuchThatClause(firstClauseValue);
-	} else {
+	}
+	else {
 		status = parsePatternClause(firstClauseValue);
 	}
 
@@ -115,7 +147,8 @@ bool QueryParser::parseSelectStatement(const Statement& stmt) {
 
 	if (secondClauseType == "such that") {
 		status = parseSuchThatClause(secondClauseValue);
-	} else {
+	}
+	else {
 		status = parsePatternClause(secondClauseValue);
 	}
 
@@ -130,7 +163,7 @@ bool QueryParser::parseSuchThatClause(const std::string& clause) {
 	if (match.size() != 4) {
 		return false;
 	}
-	
+
 	std::string typeString = match[1].str();
 
 	RelationshipType type = getRelationshipType(typeString);
@@ -138,8 +171,8 @@ bool QueryParser::parseSuchThatClause(const std::string& clause) {
 	std::string paramOneValue = match[2].str();
 	std::string paramTwoValue = match[3].str();
 
-	ParameterType paramOneType = getParameterType(paramOneValue);
-	ParameterType paramTwoType = getParameterType(paramTwoValue);
+	Type paramOneType = getParameterType(paramOneValue);
+	Type paramTwoType = getParameterType(paramTwoValue);
 
 	return query.addSuchThatClause(type, paramOneType, paramOneValue,
 		paramTwoType, paramTwoValue);
@@ -158,62 +191,50 @@ bool QueryParser::parsePatternClause(const std::string& clause) {
 	std::string paramOneValue = match[2].str();
 	std::string paramTwoValue = match[3].str();
 
-	ParameterType paramOneType = getParameterType(paramOneValue);
-	ParameterType paramTwoType = getParameterType(paramTwoValue);
+	Type paramOneType = getParameterType(paramOneValue);
+	Type paramTwoType = getParameterType(paramTwoValue);
 
-	return query.addPatternClause(synonym, paramOneType, paramOneValue, 
-		paramTwoType, paramTwoValue);
+	DesignEntity assign(synonym, Type::ASSIGN);
+	DesignEntity paramOne(paramOneValue, paramOneType);
+	DesignEntity paramTwo(paramTwoValue, paramTwoType);
+
+	return query.addPatternClause(assign, paramOne, paramTwo);
 }
 
-ParameterType QueryParser::getParameterType(const std::string value) {
+Type QueryParser::getParameterType(const std::string value) {
 	static std::string test = "^(_)$|^(" + INT + ")$|^(" + IDENT + ")$|^\"(" + IDENT + ")\"$|^(_\"" + IDENT + "\"_)|^(_\"" + INT + "\"_)$";
 	static std::regex const A(test);
 	std::smatch match;
 	std::regex_search(value, match, A);
-	if (match.empty()) {
-		return ParameterType::INVALID;
-	}
 
 	if (match[1].matched) {
-		return ParameterType::UNDERSCORE;
+		return Type::UNDERSCORE;
 	}
 
-	if (match[2].matched) {
-		return ParameterType::FIXED_STATEMENT;
-	}
-	
 	if (match[3].matched) {
-		return ParameterType::SYNONYM;
+		return Type::ASSIGN;
 	}
 
-	if (match[4].matched) {
-		return ParameterType::FIXED_VAR;
-	}
-
-	if (match[5].matched) {
-		return ParameterType::FIXED_VAR_NAME;
-	}
-
-	return ParameterType::FIXED_CONST_VALUE;
+	return Type::FIXED;
 }
 
 RelationshipType QueryParser::getRelationshipType(const std::string& relationshipTypeString) {
 	if (relationshipTypeString == "Modifies") {
 		return RelationshipType::MODIFIES_S;
 	}
-	
+
 	if (relationshipTypeString == "Uses") {
 		return RelationshipType::USES_S;
 	}
-	
+
 	if (relationshipTypeString == "Parent") {
 		return RelationshipType::PARENT;
 	}
-	
+
 	if (relationshipTypeString == "Parent*") {
 		return RelationshipType::PARENT_T;
 	}
-	
+
 	if (relationshipTypeString == "Follows") {
 		return RelationshipType::FOLLOWS;
 	}

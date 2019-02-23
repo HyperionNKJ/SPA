@@ -9,7 +9,7 @@
 using namespace std;
 
 #include "Parser.h"
-#include "PKB.h"
+#include "pkb.h"
 #include "../SPA/Type.h"
 
 static string varNameRegex = "([[:alpha:]]([[:alnum:]])*)";
@@ -17,19 +17,8 @@ static string constantRegex = "[[:digit:]]+";
 static string spaceRegex = "[[:s:]]*";
 static string openCurlyRegex = "\\{";
 
-bool withinProcedure = false;
-bool emptyProcedure = true;
-bool expectElse = false;
-vector<string> sourceCode = vector<string>();
-int statementNumber = 1;
-vector<int> parentVector = vector<int>();
-vector<int> currentFollowVector = vector<int>();
-vector<vector<int>> allFollowStack = vector<vector<int>>();
-vector<int> containerTracker = vector<int>(); 
-string currProcedure;
-PKB pkb;
-
-int Parser::parse(string fileName) {
+int Parser::parse(string fileName, PKB& p) {
+	pkb = &p;
 	loadFile(fileName);
 	for (unsigned int i = 0; i < sourceCode.size(); i++) {
 		int intent = getStatementIntent(sourceCode[i]);
@@ -160,7 +149,7 @@ int Parser::handleProcedure(string procLine) {
 	procedureName = leftTrim(procedureName, " \t");
 	procedureName = rightTrim(procedureName, " \t");
 
-	//pkb.addProcedure(procedureName);
+	pkb->insertProc(procedureName);
 	currProcedure = procedureName;
 	withinProcedure = true;
 	emptyProcedure = true;
@@ -182,11 +171,6 @@ bool Parser::checkAssignment(string assignmentLine) {
 	return true;
 }
 
-//corrected idea for expr/factor/term
-//search from the back first for +/- for expr. Track brackets and ignore +/- inside matching brackets
-//upon finding + or - break into expr first, then factor second. 
-//Same idea for factor for searching for */% from the back.
-//for term can keep the same i think
 bool Parser::checkExpr(string expr) {
 	//start from the back, start scanning for + or -. Track brackets and ignore + or - inside them.
 	int bracketTracker = 0;
@@ -269,21 +253,41 @@ int Parser::handleAssignment(string assignmentLine) {
 	if (!checkAssignment(cleanedAssignment)) {
 		return -1;
 	}
-	//do stuff to extract data from assignment statement here
+	
 	setParent(statementNumber);
-	vector<string> varConstantTokens = tokeniseString(cleanedAssignment, "=+-/*(); ");
-	string lhsVar = varConstantTokens[0];
-	setModifies(statementNumber, lhsVar);
-	for (unsigned int i = 1; i < varConstantTokens.size(); i++) {
-		if (isValidVarName(varConstantTokens[i])) {
-			PKB::insertVar(varConstantTokens[i]);
-			setUses(statementNumber, varConstantTokens[i]);
-		}
-		else {
-			PKB::insertConstant(stoi(varConstantTokens[i]));
+
+	//Separate variable names, constants and operation/brackets from each other to pass to pkb
+	vector<string> assignTokens = vector<string>();
+	string lhsVar = assignmentLine.substr(0, assignmentLine.find_first_of("="));
+	string rhs = assignmentLine.substr(assignmentLine.find_first_of("=") + 1, string::npos);
+	string currToken = "";
+	for (unsigned int i = 0; i < rhs.length(); i++) {
+		//assignment should have only alphanum and bracket/op. Less than 48 in ascii must be a bracket/op
+		if (rhs[i] < 48) {
+			if (!currToken.empty()) {
+				assignTokens.push_back(currToken);
+				currToken = "";
+				assignTokens.push_back(rhs.substr(i, 1));
+			}
+			else {
+				currToken += rhs[i];
+			}
 		}
 	}
-	emptyProcedure = false;
+	if (!currToken.empty()) {
+		assignTokens.push_back(currToken);
+	}
+	setModifies(statementNumber, lhsVar);
+	for (unsigned int i = 0; i < assignTokens.size(); i++) {
+		if (isValidVarName(assignTokens[i])) {
+			pkb->insertVar(assignTokens[i]);
+			setUses(statementNumber, assignTokens[i]);
+		}
+		else if (isValidConstant(assignTokens[i])) {
+			pkb->insertConstant(stoi(assignTokens[i]));
+		}
+	}
+	//pkb->insertAssignStmt(statementNumber, lhsVar, assignTokens);
 	return 0;
 }
 
@@ -310,7 +314,7 @@ int Parser::handleRead(string readLine) {
 
 	setParent(statementNumber);
 	setModifies(statementNumber, varName);
-	PKB::insertVar(varName);
+	pkb->insertVar(varName);
 	
 	emptyProcedure = false;
 	return 0;
@@ -339,7 +343,7 @@ int Parser::handlePrint(string printLine) {
 
 	setParent(statementNumber);
 	setUses(statementNumber, varName);
-	PKB::insertVar(varName);
+	pkb->insertVar(varName);
 	return 0;
 }
 
@@ -370,15 +374,6 @@ int Parser::handleWhile(string whileLine) {
 	if (!checkWhile(whileLine)) {
 		return -1;
 	}
-	//need to do things here
-	//update parent vector. OK.
-	//set parent relationship. OK.
-	//set follow relationship. OK.
-	//place current follows vector into stack. OK.
-	//reset the follows vector OK.
-	//update container tracker. OK.
-	//extract variables, constants in the cond_expr
-	//set uses relationship.
 
 	//set relationships
 	setParent(statementNumber);
@@ -389,6 +384,21 @@ int Parser::handleWhile(string whileLine) {
 	containerTracker.push_back(WHILECONTAINER);
 	allFollowStack.push_back(currentFollowVector);
 	currentFollowVector.clear();
+
+	//set uses relationships
+	size_t openBracketPos = whileLine.find_first_of("(");
+	size_t closeBracketPos = whileLine.find_last_of(")");
+	string condExpr = whileLine.substr(openBracketPos + 1, closeBracketPos - openBracketPos - 1);
+	vector<string> tokens = tokeniseString(condExpr, " \t&|()!");
+	for (unsigned int i = 0; i < tokens.size(); i++) {
+		if (isValidVarName(tokens[i])) {
+			pkb->insertVar(tokens[i]);
+			setUses(statementNumber, tokens[i]);
+		}
+		else if (isValidConstant(tokens[i])) {
+			pkb->insertConstant(stoi(tokens[i]));
+		}
+	}
 	return 0;
 }
 
@@ -413,21 +423,53 @@ int Parser::handleIf(string ifLine) {
 	if (!checkIf(ifLine)) {
 		return -1;
 	}
-	//about same as while
-	//update parent vector. OK.
-	//set parent relationship. OK.
-	//set follow relationship.
-	//place current follows vector into stack. OK.
-	//reset the follows vector OK.
-	//update container tracker. OK.
-	//extract variables, constants in the cond_expr
-	//set uses relationship.
+	//set follow, parent relationships
 	setParent(statementNumber);
+	setFollow(statementNumber);
+
+	//update parent, follow, container trackers
 	parentVector.push_back(statementNumber);
 	containerTracker.push_back(IFCONTAINER);
 	allFollowStack.push_back(currentFollowVector);
 	currentFollowVector.clear();
-	
+
+	//set uses relationships
+	size_t openBracketPos = ifLine.find_first_of("(");
+	size_t closeBracketPos = ifLine.find_last_of(")");
+	string condExpr = ifLine.substr(openBracketPos + 1, closeBracketPos - openBracketPos - 1);
+	vector<string> tokens = tokeniseString(condExpr, " \t&|()!");
+	for (unsigned int i = 0; i < tokens.size(); i++) {
+		if (isValidVarName(tokens[i])) {
+			pkb->insertVar(tokens[i]);
+			setUses(statementNumber, tokens[i]);
+		}
+		else if (isValidConstant(tokens[i])) {
+			pkb->insertConstant(stoi(tokens[i]));
+		}
+	}
+	return 0;
+}
+
+bool Parser::checkElse(string elseLine) {
+	string elseRegexString = spaceRegex + "else" + spaceRegex + openCurlyRegex;
+	regex elseRegex(elseRegexString);
+	if (!regex_match(elseLine, elseRegex)) {
+		cout << "Else statement has unexpected tokens just before line " << statementNumber << endl;
+		return false;
+	}
+	return true;
+}
+
+int Parser::handleElse(string elseLine) {
+	if (!checkElse(elseLine)) {
+		return -1;
+	}
+	//reset booleans
+	//reset follow tracker
+	//set container tracker
+	expectElse = false;
+	containerTracker.push_back(ELSECONTAINER);
+	currentFollowVector.clear();
 	return 0;
 }
 
@@ -467,8 +509,6 @@ bool Parser::checkCondExpr(string condExpr) {
 				//extract out the 2 expressions
 				string firstCondExpr = condExpr.substr(0, pos);
 				string secondCondExpr = condExpr.substr(pos + 2, string::npos);
-				firstCondExpr = leftTrim(rightTrim(firstCondExpr, " \t"), " \t");
-				secondCondExpr = leftTrim(rightTrim(secondCondExpr, " \t"), " \t");
 				return checkCondExpr(firstCondExpr) & checkCondExpr(secondCondExpr);
 			}
 			else {
@@ -651,36 +691,40 @@ vector<string> Parser::tokeniseString(string toTokenise, string delimiters) {
 
 bool Parser::setParent(int currStatementNum) {
 	for (unsigned int i = 0; i < parentVector.size(); i++) {
-		pkb.setParentT(parentVector[i], currStatementNum);
+		pkb->setParentT(parentVector[i], currStatementNum);
 	}
 	if (parentVector.size() > 0) {
-		pkb.setParent(parentVector.back(), currStatementNum);
+		pkb->setParent(parentVector.back(), currStatementNum);
 	}
 	return true;
 }
 
 bool Parser::setFollow(int currStatementNum) {
 	for (unsigned int i = 0; i < currentFollowVector.size(); i++) {
-		pkb.setFollowedByT(currentFollowVector[i], currStatementNum);
+		pkb->setFollowedByT(currentFollowVector[i], currStatementNum);
 	}
 	if (currentFollowVector.size() > 0) {
-		pkb.setFollowedBy(currentFollowVector.back(), currStatementNum);
+		pkb->setFollowedBy(currentFollowVector.back(), currStatementNum);
 	}
 	return true;
 }
 
 bool Parser::setModifies(int currStatementNum, string varName) {
 	for (unsigned int i = 0; i < parentVector.size(); i++) {
-		pkb.setModifies(parentVector[i], varName);
+		pkb->setModifies(parentVector[i], varName);
 	}
-	pkb.setModifies(currStatementNum, varName);
+	pkb->setModifies(currStatementNum, varName);
 	return true;
 }
 
 bool Parser::setUses(int currStatementNum, string varName) {
 	for (unsigned int i = 0; i < parentVector.size(); i++) {
-		pkb.setUses(parentVector[i], varName);
+		pkb->setUses(parentVector[i], varName);
 	}
-	pkb.setUses(currStatementNum, varName);
+	pkb->setUses(currStatementNum, varName);
 	return true;
+}
+
+void Parser::setWithinProcedure(bool setting) {
+	withinProcedure = setting;
 }

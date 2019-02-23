@@ -7,7 +7,7 @@
 
 class QueryProcessor {
 public:
-	std::list<std::string> evaluate(std::string, PKB);
+	std::list<std::string> evaluate(const std::string&, const PKB&);
 };
 
 

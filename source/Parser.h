@@ -7,6 +7,7 @@
 #include <vector>
 #include <string>
 #include <stack>
+#include "PKB.h"
 
 using namespace std;
 
@@ -26,6 +27,18 @@ static int IFCONTAINER = 101;
 static int ELSECONTAINER = 102;
 
 class Parser {
+	PKB * pkb;
+	bool withinProcedure = false;
+	bool emptyProcedure = true;
+	bool expectElse = false;
+	vector<string> sourceCode = vector<string>();
+	int statementNumber = 1;
+	vector<int> parentVector = vector<int>();
+	vector<int> currentFollowVector = vector<int>();
+	vector<vector<int>> allFollowStack = vector<vector<int>>();
+	vector<int> containerTracker = vector<int>();
+	string currProcedure;
+
 private:
 	bool setParent(int);
 	bool setModifies(int, string);
@@ -51,6 +64,8 @@ public:
 	int handleWhile(string);
 	bool checkIf(string);
 	int handleIf(string);
+	bool checkElse(string);
+	int handleElse(string);
 	bool checkCondExpr(string);
 	bool checkRelExpr(string);
 	bool checkRelFactor(string);
@@ -58,7 +73,7 @@ public:
 	int handleCloseBracket(string);
 
 	int getStatementIntent(string);
-	int parse(string);
+	int parse(string, PKB&);
 	vector<string> loadFile(string);
 
 	string leftTrim(string, string);
@@ -66,4 +81,7 @@ public:
 	bool isValidVarName(string);
 	bool isValidConstant(string);
 	vector<string> tokeniseString(string, string);
+
+	//setter/getter functions for testing
+	void setWithinProcedure(bool);
 };

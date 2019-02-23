@@ -2,9 +2,9 @@
 #include <unordered_set>
 #include <string>
 
-ModifiesS::ModifiesS(DesignEntity paraOne, DesignEntity paraTwo) : Clause(paraOne, paraTwo) {}
+ModifiesS::ModifiesS(const DesignEntity& paraOne, const DesignEntity& paraTwo) : Clause(paraOne, paraTwo) {}
 
-Result ModifiesS::evaluate(PKB pkb) {
+Result ModifiesS::evaluate(const PKB& pkb) {
 	this->pkb = pkb;
 	Type paraOneType = paraOne.getType();
 	Type paraTwoType = paraTwo.getType();
@@ -51,12 +51,12 @@ Result ModifiesS::evaluate(PKB pkb) {
 }
 
 // case Modifies(7, v)
-Result* ModifiesS::evaluateFixedVariable(string stmtNum, string variableSynonym) {
+Result* ModifiesS::evaluateFixedVariable(const string& stmtNum, const string& variableSynonym) {
 	Result* result = new Result();
 	unordered_set<string> answer = pkb.getVarModifiedByStmt(stoi(stmtNum));
 	if (!answer.empty()) {
 		result->setPassed(true);
-		result->setAnswer(variableSynonym, answer);
+		result->setAnswer(variableSynonym, answer, pkb.getVarTable());
 	}
 	else {
 		result->setPassed(false);
@@ -65,26 +65,26 @@ Result* ModifiesS::evaluateFixedVariable(string stmtNum, string variableSynonym)
 }
 
 // case Modifies(7, _)
-Result* ModifiesS::evaluateFixedUnderscore(string stmtNum) {
+Result* ModifiesS::evaluateFixedUnderscore(const string& stmtNum) {
 	Result* result = new Result();
 	result->setPassed(pkb.doesStmtModifies(stoi(stmtNum)));
 	return result;
 }
 
 // case Modifies(7, "count")
-Result* ModifiesS::evaluateFixedFixed(string stmtNum, string varName) {
+Result* ModifiesS::evaluateFixedFixed(const string& stmtNum, const string& varName) {
 	Result* result = new Result();
 	result->setPassed(pkb.isModifies(stoi(stmtNum), varName));
 	return result;
 }
 
 // case Modifies(w, v)
-Result* ModifiesS::evaluateSynonymVariable(string stmtSynonym, string variableSynonym, Type stmtType) {
+Result* ModifiesS::evaluateSynonymVariable(const string& stmtSynonym, const string& variableSynonym, const Type& stmtType) {
 	Result* result = new Result();
 	unordered_map<int, unordered_set<string>> answer = pkb.getModifiesStmtVarPairs(stmtType);
 	if (!answer.empty()) {
 		result->setPassed(true);
-		result->setAnswer(stmtSynonym, variableSynonym, answer);
+		result->setAnswer(stmtSynonym, variableSynonym, answer, pkb.getVarTable());
 	}
 	else {
 		result->setPassed(false);
@@ -93,7 +93,7 @@ Result* ModifiesS::evaluateSynonymVariable(string stmtSynonym, string variableSy
 }
 
 // case Modifies(a, _)
-Result* ModifiesS::evaluateSynonymUnderscore(string stmtSynonym, Type stmtType) {
+Result* ModifiesS::evaluateSynonymUnderscore(const string& stmtSynonym, const Type& stmtType) {
 	Result* result = new Result();
 	unordered_set<int> answer = pkb.getStmtsThatModifiesVar(stmtType);
 	if (!answer.empty()) {
@@ -107,7 +107,7 @@ Result* ModifiesS::evaluateSynonymUnderscore(string stmtSynonym, Type stmtType) 
 }
 
 // case Modifies(w, "count")
-Result* ModifiesS::evaluateSynonymFixed(string stmtSynonym, string varName, Type stmtType) {
+Result* ModifiesS::evaluateSynonymFixed(const string& stmtSynonym, const string& varName, const Type& stmtType) {
 	Result* result = new Result();
 	unordered_set<int> answer = pkb.getStmtsThatModifiesVar(varName, stmtType);
 	if (!answer.empty()) {

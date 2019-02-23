@@ -2,9 +2,9 @@
 #include <unordered_set>
 #include <string>
 
-UsesS::UsesS(DesignEntity paraOne, DesignEntity paraTwo) : Clause(paraOne, paraTwo) {}
+UsesS::UsesS(const DesignEntity& paraOne, const DesignEntity& paraTwo) : Clause(paraOne, paraTwo) {}
 
-Result UsesS::evaluate(PKB pkb) {
+Result UsesS::evaluate(const PKB& pkb) {
 	this->pkb = pkb;
 	Type paraOneType = paraOne.getType();
 	Type paraTwoType = paraTwo.getType();
@@ -51,12 +51,12 @@ Result UsesS::evaluate(PKB pkb) {
 }
 
 // case Uses(7, v)
-Result* UsesS::evaluateFixedVariable(string stmtNum, string variableSynonym) {
+Result* UsesS::evaluateFixedVariable(const string& stmtNum, const string& variableSynonym) {
 	Result* result = new Result();
 	unordered_set<string> answer = pkb.getVarUsedByStmt(stoi(stmtNum));
 	if (!answer.empty()) {
 		result->setPassed(true);
-		result->setAnswer(variableSynonym, answer);
+		result->setAnswer(variableSynonym, answer, pkb.getVarTable());
 	}
 	else {
 		result->setPassed(false);
@@ -65,26 +65,26 @@ Result* UsesS::evaluateFixedVariable(string stmtNum, string variableSynonym) {
 }
 
 // case Uses(7, _)
-Result* UsesS::evaluateFixedUnderscore(string stmtNum) {
+Result* UsesS::evaluateFixedUnderscore(const string& stmtNum) {
 	Result* result = new Result();
 	result->setPassed(pkb.doesStmtUses(stoi(stmtNum)));
 	return result;
 }
 
 // case Uses(7, "count")
-Result* UsesS::evaluateFixedFixed(string stmtNum, string varName) {
+Result* UsesS::evaluateFixedFixed(const string& stmtNum, const string& varName) {
 	Result* result = new Result();
 	result->setPassed(pkb.isUses(stoi(stmtNum), varName));
 	return result;
 }
 
 // case Uses(w, v)
-Result* UsesS::evaluateSynonymVariable(string stmtSynonym, string variableSynonym, Type stmtType) {
+Result* UsesS::evaluateSynonymVariable(const string& stmtSynonym, const string& variableSynonym, const Type& stmtType) {
 	Result* result = new Result();
 	unordered_map<int, unordered_set<string>> answer = pkb.getUsesStmtVarPairs(stmtType);
 	if (!answer.empty()) {
 		result->setPassed(true);
-		result->setAnswer(stmtSynonym, variableSynonym, answer);
+		result->setAnswer(stmtSynonym, variableSynonym, answer, pkb.getVarTable());
 	}
 	else {
 		result->setPassed(false);
@@ -93,7 +93,7 @@ Result* UsesS::evaluateSynonymVariable(string stmtSynonym, string variableSynony
 }
 
 // case Uses(a, _)
-Result* UsesS::evaluateSynonymUnderscore(string stmtSynonym, Type stmtType) {
+Result* UsesS::evaluateSynonymUnderscore(const string& stmtSynonym, const Type& stmtType) {
 	Result* result = new Result();
 	unordered_set<int> answer = pkb.getStmtsThatUsesVar(stmtType);
 	if (!answer.empty()) {
@@ -107,7 +107,7 @@ Result* UsesS::evaluateSynonymUnderscore(string stmtSynonym, Type stmtType) {
 }
 
 // e.g. Uses(w, "count")
-Result* UsesS::evaluateSynonymFixed(string stmtSynonym, string varName, Type stmtType) {
+Result* UsesS::evaluateSynonymFixed(const string& stmtSynonym, const string& varName, const Type& stmtType) {
 	Result* result = new Result();
 	unordered_set<int> answer = pkb.getStmtsThatUsesVar(varName, stmtType);
 	if (!answer.empty()) {

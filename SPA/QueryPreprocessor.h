@@ -1,12 +1,13 @@
 #pragma once
 
+#include "ProcessedQuery.h"
+
 class QueryPreprocessor {
 public:
 	QueryPreprocessor(const std::string& query);
 	bool parse();
+	ProcessedQuery getProcessedQuery();
 private:
 	const std::string& QUERY;
-
-	bool tokenize();
-	bool validateSyntax();
+	ProcessedQuery processedQuery;
 };
