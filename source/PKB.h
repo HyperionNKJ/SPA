@@ -6,26 +6,33 @@
 #include <vector>
 #include <unordered_set>
 #include <unordered_map>
-#include "../SPA/Type.h" // ### Included global enum header file.  ### Changed all StmtType -> Type in this file
+#include "../SPA/Type.h"
 
 using namespace std;
 typedef short PROC;
 
-// class TNode;
-
-class VarTable; // no need to #include "VarTable.h" as all I need is pointer
-
 class PKB
 {
+private:
+	unordered_set<string> varSet, procSet;
+	unordered_map<string, int> varTableByName, procTableByName;
+	vector<string> varTableByIdx, procTableByIdx;
+	unordered_set<int> allStmts, readStmts, printStmts, whileStmts, ifStmts, assignStmts, constSet;
+	unordered_map<int, unordered_set<int>> leaderTMap, followerTMap, parentMap, parentTMap, childrenTMap;
+	unordered_map<int, int> leaderMap, followerMap, childrenMap;
+	unordered_map<string, unordered_set<int>> assignModifyingVarMap, assignModifiedVarMap;
+	unordered_map<int, string> assignStmtVarMap;
+	unordered_map<int, unordered_set<string>> assignUseVarMap;
+	unordered_map<int, unordered_set<string>> modifiesByStmtNumMap, usesByStmtNumMap;
+	unordered_map<string, unordered_set<int>> modifiesByVarMap, usesByVarMap;
+	unordered_map<string, unordered_set<string>> modifiesByProcMap, usesByProcMap;
+
 public:
 	// Frontend APIs
-	static unordered_set<string> varTable, procTable;
-	static unordered_set<int> constTable;
-
-	static bool insertVar(string VarName);
-	static bool insertConstant(int constant);
-	static bool insertProc(string procName);
-	static bool insertStmtType(int stmtNum, Type type); 
+	bool insertVar(string VarName);
+	bool insertConstant(int constant);
+	bool insertProc(string procName);
+	bool insertStmtType(int stmtNum, Type type);
 
 	bool setFollows(int leader, int follower);
 	bool setFollowsT(int leader, int follower);
@@ -43,18 +50,20 @@ public:
 	bool setUses(int stmtNum, string varName);
 	bool setUses(string procName, string varName);
 
-	bool insertAssignStmt(int stmtNum, string variable, string assignmentStmt);
+	bool insertAssignStmt(int stmtNum, string var, vector<string> assignmentStmt);
 
 	// PQL APIs
-	unordered_set<int> getAllStmts(); // ### Added new getter API
+	unordered_set<int> getAllStmts();
 	unordered_set<int> getReadStmts();
 	unordered_set<int> getPrintStmts();
 	unordered_set<int> getWhileStmts();
 	unordered_set<int> getIfStmts();
 	unordered_set<int> getAssignStmts();
-	unordered_set<int> getAllVariables(); // ### Added new getter API
-	unordered_set<int> getAllConstant(); // ### Added new getter API
-	unordered_set<int> getAllProcedures(); // ### Added new getter API
+	unordered_set<string> getAllVariables();
+	unordered_set<int> getAllConstant();
+	unordered_set<string> getAllProcedures();
+	unordered_map<string, int> getVarTable();
+
 	bool isReadStmt(int stmtNum);
 	bool isWhileStmt(int stmtNum);
 	bool isIfStmt(int stmtNum);
@@ -62,10 +71,12 @@ public:
 	bool isPrintStmt(int stmtNum);
 
 	int getVarIdx(string varName);
-	string getVarAtIdx(int varIndex); // ### Added new API to get variable given its index
+	string getVarAtIdx(int varIdx);
+	int getProcIdx(string procName);
+	string getProcAtIdx(int procIdx);
 
 	bool isModifies(int stmtNum, string varName);
-	bool doesStmtModifies(int stmtNum); // ### Changed parameter name from stmtNumber -> stmtNum
+	bool doesStmtModifies(int stmtNum);
 	unordered_set<string> getVarModifiedByStmt(int stmtNum);
 	unordered_set<int> getStmtsThatModifiesVar(string varName, Type type);
 	unordered_map<int, unordered_set<string>> getModifiesStmtVarPairs(Type type);
@@ -88,14 +99,14 @@ public:
 	unordered_set<int> getChildrenStmts(Type childrenType);
 	int getParentOf(int stmtNum, Type parentType);
 	unordered_set<int> getParentTOf(int stmtNum, Type parentType);
-	unordered_set<int> getChildrenOf(int stmtNum, Type childrenType); // ### Renamed from getChildrenrenOf 
-	unordered_set<int> getChildrenTOf(int stmtNum, Type childrenType); // ### Added missing API
+	unordered_set<int> getChildrenOf(int stmtNum, Type childrenType);
+	unordered_set<int> getChildrenTOf(int stmtNum, Type childrenType);
 
 	bool isFollows(int stmtNum1, int stmtNum2);
 	bool isFollowsT(int stmtNum1, int stmtNum2);
 	bool hasFollower(int stmtNum);
-	bool hasLeader(int stmtNum); // ### Added missing API
-	unordered_map<int, int> getLeaderFollowerPairs(Type leaderType, Type followerType); 
+	bool hasLeader(int stmtNum);
+	unordered_map<int, int> getLeaderFollowerPairs(Type leaderType, Type followerType);
 	unordered_map<int, unordered_set<int>> getLeaderFollowerTPairs(Type leaderType, Type followerType);
 	unordered_set<int> getLeaderStmts(Type leaderType);
 	unordered_set<int> getFollowerStmts(Type followerType);
