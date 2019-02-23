@@ -72,7 +72,7 @@ Result* Pattern::evaluateVariableFixed(const string& variableSynonym, const stri
 
 	if (!answer.empty()) {
 		result->setPassed(true);
-		result->setAnswer(subjectSynonym, variableSynonym, answer);
+		result->setAnswer(subjectSynonym, variableSynonym, answer, pkb.getVarTable());
 	}
 	else {
 		result->setPassed(false);
@@ -86,7 +86,7 @@ Result* Pattern::evaluateVariableUnderscore(const string& variableSynonym, const
 	unordered_map<int, unordered_set<string>> answer = pkb.getModifiesStmtVarPairs(Type::ASSIGN);
 	if (!answer.empty()) {
 		result->setPassed(true);
-		result->setAnswer(subjectSynonym, variableSynonym, answer);
+		result->setAnswer(subjectSynonym, variableSynonym, answer, pkb.getVarTable());
 	}
 	else {
 		result->setPassed(false);

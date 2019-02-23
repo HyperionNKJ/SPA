@@ -17,17 +17,17 @@ unordered_map<string, list<int>> Result::getAnswer() {
 }
 
 // store variables as int corresponding to their index in varTable
-void Result::setAnswer(const string& variableSynonym, const unordered_set<string>& variables) {
+void Result::setAnswer(const string& variableSynonym, const unordered_set<string>& variables, const unordered_map<string, int>& varToIndexTable) {
 	list<int> variableIndices;
 	for (auto itr = variables.begin(); itr != variables.end(); itr++) { 
 		string variable = *itr;
-		variableIndices.push_back(getVariableIndex(variable));
+		variableIndices.push_back(varToIndexTable.at(variable));
 	}
 	unordered_map<string, list<int>> formattedAnswer({ {variableSynonym, variableIndices} });
 	this->answer = formattedAnswer;
 }
 
-void Result::setAnswer(const string& stmtSynonym, const string& variableSynonym, const unordered_map<int, unordered_set<string>>& answer) {
+void Result::setAnswer(const string& stmtSynonym, const string& variableSynonym, const unordered_map<int, unordered_set<string>>& answer, const unordered_map<string, int>& varToIndexTable) {
 	list<int> stmtList;
 	list<int> variableIndices;
 
@@ -37,8 +37,7 @@ void Result::setAnswer(const string& stmtSynonym, const string& variableSynonym,
 		auto it = variableNames.begin();
 		for (int i = 0; i < variableNames.size(); i++) {
 			stmtList.push_back(stmtNum);
-			int variableIndex = getVariableIndex(*it);
-			variableIndices.push_back(variableIndex);
+			variableIndices.push_back(varToIndexTable.at(*it));
 			it++;
 		}
 	}
@@ -91,7 +90,7 @@ void Result::setAnswer(const string& stmt1Synonym, const string& stmt2Synonym, c
 	this->answer = formattedAnswer;
 }
 
-void Result::setAnswer(const string& stmtSynonym, const string& variableSynonym, const unordered_map<int, string>& answer) {
+void Result::setAnswer(const string& stmtSynonym, const string& variableSynonym, const unordered_map<int, string>& answer, const unordered_map<string, int>& varToIndexTable) {
 	list<int> stmtList;
 	list<int> variableIndices;
 
@@ -100,7 +99,7 @@ void Result::setAnswer(const string& stmtSynonym, const string& variableSynonym,
 		string variable = itr->second;
 
 		stmtList.push_back(stmtNum);
-		variableIndices.push_back(getVariableIndex(variable));
+		variableIndices.push_back(varToIndexTable.at(variable));
 	}
 	unordered_map<string, list<int>> formattedAnswer({ {stmtSynonym, stmtList}, {variableSynonym, variableIndices} });
 	this->answer = formattedAnswer;

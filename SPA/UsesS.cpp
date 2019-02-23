@@ -56,7 +56,7 @@ Result* UsesS::evaluateFixedVariable(const string& stmtNum, const string& variab
 	unordered_set<string> answer = pkb.getVarUsedByStmt(stoi(stmtNum));
 	if (!answer.empty()) {
 		result->setPassed(true);
-		result->setAnswer(variableSynonym, answer);
+		result->setAnswer(variableSynonym, answer, pkb.getVarTable());
 	}
 	else {
 		result->setPassed(false);
@@ -84,7 +84,7 @@ Result* UsesS::evaluateSynonymVariable(const string& stmtSynonym, const string& 
 	unordered_map<int, unordered_set<string>> answer = pkb.getUsesStmtVarPairs(stmtType);
 	if (!answer.empty()) {
 		result->setPassed(true);
-		result->setAnswer(stmtSynonym, variableSynonym, answer);
+		result->setAnswer(stmtSynonym, variableSynonym, answer, pkb.getVarTable());
 	}
 	else {
 		result->setPassed(false);
