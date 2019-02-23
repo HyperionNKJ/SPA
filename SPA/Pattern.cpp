@@ -1,10 +1,10 @@
 #include "Pattern.h"
 
-Pattern::Pattern(DesignEntity subject, DesignEntity paraOne, DesignEntity paraTwo) : Clause(paraOne, paraTwo) {
+Pattern::Pattern(const DesignEntity& subject, const DesignEntity& paraOne, const DesignEntity& paraTwo) : Clause(paraOne, paraTwo) {
 	this->subject = subject;
 }
 
-Result Pattern::evaluate(PKB pkb) {
+Result Pattern::evaluate(const PKB& pkb) {
 	this->pkb = pkb;
 
 	Type subjectType = subject.getType(); // should be an assign type
@@ -60,7 +60,7 @@ Result Pattern::evaluate(PKB pkb) {
 }
 
 // case a(v, _"count"_)
-Result* Pattern::evaluateVariableFixed(string variableSynonym, string entity, string subjectSynonym) {
+Result* Pattern::evaluateVariableFixed(const string& variableSynonym, const string& entity, const string& subjectSynonym) {
 	Result* result = new Result();
 	unordered_set<int> assignStmtsThatUseEntity = pkb.getAssignStmtsThatUse(entity);
 	unordered_map<int, string> answer;
@@ -81,7 +81,7 @@ Result* Pattern::evaluateVariableFixed(string variableSynonym, string entity, st
 }
 
 // case a(v, _) = Modifies(a, v)
-Result* Pattern::evaluateVariableUnderscore(string variableSynonym, string subjectSynonym) {
+Result* Pattern::evaluateVariableUnderscore(const string& variableSynonym, const string& subjectSynonym) {
 	Result* result = new Result();
 	unordered_map<int, unordered_set<string>> answer = pkb.getModifiesStmtVarPairs(Type::ASSIGN);
 	if (!answer.empty()) {
@@ -95,7 +95,7 @@ Result* Pattern::evaluateVariableUnderscore(string variableSynonym, string subje
 }
 
 // case a(_, _"12"_)
-Result* Pattern::evaluateUnderscoreFixed(string entity, string subjectSynonym) {
+Result* Pattern::evaluateUnderscoreFixed(const string& entity, const string& subjectSynonym) {
 	Result* result = new Result();
 	unordered_set<int> answer = pkb.getAssignStmtsThatUse(entity);
 	if (!answer.empty()) {
@@ -109,7 +109,7 @@ Result* Pattern::evaluateUnderscoreFixed(string entity, string subjectSynonym) {
 }
 
 // case a(_, _) = All assign statements, since they must have a LHS and RHS
-Result* Pattern::evaluateUnderscoreUnderscore(string subjectSynonym) {
+Result* Pattern::evaluateUnderscoreUnderscore(const string& subjectSynonym) {
 	Result* result = new Result();
 	unordered_set<int> answer = pkb.getAssignStmts(); 
 	if (!answer.empty()) {
@@ -123,7 +123,7 @@ Result* Pattern::evaluateUnderscoreUnderscore(string subjectSynonym) {
 }
 
 // case a("count", _"12"_)
-Result* Pattern::evaluateFixedFixed(string variable, string entity, string subjectSynonym) {
+Result* Pattern::evaluateFixedFixed(const string& variable, const string& entity, const string& subjectSynonym) {
 	Result* result = new Result();
 	unordered_set<int> assignStmtsThatModifiesVar = pkb.getAssignStmtsThatModifiesVar(variable);
 	unordered_set<int> answer;
@@ -144,7 +144,7 @@ Result* Pattern::evaluateFixedFixed(string variable, string entity, string subje
 }
 
 // case a("count", _) = Modifies(a, "count")
-Result* Pattern::evaluateFixedUnderscore(string variable, string subjectSynonym) {
+Result* Pattern::evaluateFixedUnderscore(const string& variable, const string& subjectSynonym) {
 	Result* result = new Result();
 	unordered_set<int> answer = pkb.getStmtsThatModifiesVar(variable, Type::ASSIGN);
 	if (!answer.empty()) {

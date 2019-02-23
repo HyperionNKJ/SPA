@@ -5,5 +5,5 @@
 
 class QueryEvaluator {
 public:
-	std::list<std::string> evaluate(ProcessedQuery, PKB);
+	std::list<std::string> evaluate(ProcessedQuery&, const PKB&);
 };

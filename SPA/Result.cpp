@@ -17,7 +17,7 @@ unordered_map<string, list<int>> Result::getAnswer() {
 }
 
 // store variables as int corresponding to their index in varTable
-void Result::setAnswer(string variableSynonym, unordered_set<string> variables) {
+void Result::setAnswer(const string& variableSynonym, const unordered_set<string>& variables) {
 	list<int> variableIndices;
 	for (auto itr = variables.begin(); itr != variables.end(); itr++) { 
 		string variable = *itr;
@@ -27,7 +27,7 @@ void Result::setAnswer(string variableSynonym, unordered_set<string> variables) 
 	this->answer = formattedAnswer;
 }
 
-void Result::setAnswer(string stmtSynonym, string variableSynonym, unordered_map<int, unordered_set<string>> answer) {
+void Result::setAnswer(const string& stmtSynonym, const string& variableSynonym, const unordered_map<int, unordered_set<string>>& answer) {
 	list<int> stmtList;
 	list<int> variableIndices;
 
@@ -46,7 +46,7 @@ void Result::setAnswer(string stmtSynonym, string variableSynonym, unordered_map
 	this->answer = formattedAnswer;
 }
 
-void Result::setAnswer(string stmt1Synonym, string stmt2Synonym, unordered_map<int, unordered_set<int>> answer) {
+void Result::setAnswer(const string& stmt1Synonym, const string& stmt2Synonym, const unordered_map<int, unordered_set<int>>& answer) {
 	list<int> stmt1List;
 	list<int> stmt2List;
 
@@ -64,19 +64,19 @@ void Result::setAnswer(string stmt1Synonym, string stmt2Synonym, unordered_map<i
 	this->answer = formattedAnswer;
 }
 
-void Result::setAnswer(string stmtSynonym, unordered_set<int> stmtNums) {
+void Result::setAnswer(const string& stmtSynonym, const unordered_set<int>& stmtNums) {
 	list<int> stmtList(stmtNums.begin(), stmtNums.end());
 	unordered_map<string, list<int>> formattedAnswer({ {stmtSynonym, stmtList}});
 	this->answer = formattedAnswer;
 }
 
-void Result::setAnswer(string stmtSynonym, int answer) {
+void Result::setAnswer(const string& stmtSynonym, const int& answer) {
 	list<int> stmtList({ answer });
 	unordered_map<string, list<int>> formattedAnswer({ {stmtSynonym, stmtList} });
 	this->answer = formattedAnswer;
 }
 
-void Result::setAnswer(string stmt1Synonym, string stmt2Synonym, unordered_map<int, int> answer) {
+void Result::setAnswer(const string& stmt1Synonym, const string& stmt2Synonym, const unordered_map<int, int>& answer) {
 	list<int> stmt1List;
 	list<int> stmt2List;
 
@@ -91,7 +91,7 @@ void Result::setAnswer(string stmt1Synonym, string stmt2Synonym, unordered_map<i
 	this->answer = formattedAnswer;
 }
 
-void Result::setAnswer(string stmtSynonym, string variableSynonym, unordered_map<int, string> answer) {
+void Result::setAnswer(const string& stmtSynonym, const string& variableSynonym, const unordered_map<int, string>& answer) {
 	list<int> stmtList;
 	list<int> variableIndices;
 

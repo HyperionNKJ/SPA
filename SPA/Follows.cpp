@@ -1,8 +1,8 @@
 #include "Follows.h"
 
-Follows::Follows(DesignEntity paraOne, DesignEntity paraTwo) : Clause(paraOne, paraTwo) {}
+Follows::Follows(const DesignEntity& paraOne, const DesignEntity& paraTwo) : Clause(paraOne, paraTwo) {}
 
-Result Follows::evaluate(PKB pkb) {
+Result Follows::evaluate(const PKB& pkb) {
 	this->pkb = pkb;
 	Type paraOneType = paraOne.getType();
 	Type paraTwoType = paraTwo.getType();
@@ -68,7 +68,7 @@ Result Follows::evaluate(PKB pkb) {
 }
 
 // case Follows(12, w)
-Result* Follows::evaluateFixedSynonym(string leaderStmtNum, string followerSynonym, Type followerType) {
+Result* Follows::evaluateFixedSynonym(const string& leaderStmtNum, const string& followerSynonym, const Type& followerType) {
 	Result* result = new Result();
 	int answer = pkb.getFollowerOf(stoi(leaderStmtNum), followerType);
 	if (answer != -1) {
@@ -82,21 +82,21 @@ Result* Follows::evaluateFixedSynonym(string leaderStmtNum, string followerSynon
 }
 
 // case Follows(3, _)
-Result* Follows::evaluateFixedUnderscore(string leaderStmtNum) {
+Result* Follows::evaluateFixedUnderscore(const string& leaderStmtNum) {
 	Result* result = new Result();
 	result->setPassed(pkb.hasFollower(stoi(leaderStmtNum)));
 	return result;
 }
 
 // case Follows(4, 6)
-Result* Follows::evaluateFixedFixed(string leaderStmtNum, string followerStmtNum) {
+Result* Follows::evaluateFixedFixed(const string& leaderStmtNum, const string& followerStmtNum) {
 	Result* result = new Result();
 	result->setPassed(pkb.isFollows(stoi(leaderStmtNum), stoi(followerStmtNum)));
 	return result;
 }
 
 // case Follows(r, a)
-Result* Follows::evaluateSynonymSynonym(string leaderSynonym, string followerSynonym, Type leaderType, Type followerType) {
+Result* Follows::evaluateSynonymSynonym(const string& leaderSynonym, const string& followerSynonym, const Type& leaderType, const Type& followerType) {
 	Result* result = new Result();
 	unordered_map<int, int> answer = pkb.getLeaderFollowerPairs(leaderType, followerType);
 	if (!answer.empty()) {
@@ -110,7 +110,7 @@ Result* Follows::evaluateSynonymSynonym(string leaderSynonym, string followerSyn
 }
 
 // case Follows(pr, _)
-Result* Follows::evaluateSynonymUnderscore(string leaderSynonym, Type leaderType) {
+Result* Follows::evaluateSynonymUnderscore(const string& leaderSynonym, const Type& leaderType) {
 	Result* result = new Result();
 	unordered_set<int> answer = pkb.getLeaderStmts(leaderType);
 	if (!answer.empty()) {
@@ -124,7 +124,7 @@ Result* Follows::evaluateSynonymUnderscore(string leaderSynonym, Type leaderType
 }
 
 // case Follows(s, 12)
-Result* Follows::evaluateSynonymFixed(string leaderSynonym, string followerStmtNum, Type leaderType) {
+Result* Follows::evaluateSynonymFixed(const string& leaderSynonym, const string& followerStmtNum, const Type& leaderType) {
 	Result* result = new Result();
 	int answer = pkb.getLeaderOf(stoi(followerStmtNum), leaderType);
 	if (answer != -1) {
@@ -138,7 +138,7 @@ Result* Follows::evaluateSynonymFixed(string leaderSynonym, string followerStmtN
 }
 
 // case Follows(_, a)
-Result* Follows::evaluateUnderscoreSynonym(string followerSynonym, Type followerType) {
+Result* Follows::evaluateUnderscoreSynonym(const string& followerSynonym, const Type& followerType) {
 	Result* result = new Result();
 	unordered_set<int> answer = pkb.getFollowerStmts(followerType);
 	if (!answer.empty()) {
@@ -160,7 +160,7 @@ Result* Follows::evaluateUnderscoreUnderscore() {
 }
 
 // case Follows(_, 23)
-Result* Follows::evaluateUnderscoreFixed(string followerStmtNum) {
+Result* Follows::evaluateUnderscoreFixed(const string& followerStmtNum) {
 	Result* result = new Result();
 	result->setPassed(pkb.hasLeader(stoi(followerStmtNum)));
 	return result;

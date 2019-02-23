@@ -1,8 +1,8 @@
 #include "ParentT.h"
 
-ParentT::ParentT(DesignEntity paraOne, DesignEntity paraTwo) : Clause(paraOne, paraTwo) {}
+ParentT::ParentT(const DesignEntity& paraOne, const DesignEntity& paraTwo) : Clause(paraOne, paraTwo) {}
 
-Result ParentT::evaluate(PKB pkb) {
+Result ParentT::evaluate(const PKB& pkb) {
 	this->pkb = pkb;
 	Type paraOneType = paraOne.getType();
 	Type paraTwoType = paraTwo.getType();
@@ -67,7 +67,7 @@ Result ParentT::evaluate(PKB pkb) {
 }
 
 // case Parent*(12, w)
-Result* ParentT::evaluateFixedSynonym(string parentStmtNum, string childrenSynonym, Type childrenType) {
+Result* ParentT::evaluateFixedSynonym(const string& parentStmtNum, const string& childrenSynonym, const Type& childrenType) {
 	Result* result = new Result();
 	unordered_set<int> answer = pkb.getChildrenTOf(stoi(parentStmtNum), childrenType);
 	if (!answer.empty()) {
@@ -81,21 +81,21 @@ Result* ParentT::evaluateFixedSynonym(string parentStmtNum, string childrenSynon
 }
 
 // case Parent*(3, _)
-Result* ParentT::evaluateFixedUnderscore(string parentStmtNum) {
+Result* ParentT::evaluateFixedUnderscore(const string& parentStmtNum) {
 	Result* result = new Result();
 	result->setPassed(pkb.hasChildren(stoi(parentStmtNum)));
 	return result;
 }
 
 // case Parent*(4, 6)
-Result* ParentT::evaluateFixedFixed(string parentStmtNum, string childStmtNum) {
+Result* ParentT::evaluateFixedFixed(const string& parentStmtNum, const string& childStmtNum) {
 	Result* result = new Result();
 	result->setPassed(pkb.isParentT(stoi(parentStmtNum), stoi(childStmtNum)));
 	return result;
 }
 
 // case Parent*(i, a)
-Result* ParentT::evaluateSynonymSynonym(string parentSynonym, string childSynonym, Type parentType, Type childType) {
+Result* ParentT::evaluateSynonymSynonym(const string& parentSynonym, const string& childSynonym, const Type& parentType, const Type& childType) {
 	Result* result = new Result();
 	unordered_map<int, unordered_set<int>> answer = pkb.getParentChildrenTPairs(parentType, childType);
 	if (!answer.empty()) {
@@ -109,7 +109,7 @@ Result* ParentT::evaluateSynonymSynonym(string parentSynonym, string childSynony
 }
 
 // case Parent*(w, _)
-Result* ParentT::evaluateSynonymUnderscore(string parentSynonym, Type parentType) {
+Result* ParentT::evaluateSynonymUnderscore(const string& parentSynonym, const Type& parentType) {
 	Result* result = new Result();
 	unordered_set<int> answer = pkb.getParentStmts(parentType);
 	if (!answer.empty()) {
@@ -123,7 +123,7 @@ Result* ParentT::evaluateSynonymUnderscore(string parentSynonym, Type parentType
 }
 
 // case Parent*(i, 12)
-Result* ParentT::evaluateSynonymFixed(string parentSynonym, string childStmtNum, Type parentType) {
+Result* ParentT::evaluateSynonymFixed(const string& parentSynonym, const string& childStmtNum, const Type& parentType) {
 	Result* result = new Result();
 	unordered_set<int> answer = pkb.getParentTOf(stoi(childStmtNum), parentType);
 	if (!answer.empty()) {
@@ -137,7 +137,7 @@ Result* ParentT::evaluateSynonymFixed(string parentSynonym, string childStmtNum,
 }
 
 // case Parent*(_, a)
-Result* ParentT::evaluateUnderscoreSynonym(string childSynonym, Type childType) {
+Result* ParentT::evaluateUnderscoreSynonym(const string& childSynonym, const Type& childType) {
 	Result* result = new Result();
 	unordered_set<int> answer = pkb.getChildrenStmts(childType);
 	if (!answer.empty()) {
@@ -159,7 +159,7 @@ Result* ParentT::evaluateUnderscoreUnderscore() {
 }
 
 // case Parent*(_, 23)
-Result* ParentT::evaluateUnderscoreFixed(string childStmtNum) {
+Result* ParentT::evaluateUnderscoreFixed(const string& childStmtNum) {
 	Result* result = new Result();
 	result->setPassed(pkb.hasParent(stoi(childStmtNum)));
 	return result;

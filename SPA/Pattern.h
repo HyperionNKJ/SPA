@@ -6,15 +6,15 @@ class Pattern : public Clause {
 private:
 	DesignEntity subject; // subject can only be of ASSIGN synonym
 
-	Result* evaluateVariableFixed(string, string, string); // e.g. a(v, _"count"_);
-	Result* evaluateVariableUnderscore(string, string); // e.g. a(v, _);
-	Result* evaluateUnderscoreFixed(string, string); // e.g. a(_ , _"12"_);
-	Result* evaluateUnderscoreUnderscore(string); // e.g. a(_, _);
-	Result* evaluateFixedFixed(string, string, string); // e.g. a("count", _"12"_);
-	Result* evaluateFixedUnderscore(string, string); // e.g. a("count", _);
+	Result* evaluateVariableFixed(const string&, const string&, const string&); // e.g. a(v, _"count"_);
+	Result* evaluateVariableUnderscore(const string&, const string&); // e.g. a(v, _);
+	Result* evaluateUnderscoreFixed(const string&, const string&); // e.g. a(_ , _"12"_);
+	Result* evaluateUnderscoreUnderscore(const string&); // e.g. a(_, _);
+	Result* evaluateFixedFixed(const string&, const string&, const string&); // e.g. a("count", _"12"_);
+	Result* evaluateFixedUnderscore(const string&, const string&); // e.g. a("count", _);
 
 public:
-	Pattern(DesignEntity, DesignEntity, DesignEntity); // In order of subject, left arg, right arg of pattern clause
+	Pattern(const DesignEntity&, const DesignEntity&, const DesignEntity&); // In order of subject, left arg, right arg of pattern clause
 
-	Result evaluate(PKB) override;
+	Result evaluate(const PKB&) override;
 };

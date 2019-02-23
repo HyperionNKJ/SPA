@@ -1,14 +1,14 @@
 #include "Clause.h"
 
-Clause::Clause(DesignEntity paraOne, DesignEntity paraTwo) {
+Clause::Clause(const DesignEntity& paraOne, const DesignEntity& paraTwo) {
 	this->paraOne = paraOne;
 	this->paraTwo = paraTwo;
 }
 
-void Clause::setParaOne(DesignEntity paraOne) {
+void Clause::setParaOne(const DesignEntity& paraOne) {
 	this->paraOne = paraOne;
 }
 
-void Clause::setParaTwo(DesignEntity paraTwo) {
+void Clause::setParaTwo(const DesignEntity& paraTwo) {
 	this->paraTwo = paraTwo;
 }

@@ -12,10 +12,10 @@ private:
 public:
 	DesignEntity();
 	~DesignEntity();
-	DesignEntity(string, Type);
+	DesignEntity(const string&, const Type&);
 
-	void setValue(string);
-	void setType(Type);
+	void setValue(const string&);
+	void setType(const Type&);
 	string getValue();
 	Type getType();
 };

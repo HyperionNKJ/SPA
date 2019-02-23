@@ -4,18 +4,18 @@
 // consider combining Follows and FollowsT into a single class with "isTransitive" as boolean.
 class Follows : public Clause {
 private:
-	Result* evaluateFixedSynonym(string, string, Type); // e.g. Follows(12, w)
-	Result* evaluateFixedUnderscore(string); // e.g. Follows(3, _)
-	Result* evaluateFixedFixed(string, string); // e.g. Follows(4, 6)
-	Result* evaluateSynonymSynonym(string, string, Type, Type); // e.g. Follows(r, a)
-	Result* evaluateSynonymUnderscore(string, Type); // e.g. Follows(pr, _)
-	Result* evaluateSynonymFixed(string, string, Type); // Follows(s, 12)
-	Result* evaluateUnderscoreSynonym(string, Type); // Follows(_, a)
+	Result* evaluateFixedSynonym(const string&, const string&, const Type&); // e.g. Follows(12, w)
+	Result* evaluateFixedUnderscore(const string&); // e.g. Follows(3, _)
+	Result* evaluateFixedFixed(const string&, const string&); // e.g. Follows(4, 6)
+	Result* evaluateSynonymSynonym(const string&, const string&, const Type&, const Type&); // e.g. Follows(r, a)
+	Result* evaluateSynonymUnderscore(const string&, const Type&); // e.g. Follows(pr, _)
+	Result* evaluateSynonymFixed(const string&, const string&, const Type&); // Follows(s, 12)
+	Result* evaluateUnderscoreSynonym(const string&, const Type&); // Follows(_, a)
 	Result* evaluateUnderscoreUnderscore(); // Follows(_, _)
-	Result* evaluateUnderscoreFixed(string); // Follows(_, 23)
+	Result* evaluateUnderscoreFixed(const string&); // Follows(_, 23)
 
 public:
-	Follows(DesignEntity, DesignEntity);
+	Follows(const DesignEntity&, const DesignEntity&);
 
-	Result evaluate(PKB) override;
+	Result evaluate(const PKB&) override;
 };

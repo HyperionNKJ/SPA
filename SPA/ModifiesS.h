@@ -3,15 +3,15 @@
 
 class ModifiesS : public Clause {
 private:
-	Result* evaluateFixedVariable(string, string); // e.g. Modifies(7, v)
-	Result* evaluateFixedUnderscore(string); // e.g. Modifies(7, _)
-	Result* evaluateFixedFixed(string, string); // e.g. Modifies(7, "count")
-	Result* evaluateSynonymVariable(string, string, Type); // e.g. Modifies(s, v)
-	Result* evaluateSynonymUnderscore(string, Type); // e.g. Modifies(a, _)
-	Result* evaluateSynonymFixed(string, string, Type); // e.g. Modifies(w, "count")
+	Result* evaluateFixedVariable(const string&, const string&); // e.g. Modifies(7, v)
+	Result* evaluateFixedUnderscore(const string&); // e.g. Modifies(7, _)
+	Result* evaluateFixedFixed(const string&, const string&); // e.g. Modifies(7, "count")
+	Result* evaluateSynonymVariable(const string&, const string&, const Type&); // e.g. Modifies(s, v)
+	Result* evaluateSynonymUnderscore(const string&, const Type&); // e.g. Modifies(a, _)
+	Result* evaluateSynonymFixed(const string&, const string&, const Type&); // e.g. Modifies(w, "count")
 
 public:
-	ModifiesS(DesignEntity, DesignEntity);
+	ModifiesS(const DesignEntity&, const DesignEntity&);
 
-	Result evaluate(PKB) override;
+	Result evaluate(const PKB&) override;
 };

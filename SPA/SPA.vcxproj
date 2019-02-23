@@ -15,6 +15,11 @@
     <ClCompile Include="..\source\Parser.cpp" />
     <ClCompile Include="..\source\PKB.cpp" />
     <ClCompile Include="..\source\TNode.cpp" />
+    <ClCompile Include="Follows.cpp" />
+    <ClCompile Include="FollowsT.cpp" />
+    <ClCompile Include="Parent.cpp" />
+    <ClCompile Include="ParentT.cpp" />
+    <ClCompile Include="Pattern.cpp" />
     <ClCompile Include="PatternClause.cpp" />
     <ClCompile Include="ProcessedQuery.cpp" />
     <ClCompile Include="QueryParser.cpp" />
