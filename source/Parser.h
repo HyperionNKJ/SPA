@@ -83,5 +83,6 @@ public:
 	vector<string> tokeniseString(string, string);
 
 	//setter/getter functions for testing
+	void setPKB(PKB*);
 	void setWithinProcedure(bool);
 };

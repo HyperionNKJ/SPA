@@ -174,7 +174,7 @@ bool Parser::checkAssignment(string assignmentLine) {
 bool Parser::checkExpr(string expr) {
 	//start from the back, start scanning for + or -. Track brackets and ignore + or - inside them.
 	int bracketTracker = 0;
-	for (unsigned int currPos = expr.length() - 1; currPos > 0; currPos--) {
+	for (int currPos = expr.length() - 1; currPos > 0; currPos--) {
 		if (expr[currPos] == '(') {
 			bracketTracker--;
 		}
@@ -189,9 +189,13 @@ bool Parser::checkExpr(string expr) {
 			}
 		}
 		else if (bracketTracker < 0) {
-			cout << "Unexpected ( bracket encountered in assignment statement at line " << statementNumber << endl;
+			cout << "Extra mismatched ( bracket encountered in assignment statement at line " << statementNumber << endl;
 			return false;
 		}
+	}
+	if (bracketTracker > 0) {
+		cout << "Extra mismatched ) bracket encountered in assignment statement at line " << statementNumber << endl;
+		return false;
 	}
 	//reach the end with no + or -, check for single term
 	return checkTerm(expr);
@@ -201,7 +205,7 @@ bool Parser::checkTerm(string term) {
 	//similar logic to checkExpr
 	//start from the back, start scanning for *, /, %. Track brackets and ignore delimiters inside them.
 	int bracketTracker = 0;
-	for (unsigned int currPos = term.length() - 1; currPos > 0; currPos--) {
+	for (int currPos = term.length() - 1; currPos > 0; currPos--) {
 		if (term[currPos] == '(') {
 			bracketTracker--;
 		}
@@ -723,6 +727,10 @@ bool Parser::setUses(int currStatementNum, string varName) {
 	}
 	pkb->setUses(currStatementNum, varName);
 	return true;
+}
+
+void Parser::setPKB(PKB * p) {
+	pkb = p;
 }
 
 void Parser::setWithinProcedure(bool setting) {
