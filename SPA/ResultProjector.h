@@ -36,6 +36,7 @@ private:
 	list<string> convertProcIndexToProc(list<int>, PKB);
 	list<string> convertIndexToString(unordered_set<int>, PKB);
 	list<string> convertIndexToString(list<int>, PKB);
+	list<string> convertSetToList(unordered_set<string>);
 
 public:
 	void resetResults();
