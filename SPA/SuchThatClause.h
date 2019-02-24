@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include "ParameterType.h"
 #include "DesignEntity.h"
 
 enum class RelationshipType {
@@ -14,12 +13,6 @@ public:
 
 	RelationshipType type;
 
-	Type paramOne;
-	Type paramTwo;
-
-	Type paramOneType;
-	Type paramTwoType;
-
-	std::string paramOneValue;
-	std::string paramTwoValue;
+	DesignEntity paramOne;
+	DesignEntity paramTwo;
 };

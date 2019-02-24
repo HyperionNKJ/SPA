@@ -17,6 +17,12 @@ bool QueryPreprocessor::parse() {
 
 	std::vector<Statement> statements = tokenizer.getStatements();
 	QueryParser parser = QueryParser(statements);
+	status = parser.parse();
+
+	if (!status) {
+		return false;
+	}
+
 	processedQuery = parser.getQuery();
 
 	return true;

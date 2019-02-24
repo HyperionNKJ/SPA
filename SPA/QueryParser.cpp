@@ -20,18 +20,30 @@ const std::regex QueryParser::EXPRESSION_REGEX("^(_)$|^_\"(" + IDENT + ")\"_$|^_
 
 const std::unordered_set<std::string> QueryParser::KEYWORDS = {
 	"stmt", "read", "print", "while", "if", "assign", "variable", "constant",
-	"procedure", "Select", "pattern", "Modifies", "Uses", "Parent", "Follows"
+	"procedure", "Select", "pattern", "Modifies", "Uses", "Parent", "Follows",
+	"Parent*", "Follows*"
 };
 
-QueryParser::QueryParser(std::vector<Statement>& statements) {
-	for (Statement& statement : statements) {
+QueryParser::QueryParser(const std::vector<Statement>& statements)
+		: STATEMENTS(statements){
+}
+
+bool QueryParser::parse() {
+	for (Statement& statement : STATEMENTS) {
+		bool status;
+
 		if (statement.type == StatementType::DECLARATION) {
-			parseDeclarationStatement(statement);
+			status = parseDeclarationStatement(statement);
+		} else {
+			status = parseSelectStatement(statement);
 		}
-		else {
-			parseSelectStatement(statement);
+
+		if (!status) {
+			return false;
 		}
 	}
+
+	return true;
 }
 
 ProcessedQuery QueryParser::getQuery() {
@@ -44,36 +56,7 @@ bool QueryParser::parseDeclarationStatement(const Statement& statement) {
 
 	// get design entity type of this declaration statement
 	std::string typeString = statementString.substr(0, synonymIndex - 1);
-
-	Type type;
-	
-	if (typeString == "stmt") {
-		type = Type::STATEMENT;
-	}
-	else if (typeString == "read") {
-		type = Type::READ;
-	}
-	else if (typeString == "print") {
-		type = Type::PRINT;
-	}
-	else if (typeString == "while") {
-		type = Type::WHILE;
-	}
-	else if (typeString == "if") {
-		type = Type::IF;
-	}
-	else if (typeString == "assign") {
-		type = Type::ASSIGN;
-	}
-	else if (typeString == "variable") {
-		type = Type::VARIABLE;
-	}
-	else if (typeString == "constant") {
-		type = Type::CONSTANT;
-	}
-	else if (typeString == "procedure") {
-		type = Type::PROCEDURE;
-	}
+	Type type = QueryPreprocessorHelper::getType(typeString);
 
 	// get synonyms of this declaration statement
 	std::string synonymsString = statementString.substr(synonymIndex);
@@ -95,44 +78,49 @@ bool QueryParser::parseDeclarationStatement(const Statement& statement) {
 	return true;
 }
 
-bool QueryParser::parseSelectStatement(const Statement& stmt) {
+bool QueryParser::parseSelectStatement(const Statement& statement) {
 	std::smatch match;
-	std::regex_search(stmt.VALUE, match, SELECT_STMT_REGEX);
+	std::regex_search(statement.VALUE, match, SELECT_STMT_REGEX);
 
 	// check if statement is a select statement
 	if (match.empty()) {
 		return false;
 	}
 
-	std::string synonym;
-	std::string firstClauseType;
-	std::string firstClauseValue;
-	std::string secondClauseType;
-	std::string secondClauseValue;
+	std::string clauseOneType;
+	std::string clauseTwoType;
+
+	std::string clauseOneValue;
+	std::string clauseTwoValue;
+
+	size_t numberOfClauses;
 
 	if (match[1].matched) {
+		numberOfClauses = 0;
 		query.addSynonym(match[1].str());
 		return true;
-	}
-	else if (match[2].matched) {
+	} else if (match[2].matched) {
+		numberOfClauses = 1;
 		query.addSynonym(match[2].str());
-		firstClauseType = match[3].str();
-		firstClauseValue = match[4].str();
-	}
-	else {
+
+		clauseOneType = match[3].str();
+		clauseOneValue = match[4].str();
+	} else {
+		numberOfClauses = 2;
 		query.addSynonym(match[5].str());
-		firstClauseType = match[6].str();
-		firstClauseValue = match[7].str();
-		secondClauseType = match[8].str();
-		secondClauseValue = match[9].str();
+
+		clauseOneType = match[6].str();
+		clauseOneValue = match[7].str();
+
+		clauseTwoType = match[8].str();
+		clauseTwoValue = match[9].str();
 	}
 
 	bool status;
-	if (firstClauseType == "such that") {
-		status = parseSuchThatClause(firstClauseValue);
-	}
-	else {
-		status = parsePatternClause(firstClauseValue);
+	if (clauseOneType == "such that") {
+		status = parseSuchThatClause(clauseOneValue);
+	} else {
+		status = parsePatternClause(clauseOneValue);
 	}
 
 	// returns false if there is an error while parsing the first clause
@@ -140,16 +128,14 @@ bool QueryParser::parseSelectStatement(const Statement& stmt) {
 		return false;
 	}
 
-	// returns if there are only one select clauses and one constraint clause
-	if (match.size() == 4) {
+	if (numberOfClauses == 1) {
 		return true;
 	}
 
-	if (secondClauseType == "such that") {
-		status = parseSuchThatClause(secondClauseValue);
-	}
-	else {
-		status = parsePatternClause(secondClauseValue);
+	if (clauseTwoType == "such that") {
+		status = parseSuchThatClause(clauseTwoType);
+	} else {
+		status = parsePatternClause(clauseTwoType);
 	}
 
 	// returns false if there is an error while parsing the second clause
@@ -160,29 +146,29 @@ bool QueryParser::parseSuchThatClause(const std::string& clause) {
 	std::smatch match;
 	std::regex_search(clause, match, SUCH_THAT_CLAUSE_REGEX);
 
-	if (match.size() != 4) {
+	if (match.empty()) {
 		return false;
 	}
 
-	std::string typeString = match[1].str();
-
-	RelationshipType type = getRelationshipType(typeString);
-
+	std::string typeValue = match[1].str();
 	std::string paramOneValue = match[2].str();
 	std::string paramTwoValue = match[3].str();
 
 	Type paramOneType = getParameterType(paramOneValue);
 	Type paramTwoType = getParameterType(paramTwoValue);
 
-	return query.addSuchThatClause(type, paramOneType, paramOneValue,
-		paramTwoType, paramTwoValue);
+	RelationshipType type = getRelationshipType(typeValue);
+	DesignEntity paramOne(paramOneValue, paramOneType);
+	DesignEntity paramTwo(paramTwoValue, paramTwoType);
+
+	return query.addSuchThatClause(type, paramOne, paramTwo);
 }
 
 bool QueryParser::parsePatternClause(const std::string& clause) {
 	std::smatch match;
 	std::regex_search(clause, match, PATTERN_CLAUSE_REGEX);
 
-	if (match.size() != 4) {
+	if (match.empty()) {
 		return false;
 	}
 

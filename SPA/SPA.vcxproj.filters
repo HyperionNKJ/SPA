@@ -167,9 +167,6 @@
     <ClInclude Include="StatementType.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="StatementTypeFactory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="SuchThatClause.h">
       <Filter>Header Files</Filter>
     </ClInclude>
