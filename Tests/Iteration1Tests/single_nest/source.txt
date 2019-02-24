@@ -15,6 +15,6 @@ procedure P {
 		i = i - 1;			// 11
 	}
 	print p;				// 12
-	x = z					// 13
-	z = i					// 14
+	x = z;					// 13
+	z = i;					// 14
 }
