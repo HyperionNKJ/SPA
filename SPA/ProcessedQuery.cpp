@@ -1,6 +1,11 @@
 #include "Clause.h"
+#include "Follows.h"
+#include "FollowsT.h"
 #include "ModifiesS.h"
+#include "Parent.h"
+#include "ParentT.h"
 #include "Pattern.h"
+#include "UsesS.h"
 #include "ProcessedQuery.h"
 
 ProcessedQuery::ProcessedQuery() {
@@ -17,10 +22,8 @@ void ProcessedQuery::addSynonym(const std::string& newSynonym) {
 }
 
 bool ProcessedQuery::addSuchThatClause(const RelationshipType& type,
-	const Type& paramOneType,
-	const std::string& paramOneValue,
-	const Type& paramTwoType,
-	const std::string& paramTwoValue) {
+	const DesignEntity& paramOne,
+	const DesignEntity& paramTwo) {
 	if (hasSuchThatClause) {
 		return false;
 	}
@@ -28,12 +31,8 @@ bool ProcessedQuery::addSuchThatClause(const RelationshipType& type,
 	hasSuchThatClause = true;
 
 	suchThatClause.type = type;
-
-	suchThatClause.paramOneType = paramOneType;
-	suchThatClause.paramTwoType = paramTwoType;
-
-	suchThatClause.paramOneValue = paramOneValue;
-	suchThatClause.paramTwoValue = paramTwoValue;
+	suchThatClause.paramOne = paramOne;
+	suchThatClause.paramTwo = paramTwo;
 
 	return true;
 }
@@ -54,18 +53,51 @@ bool ProcessedQuery::addPatternClause(const DesignEntity& assign,
 	return true;
 }
 
-std::unordered_set<Clause> ProcessedQuery::getClauses() {
-	unordered_set<Clause> clauses;
+std::unordered_set<Clause*> ProcessedQuery::getClauses() {
+	unordered_set<Clause*> clauses;
 	if (hasSuchThatClause) {
-		if (suchThatClause.type == RelationshipType::MODIFIES_S) {
-			
+		std::string paramOneValue = suchThatClause.paramOne.getValue();
+		std::string paramTwoValue = suchThatClause.paramTwo.getValue();
+
+		if (suchThatClause.paramOne.getType() == Type::ASSIGN) {
+			Type paramOneType = declarations.find(paramOneValue)->second;
+			suchThatClause.paramOne.setType(paramOneType);
 		}
-		
+
+		if (suchThatClause.paramTwo.getType() == Type::ASSIGN) {
+			Type paramTwoType = declarations.find(paramTwoValue)->second;
+			suchThatClause.paramTwo.setType(paramTwoType);
+		}
+
+		if (suchThatClause.type == RelationshipType::MODIFIES_S) {
+			ModifiesS modifiess(suchThatClause.paramOne, suchThatClause.paramTwo);
+			clauses.insert(&modifiess);
+		}
+		else if (suchThatClause.type == RelationshipType::FOLLOWS) {
+			Follows follows(suchThatClause.paramOne, suchThatClause.paramTwo);
+			clauses.insert(&follows);
+		}
+		else if (suchThatClause.type == RelationshipType::FOLLOWS_T) {
+			FollowsT followsT(suchThatClause.paramOne, suchThatClause.paramTwo);
+			clauses.insert(&followsT);
+		}
+		else if (suchThatClause.type == RelationshipType::PARENT) {
+			Parent parent(suchThatClause.paramOne, suchThatClause.paramTwo);
+			clauses.insert(&parent);
+		}
+		else if (suchThatClause.type == RelationshipType::PARENT_T) {
+			ParentT parentT(suchThatClause.paramOne, suchThatClause.paramTwo);
+			clauses.insert(&parentT);
+		}
+		else {
+			UsesS usesS(suchThatClause.paramOne, suchThatClause.paramTwo);
+			clauses.insert(&usesS);
+		}
 	}
 
 	if (hasPatternClause) {
 		Pattern pattern(patternClause.assign, patternClause.paramOne, patternClause.paramTwo);
-		clauses.insert(pattern);
+		clauses.insert(&pattern);
 	}
 
 	return clauses;
