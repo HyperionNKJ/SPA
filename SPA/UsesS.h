@@ -3,15 +3,15 @@
 
 class UsesS : public Clause {
 private:
-	Result* evaluateFixedVariable(string, string); // e.g. Uses(7, v)
-	Result* evaluateFixedUnderscore(string); // e.g. Uses(7, _)
-	Result* evaluateFixedFixed(string, string); // e.g. Uses(7, "count")
-	Result* evaluateSynonymVariable(string, string, Type); // e.g. Uses(s, v)
-	Result* evaluateSynonymUnderscore(string, Type); // e.g. Uses(a, _)
-	Result* evaluateSynonymFixed(string, string, Type); // e.g. Uses(w, "count")
+	Result* evaluateFixedVariable(const string&, const string&); // e.g. Uses(7, v)
+	Result* evaluateFixedUnderscore(const string&); // e.g. Uses(7, _)
+	Result* evaluateFixedFixed(const string&, const string&); // e.g. Uses(7, "count")
+	Result* evaluateSynonymVariable(const string&, const string&, const Type&); // e.g. Uses(s, v)
+	Result* evaluateSynonymUnderscore(const string&, const Type&); // e.g. Uses(a, _)
+	Result* evaluateSynonymFixed(const string&, const string&, const Type&); // e.g. Uses(w, "count")
 
 public:
-	UsesS(DesignEntity, DesignEntity);
+	UsesS(const DesignEntity&, const DesignEntity&);
 
-	Result evaluate(PKB) override;
+	Result evaluate(const PKB&) override;
 };

@@ -4,16 +4,16 @@ DesignEntity::DesignEntity() {}
 
 DesignEntity::~DesignEntity() {}
 
-DesignEntity::DesignEntity(string value, Type type) {
+DesignEntity::DesignEntity(const string& value, const Type& type) {
 	this->value = value;
 	this->type = type;
 }
 
-void DesignEntity::setValue(string value) {
+void DesignEntity::setValue(const string& value) {
 	this->value = value;
 }
 
-void DesignEntity::setType(Type type) {
+void DesignEntity::setType(const Type& type) {
 	this->type = type;
 }
 

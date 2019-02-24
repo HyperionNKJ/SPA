@@ -8,7 +8,8 @@
 
 class QueryParser {
 public:
-	QueryParser(std::vector<Statement>& stmts);
+	QueryParser(const std::vector<Statement>& statements);
+	bool parse();
 	ProcessedQuery getQuery();
 private:
 	static const std::string REL;
@@ -27,6 +28,7 @@ private:
 	static const std::regex PATTERN_CLAUSE_REGEX;
 	static const std::regex EXPRESSION_REGEX;
 
+	std::vector<Statement> STATEMENTS;
 	ProcessedQuery query;
 
 	bool parseDeclarationStatement(const Statement& statement);
