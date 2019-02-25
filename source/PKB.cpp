@@ -927,7 +927,7 @@ unordered_set<int> PKB::getChildrenTOf(int stmtNum, Type childrenType)
 
 bool PKB::isFollows(int stmtNum1, int stmtNum2)
 {
-	if (leaderMap.count(stmtNum1) && leaderMap[stmtNum1].count(stmtNum2))
+	if (leaderMap.count(stmtNum1) && leaderMap[stmtNum1] == stmtNum2)
 		return true;
 	return false;
 }
