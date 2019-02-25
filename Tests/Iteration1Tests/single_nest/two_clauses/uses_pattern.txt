@@ -2,7 +2,7 @@
 if ifs;
 assign a;
 variable v;
-Select v such that Uses(ifs, v) pattern a (v, _)
+Select v such that Uses (ifs, v) pattern a (v, _)
 none
 5000
 
@@ -10,15 +10,15 @@ none
 while w;
 assign a;
 variable v;
-Select v such that Uses(w v) pattern a (v, _)
+Select v such that Uses (w v) pattern a (v, _)
 i, x, z
 5000
 
-1 - Select assign to varible used by if statement
+3 - Select assign to varible used by if statement
 if ifs;
 assign a;
 variable v;
-Select a such that Uses(ifs, v) pattern a (v, _)
+Select a such that Uses (ifs, v) pattern a (v, _)
 1, 9, 13
 5000
 

@@ -12,6 +12,6 @@ Select a pattern a (_, "w + 1")
 
 3 - Select assign pattern withint while container
 assign a;
-Select a pattern a (_, "_x_")
+Select a pattern a (_, _"x"_)
 10
 5000
