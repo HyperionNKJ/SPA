@@ -1,5 +1,5 @@
 procedure P {
-	read x;						// 1 
+	read x;						// 1
 	if (b < 15) then {			// 2
 		while (c <= x) {		// 3
 			x = x + a;			// 4
