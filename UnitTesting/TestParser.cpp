@@ -5,18 +5,30 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-namespace TestParser
+//statics from parser. Patchwork solution for now
+static int KEY_PROCEDURE = 1;
+static int KEY_ASSIGN = 2;
+static int KEY_IF = 3;
+static int KEY_ELSE = 4;
+static int KEY_WHILE = 5;
+static int KEY_READ = 6;
+static int KEY_PRINT = 7;
+static int KEY_CLOSE_BRACKET = 8;
+static int KEY_CALL = 9;
+static int WHILECONTAINER = 100;
+static int IFCONTAINER = 101;
+static int ELSECONTAINER = 102;
+
+namespace UnitTesting
 {
 	TEST_CLASS(TestParser)
 	{
-		PKB *pkb = new PKB();
-		Parser parser;
-
 	public:
 
+		
 		TEST_METHOD(TestCheckProcedure)
 		{
-			parser.setPKB(pkb);
+			Parser parser;
 			bool result;
 
 			result = parser.checkProcedure("procedure abcd {");
@@ -40,9 +52,9 @@ namespace TestParser
 			result = parser.checkProcedure("procedure {");
 			Assert::AreEqual(result, true, L"incorrect", LINE_INFO());
 		}
-
+		
 		TEST_METHOD(TestCheckFactor) {
-			parser.setPKB(pkb);
+			Parser parser;
 			bool result;
 			
 			result = parser.checkFactor("Avar");
@@ -59,7 +71,7 @@ namespace TestParser
 		}
 
 		TEST_METHOD(TestCheckTerm) {
-			parser.setPKB(pkb);
+			Parser parser;
 			bool result;
 
 			result = parser.checkFactor("c*d");
@@ -76,7 +88,7 @@ namespace TestParser
 		}
 
 		TEST_METHOD(TestCheckExpr) {
-			parser.setPKB(pkb);
+			Parser parser;
 			bool result;
 
 			result = parser.checkExpr("a+b*c*(d+e)");
@@ -93,7 +105,7 @@ namespace TestParser
 		}
 
 		TEST_METHOD(TestCheckAssignment) {
-			parser.setPKB(pkb);
+			Parser parser;
 			bool result;
 
 			result = parser.checkAssignment("myvar= X + Y	-Z + 11;");
@@ -122,7 +134,7 @@ namespace TestParser
 		}
 
 		TEST_METHOD(TestCheckRelFactor) {
-			parser.setPKB(pkb);
+			Parser parser;
 			bool result;
 
 			result = parser.checkRelFactor("somevarname");
@@ -138,7 +150,7 @@ namespace TestParser
 			Assert::AreEqual(result, false, L"incorrect", LINE_INFO());
 		}
 		TEST_METHOD(TestCheckCondExpr) {
-			parser.setPKB(pkb);
+			Parser parser;
 			bool result;
 
 			result = parser.checkCondExpr("first>second");
@@ -168,7 +180,13 @@ namespace TestParser
 			result = parser.checkCondExpr("(first>second) || (!(third!=fourth))");
 			Assert::AreEqual(result, true, L"incorrect", LINE_INFO());
 
+			result = parser.checkCondExpr("(a+b <= c+d) || (!(c + d != a+b*c))");
+			Assert::AreEqual(result, true, L"incorrect", LINE_INFO());
+
 			result = parser.checkCondExpr("123 < 456");
+			Assert::AreEqual(result, true, L"incorrect", LINE_INFO());
+
+			result = parser.checkCondExpr("(22>55) || (!(69!=134+137))");
 			Assert::AreEqual(result, true, L"incorrect", LINE_INFO());
 
 			result = parser.checkCondExpr("(1+2==3) && (2=5)");
@@ -185,14 +203,14 @@ namespace TestParser
 		}
 
 		TEST_METHOD(TestCheckWhileProcedure) {
-			parser.setPKB(pkb);
+			Parser parser;
 			bool result;
 			result = parser.checkWhile("while () {");
 			Assert::AreEqual(result, false, L"incorrect", LINE_INFO());
 		}
 
 		TEST_METHOD(TestCheckPrint) {
-			parser.setPKB(pkb);
+			Parser parser;
 			bool result;
 
 			result = parser.checkPrint("print myvar;");
@@ -209,7 +227,7 @@ namespace TestParser
 		}
 
 		TEST_METHOD(TestCheckRead) {
-			parser.setPKB(pkb);
+			Parser parser;
 			bool result;
 
 			result = parser.checkRead("read myvar;");
@@ -225,22 +243,52 @@ namespace TestParser
 			Assert::AreEqual(result, false, L"incorrect", LINE_INFO());
 		}
 
-		TEST_METHOD(TestCheckRead) {
-			parser.setPKB(pkb);
+		TEST_METHOD(TestCheckElse) {
+			Parser parser;
 			bool result;
 
-			result = parser.checkRead("read myvar;");
+			result = parser.checkElse("else    {");
 			Assert::AreEqual(result, true, L"incorrect", LINE_INFO());
 
-			result = parser.checkRead("	read	 manyspaces;");
-			Assert::AreEqual(result, true, L"incorrect", LINE_INFO());
-
-			result = parser.checkRead("read 123;");
-			Assert::AreEqual(result, false, L"incorrect", LINE_INFO());
-
-			result = parser.checkRead("read avar anothervar;");
+			result = parser.checkElse("else abcd{");
 			Assert::AreEqual(result, false, L"incorrect", LINE_INFO());
 		}
 
+		TEST_METHOD(TestGetStatementIntent) {
+			Parser parser;
+			int result;
+
+			result = parser.getStatementIntent("procedure a{");
+			Assert::AreEqual(result, KEY_PROCEDURE, L"incorrect", LINE_INFO());
+
+			result = parser.getStatementIntent("procedure while{");
+			Assert::AreEqual(result, KEY_PROCEDURE, L"incorrect", LINE_INFO());
+
+			result = parser.getStatementIntent("while ((A < B) && (b > c)) {");
+			Assert::AreEqual(result, KEY_WHILE, L"incorrect", LINE_INFO());
+
+			result = parser.getStatementIntent("while (if < read) {");
+			Assert::AreEqual(result, KEY_WHILE, L"incorrect", LINE_INFO());
+
+			result = parser.getStatementIntent("if ((a < b) || (B > C)) then {");
+			Assert::AreEqual(result, KEY_IF, L"incorrect", LINE_INFO());
+
+			result = parser.getStatementIntent("if ((then < while) && (read+print<procedure)) {");
+			Assert::AreEqual(result, KEY_IF, L"incorrect", LINE_INFO());
+
+			result = parser.getStatementIntent("read First;");
+			Assert::AreEqual(result, KEY_READ, L"incorrect", LINE_INFO());
+
+			result = parser.getStatementIntent("read print;");
+			Assert::AreEqual(result, KEY_READ, L"incorrect", LINE_INFO());
+
+			result = parser.getStatementIntent("print Second;");
+			Assert::AreEqual(result, KEY_PRINT, L"incorrect", LINE_INFO());
+
+			result = parser.getStatementIntent("print read;");
+			Assert::AreEqual(result, KEY_READ, L"incorrect", LINE_INFO());
+
+		
+		}
 	};
 }
