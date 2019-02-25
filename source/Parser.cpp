@@ -12,6 +12,21 @@ using namespace std;
 #include "pkb.h"
 #include "../SPA/Type.h"
 
+//Static integers to pass information on keyword in the statement
+static int KEY_PROCEDURE = 1;
+static int KEY_ASSIGN = 2;
+static int KEY_IF = 3;
+static int KEY_ELSE = 4;
+static int KEY_WHILE = 5;
+static int KEY_READ = 6;
+static int KEY_PRINT = 7;
+static int KEY_CLOSE_BRACKET = 8;
+static int KEY_CALL = 9;
+//Static integers to keep track of the container statements in the stack
+static int WHILECONTAINER = 100;
+static int IFCONTAINER = 101;
+static int ELSECONTAINER = 102;
+
 static string varNameRegex = "([[:alpha:]]([[:alnum:]])*)";
 static string constantRegex = "[[:digit:]]+";
 static string spaceRegex = "[[:s:]]*";
@@ -60,8 +75,11 @@ int Parser::parse(string fileName, PKB& p) {
 						result = handleRead(sourceCode[i]);
 						statementNumber++;
 					}
-					else if (intent == KEY_ELSE) {
-
+					else if (intent == KEY_ELSE && expectElse == true) {
+						result = handleElse(sourceCode[i]);
+					}
+					else if (intent == KEY_ELSE && expectElse == false) {
+						cout << "Else statement without accompanying if found just before line " << statementNumber << endl;
 					}
 					else if (intent == KEY_CALL) {
 						statementNumber++;
@@ -106,15 +124,6 @@ int Parser::getStatementIntent(string line) {
 	}
 	if (tokenLine[0] == "print") {
 		return KEY_PRINT;
-	}
-	if (tokenLine[0] == "else") {
-		return KEY_ELSE;
-	}
-	if (tokenLine[0] == "while") {
-		return KEY_WHILE;
-	}
-	if (tokenLine[0] == "if") {
-		return KEY_IF;
 	}
 	if (tokenLine[0] == "else") {
 		return KEY_ELSE;
@@ -291,7 +300,8 @@ int Parser::handleAssignment(string assignmentLine) {
 			pkb->insertConstant(stoi(assignTokens[i]));
 		}
 	}
-	//pkb->insertAssignStmt(statementNumber, lhsVar, assignTokens);
+	pkb->insertAssignStmt(statementNumber, lhsVar, assignTokens);
+	pkb->insertStmtType(statementNumber, ASSIGN);
 	return 0;
 }
 
@@ -319,8 +329,7 @@ int Parser::handleRead(string readLine) {
 	setParent(statementNumber);
 	setModifies(statementNumber, varName);
 	pkb->insertVar(varName);
-	
-	emptyProcedure = false;
+	pkb->insertStmtType(statementNumber, READ);
 	return 0;
 }
 
@@ -348,6 +357,7 @@ int Parser::handlePrint(string printLine) {
 	setParent(statementNumber);
 	setUses(statementNumber, varName);
 	pkb->insertVar(varName);
+	pkb->insertStmtType(statementNumber, PRINT);
 	return 0;
 }
 
@@ -388,6 +398,7 @@ int Parser::handleWhile(string whileLine) {
 	containerTracker.push_back(WHILECONTAINER);
 	allFollowStack.push_back(currentFollowVector);
 	currentFollowVector.clear();
+	pkb->insertStmtType(statementNumber, WHILE);
 
 	//set uses relationships
 	size_t openBracketPos = whileLine.find_first_of("(");
@@ -436,6 +447,7 @@ int Parser::handleIf(string ifLine) {
 	containerTracker.push_back(IFCONTAINER);
 	allFollowStack.push_back(currentFollowVector);
 	currentFollowVector.clear();
+	pkb->insertStmtType(statementNumber, IF);
 
 	//set uses relationships
 	size_t openBracketPos = ifLine.find_first_of("(");
