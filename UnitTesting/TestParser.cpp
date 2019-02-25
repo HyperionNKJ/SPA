@@ -50,7 +50,7 @@ namespace UnitTesting
 
 			//no proc name
 			result = parser.checkProcedure("procedure {");
-			Assert::AreEqual(result, true, L"incorrect", LINE_INFO());
+			Assert::AreEqual(result, false, L"incorrect", LINE_INFO());
 		}
 		
 		TEST_METHOD(TestCheckFactor) {
@@ -74,16 +74,16 @@ namespace UnitTesting
 			Parser parser;
 			bool result;
 
-			result = parser.checkFactor("c*d");
+			result = parser.checkTerm("c*d");
 			Assert::AreEqual(result, true, L"incorrect", LINE_INFO());
 
-			result = parser.checkFactor("c*d*e");
+			result = parser.checkTerm("c*d/e%f");
 			Assert::AreEqual(result, true, L"incorrect", LINE_INFO());
 
-			result = parser.checkFactor("Avar");
+			result = parser.checkTerm("Avar");
 			Assert::AreEqual(result, true, L"incorrect", LINE_INFO());
 
-			result = parser.checkFactor("a+b");
+			result = parser.checkTerm("a+b");
 			Assert::AreEqual(result, false, L"incorrect", LINE_INFO());
 		}
 
@@ -108,28 +108,28 @@ namespace UnitTesting
 			Parser parser;
 			bool result;
 
-			result = parser.checkAssignment("myvar= X + Y	-Z + 11;");
+			result = parser.checkAssignment("myvar=X+Y-Z+11");
 			Assert::AreEqual(result, true, L"incorrect", LINE_INFO());
 
-			result = parser.checkAssignment("x = x + y + z * (1 + 2 + 3 + x + y + z);");
+			result = parser.checkAssignment("x=x+y+z*(1+2+3+x+y+z)");
 			Assert::AreEqual(result, true, L"incorrect", LINE_INFO());
 
-			result = parser.checkAssignment("x=x*( y+1/( z+2%( a+3 ) ) );");
+			result = parser.checkAssignment("x=x*(y+1/(z+2%(a+3)))");
 			Assert::AreEqual(result, true, L"incorrect", LINE_INFO());
 
-			result = parser.checkAssignment("123 = a+b+c+d;");
+			result = parser.checkAssignment("123=a+b+c+d");
 			Assert::AreEqual(result, false, L"incorrect", LINE_INFO());
 
-			result = parser.checkAssignment("= a+b+c+d;");
+			result = parser.checkAssignment("=a+b+c+d");
 			Assert::AreEqual(result, false, L"incorrect", LINE_INFO());
 
-			result = parser.checkAssignment("x = ;");
+			result = parser.checkAssignment("x=");
 			Assert::AreEqual(result, false, L"incorrect", LINE_INFO());
 
-			result = parser.checkAssignment("x= (a+b+c+d));");
+			result = parser.checkAssignment("x=(a+b+c+d))");
 			Assert::AreEqual(result, false, L"incorrect", LINE_INFO());
 
-			result = parser.checkAssignment("x= )a+b+c+d;");
+			result = parser.checkAssignment("x=)a+b+c+d");
 			Assert::AreEqual(result, false, L"incorrect", LINE_INFO());
 		}
 
@@ -140,69 +140,69 @@ namespace UnitTesting
 			result = parser.checkRelFactor("somevarname");
 			Assert::AreEqual(result, true, L"incorrect", LINE_INFO());
 
-			result = parser.checkTerm("531");
+			result = parser.checkRelFactor("531");
 			Assert::AreEqual(result, true, L"incorrect", LINE_INFO());
 
-			result = parser.checkTerm("a+b+c*d");
+			result = parser.checkRelFactor("a+b+c*d");
 			Assert::AreEqual(result, true, L"incorrect", LINE_INFO());
 
-			result = parser.checkTerm("123notavar");
+			result = parser.checkRelFactor("123notavar");
 			Assert::AreEqual(result, false, L"incorrect", LINE_INFO());
 		}
 		TEST_METHOD(TestCheckCondExpr) {
 			Parser parser;
 			bool result;
 
-			result = parser.checkCondExpr("first>second");
+			result = parser.checkCondExpr("(first>second)");
 			Assert::AreEqual(result, true, L"incorrect", LINE_INFO());
 
-			result = parser.checkCondExpr("first>=second");
+			result = parser.checkCondExpr("(first>=second)");
 			Assert::AreEqual(result, true, L"incorrect", LINE_INFO());
 
-			result = parser.checkCondExpr("first<=second");
+			result = parser.checkCondExpr("(first<=second)");
 			Assert::AreEqual(result, true, L"incorrect", LINE_INFO());
 
-			result = parser.checkCondExpr("first<second");
+			result = parser.checkCondExpr("(first<second)");
 			Assert::AreEqual(result, true, L"incorrect", LINE_INFO());
 
-			result = parser.checkCondExpr("first==second");
+			result = parser.checkCondExpr("(first==second)");
 			Assert::AreEqual(result, true, L"incorrect", LINE_INFO());
 
-			result = parser.checkCondExpr("first!=second");
+			result = parser.checkCondExpr("(first!=second)");
 			Assert::AreEqual(result, true, L"incorrect", LINE_INFO());
 
-			result = parser.checkCondExpr("!(first>second)");
+			result = parser.checkCondExpr("(!(first>second))");
 			Assert::AreEqual(result, true, L"incorrect", LINE_INFO());
 
-			result = parser.checkCondExpr("(first>second) && (third!=fourth)");
+			result = parser.checkCondExpr("((first>second)&&(third!=fourth))");
 			Assert::AreEqual(result, true, L"incorrect", LINE_INFO());
 
-			result = parser.checkCondExpr("(first>second) || (!(third!=fourth))");
+			result = parser.checkCondExpr("((first>second)||(!(third!=fourth)))");
 			Assert::AreEqual(result, true, L"incorrect", LINE_INFO());
 
-			result = parser.checkCondExpr("(a+b <= c+d) || (!(c + d != a+b*c))");
+			result = parser.checkCondExpr("((a+b<=c+d)||(!(c+d!=a+b*c)))");
 			Assert::AreEqual(result, true, L"incorrect", LINE_INFO());
 
-			result = parser.checkCondExpr("123 < 456");
+			result = parser.checkCondExpr("(123<456)");
 			Assert::AreEqual(result, true, L"incorrect", LINE_INFO());
 
-			result = parser.checkCondExpr("(22>55) || (!(69!=134+137))");
+			result = parser.checkCondExpr("((22>55)||(!(69!=134+137)))");
 			Assert::AreEqual(result, true, L"incorrect", LINE_INFO());
 
-			result = parser.checkCondExpr("(1+2==3) && (2=5)");
+			result = parser.checkCondExpr("((1+2==3)&&(2==5))");
 			Assert::AreEqual(result, true, L"incorrect", LINE_INFO());
 
-			result = parser.checkCondExpr("first == second && first > 2");
+			result = parser.checkCondExpr("(first==second&&first>2)");
 			Assert::AreEqual(result, false, L"incorrect", LINE_INFO());
 
-			result = parser.checkCondExpr("first == second || first > 2");
+			result = parser.checkCondExpr("(first==second||(first>2))");
 			Assert::AreEqual(result, false, L"incorrect", LINE_INFO());
 
-			result = parser.checkCondExpr("(first == second) && first > 2");
+			result = parser.checkCondExpr("((first==second)&&first>2)");
 			Assert::AreEqual(result, false, L"incorrect", LINE_INFO());
 		}
 
-		TEST_METHOD(TestCheckWhileProcedure) {
+		TEST_METHOD(TestCheckWhile) {
 			Parser parser;
 			bool result;
 			result = parser.checkWhile("while () {");
@@ -286,7 +286,7 @@ namespace UnitTesting
 			Assert::AreEqual(result, KEY_PRINT, L"incorrect", LINE_INFO());
 
 			result = parser.getStatementIntent("print read;");
-			Assert::AreEqual(result, KEY_READ, L"incorrect", LINE_INFO());
+			Assert::AreEqual(result, KEY_PRINT, L"incorrect", LINE_INFO());
 
 		
 		}
