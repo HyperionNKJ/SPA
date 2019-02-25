@@ -25,9 +25,9 @@ public:
 	// method for evaluating a query
 	virtual void evaluate(std::string query, std::list<std::string>& results);
 private:
-	static Parser parser;
-	static PKB pkb;
-	static QueryProcessor queryProcessor;
+	Parser parser;
+	PKB pkb;
+	QueryProcessor queryProcessor;
 };
 
 #endif

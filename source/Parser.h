@@ -8,23 +8,9 @@
 #include <string>
 #include <stack>
 #include "PKB.h"
+#include "../SPA/Type.h"
 
 using namespace std;
-
-//Static integers to pass information on keyword in the statement
-static int KEY_PROCEDURE = 1;
-static int KEY_ASSIGN = 2;
-static int KEY_IF = 3;
-static int KEY_ELSE = 4;
-static int KEY_WHILE = 5;
-static int KEY_READ = 6;
-static int KEY_PRINT = 7;
-static int KEY_CLOSE_BRACKET = 8;
-static int KEY_CALL = 9;
-//Static integers to keep track of the container statements in the stack
-static int WHILECONTAINER = 100;
-static int IFCONTAINER = 101;
-static int ELSECONTAINER = 102;
 
 class Parser {
 	PKB * pkb;
@@ -83,5 +69,14 @@ public:
 	vector<string> tokeniseString(string, string);
 
 	//setter/getter functions for testing
-	void setWithinProcedure(bool);
+	void setPKB(PKB*);
+	void setStatementNumber(int);
+	int getStatementNumber();
+	void setCurrentFollowVector(vector<int>);
+	void setParentVector(vector<int>);
+	vector<int> getParentVector();
+	vector<int> getCurrentFollowVector();
+	void setAllFollowStack(vector<vector<int>>);
+	vector<vector<int>> getAllFollowStack();
+	string getCurrentProcedure();
 };

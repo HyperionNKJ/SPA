@@ -90,16 +90,14 @@ list<string> ResultProjector::getSelectedClauseNotInTable(Type type, PKB pkb) {
 			projectedResults = convertIndexToString(results, pkb);
 			break;
 		case Type::VARIABLE:
-			results = pkb.getAllVariables();
-			projectedResults = convertVarIndexToVar(results, pkb);
+			projectedResults = convertSetToList(pkb.getAllVariables());
 			break;
 		case Type::CONSTANT:
 			results = pkb.getAllConstant();
 			projectedResults = convertIndexToString(results, pkb);
 			break;
 		case Type::PROCEDURE:
-			results = pkb.getAllProcedures();
-			projectedResults = convertProcIndexToProc(results, pkb);
+			projectedResults = convertSetToList(pkb.getAllProcedures());
 			break;
 		}
 	return projectedResults;
@@ -149,6 +147,14 @@ list<string> ResultProjector::convertIndexToString(list<int> resultList, PKB pkb
 	list<string> results;
 	for (auto resultIndex : resultList) {
 		results.push_back(to_string(resultIndex));
+	}
+	return results;
+}
+
+list<string> ResultProjector::convertSetToList(unordered_set<string> resultSet) {
+	list<string> results;
+	for (auto result : resultSet) {
+		results.push_back(result);
 	}
 	return results;
 }

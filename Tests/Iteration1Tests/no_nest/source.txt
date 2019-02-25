@@ -8,5 +8,5 @@ procedure P {
 	print x;			// 7
 	read www;			// 8
 	print xx1;			// 9
-	z = 1 + xx1 + 10	// 10
+	z = 1 + xx1 + 10;	// 10
 }

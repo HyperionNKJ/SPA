@@ -61,7 +61,6 @@
     <ClInclude Include="ResultProjector.h" />
     <ClInclude Include="Statement.h" />
     <ClInclude Include="StatementType.h" />
-    <ClInclude Include="StatementTypeFactory.h" />
     <ClInclude Include="SuchThatClause.h" />
     <ClInclude Include="Type.h" />
     <ClInclude Include="UsesS.h" />

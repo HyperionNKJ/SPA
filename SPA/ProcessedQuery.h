@@ -16,16 +16,14 @@ public:
 	void addSynonym(const std::string& newSynonym);
 
 	bool addSuchThatClause(const RelationshipType& type,
-		const Type& paramOneType,
-		const std::string& paramOneValue,
-		const Type& paramTwoType,
-		const std::string& paramTwoValue);
+		const DesignEntity& paramOne,
+		const DesignEntity& paramTwo);
 
 	bool addPatternClause(const DesignEntity& assign,
 		const DesignEntity& paramOne,
 		const DesignEntity& paramTwo);
 
-	std::unordered_set<Clause> getClauses();
+	std::unordered_set<Clause*> getClauses();
 	DesignEntity getSelectedSynonym();
 private:
 	std::unordered_map<std::string, Type> declarations;
