@@ -207,12 +207,12 @@ namespace UnitTesting
 		{
 			PKB pkb;
 			bool result;
-			vector<string> assignmentStmt = { "y", "+", "z"}
+			vector<string> assignmentStmt = { "y", "+", "z" };
 
-			result = pkb.setAssignStmt(4, "x", assignmentStmt);
+			result = pkb.insertAssignStmt(4, "x", assignmentStmt);
 			Assert::IsTrue(result);
 
-			result = pkb.setAssignStmt(4, "x", asignmentStmt);
+			result = pkb.insertAssignStmt(4, "x", assignmentStmt);
 			Assert::IsFalse(result);
 		}
 
