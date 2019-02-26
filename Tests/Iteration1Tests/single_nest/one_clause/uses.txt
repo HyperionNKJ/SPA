@@ -1,12 +1,10 @@
 1 - Select variable used in if container
-variable v;
-if ifs;
+variable v; if ifs;
 Select v such that Uses (ifs, v)
 x, w
 5000
 2 - Select variable used in while container
-variable v;
-while w;
+variable v; while w;
 Select v such that Uses (w, v)
 i, x, z
 5000
@@ -21,8 +19,7 @@ Select v such that Uses (8, v)
 x, z, i
 5000
 5 - Select variable used in procedure
-variable v;
-procedure p;
+variable v; procedure p;
 Select v such that Uses (p, v)
 x, w, y, z, i, p
 5000

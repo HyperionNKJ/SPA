@@ -19,26 +19,22 @@ Select a pattern a (_, "_xx1_")
 10
 5000
 5 - Select assign pattern (variable, _)
-assign a;
-variable v;
+assign a; variable v;
 Select a pattern a (v, _)
 1, 2, 3, 4, 5, 10
 5000
 6 - Select assign pattern (variable, constant)
-assign a;
-variable v;
+assign a; variable v;
 Select a pattern a (v, "0")
 1
 5000
 7 - Select assign pattern (variable, variable)
-assign a;
-variable v;
+assign a; variable v;
 Select a pattern a (v, "x")
 5
 5000
 8 - Select assign pattern (variable, _variable_)
-assign a;
-variable v;
+assign a; variable v;
 Select a pattern a (v, "_xx1_")
 10
 5000
