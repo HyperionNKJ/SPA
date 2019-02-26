@@ -335,7 +335,7 @@ namespace UnitTesting
 			expectedFollowVector.push_back(5);
 			parser.setCurrentFollowVector(testFollowVector);
 
-			result = parser.handleAssignment("myvar = (a+b)*c*(d+e)");
+			result = parser.handleAssignment("myvar		=	(a+b) *c *( d + e )");
 			Assert::AreEqual(result, 0, L"incorrect", LINE_INFO());
 			//Assert::AreEqual(parser.getCurrentFollowVector(), expectedFollowVector, L"incorrect", LINE_INFO());
 		}
@@ -345,18 +345,21 @@ namespace UnitTesting
 			PKB pkb;
 			parser.setPKB(&pkb);
 			int result;
-
-			vector<vector<int>> testAllFollowStack = vector<vector<int>>();
-			vector<int> tempVector = vector<int>();
-			tempVector.push_back(2);
-			testAllFollowStack.push_back(tempVector);
-			vector<vector<int>> expectedAllFollowStack = vector<vector<int>>(testAllFollowStack);
 			
 			vector<int> testFollowVector = vector<int>();
 			vector<int> expectedFollowVector = vector<int>();
 			testFollowVector.push_back(6);
 			testFollowVector.push_back(7);
 			expectedFollowVector.clear();
+
+			vector<vector<int>> testAllFollowStack = vector<vector<int>>();
+			vector<int> tempVector = vector<int>();
+			tempVector.push_back(2);
+			testAllFollowStack.push_back(tempVector);
+			vector<vector<int>> expectedAllFollowStack = vector<vector<int>>(testAllFollowStack);
+			tempVector = vector<int>(testFollowVector);
+			tempVector.push_back(8);
+			expectedAllFollowStack.push_back(tempVector);
 			
 			vector<int> testParentVector = vector<int>();
 			testParentVector.push_back(1);
@@ -372,10 +375,13 @@ namespace UnitTesting
 			//check that success is returned, parent vector is updated
 			//follow vectors are updated
 			Assert::AreEqual(result, 0, L"incorrect", LINE_INFO());
-			//Assert::AreEqual(parser.getCurrentFollowVector(), expectedFollowVector, L"incorrect", LINE_INFO());
-			//Assert::AreEqual(parser.getParentVector(), expectedParentVector, L"incorrect", LINE_INFO());
-			//Assert::AreEqual(parser.getAllFollowStack(), expectedAllFollowStack, L"incorrect", LINE_INFO());
-		}
+			bool equalFollowVector = parser.getCurrentFollowVector() == expectedFollowVector;
+			bool equalParentVector = parser.getParentVector() == expectedParentVector;
+			bool equalAllFollowStack = parser.getAllFollowStack() == expectedAllFollowStack;
+			Assert::IsTrue(equalFollowVector, L"incorrect", LINE_INFO());
+			Assert::IsTrue(equalParentVector, L"incorrect", LINE_INFO());
+			Assert::IsTrue(equalAllFollowStack, L"incorrect", LINE_INFO());
+			}
 
 		TEST_METHOD(TestHandleIf) {
 			//essentially same test as while
@@ -384,17 +390,20 @@ namespace UnitTesting
 			parser.setPKB(&pkb);
 			int result;
 
-			vector<vector<int>> testAllFollowStack = vector<vector<int>>();
-			vector<int> tempVector = vector<int>();
-			tempVector.push_back(2);
-			testAllFollowStack.push_back(tempVector);
-			vector<vector<int>> expectedAllFollowStack = vector<vector<int>>(testAllFollowStack);
-
 			vector<int> testFollowVector = vector<int>();
 			vector<int> expectedFollowVector = vector<int>();
 			testFollowVector.push_back(6);
 			testFollowVector.push_back(7);
 			expectedFollowVector.clear();
+
+			vector<vector<int>> testAllFollowStack = vector<vector<int>>();
+			vector<int> tempVector = vector<int>();
+			tempVector.push_back(2);
+			testAllFollowStack.push_back(tempVector);
+			vector<vector<int>> expectedAllFollowStack = vector<vector<int>>(testAllFollowStack);
+			tempVector = vector<int>(testFollowVector);
+			tempVector.push_back(8);
+			expectedAllFollowStack.push_back(tempVector);
 
 			vector<int> testParentVector = vector<int>();
 			testParentVector.push_back(1);
@@ -410,9 +419,12 @@ namespace UnitTesting
 			//check that success is returned, parent vector is updated
 			//follow vectors are updated
 			Assert::AreEqual(result, 0, L"incorrect", LINE_INFO());
-			//Assert::AreEqual(parser.getCurrentFollowVector(), expectedFollowVector, L"incorrect", LINE_INFO());
-			//Assert::AreEqual(parser.getParentVector(), expectedParentVector, L"incorrect", LINE_INFO());
-			//Assert::AreEqual(parser.getAllFollowStack(), expectedAllFollowStack, L"incorrect", LINE_INFO());
+			bool equalFollowVector = parser.getCurrentFollowVector() == expectedFollowVector;
+			bool equalParentVector = parser.getParentVector() == expectedParentVector;
+			bool equalAllFollowStack = parser.getAllFollowStack() == expectedAllFollowStack;
+			Assert::IsTrue(equalFollowVector, L"incorrect", LINE_INFO());
+			Assert::IsTrue(equalParentVector, L"incorrect", LINE_INFO());
+			Assert::IsTrue(equalAllFollowStack, L"incorrect", LINE_INFO());
 		}
 	};
 }
