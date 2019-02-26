@@ -133,9 +133,10 @@ bool QueryParser::parseSelectStatement(const Statement& statement) {
 	}
 
 	if (clauseTwoType == "such that") {
-		status = parseSuchThatClause(clauseTwoType);
-	} else {
-		status = parsePatternClause(clauseTwoType);
+		status = parseSuchThatClause(clauseTwoValue);
+	}
+	else {
+		status = parsePatternClause(clauseTwoValue);
 	}
 
 	// returns false if there is an error while parsing the second clause
