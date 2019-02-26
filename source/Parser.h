@@ -70,5 +70,13 @@ public:
 
 	//setter/getter functions for testing
 	void setPKB(PKB*);
-	void setWithinProcedure(bool);
+	void setStatementNumber(int);
+	int getStatementNumber();
+	void setCurrentFollowVector(vector<int>);
+	void setParentVector(vector<int>);
+	vector<int> getParentVector();
+	vector<int> getCurrentFollowVector();
+	void setAllFollowStack(vector<vector<int>>);
+	vector<vector<int>> getAllFollowStack();
+	string getCurrentProcedure();
 };

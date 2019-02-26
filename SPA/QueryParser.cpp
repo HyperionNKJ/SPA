@@ -161,7 +161,8 @@ bool QueryParser::parseSuchThatClause(const std::string& clause) {
 	DesignEntity paramOne(paramOneValue, paramOneType);
 	DesignEntity paramTwo(paramTwoValue, paramTwoType);
 
-	return query.addSuchThatClause(type, paramOne, paramTwo);
+	bool a =  query.addSuchThatClause(type, paramOne, paramTwo);
+	return a;
 }
 
 bool QueryParser::parsePatternClause(const std::string& clause) {

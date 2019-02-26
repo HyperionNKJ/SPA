@@ -274,7 +274,8 @@ int Parser::handleAssignment(string assignmentLine) {
 	}
 	
 	setParent(statementNumber);
-
+	setFollow(statementNumber);
+	currentFollowVector.push_back(statementNumber);
 	//Separate variable names, constants and operation/brackets from each other to pass to pkb
 	vector<string> assignTokens = vector<string>();
 	string lhsVar = assignmentLine.substr(0, assignmentLine.find_first_of("="));
@@ -336,6 +337,7 @@ int Parser::handleRead(string readLine) {
 	setModifies(statementNumber, varName);
 	pkb->insertVar(varName);
 	pkb->insertStmtType(statementNumber, READ);
+	currentFollowVector.push_back(statementNumber);
 	return 0;
 }
 
@@ -364,6 +366,7 @@ int Parser::handlePrint(string printLine) {
 	setUses(statementNumber, varName);
 	pkb->insertVar(varName);
 	pkb->insertStmtType(statementNumber, PRINT);
+	currentFollowVector.push_back(statementNumber);
 	return 0;
 }
 
@@ -377,17 +380,10 @@ bool Parser::checkWhile(string whileLine) {
 	string whileRegexString = spaceRegex + "while" + spaceRegex + openCurlyRegex + spaceRegex;
 	regex whileRegex(whileRegexString);
 	if (!regex_match(truncWhileLine, whileRegex)) {
-		cout << "Unexpected tokens in the white statement at line " << statementNumber << endl;
+		cout << "Unexpected tokens in the while statement at line " << statementNumber << endl;
 		return false;
 	}
-	//clean spaces or tabs to make parsing easier
-	string cleanedCondExpr = "";
-	for (unsigned int i = 0; i < condExprLine.length(); i++) {
-		if (condExprLine[i] != ' ' && condExprLine[i] != '\t') {
-			cleanedCondExpr += condExprLine[i];
-		}
-	}
-	return checkCondExpr(cleanedCondExpr);
+	return checkCondExpr(condExprLine);
 }
 
 int Parser::handleWhile(string whileLine) {
@@ -400,6 +396,7 @@ int Parser::handleWhile(string whileLine) {
 	setFollow(statementNumber);
 
 	//update parent, container, follows trackers
+	currentFollowVector.push_back(statementNumber);
 	parentVector.push_back(statementNumber);
 	containerTracker.push_back(WHILECONTAINER);
 	allFollowStack.push_back(currentFollowVector);
@@ -433,7 +430,7 @@ bool Parser::checkIf(string ifLine) {
 	string ifRegexString = spaceRegex + "if" + spaceRegex + "then" + spaceRegex + openCurlyRegex + spaceRegex;
 	regex ifRegex(ifRegexString);
 	if (!regex_match(truncIfLine, ifRegex)) {
-		cout << "Unexpected tokens in the white statement at line " << statementNumber << endl;
+		cout << "Unexpected tokens in the if statement at line " << statementNumber << endl;
 		return false;
 	}
 	return checkCondExpr(condExprLine);
@@ -449,6 +446,7 @@ int Parser::handleIf(string ifLine) {
 	setFollow(statementNumber);
 
 	//update parent, follow, container trackers
+	currentFollowVector.push_back(statementNumber);
 	parentVector.push_back(statementNumber);
 	containerTracker.push_back(IFCONTAINER);
 	allFollowStack.push_back(currentFollowVector);
@@ -496,7 +494,14 @@ int Parser::handleElse(string elseLine) {
 }
 
 bool Parser::checkCondExpr(string condExpr) {
-	cout << condExpr << "|||condexpr" << endl;
+	//clean spaces or tabs to make parsing easier
+	string cleanedCondExpr = "";
+	for (unsigned int i = 0; i < condExpr.length(); i++) {
+		if (condExpr[i] != ' ' && condExpr[i] != '\t') {
+			cleanedCondExpr += condExpr[i];
+		}
+	}
+	condExpr = cleanedCondExpr;
 	//check that brackets wrap the expression, without unexpected tokens
 	if (condExpr.find_first_of("(") != 0 || condExpr.find_last_of(")") != (condExpr.length() - 1)) {
 		cout << "Found unexpected token when expecting ( and ) around conditional expression at line " << statementNumber << endl;
@@ -560,7 +565,6 @@ bool Parser::checkCondExpr(string condExpr) {
 }																
 
 bool Parser::checkRelExpr(string relExpr) {
-	cout << relExpr << "|||rel expr" << endl;;
 	//should have only 1 of the relational operators
 	//look for 2 character ones, then 1 character due to overlap in < and >
 	size_t relOpPos = relExpr.find("==");
@@ -583,7 +587,6 @@ bool Parser::checkRelExpr(string relExpr) {
 }
 
 bool Parser::checkRelFactor(string relFactor) {
-	cout << relFactor << "|||relfactor" << endl;
 	relFactor = leftTrim(rightTrim(relFactor, " \t\n"), " \t");
 	if (isValidVarName(relFactor)) {
 		return true;
@@ -751,6 +754,38 @@ void Parser::setPKB(PKB * p) {
 	pkb = p;
 }
 
-void Parser::setWithinProcedure(bool setting) {
-	withinProcedure = setting;
+void Parser::setStatementNumber(int sn) {
+	statementNumber = sn;
+}
+
+int Parser::getStatementNumber() {
+	return statementNumber;
+}
+
+void Parser::setParentVector(vector<int> v) {
+	parentVector = v;
+}
+
+vector<int> Parser::getParentVector() {
+	return parentVector;
+}
+
+void Parser::setCurrentFollowVector(vector<int> v) {
+	currentFollowVector = v;
+}
+
+vector<int> Parser::getCurrentFollowVector() {
+	return currentFollowVector;
+}
+
+void Parser::setAllFollowStack(vector<vector<int>> v) {
+	allFollowStack = v;
+}
+
+vector<vector<int>> Parser::getAllFollowStack() {
+	return allFollowStack;
+}
+
+string Parser::getCurrentProcedure() {
+	return currProcedure;
 }

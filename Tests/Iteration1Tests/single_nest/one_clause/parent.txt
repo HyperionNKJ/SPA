@@ -1,0 +1,19 @@
+1 - Select stmt that is parent of read
+stmt s;
+read r;
+Select s such that Parent (s, r)
+4
+5000
+
+2 - Select stmt that is parent of print
+stmt s;
+print pn;
+Select s such that Parnet (s, pn)
+none
+5000
+
+3 - Select assign that has parent
+assign a;
+Select a such that Parent (_, a)
+6, 7, 9, 10, 11
+5000

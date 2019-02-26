@@ -20,11 +20,9 @@ private:
 	unordered_set<int> allStmts, readStmts, printStmts, whileStmts, ifStmts, assignStmts, constSet;
 	unordered_map<int, unordered_set<int>> leaderTMap, followerTMap, parentMap, parentTMap, childrenTMap;
 	unordered_map<int, int> leaderMap, followerMap, childrenMap;
-	unordered_map<string, unordered_set<int>> assignModifyingVarMap, assignModifiedVarMap;
+	unordered_map<string, unordered_set<int>> assignModifyingVarMap, assignModifiedVarMap, modifiesByVarMap, usesByVarMap;
 	unordered_map<int, string> assignStmtVarMap;
-	unordered_map<int, unordered_set<string>> assignUseVarMap;
-	unordered_map<int, unordered_set<string>> modifiesByStmtNumMap, usesByStmtNumMap;
-	unordered_map<string, unordered_set<int>> modifiesByVarMap, usesByVarMap;
+	unordered_map<int, unordered_set<string>> assignUseVarMap, modifiesByStmtNumMap, usesByStmtNumMap;
 	unordered_map<string, unordered_set<string>> modifiesByProcMap, usesByProcMap;
 
 public:

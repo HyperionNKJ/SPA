@@ -9,7 +9,8 @@
 #include "ProcessedQuery.h"
 
 ProcessedQuery::ProcessedQuery() {
-
+	hasSuchThatClause = false;
+	hasPatternClause = false;
 }
 
 bool ProcessedQuery::insertDeclaration(const std::string& synonym,
