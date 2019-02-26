@@ -611,6 +611,11 @@ int Parser::handleCloseBracket(string closeBracket) {
 			cout << "A procedure cannot be empty" << endl;
 			return -1;
 		}
+		//clean up all relationship trackers
+		containerTracker.clear();
+		allFollowStack.clear();
+		currentFollowVector.clear();
+		parentVector.clear();
 		withinProcedure = false;
 		emptyProcedure = true;
 		return 0;
