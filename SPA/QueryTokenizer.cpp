@@ -19,6 +19,11 @@ QueryTokenizer::QueryTokenizer(const std::string& newQuery) : query(newQuery) {
 // returns false if any of the statement is neither a select statement or
 // declaration statement
 bool QueryTokenizer::tokenize() {
+	size_t a = query.find_last_not_of(WHITESPACES);
+	bool b = query[a] == ';';
+	if (!b) {
+		query = query + ";";
+	}
 	format();
 	split();
 	return tag();
@@ -101,7 +106,6 @@ bool QueryTokenizer::tag() {
 
 		if (isSelectStmt(statement.VALUE)) {
 			statementType = StatementType::SELECT;
-
 		}
 		else if (isDeclareStmt(statement.VALUE)) {
 			statementType = StatementType::DECLARATION;
