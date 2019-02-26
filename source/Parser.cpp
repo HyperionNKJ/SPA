@@ -339,6 +339,7 @@ int Parser::handleRead(string readLine) {
 	varName = rightTrim(varName, " \t");
 
 	setParent(statementNumber);
+	setFollow(statementNumber);
 	setModifies(statementNumber, varName);
 	pkb->insertVar(varName);
 	pkb->insertStmtType(statementNumber, READ);
@@ -368,6 +369,7 @@ int Parser::handlePrint(string printLine) {
 	varName = rightTrim(varName, " \t");
 
 	setParent(statementNumber);
+	setFollow(statementNumber);
 	setUses(statementNumber, varName);
 	pkb->insertVar(varName);
 	pkb->insertStmtType(statementNumber, PRINT);
