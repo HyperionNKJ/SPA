@@ -1,7 +1,7 @@
 1 - Select stmt such that Uses (stmt, variable) 
 stmt s; assign a; variable v;
 Select s such that Uses (s, v) pattern a (v, _"0"_)
-5
+5, 7
 5000
 2 - Select assign such that Uses (assign, variable)
 assign a; variable v;
