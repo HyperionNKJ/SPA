@@ -1,12 +1,12 @@
 procedure P {
-	x = 0;				// 1
-	xx = 1;				// 2
-	x1 = 10;			// 3
-	xx1 = 100;			// 4
-	y = x;				// 5
-	read z;				// 6
-	print x;			// 7
-	read www;			// 8
-	print xx1;			// 9
-	z = 1 + xx1 + 10;	// 10
+	x = 0;				\\ 1
+	xx = 1;				\\ 2
+	x1 = 10;			\\ 3
+	xx1 = 100;			\\ 4
+	y = x;				\\ 5
+	read z;				\\ 6
+	print x;			\\ 7
+	read www;			\\ 8
+	print xx1;			\\ 9
+	z = 1 + xx1 + 10;	\\ 10
 }
