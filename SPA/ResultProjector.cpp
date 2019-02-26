@@ -37,6 +37,10 @@ list<string> ResultProjector::getResults(DesignEntity selectedSynonym, PKB pkb) 
 	else {
 		projectedResults = getSelectedClauseNotInTable(type, pkb);
 	}
+	// sort and remove duplicates
+	projectedResults.sort();
+	projectedResults.unique();
+
 	return projectedResults;
 }
 
