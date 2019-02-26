@@ -4,14 +4,12 @@ read r;
 Select s such that Parent (s, r)
 none
 5000
-
 2 - Select if statement that indirectly has while as parent
 if ifs;
 while w;
 Select ifs such that Parnet* (w, ifs)
 10
 5000
-
 3 - Select assign that has if statment indirectly as parent
 if ifs;
 assign a;

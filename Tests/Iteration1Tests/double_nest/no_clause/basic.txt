@@ -3,7 +3,6 @@ if ifs;
 Select ifs
 2, 10
 5000
-
 2 - Select all while statements
 while w;
 Select w
