@@ -139,7 +139,7 @@ bool PKB::setUses(string procName, string varName)
 
 bool PKB::insertAssignStmt(int stmtNum, string var, vector<string> assignmentStmt)
 {
-	bool isVar, isSuccessfulInsert;
+	bool isVarConst, isSuccessfulInsert;
 
 	isSuccessfulInsert = assignModifiedVarMap[var].insert(stmtNum).second;
 	assignStmtVarMap.insert({stmtNum, var});
@@ -147,16 +147,14 @@ bool PKB::insertAssignStmt(int stmtNum, string var, vector<string> assignmentStm
 	{
 		for (const auto &elem : assignmentStmt)
 		{
-			isVar = true;
-			if (!isalpha(elem[0]))
-				continue;
+			isVarConst = true;
 			for (const char &c : elem)
 			{
 				if (!isalnum(c))
-					isVar = false;
+					isVarConst = false;
 				break;
 			}
-			if (isVar)
+			if (isVarConst)
 			{
 				assignModifyingVarMap[elem].insert(stmtNum);
 				assignUseVarMap[stmtNum].insert(elem);
@@ -1286,9 +1284,9 @@ unordered_set<int> PKB::getFollowerTOf(int stmtNum, Type followerType)
 	{
 		for (const auto &elem : leaderTMap[stmtNum])
 		{
-			if (typedStmtSet.count(stmtNum))
+			if (typedStmtSet.count(elem))
 			{
-				resultSet.insert(stmtNum);
+				resultSet.insert(elem);
 			}
 		}
 	}

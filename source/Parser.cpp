@@ -753,6 +753,7 @@ bool Parser::setModifies(int currStatementNum, string varName) {
 		pkb->setModifies(parentVector[i], varName);
 	}
 	pkb->setModifies(currStatementNum, varName);
+	pkb->setModifies(currProcedure, varName);
 	return true;
 }
 
@@ -761,6 +762,7 @@ bool Parser::setUses(int currStatementNum, string varName) {
 		pkb->setUses(parentVector[i], varName);
 	}
 	pkb->setUses(currStatementNum, varName);
+	pkb->setUses(currProcedure, varName);
 	return true;
 }
 
