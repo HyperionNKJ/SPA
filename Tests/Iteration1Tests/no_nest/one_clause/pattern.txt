@@ -25,11 +25,7 @@ Select a pattern a (v, _)
 5000
 6 - Select assign pattern (variable, constant)
 assign a; variable v;
-<<<<<<< HEAD
 Select a pattern a (v, _"0"_)
-=======
-Select a pattern a (v, "0")
->>>>>>> 655807e4c48ae7090639d618e18278ddf2fb8e6e
 1
 5000
 7 - Select assign pattern (variable, variable)
