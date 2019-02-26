@@ -1,6 +1,0 @@
-#pragma once
-
-enum class StatementType {
-	DECLARATION, SELECT, MODIFIES, USES, PARENT, PARENT_T, FOLLOWS, FOLLOWS_T,
-	PATTERN
-};

@@ -1,0 +1,20 @@
+1 - Select stmt that is followed within while container
+stmt s;
+Select s such that Follows (10, s)
+14
+5000
+2 - Select stmt indirectly follows while stmt
+stmt s; while w;
+Select s such that Follows* (w, s)
+15, 16, 17
+5000
+3 - Select stmt that is followed within if container
+stmt s;
+Select s such that Follows (s, 13)
+12
+5000
+4 - Select stmt followe by if statement
+if ifs; stmt s;
+Select s such that Follows* (s, ifs)
+1
+5000

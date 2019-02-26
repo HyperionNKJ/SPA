@@ -1,0 +1,30 @@
+1 - Select stmt that is followed by anything
+stmt s1; stmt s2;
+Select s1 such that Follows (s1, s2)
+1, 2, 3, 4, 5, 6, 7, 8, 9
+5000
+2 - Select stmt that follows anything
+stmt s1; stmt s2;
+Select s2 such that Follows (s1, s2)
+2, 3, 4, 5, 6, 7, 8, 9, 10
+5000
+3 - Select stmt that is followed by assign
+stmt s1; assign a2;
+Select s1 such that Follows (s1, a2)
+1, 2, 3, 4, 9
+5000
+4 - Select stmt that follows assign
+assign a1; stmt s2;
+Select s2 such that Follows (a1, s2)
+2, 3, 4, 5, 6
+5000
+5 - Select assign that is indirectly followed by print
+assign a1; print p2;
+Select a1 such that Follows* (a1, p2)
+1, 2, 3, 4, 5
+5000
+6 - Select read that indirectly follows assign
+assign a1; read r2;
+Select r2 such that Follows* (a1, r2)
+6, 8
+5000

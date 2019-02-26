@@ -1,0 +1,35 @@
+1 - Select all procedure
+procedure p;
+Select p
+P
+5000
+2 - Select all statements
+stmt s;
+Select s
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+5000
+3 - Select all assign statements
+assign a;
+Select a
+1, 2, 3, 4, 5, 10
+5000
+4 - Select all read statements
+read r;
+Select r
+6, 8
+5000
+5 - Select all print statements
+print p;
+Select p
+7, 9
+5000
+6 - Select all variables
+variable v;
+Select v
+x, xx, x1, xx1, y, z, www
+5000
+7 - Select all constants
+constant c;
+Select c
+0, 1, 10, 100
+5000

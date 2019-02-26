@@ -1,0 +1,20 @@
+1 - Select assign with constant such that Modifies (assign, variable)
+assign a; variable v;
+Select a such that Modifies (a, v) pattern a (_, _"x"_)
+5
+5000
+2 - Select assign with variable such that Modifies (assign, variable)
+assign a; variable v;
+Select a such that Modifies (a, v) pattern a (_, _"x"_)
+5
+5000
+3 - Select read such that Modifies (read, variable)
+read r; assign a; variable v;
+Select r such that Modifies (r, v) pattern a (v, _)
+6
+5000
+4 - Select assign such that Modifies (read, variable)
+assign a; variable v;
+Select a such that Modifies (a, v) pattern a (v, _"www"_)
+none
+5000

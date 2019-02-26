@@ -1,0 +1,15 @@
+1 - Select stmt such that Uses (stmt, variable)
+stmt s; variable v;
+Select s such that Uses (s, v)
+5, 7, 9, 10
+5000
+3 - Select assign such that Uses (assign, variable)
+assign a; variable v;
+Select a such that Uses (a, v)
+5, 10
+5000
+4 - Select print such that Uses (print, variable)
+print pn; variable v;
+Select pn such that Uses (pn, v)
+7, 9
+5000

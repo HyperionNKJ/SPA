@@ -1,0 +1,15 @@
+1 - Select variable inside if container with certain assignment pattern
+if ifs; assign a; variable v;
+Select v such that Uses (ifs, v) pattern a (v, _)
+x, z
+5000
+2 - Select variable inside while container with certain assignment pattern
+while w; assign a; variable v;
+Select v such that Uses (w, v) pattern a (v, _)
+i, x, z
+5000
+3 - Select assign to varible used by if statement
+if ifs; assign a; variable v;
+Select a such that Uses (ifs, v) pattern a (v, _)
+1, 2, 6, 9, 10, 13, 14
+5000
