@@ -1226,7 +1226,7 @@ unordered_set<int> PKB::getLeaderTOf(int stmtNum, Type leaderType)
 int PKB::getFollowerOf(int stmtNum, Type followerType)
 {
 	unordered_set<int> typedStmtSet;
-	int result;
+	int result = -1;
 
 	switch (followerType)
 	{

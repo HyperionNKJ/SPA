@@ -456,7 +456,6 @@ int Parser::handleIf(string ifLine) {
 	containerTracker.push_back(IFCONTAINER);
 	allFollowStack.push_back(currentFollowVector);
 	currentFollowVector.clear();
-	cout << "going to insert" << endl;
 	pkb->insertStmtType(statementNumber, IF);
 
 	//set uses relationships
@@ -732,9 +731,11 @@ bool Parser::setParent(int currStatementNum) {
 
 bool Parser::setFollow(int currStatementNum) {
 	for (unsigned int i = 0; i < currentFollowVector.size(); i++) {
+		pkb->setFollowsT(currentFollowVector[i], currStatementNum);
 		pkb->setFollowedByT(currentFollowVector[i], currStatementNum);
 	}
 	if (currentFollowVector.size() > 0) {
+		pkb->setFollows(currentFollowVector.back(), currStatementNum);
 		pkb->setFollowedBy(currentFollowVector.back(), currStatementNum);
 	}
 	return true;
