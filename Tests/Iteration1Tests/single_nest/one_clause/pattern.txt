@@ -5,7 +5,7 @@ Select a pattern a ("z", _)
 5000
 2 - Select assign pattern within if container
 assign a;
-Select a pattern a (_, "w + 1")
+Select a pattern a (_, _"w"_)
 6
 5000
 3 - Select assign pattern withint while container

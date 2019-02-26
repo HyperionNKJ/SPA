@@ -1,9 +1,4 @@
-1 - Select procedure such that Uses (procedure, variable)
-procedure p; variable v;
-Select p such that Uses (p, v)
-P
-5000
-2 - Select stmt such that Uses (stmt, variable)
+1 - Select stmt such that Uses (stmt, variable)
 stmt s; variable v;
 Select s such that Uses (s, v)
 5, 7, 9, 10

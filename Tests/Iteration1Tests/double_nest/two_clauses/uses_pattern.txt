@@ -10,7 +10,7 @@ c, a
 5000
 3 - Select constant that is assigned and used by if statement
 if ifs; assign a; constant c;
-Select c such that Uses (ifs, c) pattern a (_, c)
+Select c such that Uses (ifs, c) pattern a (_, _)
 16
 5000
 

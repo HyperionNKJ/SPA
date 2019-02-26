@@ -1,6 +1,6 @@
 1 - Select stmt such that Uses (stmt, variable) 
 stmt s; assign a; variable v;
-Select s such that Uses (s, v) pattern a (v, "0")
+Select s such that Uses (s, v) pattern a (v, _"0"_)
 5
 5000
 2 - Select assign such that Uses (assign, variable)
@@ -15,6 +15,6 @@ none
 5000
 4 - Select print such that Uses (print, variable)
 print pn; assign a; variable v;
-Select pn such that Uses (pn, v) pattern a (v, "100")
+Select pn such that Uses (pn, v) pattern a (v, _"100"_)
 9
 5000
