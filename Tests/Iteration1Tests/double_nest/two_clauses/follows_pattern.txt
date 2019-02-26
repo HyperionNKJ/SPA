@@ -5,7 +5,7 @@ Select a1 such that Follows (a1, s2) pattern a1 ("x", _)
 5000
 2 - Select assign with constant that is followed by anything
 assign a1; assign a2;
-Select a1 such that Follows (a1, a2) pattern a2 (_, "16") 
+Select a1 such that Follows (a1, a2) pattern a2 (_, _"16"_) 
 4
 5000
 3 - Select assign to variable that is followed by anything
@@ -20,6 +20,6 @@ Select a1 such that Follows* (a1, a2) pattern a2 (_, _"x"_)
 5000
 5 - Select assign with constant that indirectly follows read
 assign a2; read r1;
-Select a1 such that Follows (r1, a2) pattern a2 (_, "x") 
+Select a1 such that Follows (r1, a2) pattern a2 (_, _"x"_) 
 1, 2, 3, 4, 5
 5000
