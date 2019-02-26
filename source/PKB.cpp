@@ -1288,7 +1288,7 @@ unordered_set<int> PKB::getFollowerTOf(int stmtNum, Type followerType)
 		{
 			if (typedStmtSet.count(stmtNum))
 			{
-				resultSet.insert(stmtNum);
+				resultSet.insert(elem);
 			}
 		}
 	}
