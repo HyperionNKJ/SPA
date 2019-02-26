@@ -36,16 +36,6 @@ int Parser::parse(string fileName, PKB& p) {
 	pkb = &p;
 	loadFile(fileName);
 	for (unsigned int i = 0; i < sourceCode.size(); i++) {
-		for (int i = 0; i < currentFollowVector.size(); i++) {
-			cout << currentFollowVector[i] << " ";
-		} cout << endl;
-		for (int i = 0; i < allFollowStack.size(); i++) {
-			cout << i << " stack currently" << endl;
-			for (int j = 0; j < allFollowStack[i].size(); j++) {
-				cout << allFollowStack[i][j] << " ";
-			}cout << endl;
-		} cout << endl;
-		cout << "Current line is: " << sourceCode[i] << endl;
 		int intent = getStatementIntent(sourceCode[i]);
 		int result = 0;
 		if (intent == KEY_PROCEDURE) {
