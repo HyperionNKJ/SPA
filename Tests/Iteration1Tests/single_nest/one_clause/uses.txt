@@ -1,7 +1,7 @@
 1 - Select variable used in if container
 variable v; if ifs;
 Select v such that Uses (ifs, v)
-x, w
+x, w, z
 5000
 2 - Select variable used in while container
 variable v; while w;
@@ -11,20 +11,15 @@ i, x, z
 3 - Select variable used in if condition
 variable v;
 Select v such that Uses (4, v)
-w
+w, x, z
 5000
 4 - Select variable used in while condition
 variable v;
 Select v such that Uses (8, v)
 x, z, i
 5000
-5 - Select variable used in procedure
-variable v; procedure p;
-Select v such that Uses (p, v)
-x, w, y, z, i, p
-5000
-6 - Select stmt uses certain variable
+5 - Select stmt uses certain variable
 stmt s;
 Select s such that Uses (s, "z")
-7, 10, 13
+4, 7, 8, 10, 13
 5000

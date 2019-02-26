@@ -23,3 +23,8 @@ while w; stmt s;
 Select s such that Follows (s, w)
 4
 5000
+6 - Select all stmts if there is stmt followed by while statement
+while w; stmt s; stmt s1;
+Select s1 such that Follows (s, w)
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
+5000

@@ -14,7 +14,7 @@ Select s such that Follows (s, 13)
 12
 5000
 4 - Select stmt followe by if statement
-if ifs;
-Select s such that Follows* (_, ifs)
+if ifs; stmt s;
+Select s such that Follows* (s, ifs)
 1
 5000
