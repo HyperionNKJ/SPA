@@ -25,7 +25,6 @@ Select a1 such that Follows* (a1, p2)
 5000
 6 - Select read that indirectly follows assign
 assign a1; read r2;
-Select r2 such that Follows* 
-(a1, r2)
+Select r2 such that Follows* (a1, r2)
 6, 8
 5000
