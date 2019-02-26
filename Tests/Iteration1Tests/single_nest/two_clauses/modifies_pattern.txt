@@ -5,7 +5,6 @@ variable v;
 Select v such that Modifies (ifs, v) pattern a (v, _"x"_)
 x, y, z
 5000
-
 2 - Select assign with certain pattern inside if container that doesn't exist
 if ifs;
 assign a;
@@ -13,7 +12,6 @@ variable v;
 Select a such that Modifies (ifs, v) pattern a (v, _"x"_)
 none
 5000
-
 3 - Select variable modified in while container with pattern
 while w;
 assign a;
