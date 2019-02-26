@@ -1,7 +1,7 @@
 1 - Select stmt that is parent of assign with pattern
 stmt s; assign a;
 Select s such that Parent (s, a) pattern a ("x", _)
-none
+8
 5000
 2 - Select assign with pattern that has while as parent
 while w; assign a;
