@@ -5,7 +5,7 @@ Select a pattern a (_, _)
 5000
 2 - Select assign pattern (_, constant)
 assign a;
-Select a pattern a (_, "16")
+Select a pattern a (_, _"16"_)
 5
 5000
 3 - Select assign pattern (_, expression)

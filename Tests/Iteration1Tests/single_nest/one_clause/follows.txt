@@ -14,14 +14,12 @@ Select s such that Follows (s, 5)
 none
 5000
 4 - Select stmt follows if statement
-if ifs;
-stmt s;
+if ifs; stmt s;
 Select s such that Follows* (ifs, s)
 8, 12, 13, 14
 5000
 5 - Select stmt followed by while statement
-while w;
-stmt s;
+while w; stmt s;
 Select s such that Follows (s, w)
 12
 5000
