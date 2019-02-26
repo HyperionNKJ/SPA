@@ -36,6 +36,6 @@ private:
 	bool parseSuchThatClause(const std::string& clause);
 	bool parsePatternClause(const std::string& clause);
 
-	static Type getParameterType(const std::string value);
+	static Type getParameterType(std::string& value);
 	static RelationshipType getRelationshipType(const std::string& type);
 };
