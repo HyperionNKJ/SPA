@@ -276,7 +276,6 @@ int Parser::handleAssignment(string assignmentLine) {
 	
 	setParent(statementNumber);
 	setFollow(statementNumber);
-	currentFollowVector.push_back(statementNumber);
 	//Separate variable names, constants and operation/brackets from each other to pass to pkb
 	vector<string> assignTokens = vector<string>();
 	string lhsVar = cleanedAssignment.substr(0, cleanedAssignment.find_first_of("="));
