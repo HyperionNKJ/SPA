@@ -337,7 +337,8 @@ namespace UnitTesting
 
 			result = parser.handleAssignment("myvar		=	(a+b) *c *( d + e )");
 			Assert::AreEqual(result, 0, L"incorrect", LINE_INFO());
-			//Assert::AreEqual(parser.getCurrentFollowVector(), expectedFollowVector, L"incorrect", LINE_INFO());
+			bool equalFollowVector = parser.getCurrentFollowVector() == expectedFollowVector;
+			Assert::IsTrue(equalFollowVector, L"incorrect", LINE_INFO());
 		}
 
 		TEST_METHOD(TestHandleWhile) {
