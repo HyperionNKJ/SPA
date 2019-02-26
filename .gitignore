@@ -340,4 +340,8 @@ ASALocalRun/
 # BeatPulse healthcheck temp database 
 healthchecksdb
 
+<<<<<<< HEAD
+*.txt.xml
+=======
 Tests/**/*.xml
+>>>>>>> c0bb2e703082db97ee4b7d860d98584a82ada571

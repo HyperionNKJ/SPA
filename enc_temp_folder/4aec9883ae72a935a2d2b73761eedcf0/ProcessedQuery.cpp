@@ -63,6 +63,7 @@ std::unordered_set<Clause*> ProcessedQuery::getClauses() {
 		if (suchThatClause.paramOne.getType() == Type::ASSIGN) {
 			Type paramOneType = declarations.find(paramOneValue)->second;
 			suchThatClause.paramOne.setType(paramOneType);
+			Type test = suchThatClause.paramOne.getType();
 		}
 
 		if (suchThatClause.paramTwo.getType() == Type::ASSIGN) {
