@@ -505,6 +505,41 @@ namespace UnitTesting
 			Assert::IsTrue(sameTable);
 			Assert::IsTrue(sameResult);
 		}
+		TEST_METHOD(combineTwoTwoWithOneCommonSynonym4)
+		{
+			ResultProjector resultProjector;
+			// set up
+			resultProjector.resetResults();
+
+			unordered_map<string, list<int>> result1;
+			unordered_map<string, list<int>> result2;
+			result1["a"] = { 3,3,6,6,9,9,9,9 };
+			result1["b"] = { 0,3,3,1,2,0,3,1 };
+			result2["b"] = { 0,3,2,1,4,3 };
+			result2["c"] = { 4,7,11,14,16,14 };
+
+			// combining results
+			resultProjector.combineResults(result1);
+			resultProjector.combineResults(result2);
+
+			// expected results
+			unordered_map<string, int> expectedSynonymTable;
+			expectedSynonymTable["a"] = 0;
+			expectedSynonymTable["b"] = 0;
+			expectedSynonymTable["c"] = 0;
+			unordered_map<int, unordered_map<string, list<int>>> expectedSynonymResults;
+			unordered_map<string, list<int>> expectedResults1;
+			expectedResults1["a"] = { 3,3,6,6,9,9,9,9,3,6,9 };
+			expectedResults1["b"] = { 0,3,3,1,2,0,3,1,3,3,3 };
+			expectedResults1["c"] = { 4,7,7,14,11,4,7,14,14,14,14 };
+			expectedSynonymResults[0] = expectedResults1;
+
+			// compare results
+			bool sameTable = expectedSynonymTable == resultProjector.getSynonymTable();
+			bool sameResult = expectedSynonymResults == resultProjector.getSynonymResults();
+			Assert::IsTrue(sameTable);
+			Assert::IsTrue(sameResult);
+		}
 		TEST_METHOD(combineTwoTwoWithOneCommonSynonymWithAllCommonResults)
 		{
 			ResultProjector resultProjector;
