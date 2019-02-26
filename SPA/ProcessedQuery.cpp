@@ -97,6 +97,19 @@ std::unordered_set<Clause*> ProcessedQuery::getClauses() {
 	}
 
 	if (hasPatternClause) {
+		std::string paramOneValue = patternClause.paramOne.getValue();
+		std::string paramTwoValue = patternClause.paramTwo.getValue();
+
+		if (patternClause.paramOne.getType() == Type::ASSIGN) {
+			Type paramOneType = declarations.find(paramOneValue)->second;
+			patternClause.paramOne.setType(paramOneType);
+		}
+
+		if (patternClause.paramTwo.getType() == Type::ASSIGN) {
+			Type paramTwoType = declarations.find(paramTwoValue)->second;
+			patternClause.paramTwo.setType(paramTwoType);
+		}
+
 		Pattern* pattern = new Pattern(patternClause.assign, patternClause.paramOne, patternClause.paramTwo);
 		clauses.insert(pattern);
 	}
