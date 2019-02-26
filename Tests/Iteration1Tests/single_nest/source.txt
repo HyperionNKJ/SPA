@@ -1,20 +1,20 @@
 procedure P {
-	x = 2;					\\ 1
-	z = 3;					\\ 2
-	i = 5;					\\ 3
-	if (x==1) then {		\\ 4
-		read w;				\\ 5
-		z = w + 1;			\\ 6
+	x = 2;					
+	z = 3;					
+	i = 5;					
+	if (x==1) then {		
+		read w;				
+		z = w + 1;			
 	}
 	else {
-		y = z + x;			\\ 7
+		y = z + x;			
 	}
-	while (i != 0) {		\\ 8
-		x = x - 1;			\\ 9
-		z = z + x + i;		\\ 10
-		i = i - 1;			\\ 11
+	while (i != 0) {		
+		x = x - 1;			
+		z = z + x + i;		
+		i = i - 1;			
 	}
-	print p;				\\ 12
-	x = z;					\\ 13
-	z = i;					\\ 14
+	print p;				
+	x = z;					
+	z = i;					
 }
