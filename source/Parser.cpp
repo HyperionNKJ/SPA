@@ -337,6 +337,7 @@ int Parser::handleRead(string readLine) {
 	setModifies(statementNumber, varName);
 	pkb->insertVar(varName);
 	pkb->insertStmtType(statementNumber, READ);
+	currentFollowVector.push_back(statementNumber);
 	return 0;
 }
 
@@ -365,6 +366,7 @@ int Parser::handlePrint(string printLine) {
 	setUses(statementNumber, varName);
 	pkb->insertVar(varName);
 	pkb->insertStmtType(statementNumber, PRINT);
+	currentFollowVector.push_back(statementNumber);
 	return 0;
 }
 
@@ -394,6 +396,7 @@ int Parser::handleWhile(string whileLine) {
 	setFollow(statementNumber);
 
 	//update parent, container, follows trackers
+	currentFollowVector.push_back(statementNumber);
 	parentVector.push_back(statementNumber);
 	containerTracker.push_back(WHILECONTAINER);
 	allFollowStack.push_back(currentFollowVector);
@@ -443,6 +446,7 @@ int Parser::handleIf(string ifLine) {
 	setFollow(statementNumber);
 
 	//update parent, follow, container trackers
+	currentFollowVector.push_back(statementNumber);
 	parentVector.push_back(statementNumber);
 	containerTracker.push_back(IFCONTAINER);
 	allFollowStack.push_back(currentFollowVector);
