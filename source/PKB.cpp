@@ -46,7 +46,7 @@ bool PKB::insertProc(string procName)
 bool PKB::insertStmtType(int stmtNum, Type type)
 {
 	bool isValidStmt;
-	unordered_set<int> typedStmtSet;
+	unordered_set<int> *typedStmtSet;
 	isValidStmt = allStmts.insert(stmtNum).second;
 
 	if (isValidStmt)
@@ -54,22 +54,22 @@ bool PKB::insertStmtType(int stmtNum, Type type)
 		switch (type)
 		{
 		case READ:
-			typedStmtSet = readStmts;
+			typedStmtSet = &readStmts;
 			break;
 		case WHILE:
-			typedStmtSet = whileStmts;
+			typedStmtSet = &whileStmts;
 			break;
 		case IF:
-			typedStmtSet = ifStmts;
+			typedStmtSet = &ifStmts;
 			break;
 		case ASSIGN:
-			typedStmtSet = assignStmts;
+			typedStmtSet = &assignStmts;
 			break;
 		case PRINT:
-			typedStmtSet = printStmts;
+			typedStmtSet = &printStmts;
 			break;
 		}
-		isValidStmt = typedStmtSet.insert(stmtNum).second;
+		isValidStmt = typedStmtSet->insert(stmtNum).second;
 	}
 
 	return isValidStmt;
