@@ -3,26 +3,22 @@ stmt s;
 Select s such that Follows* (9, s)
 10, 11
 5000
-
 2 - Select stmt follows last stmt in container
 stmt s;
 Select s such that Follows (11, s)
 none
 5000
-
 3 - Select stmt followed by first stmt in container
 stmt s;
 Select s such that Follows (s, 5)
 none
 5000
-
 4 - Select stmt follows if statement
 if ifs;
 stmt s;
 Select s such that Follows* (ifs, s)
 8, 12, 13, 14
 5000
-
 5 - Select stmt followed by while statement
 while w;
 stmt s;

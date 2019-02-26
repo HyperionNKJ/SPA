@@ -4,21 +4,18 @@ variable v;
 Select p such that Modifies (p, v)
 P
 5000
-
 2 - Select stmt such that Modifies (stmt, variable)
 stmt s;
 variable v;
 Select s such that Modifies (s, v)
 1, 2, 3, 4, 5, 6, 8, 10
 5000
-
 3 - Select assign such that Modifies (assign, variable)
 assign a;
 variable v;
 Select a such that Modifies (a, v)
 1, 2, 3, 4, 5, 10
 5000
-
 4 - Select read such that Modifies (read, variable)
 read r;
 variable v;
