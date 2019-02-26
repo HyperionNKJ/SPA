@@ -1,18 +1,15 @@
 1 - Select variable modified in if container
-variable v;
-if ifs;
+variable v; if ifs;
 Select v such that Modifies (ifs, v)
 x, c, a, b
 5000
 2 - Select variable modified in while container
-variable v;
-while w;
+variable v; while w;
 Select v such that Modifies (w, v)
 c, a, b, x
 5000
 3 - Select variable modified in procedure
-variable v;
-procedure p;
+variable v; procedure p;
 Select v such that Modifies (p, v)
 x, a, b, c, k
 5000

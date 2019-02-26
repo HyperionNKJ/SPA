@@ -4,8 +4,7 @@ Select a such that Follows (9, a) pattern a (_, "i - 1")
 11
 5000
 2 - Select assign after if container with pattern
-assign a;
-if ifs;
+assign a; if ifs;
 Select a such that Follows (a, ifs) pattern a ("z", _) 
 14
 5000

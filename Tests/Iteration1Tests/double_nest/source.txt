@@ -1,28 +1,28 @@
 procedure P {
-	read x;						// 1
-	if (b < 15) then {			// 2
-		while (c <= x) {		// 3
-			x = x + a;			// 4
-			c = 16;				// 5
+	read x;						
+	if (b < 15) then {			
+		while (c <= x) {		
+			x = x + a;			
+			c = 16;				
 		}
 	}
 	else {
-		while (b >= c) {		// 6
-			c = 7 + a - b;		// 7
-			a = b + c;			// 8
+		while (b >= c) {		
+			c = 7 + a - b;		
+			a = b + c;			
 		}
 	}
-	while (a > c) {				// 9
-		if (b <= c) then {		// 10
-			b = b + a			// 11
+	while (a > c) {				
+		if (b <= c) then {		
+			b = b + a;			
 		}
 		else {
-			x = x + b			// 12
-			c = x + c			// 13
+			x = x + b;			
+			c = x + c;			
 		}
-		a = a - 1				// 14
+		a = a - 1;				
 	}
-	x = c;						// 15
-	k = x + a - b + a + a;		// 16 
-	print k;					// 17
+	x = c;						
+	k = x + a - b + a + a;		 
+	print k;					
 }

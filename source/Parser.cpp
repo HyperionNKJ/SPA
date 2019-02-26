@@ -164,7 +164,8 @@ int Parser::handleProcedure(string procLine) {
 	procedureName = leftTrim(procedureName, " \t");
 	procedureName = rightTrim(procedureName, " \t");
 
-	pkb->insertProc(procedureName);
+	bool result;
+	result = pkb->insertProc(procedureName);
 	currProcedure = procedureName;
 	withinProcedure = true;
 	emptyProcedure = true;
@@ -275,11 +276,10 @@ int Parser::handleAssignment(string assignmentLine) {
 	
 	setParent(statementNumber);
 	setFollow(statementNumber);
-	currentFollowVector.push_back(statementNumber);
 	//Separate variable names, constants and operation/brackets from each other to pass to pkb
 	vector<string> assignTokens = vector<string>();
-	string lhsVar = assignmentLine.substr(0, assignmentLine.find_first_of("="));
-	string rhs = assignmentLine.substr(assignmentLine.find_first_of("=") + 1, string::npos);
+	string lhsVar = cleanedAssignment.substr(0, cleanedAssignment.find_first_of("="));
+	string rhs = cleanedAssignment.substr(cleanedAssignment.find_first_of("=") + 1, string::npos);
 	string currToken = "";
 	for (unsigned int i = 0; i < rhs.length(); i++) {
 		//assignment should have only alphanum and bracket/op. Less than 48 in ascii must be a bracket/op
@@ -287,17 +287,21 @@ int Parser::handleAssignment(string assignmentLine) {
 			if (!currToken.empty()) {
 				assignTokens.push_back(currToken);
 				currToken = "";
-				assignTokens.push_back(rhs.substr(i, 1));
 			}
-			else {
-				currToken += rhs[i];
-			}
+			assignTokens.push_back(rhs.substr(i, 1));
+		}
+		else {
+			currToken += rhs[i];
 		}
 	}
 	if (!currToken.empty()) {
 		assignTokens.push_back(currToken);
 	}
+
+	//set lhs var
+	pkb->insertVar(lhsVar);
 	setModifies(statementNumber, lhsVar);
+	//set rhs var, constants
 	for (unsigned int i = 0; i < assignTokens.size(); i++) {
 		if (isValidVarName(assignTokens[i])) {
 			pkb->insertVar(assignTokens[i]);
@@ -309,6 +313,7 @@ int Parser::handleAssignment(string assignmentLine) {
 	}
 	pkb->insertAssignStmt(statementNumber, lhsVar, assignTokens);
 	pkb->insertStmtType(statementNumber, ASSIGN);
+	currentFollowVector.push_back(statementNumber);
 	return 0;
 }
 
@@ -334,6 +339,7 @@ int Parser::handleRead(string readLine) {
 	varName = rightTrim(varName, " \t");
 
 	setParent(statementNumber);
+	setFollow(statementNumber);
 	setModifies(statementNumber, varName);
 	pkb->insertVar(varName);
 	pkb->insertStmtType(statementNumber, READ);
@@ -363,6 +369,7 @@ int Parser::handlePrint(string printLine) {
 	varName = rightTrim(varName, " \t");
 
 	setParent(statementNumber);
+	setFollow(statementNumber);
 	setUses(statementNumber, varName);
 	pkb->insertVar(varName);
 	pkb->insertStmtType(statementNumber, PRINT);
@@ -604,6 +611,11 @@ int Parser::handleCloseBracket(string closeBracket) {
 			cout << "A procedure cannot be empty" << endl;
 			return -1;
 		}
+		//clean up all relationship trackers
+		containerTracker.clear();
+		allFollowStack.clear();
+		currentFollowVector.clear();
+		parentVector.clear();
 		withinProcedure = false;
 		emptyProcedure = true;
 		return 0;
@@ -726,9 +738,11 @@ bool Parser::setParent(int currStatementNum) {
 
 bool Parser::setFollow(int currStatementNum) {
 	for (unsigned int i = 0; i < currentFollowVector.size(); i++) {
+		pkb->setFollowsT(currentFollowVector[i], currStatementNum);
 		pkb->setFollowedByT(currentFollowVector[i], currStatementNum);
 	}
 	if (currentFollowVector.size() > 0) {
+		pkb->setFollows(currentFollowVector.back(), currStatementNum);
 		pkb->setFollowedBy(currentFollowVector.back(), currStatementNum);
 	}
 	return true;
