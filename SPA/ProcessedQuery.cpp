@@ -97,8 +97,8 @@ std::unordered_set<Clause*> ProcessedQuery::getClauses() {
 	}
 
 	if (hasPatternClause) {
-		Pattern pattern(patternClause.assign, patternClause.paramOne, patternClause.paramTwo);
-		clauses.insert(&pattern);
+		Pattern* pattern = new Pattern(patternClause.assign, patternClause.paramOne, patternClause.paramTwo);
+		clauses.insert(pattern);
 	}
 
 	return clauses;
