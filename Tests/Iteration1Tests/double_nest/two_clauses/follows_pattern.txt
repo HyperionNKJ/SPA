@@ -16,10 +16,10 @@ none
 4 - Select assign with constant that is indirectly followed by assign
 assign a1; assign a2;
 Select a1 such that Follows* (a1, a2) pattern a2 (_, _"x"_) 
-15
+12, 15
 5000
 5 - Select assign with constant that indirectly follows read
 assign a2; read r1;
 Select a1 such that Follows (r1, a2) pattern a2 (_, _"x"_) 
-1, 2, 3, 4, 5
+none
 5000
