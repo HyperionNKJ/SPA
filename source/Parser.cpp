@@ -729,9 +729,11 @@ vector<string> Parser::tokeniseString(string toTokenise, string delimiters) {
 bool Parser::setParent(int currStatementNum) {
 	for (unsigned int i = 0; i < parentVector.size(); i++) {
 		pkb->setParentT(parentVector[i], currStatementNum);
+		pkb->setChildT(parentVector[i], currStatementNum);
 	}
 	if (parentVector.size() > 0) {
 		pkb->setParent(parentVector.back(), currStatementNum);
+		pkb->setChild(parentVector.back(), currStatementNum);
 	}
 	return true;
 }
