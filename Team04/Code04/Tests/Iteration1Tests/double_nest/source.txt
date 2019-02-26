@@ -1,0 +1,28 @@
+procedure P {
+	read x;						
+	if (b < 15) then {			
+		while (c <= x) {		
+			x = x + a;			
+			c = 16;				
+		}
+	}
+	else {
+		while (b >= c) {		
+			c = 7 + a - b;		
+			a = b + c;			
+		}
+	}
+	while (a > c) {				
+		if (b <= c) then {		
+			b = b + a;			
+		}
+		else {
+			x = x + b;			
+			c = x + c;			
+		}
+		a = a - 1;				
+	}
+	x = c;						
+	k = x + a - b + a + a;		 
+	print k;					
+}

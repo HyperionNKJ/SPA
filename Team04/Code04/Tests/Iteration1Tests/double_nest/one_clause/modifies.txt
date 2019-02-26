@@ -1,0 +1,15 @@
+1 - Select variable modified in if container
+variable v; if ifs;
+Select v such that Modifies (ifs, v)
+x, c, a, b
+5000
+2 - Select variable modified in while container
+variable v; while w;
+Select v such that Modifies (w, v)
+c, a, b, x
+5000
+3 - Select stmt modifies certain variable
+stmt s;
+Select s such that Modifies (s, "c")
+2, 3, 5, 6, 7, 9, 10, 13
+5000

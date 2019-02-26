@@ -1,0 +1,29 @@
+<?xml-stylesheet type="text/xsl" href="analysis.xsl"?>
+<test_results>
+<info>
+<name>Iteration1Tests</name><parsing_time_taken>56.000000</parsing_time_taken>
+</info>
+<queries>
+<query>
+<id ReturnTuple="1" UnnamedVar="1" Uses="1" Pattern="1" SuchThat="1" CondNum="5" RelNum="1" comment="Select variable inside if container with certain assignment pattern">1</id><querystr><![CDATA[if ifs; assign a; variable v; Select v such that Uses (ifs, v) pattern a (v, _)]]></querystr>
+<stuans>a,b,c,x</stuans>
+<correct>x,c,a,b</correct>
+<time_taken>50.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" UnnamedVar="1" Uses="1" Pattern="1" SuchThat="1" CondNum="5" RelNum="1" comment="Select variable inside while container with certain assignment pattern">2</id><querystr><![CDATA[assign a; variable v; Select v such that Uses (6, v) pattern a (v, _)]]></querystr>
+<stuans>a,b,c</stuans>
+<correct>c,a,b</correct>
+<time_taken>41.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" UnnamedVar="2" Uses="1" Pattern="1" SuchThat="1" CondNum="6" RelNum="1" comment="Select constant that is assigned and used by if statement">3</id><querystr><![CDATA[if ifs; assign a; constant c; Select c such that Uses (ifs, c) pattern a (_, _)]]></querystr>
+<stuans></stuans>
+<correct></correct>
+<time_taken>15.000000</time_taken>
+<passed/>
+</query>
+</queries>
+</test_results>

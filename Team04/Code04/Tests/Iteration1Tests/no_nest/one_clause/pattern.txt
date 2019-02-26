@@ -1,0 +1,60 @@
+1 - Select assign pattern (_, _)
+assign a;
+Select a pattern a (_, _)
+1, 2, 3, 4, 5, 10
+5000
+2 - Select assign pattern (_, constant)
+assign a;
+Select a pattern a (_, _"0"_)
+1
+5000
+3 - Select assign pattern (_, variable)
+assign a;
+Select a pattern a (_, _"x"_)
+5
+5000
+4 - Select assign pattern (_, _variable_)
+assign a;
+Select a pattern a (_, _"xx1"_)
+10
+5000
+5 - Select assign pattern (variable, _)
+assign a; variable v;
+Select a pattern a (v, _)
+1, 2, 3, 4, 5, 10
+5000
+6 - Select assign pattern (variable, constant)
+assign a; variable v;
+Select a pattern a (v, _"0"_)
+1
+5000
+7 - Select assign pattern (variable, variable)
+assign a; variable v;
+Select a pattern a (v, _"x"_)
+5
+5000
+8 - Select assign pattern (variable, _variable_)
+assign a; variable v;
+Select a pattern a (v, _"xx1"_)
+10
+5000
+9 - Select assign pattern (identity, _)
+assign a;
+Select a pattern a ("x", _)
+1
+5000
+10 - Select assign pattern (identity, constant)
+assign a;
+Select a pattern a ("x", _"0"_)
+1
+5000
+11 - Select assign pattern (identity, variable)
+assign a;
+Select a pattern a ("y", _"x"_)
+5
+5000
+12 - Select assign pattern (identity, _variable_)
+assign a;
+Select a pattern a ("z", _"xx1"_)
+10
+5000

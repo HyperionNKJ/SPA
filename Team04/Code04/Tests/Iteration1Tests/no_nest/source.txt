@@ -1,0 +1,12 @@
+procedure P {
+	x = 0;				
+	xx = 1;				
+	x1 = 10;			
+	xx1 = 100;			
+	y = x;				
+	read z;				
+	print x;			
+	read www;			
+	print xx1;			
+	z = 1 + xx1 + 10;	
+}

@@ -1,0 +1,36 @@
+<?xml-stylesheet type="text/xsl" href="analysis.xsl"?>
+<test_results>
+<info>
+<name>Iteration1Tests</name><parsing_time_taken>25.000000</parsing_time_taken>
+</info>
+<queries>
+<query>
+<id ReturnTuple="1" UnnamedVar="1" Uses="1" Pattern="1" SuchThat="1" CondNum="5" RelNum="1" comment="Select stmt such that Uses (stmt, variable)">1</id><querystr><![CDATA[stmt s; assign a; variable v; Select s such that Uses (s, v) pattern a (v, _"0"_)]]></querystr>
+<stuans>5,7</stuans>
+<correct>5,7</correct>
+<time_taken>34.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" UnnamedVar="2" Uses="1" Pattern="1" SuchThat="1" CondNum="6" RelNum="1" comment="Select assign such that Uses (assign, variable)">2</id><querystr><![CDATA[assign a; variable v; Select a such that Uses (a, v) pattern a (_, _"xx1"_)]]></querystr>
+<stuans>10</stuans>
+<correct>10</correct>
+<time_taken>31.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" UnnamedVar="1" Uses="1" Pattern="1" SuchThat="1" CondNum="5" RelNum="1" comment="Select assign such that Uses (assign, variable) but doesn't exsit">3</id><querystr><![CDATA[assign a; variable v; Select a such that Uses (a, v) pattern a (v, _)]]></querystr>
+<stuans></stuans>
+<correct></correct>
+<time_taken>22.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" UnnamedVar="1" Uses="1" Pattern="1" SuchThat="1" CondNum="5" RelNum="1" comment="Select print such that Uses (print, variable)">4</id><querystr><![CDATA[print pn; assign a; variable v; Select pn such that Uses (pn, v) pattern a (v, _"100"_)]]></querystr>
+<stuans>9</stuans>
+<correct>9</correct>
+<time_taken>31.000000</time_taken>
+<passed/>
+</query>
+</queries>
+</test_results>

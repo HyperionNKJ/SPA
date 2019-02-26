@@ -1,0 +1,29 @@
+<?xml-stylesheet type="text/xsl" href="analysis.xsl"?>
+<test_results>
+<info>
+<name>Iteration1Tests</name><parsing_time_taken>67.000000</parsing_time_taken>
+</info>
+<queries>
+<query>
+<id ReturnTuple="1" Followsstar="1" UnnamedVar="2" Pattern="1" SuchThat="1" CondNum="6" RelNum="1" comment="Select assign inside while container with pattern">1</id><querystr><![CDATA[assign a; Select a such that Follows* (9, a) pattern a (_, _"i"_) ]]></querystr>
+<stuans>10,11</stuans>
+<correct>10,11</correct>
+<time_taken>41.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Followsstar="1" UnnamedVar="1" Pattern="1" SuchThat="1" CondNum="5" RelNum="1" comment="Select assign after if container with pattern">2</id><querystr><![CDATA[assign a; if ifs; Select a such that Follows* (ifs, a) pattern a ("z", _) ]]></querystr>
+<stuans>14</stuans>
+<correct>14</correct>
+<time_taken>46.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Followsstar="1" UnnamedVar="1" Pattern="1" SuchThat="1" CondNum="5" RelNum="1" comment="Select assign with certain variables">3</id><querystr><![CDATA[assign a; Select a such that Follows* (1, a) pattern a ("z", _"i"_) ]]></querystr>
+<stuans>14</stuans>
+<correct>14</correct>
+<time_taken>49.000000</time_taken>
+<passed/>
+</query>
+</queries>
+</test_results>

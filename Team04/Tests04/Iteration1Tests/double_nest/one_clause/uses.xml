@@ -1,0 +1,43 @@
+<?xml-stylesheet type="text/xsl" href="analysis.xsl"?>
+<test_results>
+<info>
+<name>Iteration1Tests</name><parsing_time_taken>76.000000</parsing_time_taken>
+</info>
+<queries>
+<query>
+<id ReturnTuple="1" Uses="1" SuchThat="1" CondNum="3" RelNum="1" comment="Select variable used in if container">1</id><querystr><![CDATA[variable v; if ifs; Select v such that Uses (ifs, v)]]></querystr>
+<stuans>a,b,c,x</stuans>
+<correct>b,x,a,c</correct>
+<time_taken>44.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Uses="1" SuchThat="1" CondNum="3" RelNum="1" comment="Select variable used in while container">2</id><querystr><![CDATA[variable v; while w; Select v such that Uses (w, v)]]></querystr>
+<stuans>a,b,c,x</stuans>
+<correct>c,x,a,b</correct>
+<time_taken>36.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Uses="1" SuchThat="1" CondNum="3" RelNum="1" comment="Select variable used in one if container">3</id><querystr><![CDATA[variable v; Select v such that Uses (10, v)]]></querystr>
+<stuans>a,b,c,x</stuans>
+<correct>b,c,a,x</correct>
+<time_taken>29.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Uses="1" SuchThat="1" CondNum="3" RelNum="1" comment="Select variable used in one while container">4</id><querystr><![CDATA[variable v; Select v such that Uses (3, v)]]></querystr>
+<stuans>a,c,x</stuans>
+<correct>c,x,a</correct>
+<time_taken>30.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Uses="1" SuchThat="1" CondNum="3" RelNum="1" comment="Select stmt uses certain variable">5</id><querystr><![CDATA[stmt s; Select s such that Uses (s, "c")]]></querystr>
+<stuans>10,13,15,2,3,6,8,9</stuans>
+<correct>2,3,6,8,9,10,13,15</correct>
+<time_taken>29.000000</time_taken>
+<passed/>
+</query>
+</queries>
+</test_results>

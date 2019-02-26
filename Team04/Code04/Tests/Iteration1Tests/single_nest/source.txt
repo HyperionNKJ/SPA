@@ -1,0 +1,20 @@
+procedure P {
+	x = 2;					
+	z = 3;					
+	i = 5;					
+	if (x==1) then {		
+		read w;				
+		z = w + 1;			
+	}
+	else {
+		y = z + x;			
+	}
+	while (i != 0) {		
+		x = x - 1;			
+		z = z + x + i;		
+		i = i - 1;			
+	}
+	print p;				
+	x = z;					
+	z = i;					
+}

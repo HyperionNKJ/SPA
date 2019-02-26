@@ -1,0 +1,29 @@
+<?xml-stylesheet type="text/xsl" href="analysis.xsl"?>
+<test_results>
+<info>
+<name>Iteration1Tests</name><parsing_time_taken>35.000000</parsing_time_taken>
+</info>
+<queries>
+<query>
+<id ReturnTuple="1" Modifies="1" SuchThat="1" CondNum="3" RelNum="1" comment="Select variable modified in if container">1</id><querystr><![CDATA[variable v; if ifs; Select v such that Modifies (ifs, v)]]></querystr>
+<stuans>w,y,z</stuans>
+<correct>w,y,z</correct>
+<time_taken>30.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Modifies="1" SuchThat="1" CondNum="3" RelNum="1" comment="Select variable modified in while container">2</id><querystr><![CDATA[variable v; while w; Select v such that Modifies (w, v)]]></querystr>
+<stuans>i,x,z</stuans>
+<correct>x,z,i</correct>
+<time_taken>31.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Modifies="1" SuchThat="1" CondNum="3" RelNum="1" comment="Select stmt modifies certain variable">3</id><querystr><![CDATA[stmt s; Select s such that Modifies (s, "z")]]></querystr>
+<stuans>10,14,2,4,6,8</stuans>
+<correct>2,4,6,8,10,14</correct>
+<time_taken>36.000000</time_taken>
+<passed/>
+</query>
+</queries>
+</test_results>

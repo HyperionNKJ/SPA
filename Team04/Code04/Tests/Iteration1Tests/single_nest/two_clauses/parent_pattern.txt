@@ -1,0 +1,15 @@
+1 - Select stmt that is parent of assign with pattern
+stmt s; assign a;
+Select s such that Parent (s, a) pattern a ("x", _)
+8
+5000
+2 - Select assign with pattern that has while as parent
+while w; assign a;
+Select a such that Parent (w, a) pattern a (_, _"x"_)
+9, 10
+5000
+3 - Select assign with pattern that has if as parent
+assign a; if ifs;
+Select a such that Parent (ifs, a) pattern a ("z", _)
+6
+5000

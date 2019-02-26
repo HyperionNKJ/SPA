@@ -1,0 +1,29 @@
+<?xml-stylesheet type="text/xsl" href="analysis.xsl"?>
+<test_results>
+<info>
+<name>Iteration1Tests</name><parsing_time_taken>18.000000</parsing_time_taken>
+</info>
+<queries>
+<query>
+<id ReturnTuple="1" Modifies="1" SuchThat="1" CondNum="3" RelNum="1" comment="Select stmt such that Modifies (stmt, variable)">1</id><querystr><![CDATA[stmt s; variable v; Select s such that Modifies (s, v)]]></querystr>
+<stuans>1,10,2,3,4,5,6,8</stuans>
+<correct>1,2,3,4,5,6,8,10</correct>
+<time_taken>27.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Modifies="1" SuchThat="1" CondNum="3" RelNum="1" comment="Select assign such that Modifies (assign, variable)">2</id><querystr><![CDATA[assign a; variable v; Select a such that Modifies (a, v)]]></querystr>
+<stuans>1,10,2,3,4,5</stuans>
+<correct>1,2,3,4,5,10</correct>
+<time_taken>22.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Modifies="1" SuchThat="1" CondNum="3" RelNum="1" comment="Select read such that Modifies (read, variable)">3</id><querystr><![CDATA[read r; variable v; Select r such that Modifies (r, v)]]></querystr>
+<stuans>6,8</stuans>
+<correct>6,8</correct>
+<time_taken>28.000000</time_taken>
+<passed/>
+</query>
+</queries>
+</test_results>

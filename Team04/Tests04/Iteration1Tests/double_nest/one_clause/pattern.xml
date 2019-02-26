@@ -1,0 +1,36 @@
+<?xml-stylesheet type="text/xsl" href="analysis.xsl"?>
+<test_results>
+<info>
+<name>Iteration1Tests</name><parsing_time_taken>49.000000</parsing_time_taken>
+</info>
+<queries>
+<query>
+<id ReturnTuple="1" UnnamedVar="2" Pattern="1" CondNum="4" RelNum="0" comment="Select assign pattern (_, _)">1</id><querystr><![CDATA[assign a; Select a pattern a (_, _)]]></querystr>
+<stuans>11,12,13,14,15,16,4,5,7,8</stuans>
+<correct>4,5,7,8,11,12,13,14,15,16</correct>
+<time_taken>30.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" UnnamedVar="2" Pattern="1" CondNum="4" RelNum="0" comment="Select assign pattern (_, constant)">2</id><querystr><![CDATA[assign a; Select a pattern a (_, _"16"_)]]></querystr>
+<stuans>5</stuans>
+<correct>5</correct>
+<time_taken>35.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" UnnamedVar="1" Pattern="1" CondNum="3" RelNum="0" comment="Select assign pattern (_, expression)">3</id><querystr><![CDATA[assign a; Select a pattern a ("x", _)]]></querystr>
+<stuans>12,15,4</stuans>
+<correct>4,12,15</correct>
+<time_taken>43.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" UnnamedVar="2" Pattern="1" CondNum="4" RelNum="0" comment="Select assign pattern (_, _expression_)">4</id><querystr><![CDATA[assign a; Select a pattern a (_, _"x"_)]]></querystr>
+<stuans>12,13,16,4</stuans>
+<correct>4,12,13,16</correct>
+<time_taken>53.000000</time_taken>
+<passed/>
+</query>
+</queries>
+</test_results>

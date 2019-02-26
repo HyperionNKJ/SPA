@@ -1,0 +1,20 @@
+1 - Select assign pattern (_, _)
+assign a;
+Select a pattern a (_, _)
+4, 5, 7, 8, 11, 12, 13, 14, 15, 16
+5000
+2 - Select assign pattern (_, constant)
+assign a;
+Select a pattern a (_, _"16"_)
+5
+5000
+3 - Select assign pattern (_, expression)
+assign a;
+Select a pattern a ("x", _)
+4, 12, 15
+5000
+4 - Select assign pattern (_, _expression_)
+assign a;
+Select a pattern a (_, _"x"_)
+4, 12, 13, 16
+5000

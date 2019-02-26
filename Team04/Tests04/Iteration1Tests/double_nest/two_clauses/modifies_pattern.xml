@@ -1,0 +1,29 @@
+<?xml-stylesheet type="text/xsl" href="analysis.xsl"?>
+<test_results>
+<info>
+<name>Iteration1Tests</name><parsing_time_taken>48.000000</parsing_time_taken>
+</info>
+<queries>
+<query>
+<id ReturnTuple="1" Modifies="1" UnnamedVar="1" Pattern="1" SuchThat="1" CondNum="5" RelNum="1" comment="Select variable inside if container with certain assignment pattern">1</id><querystr><![CDATA[if ifs; assign a; variable v; Select v such that Modifies (ifs, v) pattern a (v, _"x"_)]]></querystr>
+<stuans>c,x</stuans>
+<correct>c,x</correct>
+<time_taken>42.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Modifies="1" UnnamedVar="1" Pattern="1" SuchThat="1" CondNum="5" RelNum="1" comment="Select assign with certain pattern inside if container that doesn't exist">2</id><querystr><![CDATA[if ifs; assign a; variable v; Select a such that Modifies (ifs, v) pattern a (v, _"y"_)]]></querystr>
+<stuans></stuans>
+<correct></correct>
+<time_taken>20.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Modifies="1" UnnamedVar="1" Pattern="1" SuchThat="1" CondNum="5" RelNum="1" comment="Select variable modified in while container with pattern">3</id><querystr><![CDATA[while w; assign a; variable v; Select v such that Modifies (w, v) pattern a (v, _"a"_)]]></querystr>
+<stuans>a,b,c,x</stuans>
+<correct>x,c,b,a</correct>
+<time_taken>47.000000</time_taken>
+<passed/>
+</query>
+</queries>
+</test_results>

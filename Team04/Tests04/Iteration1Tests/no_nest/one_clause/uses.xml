@@ -1,0 +1,29 @@
+<?xml-stylesheet type="text/xsl" href="analysis.xsl"?>
+<test_results>
+<info>
+<name>Iteration1Tests</name><parsing_time_taken>27.000000</parsing_time_taken>
+</info>
+<queries>
+<query>
+<id ReturnTuple="1" Uses="1" SuchThat="1" CondNum="3" RelNum="1" comment="Select stmt such that Uses (stmt, variable)">1</id><querystr><![CDATA[stmt s; variable v; Select s such that Uses (s, v)]]></querystr>
+<stuans>10,5,7,9</stuans>
+<correct>5,7,9,10</correct>
+<time_taken>31.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Uses="1" SuchThat="1" CondNum="3" RelNum="1" comment="Select assign such that Uses (assign, variable)">3</id><querystr><![CDATA[assign a; variable v; Select a such that Uses (a, v)]]></querystr>
+<stuans>10,5</stuans>
+<correct>5,10</correct>
+<time_taken>29.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Uses="1" SuchThat="1" CondNum="3" RelNum="1" comment="Select print such that Uses (print, variable)">4</id><querystr><![CDATA[print pn; variable v; Select pn such that Uses (pn, v)]]></querystr>
+<stuans>7,9</stuans>
+<correct>7,9</correct>
+<time_taken>28.000000</time_taken>
+<passed/>
+</query>
+</queries>
+</test_results>

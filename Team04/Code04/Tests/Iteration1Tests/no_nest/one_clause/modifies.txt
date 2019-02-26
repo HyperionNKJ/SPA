@@ -1,0 +1,15 @@
+1 - Select stmt such that Modifies (stmt, variable)
+stmt s; variable v;
+Select s such that Modifies (s, v)
+1, 2, 3, 4, 5, 6, 8, 10
+5000
+2 - Select assign such that Modifies (assign, variable)
+assign a; variable v;
+Select a such that Modifies (a, v)
+1, 2, 3, 4, 5, 10
+5000
+3 - Select read such that Modifies (read, variable)
+read r; variable v;
+Select r such that Modifies (r, v)
+6, 8
+5000

@@ -1,0 +1,92 @@
+<?xml-stylesheet type="text/xsl" href="analysis.xsl"?>
+<test_results>
+<info>
+<name>Iteration1Tests</name><parsing_time_taken>23.000000</parsing_time_taken>
+</info>
+<queries>
+<query>
+<id ReturnTuple="1" UnnamedVar="2" Pattern="1" CondNum="4" RelNum="0" comment="Select assign pattern (_, _)">1</id><querystr><![CDATA[assign a; Select a pattern a (_, _)]]></querystr>
+<stuans>1,10,2,3,4,5</stuans>
+<correct>1,2,3,4,5,10</correct>
+<time_taken>22.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" UnnamedVar="2" Pattern="1" CondNum="4" RelNum="0" comment="Select assign pattern (_, constant)">2</id><querystr><![CDATA[assign a; Select a pattern a (_, _"0"_)]]></querystr>
+<stuans>1</stuans>
+<correct>1</correct>
+<time_taken>26.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" UnnamedVar="2" Pattern="1" CondNum="4" RelNum="0" comment="Select assign pattern (_, variable)">3</id><querystr><![CDATA[assign a; Select a pattern a (_, _"x"_)]]></querystr>
+<stuans>5</stuans>
+<correct>5</correct>
+<time_taken>22.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" UnnamedVar="2" Pattern="1" CondNum="4" RelNum="0" comment="Select assign pattern (_, _variable_)">4</id><querystr><![CDATA[assign a; Select a pattern a (_, _"xx1"_)]]></querystr>
+<stuans>10</stuans>
+<correct>10</correct>
+<time_taken>21.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" UnnamedVar="1" Pattern="1" CondNum="3" RelNum="0" comment="Select assign pattern (variable, _)">5</id><querystr><![CDATA[assign a; variable v; Select a pattern a (v, _)]]></querystr>
+<stuans>1,10,2,3,4,5</stuans>
+<correct>1,2,3,4,5,10</correct>
+<time_taken>22.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" UnnamedVar="1" Pattern="1" CondNum="3" RelNum="0" comment="Select assign pattern (variable, constant)">6</id><querystr><![CDATA[assign a; variable v; Select a pattern a (v, _"0"_)]]></querystr>
+<stuans>1</stuans>
+<correct>1</correct>
+<time_taken>23.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" UnnamedVar="1" Pattern="1" CondNum="3" RelNum="0" comment="Select assign pattern (variable, variable)">7</id><querystr><![CDATA[assign a; variable v; Select a pattern a (v, _"x"_)]]></querystr>
+<stuans>5</stuans>
+<correct>5</correct>
+<time_taken>20.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" UnnamedVar="1" Pattern="1" CondNum="3" RelNum="0" comment="Select assign pattern (variable, _variable_)">8</id><querystr><![CDATA[assign a; variable v; Select a pattern a (v, _"xx1"_)]]></querystr>
+<stuans>10</stuans>
+<correct>10</correct>
+<time_taken>22.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" UnnamedVar="1" Pattern="1" CondNum="3" RelNum="0" comment="Select assign pattern (identity, _)">9</id><querystr><![CDATA[assign a; Select a pattern a ("x", _)]]></querystr>
+<stuans>1</stuans>
+<correct>1</correct>
+<time_taken>20.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" UnnamedVar="1" Pattern="1" CondNum="3" RelNum="0" comment="Select assign pattern (identity, constant)">10</id><querystr><![CDATA[assign a; Select a pattern a ("x", _"0"_)]]></querystr>
+<stuans>1</stuans>
+<correct>1</correct>
+<time_taken>21.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" UnnamedVar="1" Pattern="1" CondNum="3" RelNum="0" comment="Select assign pattern (identity, variable)">11</id><querystr><![CDATA[assign a; Select a pattern a ("y", _"x"_)]]></querystr>
+<stuans>5</stuans>
+<correct>5</correct>
+<time_taken>20.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" UnnamedVar="1" Pattern="1" CondNum="3" RelNum="0" comment="Select assign pattern (identity, _variable_)">12</id><querystr><![CDATA[assign a; Select a pattern a ("z", _"xx1"_)]]></querystr>
+<stuans>10</stuans>
+<correct>10</correct>
+<time_taken>20.000000</time_taken>
+<passed/>
+</query>
+</queries>
+</test_results>
