@@ -6,12 +6,12 @@ using namespace std;
 
 class DesignEntity {
 private:
-	string value;
-	Type type;
+	
 
 public:
+	string value;
+	Type type;
 	DesignEntity();
-	~DesignEntity();
 	DesignEntity(const string&, const Type&);
 
 	void setValue(const string&);

@@ -3,6 +3,7 @@
 Parent::Parent(const DesignEntity& paraOne, const DesignEntity& paraTwo) : Clause(paraOne, paraTwo) {}
 
 Result Parent::evaluate(const PKB& pkb) {
+	Clause;
 	this->pkb = pkb;
 	Type paraOneType = paraOne.getType();
 	Type paraTwoType = paraTwo.getType();

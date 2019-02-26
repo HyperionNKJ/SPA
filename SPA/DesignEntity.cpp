@@ -2,8 +2,6 @@
 
 DesignEntity::DesignEntity() {}
 
-DesignEntity::~DesignEntity() {}
-
 DesignEntity::DesignEntity(const string& value, const Type& type) {
 	this->value = value;
 	this->type = type;
