@@ -314,6 +314,7 @@ int Parser::handleAssignment(string assignmentLine) {
 	}
 	pkb->insertAssignStmt(statementNumber, lhsVar, assignTokens);
 	pkb->insertStmtType(statementNumber, ASSIGN);
+	currentFollowVector.push_back(statementNumber);
 	return 0;
 }
 
