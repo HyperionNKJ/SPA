@@ -188,8 +188,8 @@ bool QueryParser::parsePatternClause(const std::string& clause) {
 	return query.addPatternClause(assign, paramOne, paramTwo);
 }
 
-Type QueryParser::getParameterType(const std::string value) {
-	static std::string test = "^(_)$|^(" + INT + ")$|^(" + IDENT + ")$|^\"(" + IDENT + ")\"$|^(_\"" + IDENT + "\"_)|^(_\"" + INT + "\"_)$";
+Type QueryParser::getParameterType(std::string& value) {
+	static std::string test = "^(_)$|^(" + INT + ")$|^(" + IDENT + ")$|^\"(" + IDENT + ")\"$|^_\"(" + IDENT + ")\"_|^_\"(" + INT + ")\"_$";
 	static std::regex const A(test);
 	std::smatch match;
 	std::regex_search(value, match, A);
@@ -200,6 +200,18 @@ Type QueryParser::getParameterType(const std::string value) {
 
 	if (match[3].matched) {
 		return Type::ASSIGN;
+	}
+
+	if (match[4].matched) {
+		value = match[4].str();
+	}
+
+	if (match[5].matched) {
+		value = match[5].str();
+	}
+
+	if (match[6].matched) {
+		value = match[6].str();
 	}
 
 	return Type::FIXED;

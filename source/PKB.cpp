@@ -16,7 +16,7 @@ using namespace std;
 // Frontend APIs
 bool PKB::insertVar(string varName)
 {
-	if (varSet.count(varName))
+	if (!varSet.count(varName))
 	{
 		varSet.insert(varName);
 		varTableByIdx.push_back(varName);
@@ -33,7 +33,7 @@ bool PKB::insertConstant(int constant)
 
 bool PKB::insertProc(string procName)
 {
-	if (procTableByName.count(procName))
+	if (!procTableByName.count(procName))
 	{
 		procSet.insert(procName);
 		procTableByIdx.push_back(procName);
@@ -64,6 +64,9 @@ bool PKB::insertStmtType(int stmtNum, Type type)
 			break;
 		case ASSIGN:
 			typedStmtSet = assignStmts;
+			break;
+		case PRINT:
+			typedStmtSet = printStmts;
 			break;
 		}
 		isValidStmt = typedStmtSet.insert(stmtNum).second;
