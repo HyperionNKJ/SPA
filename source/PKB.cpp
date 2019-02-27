@@ -43,7 +43,7 @@ bool PKB::insertStmtType(int stmtNum, Type type) {
 	unordered_set<int> *typedStmtSet;
 	isValidStmt = allStmts.insert(stmtNum).second;
 
-	if (isValidStmt) {
+	if (isValidStmt && type != STATEMENT) {
 		switch (type) {
 		case READ:
 			typedStmtSet = &readStmts;
