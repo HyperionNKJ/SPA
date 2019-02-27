@@ -9,7 +9,7 @@ error_cases = []
 cmd = r"..\..\Debug\AutoTester.exe"
 for root, dirs, files in os.walk("."):
 	for nest in dirs:
-		source = nest + "\\source.txt"
+		source = nest + '\\' + nest + "_source.txt"
 		for root2, dirs2, files2 in os.walk(nest):
 			for file in files2:
 				if 'txt' in file and 'source' not in file:
