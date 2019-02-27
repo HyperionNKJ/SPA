@@ -19,15 +19,10 @@ static int WHILECONTAINER = 100;
 static int IFCONTAINER = 101;
 static int ELSECONTAINER = 102;
 
-namespace UnitTesting
-{
-	TEST_CLASS(TestParser)
-	{
+namespace UnitTesting {
+	TEST_CLASS(TestParser) {
 	public:
-
-		
-		TEST_METHOD(TestCheckProcedure)
-		{
+		TEST_METHOD(TestCheckProcedure) {
 			Parser parser;
 			bool result;
 
@@ -264,16 +259,16 @@ namespace UnitTesting
 			result = parser.getStatementIntent("procedure while{");
 			Assert::AreEqual(result, KEY_PROCEDURE, L"incorrect", LINE_INFO());
 
-			result = parser.getStatementIntent("while ((A < B) && (b > c)) {");
+			result = parser.getStatementIntent("while ((A >= B) && (b != c)) {");
 			Assert::AreEqual(result, KEY_WHILE, L"incorrect", LINE_INFO());
 
-			result = parser.getStatementIntent("while (if < read) {");
+			result = parser.getStatementIntent("while (if <= read) {");
 			Assert::AreEqual(result, KEY_WHILE, L"incorrect", LINE_INFO());
 
-			result = parser.getStatementIntent("if ((a < b) || (B > C)) then {");
+			result = parser.getStatementIntent("if ((a == b) || (B >= C)) then {");
 			Assert::AreEqual(result, KEY_IF, L"incorrect", LINE_INFO());
 
-			result = parser.getStatementIntent("if ((then < while) && (read+print<procedure)) {");
+			result = parser.getStatementIntent("if ((then > while) && (read+print<procedure)) {");
 			Assert::AreEqual(result, KEY_IF, L"incorrect", LINE_INFO());
 
 			result = parser.getStatementIntent("read First;");
@@ -321,24 +316,99 @@ namespace UnitTesting
 			Assert::AreEqual(0, expectedProc.compare(parser.getCurrentProcedure()), L"incorrect", LINE_INFO());
 		}
 
+		/*Tests to handle statements in the code must ensure the following update correctly
+		Or are not updated, depending on the statement type.
+		Parent Vector, Follow Vector, All Follow Stack, statement number
+		Also ensure correct return integer to signal success or failure
+		*/
 		TEST_METHOD(TestHandleAssignment) {
 			Parser parser;
 			PKB pkb;
 			parser.setPKB(&pkb);
 			int result;
 			
-			parser.setStatementNumber(5);
-			vector<int> testFollowVector = vector<int>();
-			testFollowVector.push_back(3);
-			testFollowVector.push_back(4);
+			parser.setStatementNumber(7);
+			vector<int> testFollowVector = { 5, 6 };
 			vector<int> expectedFollowVector = vector<int>(testFollowVector);
 			expectedFollowVector.push_back(5);
-			parser.setCurrentFollowVector(testFollowVector);
+			vector<int> expectedParentVector = { 1, 2 };
 
-			result = parser.handleAssignment("myvar		=	(a+b) *c *( d + e )");
+			vector<int> tempVector = { 4 };
+			vector<vector<int>> expectedAllFollowStack = vector<vector<int>>();
+			expectedAllFollowStack.push_back(tempVector);
+
+			parser.setParentVector(expectedParentVector);
+			parser.setCurrentFollowVector(testFollowVector);
+			parser.setAllFollowStack(expectedAllFollowStack);
+
+			result = parser.handleAssignment("myvar		=	((a+b)*d) *c *((( d + e ) * f) * (g+h))");
 			Assert::AreEqual(result, 0, L"incorrect", LINE_INFO());
 			bool equalFollowVector = parser.getCurrentFollowVector() == expectedFollowVector;
+			bool equalParentVector = parser.getParentVector() == expectedParentVector;
+			bool equalAllFollowStack = parser.getAllFollowStack() == expectedAllFollowStack;
 			Assert::IsTrue(equalFollowVector, L"incorrect", LINE_INFO());
+			Assert::IsTrue(equalParentVector, L"incorrect", LINE_INFO());
+			Assert::IsTrue(equalAllFollowStack, L"incorrect", LINE_INFO());
+		}
+
+		TEST_METHOD(TestHandleRead) {
+			Parser parser;
+			PKB pkb;
+			parser.setPKB(&pkb);
+			int result;
+
+			parser.setStatementNumber(7);
+			vector<int> testFollowVector = { 5, 6 };
+			vector<int> expectedFollowVector = vector<int>(testFollowVector);
+			expectedFollowVector.push_back(7);
+			vector<int> expectedParentVector = { 1, 2 };
+
+			vector<int> tempVector = { 4 };
+			vector<vector<int>> expectedAllFollowStack = vector<vector<int>>();
+			expectedAllFollowStack.push_back(tempVector);
+			
+			parser.setParentVector(expectedParentVector);
+			parser.setCurrentFollowVector(testFollowVector);
+			parser.setAllFollowStack(expectedAllFollowStack);
+
+			result = parser.handleAssignment("  read   something  ;");
+			Assert::AreEqual(result, 0, L"incorrect", LINE_INFO());
+			bool equalFollowVector = parser.getCurrentFollowVector() == expectedFollowVector;
+			bool equalParentVector = parser.getParentVector() == expectedParentVector;
+			bool equalAllFollowStack = parser.getAllFollowStack() == expectedAllFollowStack;
+			Assert::IsTrue(equalFollowVector, L"incorrect", LINE_INFO());
+			Assert::IsTrue(equalParentVector, L"incorrect", LINE_INFO());
+			Assert::IsTrue(equalAllFollowStack, L"incorrect", LINE_INFO());
+		}
+
+		TEST_METHOD(TestHandlePrint) {
+			Parser parser;
+			PKB pkb;
+			parser.setPKB(&pkb);
+			int result;
+
+			parser.setStatementNumber(7);
+			vector<int> testFollowVector = { 5, 6 };
+			vector<int> expectedFollowVector = vector<int>(testFollowVector);
+			expectedFollowVector.push_back(7);
+			vector<int> expectedParentVector = { 1, 2 };
+
+			vector<int> tempVector = { 4 };
+			vector<vector<int>> expectedAllFollowStack = vector<vector<int>>();
+			expectedAllFollowStack.push_back(tempVector);
+
+			parser.setParentVector(expectedParentVector);
+			parser.setCurrentFollowVector(testFollowVector);
+			parser.setAllFollowStack(expectedAllFollowStack);
+
+			result = parser.handleAssignment("	print   otherstuff  ;");
+			Assert::AreEqual(result, 0, L"incorrect", LINE_INFO());
+			bool equalFollowVector = parser.getCurrentFollowVector() == expectedFollowVector;
+			bool equalParentVector = parser.getParentVector() == expectedParentVector;
+			bool equalAllFollowStack = parser.getAllFollowStack() == expectedAllFollowStack;
+			Assert::IsTrue(equalFollowVector, L"incorrect", LINE_INFO());
+			Assert::IsTrue(equalParentVector, L"incorrect", LINE_INFO());
+			Assert::IsTrue(equalAllFollowStack, L"incorrect", LINE_INFO());
 		}
 
 		TEST_METHOD(TestHandleWhile) {
@@ -347,23 +417,17 @@ namespace UnitTesting
 			parser.setPKB(&pkb);
 			int result;
 			
-			vector<int> testFollowVector = vector<int>();
+			vector<int> testFollowVector = { 6, 7 };
 			vector<int> expectedFollowVector = vector<int>();
-			testFollowVector.push_back(6);
-			testFollowVector.push_back(7);
-			expectedFollowVector.clear();
 
 			vector<vector<int>> testAllFollowStack = vector<vector<int>>();
-			vector<int> tempVector = vector<int>();
-			tempVector.push_back(2);
+			vector<int> tempVector = { 2 };
 			testAllFollowStack.push_back(tempVector);
 			vector<vector<int>> expectedAllFollowStack = vector<vector<int>>(testAllFollowStack);
-			tempVector = vector<int>(testFollowVector);
-			tempVector.push_back(8);
+			tempVector = { 6, 7, 8 };
 			expectedAllFollowStack.push_back(tempVector);
-			
-			vector<int> testParentVector = vector<int>();
-			testParentVector.push_back(1);
+
+			vector<int> testParentVector = { 1 };
 			vector<int> expectedParentVector = vector<int>(testParentVector);
 			expectedParentVector.push_back(8);
 
@@ -372,7 +436,12 @@ namespace UnitTesting
 			parser.setParentVector(testParentVector);
 			parser.setAllFollowStack(testAllFollowStack);
 
-			result = parser.handleWhile("while   (a < b ) {");
+			parser.setStatementNumber(8);
+			parser.setCurrentFollowVector(testFollowVector);
+			parser.setParentVector(testParentVector);
+			parser.setAllFollowStack(testAllFollowStack);
+
+			result = parser.handleWhile("while   (( a >= b ) || ((b == c ) && (d != e ) ) ){");
 			//check that success is returned, parent vector is updated
 			//follow vectors are updated
 			Assert::AreEqual(result, 0, L"incorrect", LINE_INFO());
@@ -385,29 +454,24 @@ namespace UnitTesting
 			}
 
 		TEST_METHOD(TestHandleIf) {
-			//essentially same test as while
 			Parser parser;
 			PKB pkb;
 			parser.setPKB(&pkb);
 			int result;
-
-			vector<int> testFollowVector = vector<int>();
+			//setup
+			vector<int> testFollowVector = { 6, 7 };
 			vector<int> expectedFollowVector = vector<int>();
-			testFollowVector.push_back(6);
-			testFollowVector.push_back(7);
 			expectedFollowVector.clear();
 
 			vector<vector<int>> testAllFollowStack = vector<vector<int>>();
-			vector<int> tempVector = vector<int>();
-			tempVector.push_back(2);
+			vector<int> tempVector = { 2 };
 			testAllFollowStack.push_back(tempVector);
 			vector<vector<int>> expectedAllFollowStack = vector<vector<int>>(testAllFollowStack);
-			tempVector = vector<int>(testFollowVector);
-			tempVector.push_back(8);
+			tempVector.clear();
+			tempVector = { 6, 7, 8 };
 			expectedAllFollowStack.push_back(tempVector);
 
-			vector<int> testParentVector = vector<int>();
-			testParentVector.push_back(1);
+			vector<int> testParentVector = { 1 };
 			vector<int> expectedParentVector = vector<int>(testParentVector);
 			expectedParentVector.push_back(8);
 
@@ -416,7 +480,7 @@ namespace UnitTesting
 			parser.setParentVector(testParentVector);
 			parser.setAllFollowStack(testAllFollowStack);
 
-			result = parser.handleIf("if (((a<b)||(b<c)) && (d==e)) then  {");
+			result = parser.handleIf("if (((a<b)||(b<c)) && (!(d==e))) then  {");
 			//check that success is returned, parent vector is updated
 			//follow vectors are updated
 			Assert::AreEqual(result, 0, L"incorrect", LINE_INFO());
@@ -426,6 +490,7 @@ namespace UnitTesting
 			Assert::IsTrue(equalFollowVector, L"incorrect", LINE_INFO());
 			Assert::IsTrue(equalParentVector, L"incorrect", LINE_INFO());
 			Assert::IsTrue(equalAllFollowStack, L"incorrect", LINE_INFO());
+			Assert::AreEqual(9, parser.getStatementNumber(), L"incorrect", LINE_INFO());
 		}
 	};
 }
