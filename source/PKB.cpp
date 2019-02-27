@@ -726,8 +726,8 @@ unordered_set<int> PKB::getParentTOf(int stmtNum, Type parentType) {
 
 	if (childrenTMap.count(stmtNum)) {
 		for (const auto &elem : childrenTMap[stmtNum]) {
-			if (typedStmtSet.count(stmtNum)) {
-				resultSet.insert(stmtNum);
+			if (typedStmtSet.count(elem)) {
+				resultSet.insert(elem);
 			}
 		}
 	}
@@ -796,8 +796,8 @@ unordered_set<int> PKB::getChildrenTOf(int stmtNum, Type childrenType) {
 
 	if (parentTMap.count(stmtNum)) {
 		for (const auto &elem : parentTMap[stmtNum]) {
-			if (typedStmtSet.count(stmtNum)) {
-				resultSet.insert(stmtNum);
+			if (typedStmtSet.count(elem)) {
+				resultSet.insert(elem);
 			}
 		}
 	}
