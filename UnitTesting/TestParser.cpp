@@ -19,15 +19,11 @@ static int WHILECONTAINER = 100;
 static int IFCONTAINER = 101;
 static int ELSECONTAINER = 102;
 
-namespace UnitTesting
-{
-	TEST_CLASS(TestParser)
-	{
+namespace UnitTesting {
+	TEST_CLASS(TestParser) {
 	public:
 
-		
-		TEST_METHOD(TestCheckProcedure)
-		{
+		TEST_METHOD(TestCheckProcedure) {
 			Parser parser;
 			bool result;
 
