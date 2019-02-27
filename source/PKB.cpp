@@ -1060,8 +1060,8 @@ unordered_set<int> PKB::getLeaderTOf(int stmtNum, Type leaderType) {
 
 	if (followerTMap.count(stmtNum)) {
 		for (const auto &elem : followerTMap[stmtNum]) {
-			if (typedStmtSet.count(stmtNum)) {
-				resultSet.insert(stmtNum);
+			if (typedStmtSet.count(elem)) {
+				resultSet.insert(elem);
 			}
 		}
 	}
