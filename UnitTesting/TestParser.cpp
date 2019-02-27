@@ -330,7 +330,7 @@ namespace UnitTesting {
 			parser.setStatementNumber(7);
 			vector<int> testFollowVector = { 5, 6 };
 			vector<int> expectedFollowVector = vector<int>(testFollowVector);
-			expectedFollowVector.push_back(5);
+			expectedFollowVector.push_back(7);
 			vector<int> expectedParentVector = { 1, 2 };
 
 			vector<int> tempVector = { 4 };
@@ -490,7 +490,6 @@ namespace UnitTesting {
 			Assert::IsTrue(equalFollowVector, L"incorrect", LINE_INFO());
 			Assert::IsTrue(equalParentVector, L"incorrect", LINE_INFO());
 			Assert::IsTrue(equalAllFollowStack, L"incorrect", LINE_INFO());
-			Assert::AreEqual(9, parser.getStatementNumber(), L"incorrect", LINE_INFO());
 		}
 	};
 }
