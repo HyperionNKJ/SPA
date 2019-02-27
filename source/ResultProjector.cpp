@@ -1,6 +1,6 @@
 #include "ResultProjector.h"
 #include "DesignEntity.h"
-#include "../source/PKB.h"
+#include "PKB.h"
 #include <iostream>
 #include <string>
 

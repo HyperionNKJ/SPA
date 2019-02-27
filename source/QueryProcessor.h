@@ -1,7 +1,7 @@
 #pragma once
 
 #include <list>
-#include "../SOURCE/PKB.h"
+#include "PKB.h"
 #include "QueryPreprocessor.h"
 #include "QueryEvaluator.h"
 

@@ -3,7 +3,7 @@
 #include <list>
 #include "DesignEntity.h"
 #include "Result.h"
-#include "../SOURCE/PKB.h"
+#include "PKB.h"
 
 using namespace std;
 

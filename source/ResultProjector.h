@@ -1,7 +1,7 @@
 #pragma once
 
 #include "DesignEntity.h"
-#include "../source/PKB.h"
+#include "PKB.h"
 #include <stdio.h>
 #include <iostream>
 #include <unordered_set>
