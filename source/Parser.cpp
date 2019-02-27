@@ -34,7 +34,13 @@ static string openCurlyRegex = "\\{";
 
 int Parser::parse(string fileName, PKB& p) {
 	pkb = &p;
-	loadFile(fileName);
+	try {
+		loadFile(fileName);
+	}
+	catch (int n) {
+		cout << "Failed to open file" << endl;
+		return -1;
+	}
 	for (unsigned int i = 0; i < sourceCode.size(); i++) {
 		int intent = getStatementIntent(sourceCode[i]);
 		int result = 0;
@@ -99,7 +105,7 @@ int Parser::parse(string fileName, PKB& p) {
 		}
 		//early termination if parsing fails at any point
 		if (result != 0) {
-			break;
+			return -1;
 		}
 	}
 	return 0;
@@ -649,6 +655,9 @@ int Parser::handleCloseBracket(string closeBracket) {
 vector<string> Parser::loadFile(string fileName) {
 	ifstream sourceFile;
 	sourceFile.open(fileName);
+	if (sourceFile.fail()) {
+		throw;
+	}
 	string currLine;
 	string allSourceCode = "";
 	while (getline(sourceFile, currLine)) {
