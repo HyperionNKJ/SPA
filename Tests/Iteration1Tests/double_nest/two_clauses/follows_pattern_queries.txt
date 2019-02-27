@@ -19,7 +19,12 @@ Select a1 such that Follows* (a1, a2) pattern a2 (_, _"x"_)
 12, 15
 5000
 5 - Select assign with constant that indirectly follows read
-assign a2; read r1;
-Select a1 such that Follows (r1, a2) pattern a2 (_, _"x"_) 
-none
+assign a1; read r1;
+Select a1 such that Follows* (r1, a1) pattern a1 (_, _"x"_) 
+16
+5000
+6 - Select assign with constant that is indirectly followed by stmt
+stmt s; assign a1; variable v;
+Select s such that Follows* (s, a1) pattern a1 (v, _"x"_) 
+12, 15, 1, 2, 9
 5000

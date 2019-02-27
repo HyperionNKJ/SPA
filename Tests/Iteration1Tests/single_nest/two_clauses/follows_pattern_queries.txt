@@ -13,3 +13,13 @@ assign a;
 Select a such that Follows* (1, a) pattern a ("z", _"i"_) 
 14
 5000
+4 - Select assign that is indirectly followed by stmt and modifies a variable
+assign a; stmt s; variable v;
+Select a such that Follows* (s, a) pattern a (v, _) 
+2, 3, 6, 10, 11, 13, 14
+5000
+5 - Select stmt that is indirectly follows assign that modifies a variable
+assign a; stmt s; variable v;
+Select s such that Follows* (s, a) pattern a (v, _) 
+1, 2, 3, 4, 5, 8, 9, 10, 12, 13
+5000

@@ -8,8 +8,23 @@ assign a;
 Select a pattern a (_, _"w"_)
 6
 5000
-3 - Select assign pattern withint while container
+3 - Select assign pattern within while andn if container
 assign a;
 Select a pattern a (_, _"x"_)
 7, 9, 10
+5000
+4 - Select variable for any assign that modifies x 
+variable v; assign a1;
+Select v pattern a1 (v, _"x"_)
+y, x, z
+5000
+5 - Select all assign if assign pattern is true
+assign a; assign a1; variable v;
+Select a pattern a1 (v, _"x"_)
+1, 2, 3, 6, 7, 9, 10, 11, 13, 14
+5000
+6 - Invalid query
+assign a1;
+Select a pattern a1 (v, _"x"_)
+none
 5000

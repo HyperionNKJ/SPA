@@ -13,3 +13,18 @@ stmt s;
 Select s such that Modifies (s, "z")
 2, 4, 6, 8, 10, 14
 5000
+4 - Select variable modified in specified stmt
+variable v;
+Select v such that Modifies (4, v)
+w, z, y
+5000
+5 - Select assign modifies any variable
+assign a;
+Select a such that Modifies (a, _)
+1, 2, 3, 6, 7, 9, 10, 11, 13, 14
+5000
+6 - Invalid query
+assign a;
+Select a such that Modifies (_, a)
+none
+5000

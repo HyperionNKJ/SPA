@@ -23,3 +23,8 @@ stmt s;
 Select s such that Uses (s, "z")
 4, 7, 8, 10, 13
 5000
+6 - Select all stmts if specified stmt uses z
+stmt s;
+Select s such that Uses (7, "z")
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
+5000
