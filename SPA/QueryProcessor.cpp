@@ -9,7 +9,9 @@ std::list<std::string> QueryProcessor::evaluate(const std::string& query, const 
 	if (!isValidQuery) {
 		return results; // invalid query
 	}
+
 	ProcessedQuery processedQuery = queryPreprocessor.getProcessedQuery();
+
 	results = queryEvaluator.evaluate(processedQuery, pkb);
 	return results;
 }

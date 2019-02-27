@@ -8,6 +8,13 @@
 
 class ProcessedQuery {
 public:
+	std::unordered_map<std::string, Type> declarations;
+	SuchThatClause suchThatClause;
+	PatternClause patternClause;
+	std::string synonym;
+	bool hasSuchThatClause;
+	bool hasPatternClause;
+
 	ProcessedQuery();
 
 	bool insertDeclaration(const std::string& synonym,
@@ -24,16 +31,5 @@ public:
 		const DesignEntity& paramTwo);
 
 	std::unordered_set<Clause*> getClauses();
-	bool hasValidSynonyms();
 	DesignEntity getSelectedSynonym();
-private:
-	std::unordered_map<std::string, Type> declarations;
-
-	bool hasSuchThatClause;
-	bool hasPatternClause;
-	
-	std::string synonym;
-
-	SuchThatClause suchThatClause;
-	PatternClause patternClause;
 };

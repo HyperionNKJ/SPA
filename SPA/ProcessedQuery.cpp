@@ -117,19 +117,6 @@ std::unordered_set<Clause*> ProcessedQuery::getClauses() {
 	return clauses;
 }
 
-bool ProcessedQuery::hasValidSynonyms() {
-	std::string paramOneValue = suchThatClause.paramOne.getValue();
-	std::string paramTwoValue = suchThatClause.paramTwo.getValue();
-
-	if (declarations.find(paramOneValue) == declarations.end()
-		|| declarations.find(paramTwoValue) == declarations.end()
-		|| declarations.find(synonym) == declarations.end()) {
-		return false;
-	}
-
-	return true;
-}
-
 DesignEntity ProcessedQuery::getSelectedSynonym() {
 	return DesignEntity(synonym, declarations[synonym]);
 }
