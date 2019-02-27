@@ -31,8 +31,8 @@
     <ClCompile Include="DesignEntity.cpp" />
     <ClCompile Include="ModifiesS.cpp" />
     <ClCompile Include="QueryEvaluator.cpp" />
-    <ClCompile Include="QueryProcessor.cpp" />
     <ClCompile Include="Result.cpp" />
+    <ClCompile Include="QueryProcessor.cpp" />
     <ClCompile Include="Statement.cpp" />
     <ClCompile Include="SuchThatClause.cpp" />
     <ClCompile Include="UsesS.cpp" />
@@ -100,6 +100,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <AdditionalIncludeDirectories>$(Solutiondir)source;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
