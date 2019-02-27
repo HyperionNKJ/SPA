@@ -13,3 +13,8 @@ assign a; if ifs;
 Select a such that Parent* (ifs, a) pattern a ("k", _)
 none
 5000
+4 - Select assign with pattern that indirectly has specified stmt as parent
+assign a; if ifs;
+Select a such that Parent* (2, a) pattern a ("c", _)
+5, 7
+5000

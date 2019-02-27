@@ -13,3 +13,13 @@ while w; assign a; variable v;
 Select v such that Modifies (w, v) pattern a (v, _"x"_)
 x, z
 5000
+4 - Select variable modified in assign with pattern
+assign a; variable v;
+Select v such that Modifies (a, v) pattern a (v, _"x"_)
+x, y, z
+5000
+5 - Select while that modifies a variable if pattern is true
+while w; assign a;
+Select w such that Modifies (w, _) pattern a (_, _"x"_)
+8
+5000
