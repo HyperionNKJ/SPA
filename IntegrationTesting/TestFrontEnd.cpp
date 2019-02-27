@@ -2,6 +2,7 @@
 #include "CppUnitTest.h"
 #include "Parser.h"
 #include "PKB.h"
+#include "Type.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -24,11 +25,10 @@ namespace IntegrationTesting {
 			procs = pkb.getAllProcedures();
 			Assert::AreEqual(1, (int) procs.size(), L"incorrect", LINE_INFO());
 
-			string wrongName = "All your base are belong to us.";
-			for (string it : procs) {
-				Assert::AreEqual(procName, it, L"incorrect", LINE_INFO());
-				Assert::AreNotEqual(wrongName, it, L"incorrect", LINE_INFO());
-			}
+			unordered_set<string> expectedProcs;
+			expectedProcs.insert(procName);
+			bool equalProcs = procs == expectedProcs;
+			Assert::IsTrue(equalProcs, L"incorrect", LINE_INFO());
 		}
 
 		TEST_METHOD(TestInsertAssignment) {
@@ -43,21 +43,31 @@ namespace IntegrationTesting {
 			Assert::AreEqual((int) vars.size(), 0, L"incorrect", LINE_INFO());
 			Assert::AreEqual((int) consts.size(), 0, L"incorrect", LINE_INFO());
 
-			string correctVars[] = {"a", "b", "c", "d"};
-			int correctConsts[] = {1, 10};
+			//setup
+			int stmtNumber = 4;
+			parser.setStatementNumber(stmtNumber);
+			parser.setParentVector({ 1 , 2 });
+			unordered_set<string> expectedVars = {"a", "b", "c", "d"};
+			unordered_set<int> expectedConsts = {1, 10};
 			parser.handleAssignment("a		=	b + c*d - 1 * 10");
 
-			vars = pkb.getAllVariables();
-			consts = pkb.getAllConstant();
-			Assert::AreEqual((int) sizeof(correctVars) / sizeof(correctVars[0]), (unsigned int) vars.size(), L"incorrect", LINE_INFO());
-			Assert::AreEqual((int) sizeof(correctConsts) / sizeof(correctConsts[0]), (unsigned int) consts.size(), L"incorrect", LINE_INFO());
-
-			for (string it : correctVars) {
-				Assert::IsTrue(vars.find(it) != vars.end(), L"incorrect", LINE_INFO());
-			}
-			for (int it : correctConsts) {
-				Assert::IsTrue(consts.find(it) != consts.end(), L"incorrect", LINE_INFO());
-			}
+			//test expected values
+			//test var/const table
+			bool equalVars = pkb.getAllVariables() == expectedVars;
+			bool equalConsts = pkb.getAllConstant() == expectedConsts;
+			Assert::IsTrue(equalVars, L"incorrect", LINE_INFO());
+			Assert::IsTrue(equalConsts, L"incorrect", LINE_INFO());
+			//test assignment tables
+			unordered_set<int> expectedAssignStmts = { 4 };
+			bool equalAssignStmts = pkb.getAssignStmts == expectedAssignStmts;
+			Assert::IsTrue(equalAssignStmts, L"incorrect", LINE_INFO());
+			//test statement modifies var and var modified by stmt is correct
+			unordered_set<string> expectedModifiedVar = { "a" };
+			bool equalModifiedVars = pkb.getVarModifiedByStmt(stmtNumber) == expectedModifiedVar;
+			Assert::IsTrue(equalModifiedVars, L"incorrect", LINE_INFO());
+			unordered_set<int> expectedModifyingStmt = { 4 };
+			bool equalModifyingStmt = pkb.getStmtsThatModifiesVar("a", ASSIGN) == expectedModifyingStmt;
+			Assert::IsTrue(equalModifyingStmt, L"incorrect", LINE_INFO());
 		}
 
 		TEST_METHOD(TestNoNestSource) {
