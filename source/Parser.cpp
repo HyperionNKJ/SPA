@@ -37,7 +37,7 @@ int Parser::parse(string fileName, PKB& p) {
 	try {
 		loadFile(fileName);
 	}
-	catch (int n) {
+	catch (int err) {
 		cout << "Failed to open file" << endl;
 		return -1;
 	}
@@ -388,6 +388,10 @@ bool Parser::checkWhile(string whileLine) {
 	//then call functions to check validity of the cond expr
 	size_t firstOpenBracket = whileLine.find_first_of("(");
 	size_t lastCloseBracket = whileLine.find_last_of(")");
+	if (firstOpenBracket == string::npos || lastCloseBracket == string::npos) {
+		cout << "Missing ( and ) brackets around the conditional expession at line " << statementNumber << endl;
+		return false;
+	}
 	string truncWhileLine = whileLine.substr(0, firstOpenBracket) + whileLine.substr(lastCloseBracket+1, string::npos);
 	string condExprLine = whileLine.substr(firstOpenBracket, lastCloseBracket - firstOpenBracket + 1);
 	string whileRegexString = spaceRegex + "while" + spaceRegex + openCurlyRegex + spaceRegex;
@@ -438,6 +442,10 @@ bool Parser::checkIf(string ifLine) {
 	//practically the same as while
 	size_t firstOpenBracket = ifLine.find_first_of("(");
 	size_t lastCloseBracket = ifLine.find_last_of(")");
+	if (firstOpenBracket == string::npos || lastCloseBracket == string::npos) {
+		cout << "Missing ( and ) brackets around the conditional expression at line " << statementNumber << endl;
+		return false;
+	}
 	string truncIfLine = ifLine.substr(0, firstOpenBracket) + ifLine.substr(lastCloseBracket+1, string::npos);
 	string condExprLine = ifLine.substr(firstOpenBracket, lastCloseBracket - firstOpenBracket + 1);
 	string ifRegexString = spaceRegex + "if" + spaceRegex + "then" + spaceRegex + openCurlyRegex + spaceRegex;

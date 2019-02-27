@@ -200,7 +200,17 @@ namespace UnitTesting {
 		TEST_METHOD(TestCheckWhile) {
 			Parser parser;
 			bool result;
+
+			result = parser.checkWhile("while ((A < B) && (C != E)) {");
+			Assert::AreEqual(result, true, L"incorrect", LINE_INFO());
+
 			result = parser.checkWhile("while () {");
+			Assert::AreEqual(result, false, L"incorrect", LINE_INFO());
+
+			result = parser.checkWhile("while (a < b) then {");
+			Assert::AreEqual(result, false, L"incorrect", LINE_INFO());
+
+			result = parser.checkWhile("while a < b {");
 			Assert::AreEqual(result, false, L"incorrect", LINE_INFO());
 		}
 
