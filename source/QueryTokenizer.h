@@ -1,5 +1,6 @@
 #pragma once
 
+#include <regex>
 #include <unordered_set>
 #include "Statement.h"
 
