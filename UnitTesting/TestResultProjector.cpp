@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
-#include "../SPA/ResultProjector.h"
+#include "ResultProjector.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 

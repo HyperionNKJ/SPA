@@ -15,165 +15,160 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\source\Clause.cpp">
+    <ClCompile Include="DesignExtractor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\DesignEntity.cpp">
+    <ClCompile Include="Parser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\DesignExtractor.cpp">
+    <ClCompile Include="PKB.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\Follows.cpp">
+    <ClCompile Include="TNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\FollowsT.cpp">
+    <ClCompile Include="ResultProjector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\ModifiesS.cpp">
+    <ClCompile Include="DesignEntity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\Parent.cpp">
+    <ClCompile Include="Clause.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\ParentT.cpp">
+    <ClCompile Include="ModifiesS.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\Parser.cpp">
+    <ClCompile Include="Result.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\Pattern.cpp">
+    <ClCompile Include="UsesS.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\PatternClause.cpp">
+    <ClCompile Include="QueryEvaluator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\PKB.cpp">
+    <ClCompile Include="ProcessedQuery.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\ProcessedQuery.cpp">
+    <ClCompile Include="QueryParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\QueryEvaluator.cpp">
+    <ClCompile Include="PatternClause.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\QueryParser.cpp">
+    <ClCompile Include="QueryPreprocessor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\QueryPreprocessor.cpp">
+    <ClCompile Include="QueryPreprocessorHelper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\QueryPreprocessorHelper.cpp">
+    <ClCompile Include="QueryTokenizer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\QueryProcessor.cpp">
+    <ClCompile Include="Statement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\QueryTokenizer.cpp">
+    <ClCompile Include="SuchThatClause.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\Result.cpp">
+    <ClCompile Include="Follows.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\ResultProjector.cpp">
+    <ClCompile Include="FollowsT.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\Statement.cpp">
+    <ClCompile Include="Parent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\SuchThatClause.cpp">
+    <ClCompile Include="ParentT.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\UsesS.cpp">
+    <ClCompile Include="Pattern.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QueryProcessor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\Clause.h">
+    <ClInclude Include="PKB.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\DesignEntity.h">
+    <ClInclude Include="Parser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\DesignEntityTypeFactory.h">
+    <ClInclude Include="TNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\Follows.h">
+    <ClInclude Include="Type.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\FollowsT.h">
+    <ClInclude Include="QueryProcessor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\ModifiesS.h">
+    <ClInclude Include="DesignEntity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\ParameterType.h">
+    <ClInclude Include="Clause.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\Parent.h">
+    <ClInclude Include="ModifiesS.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\ParentT.h">
+    <ClInclude Include="Result.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\Parser.h">
+    <ClInclude Include="UsesS.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\Pattern.h">
+    <ClInclude Include="QueryEvaluator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\PatternClause.h">
+    <ClInclude Include="Parent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\PKB.h">
+    <ClInclude Include="ParentT.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\ProcessedQuery.h">
+    <ClInclude Include="Follows.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\QueryEvaluator.h">
+    <ClInclude Include="FollowsT.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\QueryParser.h">
+    <ClInclude Include="Pattern.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\QueryPreprocessor.h">
+    <ClInclude Include="ResultProjector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\QueryPreprocessorHelper.h">
+    <ClInclude Include="QueryPreprocessor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\QueryProcessor.h">
+    <ClInclude Include="ProcessedQuery.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\QueryTokenizer.h">
+    <ClInclude Include="QueryParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\Result.h">
+    <ClInclude Include="PatternClause.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\ResultProjector.h">
+    <ClInclude Include="QueryPreprocessorHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\Statement.h">
+    <ClInclude Include="QueryTokenizer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\StatementType.h">
+    <ClInclude Include="Statement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\SuchThatClause.h">
+    <ClInclude Include="StatementType.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\Type.h">
+    <ClInclude Include="SuchThatClause.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\UsesS.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\source\SPA.vcxproj" />
-    <None Include="..\source\SPA.vcxproj.filters" />
-    <None Include="..\source\SPA.vcxproj.user" />
   </ItemGroup>
 </Project>

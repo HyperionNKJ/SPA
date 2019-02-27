@@ -9,7 +9,7 @@
 #include <unordered_map>
 
 #include "PKB.h"
-#include "../SPA/Type.h"
+#include "Type.h"
 
 using namespace std;
 

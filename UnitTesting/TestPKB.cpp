@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
 #include "PKB.h"
-#include "../SPA/Type.h"
+#include "Type.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 

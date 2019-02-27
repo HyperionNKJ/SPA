@@ -9,7 +9,7 @@
 #include "AbstractWrapper.h"
 #include "Parser.h"
 #include "PKB.h"
-#include "../SPA/QueryProcessor.h"
+#include "QueryProcessor.h"
 
 class TestWrapper : public AbstractWrapper {
 public:

@@ -2,8 +2,8 @@
 #include "CppUnitTest.h"
 #include <vector>
 #include <iostream>
-#include "../SPA/QueryTokenizer.h"
-#include "../SPA/Statement.h"
+#include "QueryTokenizer.h"
+#include "Statement.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 

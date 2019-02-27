@@ -6,7 +6,7 @@
 #include <vector>
 #include <unordered_set>
 #include <unordered_map>
-#include "../SPA/Type.h"
+#include "Type.h"
 
 using namespace std;
 typedef short PROC;

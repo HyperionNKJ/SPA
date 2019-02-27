@@ -10,7 +10,7 @@ using namespace std;
 
 #include "Parser.h"
 #include "pkb.h"
-#include "../SPA/Type.h"
+#include "Type.h"
 
 //Static integers to pass information on keyword in the statement
 static int KEY_PROCEDURE = 1;
