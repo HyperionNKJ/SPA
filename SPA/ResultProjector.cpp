@@ -378,12 +378,24 @@ void ResultProjector::mergeOneSyn(string existKey, string newKey, unordered_map<
 
 	list<int> newKeyResultsSorted;
 	list<int>::iterator itr;
+	unordered_map<int, int> synonymIndexInPrevResults;
+	unordered_map<int, int>::iterator mapItr;
+	int listIndex = 0;
 
 	// merging with current results
 	for (auto prevResult : prevResults) {
-		if (resultExists(prevResult, results.at(existKey))) {
-			newKeyResultsSorted.push_back(getAndDeleteCorrespondingResult(prevResult, existKey, newKey, results));
+		mapItr = synonymIndexInPrevResults.find(prevResult);
+		if (mapItr == synonymIndexInPrevResults.end()) { // synonym did not appear originally
+			if (resultExists(prevResult, results.at(existKey))) {
+				newKeyResultsSorted.push_back(getAndDeleteCorrespondingResult(prevResult, existKey, newKey, results));
+				synonymIndexInPrevResults[prevResult] = listIndex;
+			}
 		}
+		else {
+			int prevSetCorrespondingResult = getCorrespondingResult(synonymIndexInPrevResults[prevResult], newKeyResultsSorted);
+			newKeyResultsSorted.push_back(prevSetCorrespondingResult);
+		}
+		listIndex++;
 	}
 
 	// repeated results in new results
@@ -392,11 +404,18 @@ void ResultProjector::mergeOneSyn(string existKey, string newKey, unordered_map<
 		list<int> existKeyResults = results.at(existKey);
 		list<int> newKeyResults = results.at(newKey);
 		int listIndex = 0;
+		int prevResultIndex = 0;
 
 		for (auto existKeyResult : existKeyResults) {
 			if (resultExists(existKeyResult, prevResults)) { // result overlaps with existing results
-				duplicateResultsForRestOfTable(findIndex(existKeyResult, prevResults), resultTable);
-				newKeyResultsSorted.push_back(getCorrespondingResult(listIndex, newKeyResults));
+				prevResultIndex = 0;
+				for (auto prevResult : prevResults) {
+					if (prevResult == existKeyResult) {
+						duplicateResultsForRestOfTable(prevResultIndex, resultTable);
+						newKeyResultsSorted.push_back(getCorrespondingResult(listIndex, newKeyResults));
+					}
+					prevResultIndex++;
+				}
 			}
 			listIndex++;
 		}

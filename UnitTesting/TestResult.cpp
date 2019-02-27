@@ -4,11 +4,10 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-namespace UnitTesting
-{
-	TEST_CLASS(TestResult)
-	{
+namespace UnitTesting {
+	TEST_CLASS(TestResult) {
 	public:
+
 		bool isAnswerCorrect(unordered_map<string, list<int>> actual, unordered_map<string, list<int>> expected) {
 			if (actual.size() != expected.size()) {
 				return false;
@@ -91,8 +90,7 @@ namespace UnitTesting
 			}
 			return true;
 		}
-		TEST_METHOD(setAnswer_setOfString)
-		{
+		TEST_METHOD(setAnswer_setOfString) {
 			Result result;
 
 			string variableSynonym = "v";
@@ -108,8 +106,7 @@ namespace UnitTesting
 			Assert::IsTrue(isAnswerCorrect(actualAnswer, expectedAnswer));
 		}
 
-		TEST_METHOD(setAnswer_mapOfIntAndStringSet)
-		{
+		TEST_METHOD(setAnswer_mapOfIntAndStringSet) {
 			Result result;
 
 			string stmtSynonym = "a";
@@ -126,8 +123,7 @@ namespace UnitTesting
 			unordered_map<string, list<int>> actualAnswer = result.getAnswer();
 			Assert::IsTrue(isAnswerCorrect(actualAnswer, expectedAnswer));
 		}
-		TEST_METHOD(setAnswer_mapOfIntAndIntSet)
-		{
+		TEST_METHOD(setAnswer_mapOfIntAndIntSet) {
 			Result result;
 
 			string stmt1Synonym = "w";
@@ -141,8 +137,7 @@ namespace UnitTesting
 			Assert::IsTrue(isAnswerCorrect(actualAnswer, expectedAnswer));
 		}
 
-		TEST_METHOD(setAnswer_setOfInt)
-		{
+		TEST_METHOD(setAnswer_setOfInt) {
 			Result result;
 
 			string stmt1Synonym = "a";
@@ -155,8 +150,7 @@ namespace UnitTesting
 			Assert::IsTrue(isAnswerCorrect(actualAnswer, expectedAnswer));
 		}
 
-		TEST_METHOD(setAnswer_int)
-		{
+		TEST_METHOD(setAnswer_int) {
 			Result result;
 
 			string stmtSynonym = "w";
@@ -169,8 +163,7 @@ namespace UnitTesting
 			Assert::IsTrue(isAnswerCorrect(actualAnswer, expectedAnswer));
 		}
 
-		TEST_METHOD(setAnswer_mapOfIntAndInt)
-		{
+		TEST_METHOD(setAnswer_mapOfIntAndInt) {
 			Result result;
 
 			string stmt1Synonym = "read";
@@ -184,8 +177,7 @@ namespace UnitTesting
 			Assert::IsTrue(isAnswerCorrect(actualAnswer, expectedAnswer));
 		}
 
-		TEST_METHOD(setAnswer_mapOfIntAndString)
-		{
+		TEST_METHOD(setAnswer_mapOfIntAndString) {
 			Result result;
 
 			string stmtSynonym = "a";

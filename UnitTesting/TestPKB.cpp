@@ -5,14 +5,11 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-namespace UnitTesting
-{
-	TEST_CLASS(TestPKB)
-	{
+namespace UnitTesting {
+	TEST_CLASS(TestPKB) {
 	public:
 
-		TEST_METHOD(TestInsertVar)
-		{
+		TEST_METHOD(TestInsertVar) {
 			PKB pkb;
 			bool result;
 
@@ -23,8 +20,7 @@ namespace UnitTesting
 			Assert::IsFalse(result);
 		}
 
-		TEST_METHOD(TestInsertConstant)
-		{
+		TEST_METHOD(TestInsertConstant) {
 			PKB pkb;
 			bool result;
 
@@ -35,8 +31,7 @@ namespace UnitTesting
 			Assert::IsFalse(result);
 		}
 
-		TEST_METHOD(TestInsertProc)
-		{
+		TEST_METHOD(TestInsertProc) {
 			PKB pkb;
 			bool result;
 
@@ -47,8 +42,7 @@ namespace UnitTesting
 			Assert::IsFalse(result);
 		}
 
-		TEST_METHOD(TestInsertStmtType)
-		{
+		TEST_METHOD(TestInsertStmtType) {
 			PKB pkb;
 			bool result;
 
@@ -59,8 +53,7 @@ namespace UnitTesting
 			Assert::IsFalse(result);
 		}
 
-		TEST_METHOD(TestSetFollows)
-		{
+		TEST_METHOD(TestSetFollows) {
 			PKB pkb;
 			bool result;
 
@@ -71,8 +64,7 @@ namespace UnitTesting
 			Assert::IsFalse(result);
 		}
 		
-		TEST_METHOD(TestSetFollowsT)
-		{
+		TEST_METHOD(TestSetFollowsT) {
 			PKB pkb;
 			bool result;
 
@@ -83,8 +75,7 @@ namespace UnitTesting
 			Assert::IsFalse(result);
 		}
 		
-		TEST_METHOD(TestSetFollowedBy)
-		{
+		TEST_METHOD(TestSetFollowedBy) {
 			PKB pkb;
 			bool result;
 
@@ -95,8 +86,7 @@ namespace UnitTesting
 			Assert::IsFalse(result);
 		}
 
-		TEST_METHOD(TestSetFollowedByT)
-		{
+		TEST_METHOD(TestSetFollowedByT) {
 			PKB pkb;
 			bool result;
 
@@ -107,8 +97,7 @@ namespace UnitTesting
 			Assert::IsFalse(result);
 		}
 
-		TEST_METHOD(TestSetParent)
-		{
+		TEST_METHOD(TestSetParent) {
 			PKB pkb;
 			bool result;
 
@@ -119,8 +108,7 @@ namespace UnitTesting
 			Assert::IsFalse(result);
 		}
 
-		TEST_METHOD(TestSetParentT)
-		{
+		TEST_METHOD(TestSetParentT) {
 			PKB pkb;
 			bool result;
 
@@ -131,8 +119,7 @@ namespace UnitTesting
 			Assert::IsFalse(result);
 		}
 
-		TEST_METHOD(TestSetChild)
-		{
+		TEST_METHOD(TestSetChild) {
 			PKB pkb;
 			bool result;
 
@@ -143,8 +130,7 @@ namespace UnitTesting
 			Assert::IsFalse(result);
 		}
 
-		TEST_METHOD(TestSetChildT)
-		{
+		TEST_METHOD(TestSetChildT) {
 			PKB pkb;
 			bool result;
 
@@ -155,8 +141,7 @@ namespace UnitTesting
 			Assert::IsFalse(result);
 		}
 
-		TEST_METHOD(TestSetModifiesByStmtNum)
-		{
+		TEST_METHOD(TestSetModifiesByStmtNum) {
 			PKB pkb;
 			bool result;
 
@@ -167,8 +152,7 @@ namespace UnitTesting
 			Assert::IsFalse(result);
 		}
 
-		TEST_METHOD(TestSetModifiesByProcName)
-		{
+		TEST_METHOD(TestSetModifiesByProcName) {
 			PKB pkb;
 			bool result;
 
@@ -179,8 +163,7 @@ namespace UnitTesting
 			Assert::IsFalse(result);
 		}
 
-		TEST_METHOD(TestSetUsesByStmtNum)
-		{
+		TEST_METHOD(TestSetUsesByStmtNum) {
 			PKB pkb;
 			bool result;
 
@@ -191,8 +174,7 @@ namespace UnitTesting
 			Assert::IsFalse(result);
 		}
 
-		TEST_METHOD(TestSetUsesByProcName)
-		{
+		TEST_METHOD(TestSetUsesByProcName) {
 			PKB pkb;
 			bool result;
 
@@ -203,8 +185,7 @@ namespace UnitTesting
 			Assert::IsFalse(result);
 		}
 
-		TEST_METHOD(TestSetAssignStmt)
-		{
+		TEST_METHOD(TestSetAssignStmt) {
 			PKB pkb;
 			bool result;
 			vector<string> assignmentStmt = { "y", "+", "z" };

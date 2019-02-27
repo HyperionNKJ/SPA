@@ -25,7 +25,7 @@ const std::unordered_set<std::string> QueryParser::KEYWORDS = {
 };
 
 QueryParser::QueryParser(const std::vector<Statement>& statements)
-		: STATEMENTS(statements){
+	: STATEMENTS(statements) {
 }
 
 bool QueryParser::parse() {
@@ -39,6 +39,44 @@ bool QueryParser::parse() {
 		}
 
 		if (!status) {
+			return false;
+		}
+	}
+
+	if (query.declarations.find(query.synonym) == query.declarations.end()) {
+		return false;
+	}
+
+	if (query.hasSuchThatClause) {
+		std::string paramOneValue = query.suchThatClause.paramOne.getValue();
+		std::string paramTwoValue = query.suchThatClause.paramTwo.getValue();
+		Type paramOneType = query.suchThatClause.paramOne.getType();
+		Type paramTwoType = query.suchThatClause.paramTwo.getType();
+
+		if (paramOneType == Type::ASSIGN
+			&& query.declarations.find(paramOneValue) == query.declarations.end()) {
+			return false;
+		}
+
+		if (paramTwoType == Type::ASSIGN
+			&& query.declarations.find(paramTwoValue) == query.declarations.end()) {
+			return false;
+		}
+	}
+
+	if (query.hasPatternClause) {
+		std::string paramOneValue = query.patternClause.paramOne.getValue();
+		std::string paramTwoValue = query.patternClause.paramTwo.getValue();
+		Type paramOneType = query.patternClause.paramOne.getType();
+		Type paramTwoType = query.patternClause.paramTwo.getType();
+
+		if (paramOneType == Type::ASSIGN 
+			&& query.declarations.find(paramOneValue) == query.declarations.end()) {
+			return false;
+		}
+
+		if (paramTwoType == Type::ASSIGN
+			&& query.declarations.find(paramTwoValue) == query.declarations.end()) {
 			return false;
 		}
 	}
@@ -99,13 +137,15 @@ bool QueryParser::parseSelectStatement(const Statement& statement) {
 		numberOfClauses = 0;
 		query.addSynonym(match[1].str());
 		return true;
-	} else if (match[2].matched) {
+	}
+	else if (match[2].matched) {
 		numberOfClauses = 1;
 		query.addSynonym(match[2].str());
 
 		clauseOneType = match[3].str();
 		clauseOneValue = match[4].str();
-	} else {
+	}
+	else {
 		numberOfClauses = 2;
 		query.addSynonym(match[5].str());
 
@@ -119,7 +159,8 @@ bool QueryParser::parseSelectStatement(const Statement& statement) {
 	bool status;
 	if (clauseOneType == "such that") {
 		status = parseSuchThatClause(clauseOneValue);
-	} else {
+	}
+	else {
 		status = parsePatternClause(clauseOneValue);
 	}
 
@@ -162,7 +203,7 @@ bool QueryParser::parseSuchThatClause(const std::string& clause) {
 	DesignEntity paramOne(paramOneValue, paramOneType);
 	DesignEntity paramTwo(paramTwoValue, paramTwoType);
 
-	bool a =  query.addSuchThatClause(type, paramOne, paramTwo);
+	bool a = query.addSuchThatClause(type, paramOne, paramTwo);
 	return a;
 }
 
