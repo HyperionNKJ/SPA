@@ -210,7 +210,7 @@ namespace UnitTesting {
 			result = parser.checkWhile("while (a < b) then {");
 			Assert::AreEqual(result, false, L"incorrect", LINE_INFO());
 
-			result = parser.checkWhile("while a < b {");
+			result = parser.checkWhile("while (a < b {");
 			Assert::AreEqual(result, false, L"incorrect", LINE_INFO());
 		}
 
