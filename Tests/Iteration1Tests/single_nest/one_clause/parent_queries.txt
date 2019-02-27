@@ -13,3 +13,8 @@ assign a;
 Select a such that Parent (_, a)
 6, 7, 9, 10, 11
 5000
+4 - Select assign that has specific parent
+assign a;
+Select a such that Parent (4, a)
+6, 7
+5000

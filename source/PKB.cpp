@@ -761,8 +761,8 @@ unordered_set<int> PKB::getChildrenOf(int stmtNum, Type childrenType) {
 
 	if (parentMap.count(stmtNum)) {
 		for (const auto &elem : parentMap[stmtNum]) {
-			if (typedStmtSet.count(stmtNum)) {
-				resultSet.insert(stmtNum);
+			if (typedStmtSet.count(elem)) {
+				resultSet.insert(elem);
 			}
 		}
 	}
