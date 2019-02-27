@@ -24,13 +24,14 @@ public:
 		const DesignEntity& paramTwo);
 
 	std::unordered_set<Clause*> getClauses();
+	bool hasValidSynonyms();
 	DesignEntity getSelectedSynonym();
 private:
 	std::unordered_map<std::string, Type> declarations;
 
 	bool hasSuchThatClause;
 	bool hasPatternClause;
-
+	
 	std::string synonym;
 
 	SuchThatClause suchThatClause;
