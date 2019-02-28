@@ -59,7 +59,7 @@ namespace IntegrationTesting {
 			Assert::IsTrue(equalConsts, L"incorrect", LINE_INFO());
 			//test assignment tables
 			unordered_set<int> expectedAssignStmts = { 4 };
-			bool equalAssignStmts = pkb.getAssignStmts == expectedAssignStmts;
+			bool equalAssignStmts = pkb.getAssignStmts() == expectedAssignStmts;
 			Assert::IsTrue(equalAssignStmts, L"incorrect", LINE_INFO());
 			//test statement modifies var and var modified by stmt is correct
 			unordered_set<string> expectedModifiedVar = { "a" };

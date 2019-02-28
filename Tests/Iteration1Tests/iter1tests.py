@@ -16,6 +16,7 @@ for root, dirs, files in os.walk("."):
 					try:
 						query = root2 + '\\' + file
 						output = root2 + '\\' + file.split('.')[0] + '.xml'
+						os.remove(output)
 						out = check_output([cmd, source, query, output], shell=True).strip().decode()
 						print(out)
 
