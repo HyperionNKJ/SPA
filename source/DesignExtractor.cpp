@@ -37,15 +37,17 @@ bool DesignExtractor::insertProcModifies(string procName, string varName) {
 	else {
 		procModifiesTable[procName].insert(varName);
 	}
+	return true;
 }
 
 bool DesignExtractor::insertProcCalledBy(string procName, int stmtNum) {
 	procCalledByTable.insert({ procName, stmtNum });
+	return true;
 }
 
 void DesignExtractor::processCalls() {
 	topologicalSortCalls();
-	for (int i = 0; i < topologicalSortedProc.size(); i++) {
+	for (unsigned int i = 0; i < topologicalSortedProc.size(); i++) {
 		string currProc = topologicalSortedProc[i];
 		unordered_set<string> calledByProc = callGraph[currProc];
 		for (const auto &proc : calledByProc) {

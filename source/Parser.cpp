@@ -689,6 +689,8 @@ int Parser::handleCall(string callLine) {
 	
 	de.insertProcCalledBy(currProcedure, statementNumber);
 	de.insertCall(currProcedure, calledProcName);
+
+	return 0;
 }
 
 vector<string> Parser::loadFile(string fileName) {

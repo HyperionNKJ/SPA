@@ -40,7 +40,7 @@
     <ClInclude Include="..\source\Clause.h" />
     <ClInclude Include="..\source\DesignEntity.h" />
     <ClInclude Include="..\source\DesignEntityTypeFactory.h" />
-    <ClInclude Include="..\source\Follows.h" />
+    <ClInclude Include="..\source\DesignExtractor.h" />
     <ClInclude Include="..\source\FollowsT.h" />
     <ClInclude Include="..\source\ModifiesS.h" />
     <ClInclude Include="..\source\ParameterType.h" />
@@ -64,7 +64,6 @@
     <ClInclude Include="..\source\SuchThatClause.h" />
     <ClInclude Include="..\source\Type.h" />
     <ClInclude Include="..\source\UsesS.h" />
-    <ClInclude Include="DesignExtractor.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\SPA.vcxproj" />
