@@ -93,6 +93,7 @@ int Parser::parse(string fileName, PKB& p) {
 						cout << "Else statement without accompanying if found just before line " << statementNumber << endl;
 					}
 					else if (intent == KEY_CALL) {
+						result = handleCall(sourceCode[i]);
 						statementNumber++;
 						emptyProcedure = false;
 					}
@@ -660,6 +661,36 @@ int Parser::handleCloseBracket(string closeBracket) {
 	return 0;
 }
 
+bool Parser::checkCall(string callLine) {
+	string callRegexString = spaceRegex + "call" + spaceRegex + varNameRegex + spaceRegex + ";" + spaceRegex;
+	regex callRegex(callRegexString);
+	if (!regex_match(callLine, callRegex)) {
+		cout << "Call statement is invalid at line " << statementNumber << endl;
+		return false;
+	}
+	return true;
+}
+
+int Parser::handleCall(string callLine) {
+	if (!checkCall(callLine)) {
+		return -1;
+	}
+	//extract proc name
+	size_t startPos = callLine.find_first_of("call");
+	size_t endPos = callLine.find_first_of(";");
+	string calledProcName = callLine.substr(startPos + 4, endPos - startPos - 4);
+	calledProcName = leftTrim(calledProcName, " \t");
+	calledProcName = rightTrim(calledProcName, " \t");
+
+	setParent(statementNumber);
+	setFollow(statementNumber);
+	pkb->insertStmtType(statementNumber, CALL);
+	currentFollowVector.push_back(statementNumber);
+	
+	de.insertProcCalledBy(currProcedure, statementNumber);
+	de.insertCall(currProcedure, calledProcName);
+}
+
 vector<string> Parser::loadFile(string fileName) {
 	ifstream sourceFile;
 	sourceFile.open(fileName);
@@ -773,6 +804,7 @@ bool Parser::setModifies(int currStatementNum, string varName) {
 	}
 	pkb->setModifies(currStatementNum, varName);
 	pkb->setModifies(currProcedure, varName);
+	de.insertProcModifies(currProcedure, varName);
 	return true;
 }
 
@@ -782,6 +814,7 @@ bool Parser::setUses(int currStatementNum, string varName) {
 	}
 	pkb->setUses(currStatementNum, varName);
 	pkb->setUses(currProcedure, varName);
+	de.insertProcUses(currProcedure, varName);
 	return true;
 }
 

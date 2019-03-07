@@ -9,11 +9,13 @@
 #include <stack>
 #include "PKB.h"
 #include "Type.h"
+#include "DesignExtractor.h"
 
 using namespace std;
 
 class Parser {
 	PKB * pkb;
+	DesignExtractor de;
 	bool withinProcedure = false;
 	bool emptyProcedure = true;
 	bool expectElse = false;
@@ -55,6 +57,9 @@ public:
 	bool checkCondExpr(string);
 	bool checkRelExpr(string);
 	bool checkRelFactor(string);
+
+	bool checkCall(string);
+	int handleCall(string);
 
 	int handleCloseBracket(string);
 
