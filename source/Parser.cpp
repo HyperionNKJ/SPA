@@ -109,6 +109,8 @@ int Parser::parse(string fileName, PKB& p) {
 			return -1;
 		}
 	}
+	de.setPKB(pkb);
+	de.processCalls();
 	return 0;
 }
 
@@ -805,7 +807,6 @@ bool Parser::setModifies(int currStatementNum, string varName) {
 		pkb->setModifies(parentVector[i], varName);
 	}
 	pkb->setModifies(currStatementNum, varName);
-	pkb->setModifies(currProcedure, varName);
 	de.insertProcModifies(currProcedure, varName);
 	return true;
 }
@@ -815,7 +816,6 @@ bool Parser::setUses(int currStatementNum, string varName) {
 		pkb->setUses(parentVector[i], varName);
 	}
 	pkb->setUses(currStatementNum, varName);
-	pkb->setUses(currProcedure, varName);
 	de.insertProcUses(currProcedure, varName);
 	return true;
 }
