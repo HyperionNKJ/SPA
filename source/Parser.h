@@ -29,8 +29,8 @@ class Parser {
 
 private:
 	bool setParent(int);
-	bool setModifies(int, string);
-	bool setUses(int, string);
+	bool setModifies(int, string, string);
+	bool setUses(int, string, string);
 	bool setFollow(int);
 public:
 

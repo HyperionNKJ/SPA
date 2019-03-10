@@ -22,15 +22,17 @@ class DesignExtractor {
 
 private:
 	bool topologicalSortCalls();
-	bool topologicalVisit(string, unordered_set<string>, unordered_set<string>);
+	bool topologicalVisit(string, unordered_set<string>*, unordered_set<string>*);
 	void updateProcModifies(string, string);
 	void updateProcUses(string, string);
 public:
 	bool insertCall(string, string);
+	bool insertProc(string);
 	bool insertProcUses(string, string);
 	bool insertProcModifies(string, string);
 	bool insertProcCalledBy(string, int);
 	bool processCalls();
+	bool processIndirectUsesModifies();
 	void processCallsTransitive();
 
 	void setPKB(PKB*);

@@ -34,6 +34,7 @@ static string openCurlyRegex = "\\{";
 
 int Parser::parse(string fileName, PKB& p) {
 	pkb = &p;
+	de.setPKB(&p);
 	try {
 		loadFile(fileName);
 	}
@@ -109,7 +110,6 @@ int Parser::parse(string fileName, PKB& p) {
 			return -1;
 		}
 	}
-	de.setPKB(pkb);
 	de.processCalls();
 	return 0;
 }
@@ -175,6 +175,8 @@ int Parser::handleProcedure(string procLine) {
 
 	bool result;
 	result = pkb->insertProc(procedureName);
+	de.insertProc(procedureName);
+	
 	currProcedure = procedureName;
 	withinProcedure = true;
 	emptyProcedure = true;
@@ -309,12 +311,12 @@ int Parser::handleAssignment(string assignmentLine) {
 
 	//set lhs var
 	pkb->insertVar(lhsVar);
-	setModifies(statementNumber, lhsVar);
+	setModifies(statementNumber, currProcedure, lhsVar);
 	//set rhs var, constants
 	for (unsigned int i = 0; i < assignTokens.size(); i++) {
 		if (isValidVarName(assignTokens[i])) {
 			pkb->insertVar(assignTokens[i]);
-			setUses(statementNumber, assignTokens[i]);
+			setUses(statementNumber, currProcedure, assignTokens[i]);
 		}
 		else if (isValidConstant(assignTokens[i])) {
 			pkb->insertConstant(stoi(assignTokens[i]));
@@ -349,7 +351,7 @@ int Parser::handleRead(string readLine) {
 
 	setParent(statementNumber);
 	setFollow(statementNumber);
-	setModifies(statementNumber, varName);
+	setModifies(statementNumber, currProcedure, varName);
 	pkb->insertVar(varName);
 	pkb->insertStmtType(statementNumber, READ);
 	currentFollowVector.push_back(statementNumber);
@@ -379,7 +381,7 @@ int Parser::handlePrint(string printLine) {
 
 	setParent(statementNumber);
 	setFollow(statementNumber);
-	setUses(statementNumber, varName);
+	setUses(statementNumber, currProcedure, varName);
 	pkb->insertVar(varName);
 	pkb->insertStmtType(statementNumber, PRINT);
 	currentFollowVector.push_back(statementNumber);
@@ -431,7 +433,7 @@ int Parser::handleWhile(string whileLine) {
 	for (unsigned int i = 0; i < tokens.size(); i++) {
 		if (isValidVarName(tokens[i])) {
 			pkb->insertVar(tokens[i]);
-			setUses(statementNumber, tokens[i]);
+			setUses(statementNumber, currProcedure, tokens[i]);
 		}
 		else if (isValidConstant(tokens[i])) {
 			pkb->insertConstant(stoi(tokens[i]));
@@ -485,7 +487,7 @@ int Parser::handleIf(string ifLine) {
 	for (unsigned int i = 0; i < tokens.size(); i++) {
 		if (isValidVarName(tokens[i])) {
 			pkb->insertVar(tokens[i]);
-			setUses(statementNumber, tokens[i]);
+			setUses(statementNumber, currProcedure, tokens[i]);
 		}
 		else if (isValidConstant(tokens[i])) {
 			pkb->insertConstant(stoi(tokens[i]));
@@ -686,7 +688,7 @@ int Parser::handleCall(string callLine) {
 
 	setParent(statementNumber);
 	setFollow(statementNumber);
-	pkb->insertStmtType(statementNumber, CALL);
+	//pkb->insertStmtType(statementNumber, CALL);
 	currentFollowVector.push_back(statementNumber);
 	
 	de.insertProcCalledBy(currProcedure, statementNumber);
@@ -802,21 +804,21 @@ bool Parser::setFollow(int currStatementNum) {
 	return true;
 }
 
-bool Parser::setModifies(int currStatementNum, string varName) {
+bool Parser::setModifies(int currStatementNum, string currProc, string varName) {
 	for (unsigned int i = 0; i < parentVector.size(); i++) {
 		pkb->setModifies(parentVector[i], varName);
 	}
 	pkb->setModifies(currStatementNum, varName);
-	de.insertProcModifies(currProcedure, varName);
+	de.insertProcModifies(currProc, varName);
 	return true;
 }
 
-bool Parser::setUses(int currStatementNum, string varName) {
+bool Parser::setUses(int currStatementNum, string currProc, string varName) {
 	for (unsigned int i = 0; i < parentVector.size(); i++) {
 		pkb->setUses(parentVector[i], varName);
 	}
 	pkb->setUses(currStatementNum, varName);
-	de.insertProcUses(currProcedure, varName);
+	de.insertProcUses(currProc, varName);
 	return true;
 }
 

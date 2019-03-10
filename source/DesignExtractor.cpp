@@ -10,6 +10,11 @@ using namespace std;
 #include "DesignExtractor.h"
 #include "PKB.h"
 
+bool DesignExtractor::insertProc(string procName) {
+	procList.insert(procName);
+	return true;
+}
+
 bool DesignExtractor::insertCall(string procCalling, string procCalled) {
 	if (callGraph.count(procCalling) < 1) {
 		callGraph[procCalling] = { procCalled };
@@ -67,12 +72,20 @@ bool DesignExtractor::processCalls() {
 	}
 	//next need to populate pkb with call statement uses/modifies
 	//need to validate here the procedure exists
-	// TODO: Abstract this out later
+	if (!processIndirectUsesModifies()) {
+		return false;
+	}
+	//finally need to process calls*
+	processCallsTransitive();
+	return true;
+}
+
+bool DesignExtractor::processIndirectUsesModifies() {
 	for (const auto &elem : procCalledByTable) {
 		string procName = elem.first;
 		int stmtNum = elem.second;
 		if (procList.count(procName) < 1) {
-			cout << "Call to non-existent function detected at line " << stmtNum << endl;
+			cout << "Call to non-existent procedure at line " << stmtNum << endl;
 			return false;
 		}
 		for (const auto &elem : procModifiesTable[procName]) {
@@ -82,9 +95,6 @@ bool DesignExtractor::processCalls() {
 			pkb->setUses(stmtNum, elem);
 		}
 	}
-	//finally need to process calls*
-	processCallsTransitive();
-	return true;
 }
 
 bool DesignExtractor::topologicalSortCalls() {
@@ -92,7 +102,7 @@ bool DesignExtractor::topologicalSortCalls() {
 	unordered_set<string> currentDFSVisited;
 	for (const auto &elem : procList) {
 		if (visitedProc.count(elem) < 1) {
-			bool result = topologicalVisit(elem, visitedProc, currentDFSVisited);
+			bool result = topologicalVisit(elem, &visitedProc, &currentDFSVisited);
 			if (!result) {
 				return false;
 			}
@@ -101,11 +111,11 @@ bool DesignExtractor::topologicalSortCalls() {
 	return true;
 }
 
-bool DesignExtractor::topologicalVisit(string procName, unordered_set<string> visitedProc, unordered_set<string> currentDFSVisited) {
-	if (visitedProc.count(procName) > 0) {
+bool DesignExtractor::topologicalVisit(string procName, unordered_set<string>* visitedProc, unordered_set<string>* currentDFSVisited) {
+	if (visitedProc->count(procName) > 0) {
 		return true;
 	}
-	else if (currentDFSVisited.count(procName) > 0) {
+	else if (currentDFSVisited->count(procName) > 0) {
 		//not a DAG, since we point back to a node higher in this dfs search, return error due to cyclic calls
 		cout << "Cyclic/Self calls in program are detected" << endl;
 		return false;
@@ -116,13 +126,14 @@ bool DesignExtractor::topologicalVisit(string procName, unordered_set<string> vi
 		return false;
 	}
 	else {
-		currentDFSVisited.insert(procName);
+		currentDFSVisited->insert(procName);
 		for (const auto &nextProc : callGraph[procName]) {
 			topologicalVisit(nextProc, visitedProc, currentDFSVisited);
 		}
 	}
-	visitedProc.insert(procName);
+	visitedProc->insert(procName);
 	topoSortedProc.push_back(procName);
+	return true;
 }
 
 void DesignExtractor::processCallsTransitive() {
