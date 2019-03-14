@@ -16,6 +16,7 @@ using namespace std;
 class Parser {
 	PKB * pkb;
 	DesignExtractor de;
+	enum Container { WHILEC, IFC, ELSEC, NONEC };
 	bool withinProcedure = false;
 	bool emptyProcedure = true;
 	bool expectElse = false;
@@ -24,7 +25,13 @@ class Parser {
 	vector<int> parentVector = vector<int>();
 	vector<int> currentFollowVector = vector<int>();
 	vector<vector<int>> allFollowStack = vector<vector<int>>();
-	vector<int> containerTracker = vector<int>();
+	vector<Container> containerTracker = vector<Container>();
+	//trackers for next
+	bool firstInProc = false;
+	bool firstInElse = false;
+	vector<int> lastInIfTracker = vector<int>();
+	vector<int> lastInElseTracker = vector<int>();
+	int closedIfCount = 0;
 	string currProcedure;
 
 private:
@@ -32,6 +39,13 @@ private:
 	bool setModifies(int, string, string);
 	bool setUses(int, string, string);
 	bool setFollow(int);
+	bool setNext(int, Container);
+
+	string leftTrim(string, string);
+	string rightTrim(string, string);
+	bool isValidVarName(string);
+	bool isValidConstant(string);
+	vector<string> tokeniseString(string, string);
 public:
 
 	bool checkProcedure(string);
@@ -66,12 +80,6 @@ public:
 	int getStatementIntent(string);
 	int parse(string, PKB&);
 	vector<string> loadFile(string);
-
-	string leftTrim(string, string);
-	string rightTrim(string, string);
-	bool isValidVarName(string);
-	bool isValidConstant(string);
-	vector<string> tokeniseString(string, string);
 
 	//setter/getter functions for testing
 	void setPKB(PKB*);

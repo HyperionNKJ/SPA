@@ -31,9 +31,9 @@ public:
 	bool insertProcUses(string, string);
 	bool insertProcModifies(string, string);
 	bool insertProcCalledBy(string, int);
+	void setPKB(PKB*);
+
 	bool processCalls();
 	bool processIndirectUsesModifies();
 	void processCallsTransitive();
-
-	void setPKB(PKB*);
 };

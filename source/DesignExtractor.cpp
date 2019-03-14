@@ -95,6 +95,7 @@ bool DesignExtractor::processIndirectUsesModifies() {
 			pkb->setUses(stmtNum, elem);
 		}
 	}
+	return true;
 }
 
 bool DesignExtractor::topologicalSortCalls() {

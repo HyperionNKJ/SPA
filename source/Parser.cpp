@@ -22,10 +22,6 @@ static int KEY_READ = 6;
 static int KEY_PRINT = 7;
 static int KEY_CLOSE_BRACKET = 8;
 static int KEY_CALL = 9;
-//Static integers to keep track of the container statements in the stack
-static int WHILECONTAINER = 100;
-static int IFCONTAINER = 101;
-static int ELSECONTAINER = 102;
 
 static string varNameRegex = "([[:alpha:]]([[:alnum:]])*)";
 static string constantRegex = "[[:digit:]]+";
@@ -287,6 +283,7 @@ int Parser::handleAssignment(string assignmentLine) {
 	
 	setParent(statementNumber);
 	setFollow(statementNumber);
+	setNext(statementNumber, NONEC);
 	//Separate variable names, constants and operation/brackets from each other to pass to pkb
 	vector<string> assignTokens = vector<string>();
 	string lhsVar = cleanedAssignment.substr(0, cleanedAssignment.find_first_of("="));
@@ -351,6 +348,8 @@ int Parser::handleRead(string readLine) {
 
 	setParent(statementNumber);
 	setFollow(statementNumber);
+	setNext(statementNumber, NONEC);
+
 	setModifies(statementNumber, currProcedure, varName);
 	pkb->insertVar(varName);
 	pkb->insertStmtType(statementNumber, READ);
@@ -381,6 +380,7 @@ int Parser::handlePrint(string printLine) {
 
 	setParent(statementNumber);
 	setFollow(statementNumber);
+	setNext(statementNumber, NONEC);
 	setUses(statementNumber, currProcedure, varName);
 	pkb->insertVar(varName);
 	pkb->insertStmtType(statementNumber, PRINT);
@@ -416,11 +416,12 @@ int Parser::handleWhile(string whileLine) {
 	//set relationships
 	setParent(statementNumber);
 	setFollow(statementNumber);
+	setNext(statementNumber, NONEC);
 
 	//update parent, container, follows trackers
 	currentFollowVector.push_back(statementNumber);
 	parentVector.push_back(statementNumber);
-	containerTracker.push_back(WHILECONTAINER);
+	containerTracker.push_back(WHILEC);
 	allFollowStack.push_back(currentFollowVector);
 	currentFollowVector.clear();
 	pkb->insertStmtType(statementNumber, WHILE);
@@ -470,11 +471,12 @@ int Parser::handleIf(string ifLine) {
 	//set follow, parent relationships
 	setParent(statementNumber);
 	setFollow(statementNumber);
+	setNext(statementNumber, NONEC);
 
 	//update parent, follow, container trackers
 	currentFollowVector.push_back(statementNumber);
 	parentVector.push_back(statementNumber);
-	containerTracker.push_back(IFCONTAINER);
+	containerTracker.push_back(IFC);
 	allFollowStack.push_back(currentFollowVector);
 	currentFollowVector.clear();
 	pkb->insertStmtType(statementNumber, IF);
@@ -514,7 +516,8 @@ int Parser::handleElse(string elseLine) {
 	//reset follow tracker
 	//set container tracker
 	expectElse = false;
-	containerTracker.push_back(ELSECONTAINER);
+	firstInElse = true;
+	containerTracker.push_back(ELSEC);
 	currentFollowVector.clear();
 	return 0;
 }
@@ -644,7 +647,7 @@ int Parser::handleCloseBracket(string closeBracket) {
 		//clear follow vector
 		//set else checker and container for if
 		currentFollowVector.clear();
-		if (containerTracker.back() == WHILECONTAINER || containerTracker.back() == ELSECONTAINER) {
+		if (containerTracker.back() == WHILEC || containerTracker.back() == ELSEC) {
 			if (parentVector.size() == 0) {
 				cout << "Unexpected error when parsing end of container statement. Parent vector is empty. At line " << statementNumber << endl;
 				return -1;
@@ -656,9 +659,12 @@ int Parser::handleCloseBracket(string closeBracket) {
 			parentVector.pop_back();
 			currentFollowVector = allFollowStack.back();
 			allFollowStack.pop_back();
+			//track consecutive closed if/else statements
+			setNext(statementNumber, containerTracker.back());
 		}
-		else if (containerTracker.back() == IFCONTAINER) {
+		else if (containerTracker.back() == IFC) {
 			expectElse = true;
+			lastInIfTracker.push_back(statementNumber - 1);
 		}
 		containerTracker.pop_back();
 	}
@@ -688,6 +694,7 @@ int Parser::handleCall(string callLine) {
 
 	setParent(statementNumber);
 	setFollow(statementNumber);
+	setNext(statementNumber, NONEC);
 	//pkb->insertStmtType(statementNumber, CALL);
 	currentFollowVector.push_back(statementNumber);
 	
@@ -695,6 +702,62 @@ int Parser::handleCall(string callLine) {
 	de.insertCall(currProcedure, calledProcName);
 
 	return 0;
+}
+
+bool Parser::setNext(int stmtNum, Container closingType) {
+	//for case of first line in else
+	if (firstInElse) {
+		firstInElse = false;
+		cout << parentVector.back() << " " << statementNumber << "first line in else " << endl;
+		return true;//pkb->setNext(ifStmtTracker.back(), stmtNum);
+	}
+	//for case of close bracket involving while
+	if (closingType == WHILEC) {
+		int lastWhile = parentVector.back();
+		if (closedIfCount > 0) {
+			while (closedIfCount > 0) {
+				cout << lastInIfTracker.back() << " " << lastWhile << "closed while with if involved" << endl;
+				cout << lastInElseTracker.back() << " " << lastWhile << endl;
+				cout << lastWhile << " " << statementNumber << endl;
+				//pkb->setNext(lastInIfTracker.back(), lastWhile);
+				//pkb->setNext(lastInElseTracker.back(), lastWhile);
+				//pkb->setNext(lastWhile, statementNumber);
+				lastInIfTracker.pop_back();
+				lastInElseTracker.pop_back();
+				closedIfCount--;
+			}
+		}
+		else {
+			cout << lastWhile << " " << statementNumber << " end of while with no if involved" << endl;
+			cout << statementNumber - 1 << " " << lastWhile << endl;
+			//pkb->setNext(lastWhile, stmtNum);
+			//pkb->setNext(stmtNum-1, lastWhile);
+		}
+		return true;
+	}
+	//for case of close bracket involving else
+	if (closingType == ELSEC) {
+		lastInElseTracker.push_back(statementNumber - 1);
+		closedIfCount++;
+		return true;
+	}
+	//for case of not first line in else, neither is it closing bracket.
+	if (closedIfCount > 0) {
+		while (closedIfCount > 0) {
+			cout << lastInIfTracker.back() << " " << statementNumber << "closed if no container " << endl;
+			cout << lastInElseTracker.back() << " " << statementNumber << endl;
+			//pkb->setNext(lastInIfTracker.back(), stmtNum);
+			//pkb->setNext(lastInElseTracker.back(), stmtNum);
+			lastInIfTracker.pop_back();
+			lastInElseTracker.pop_back();
+			closedIfCount--;
+		}
+	}
+	else {
+		cout << statementNumber - 1 << " " << statementNumber << "first nothing involved" << endl;
+		//pkb->setNext(stmtNum-1, stmtNum);
+	}
+	return true;
 }
 
 vector<string> Parser::loadFile(string fileName) {
