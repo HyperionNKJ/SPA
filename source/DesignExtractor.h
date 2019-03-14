@@ -9,8 +9,6 @@
 #include "PKB.h"
 #include "Type.h"
 
-using namespace std;
-
 class DesignExtractor {
 	PKB * pkb;
 	unordered_set<string> procList;

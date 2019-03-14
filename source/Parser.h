@@ -11,8 +11,6 @@
 #include "Type.h"
 #include "DesignExtractor.h"
 
-using namespace std;
-
 class Parser {
 	PKB * pkb;
 	DesignExtractor de;

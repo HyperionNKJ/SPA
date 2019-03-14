@@ -5,8 +5,6 @@
 #include <string>
 #include <vector>
 
-using namespace std;
-
 #include "DesignExtractor.h"
 #include "PKB.h"
 

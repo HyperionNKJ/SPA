@@ -6,8 +6,6 @@
 #include <regex>
 #include <algorithm>
 
-using namespace std;
-
 #include "Parser.h"
 #include "pkb.h"
 #include "Type.h"
@@ -176,6 +174,7 @@ int Parser::handleProcedure(string procLine) {
 	currProcedure = procedureName;
 	withinProcedure = true;
 	emptyProcedure = true;
+	firstInProc = true;
 	return 0;
 }
 
@@ -284,7 +283,7 @@ int Parser::handleAssignment(string assignmentLine) {
 	setParent(statementNumber);
 	setFollow(statementNumber);
 	setNext(statementNumber, NONEC);
-	//Separate variable names, constants and operation/brackets from each other to pass to pkb
+	//Separate variable names, constants and operation/brackets from each other
 	vector<string> assignTokens = vector<string>();
 	string lhsVar = cleanedAssignment.substr(0, cleanedAssignment.find_first_of("="));
 	string rhs = cleanedAssignment.substr(cleanedAssignment.find_first_of("=") + 1, string::npos);
@@ -305,7 +304,76 @@ int Parser::handleAssignment(string assignmentLine) {
 	if (!currToken.empty()) {
 		assignTokens.push_back(currToken);
 	}
-
+	//form postfix expression
+	vector<string> postfixRHS = vector<string>();
+	vector<string> opStack = vector<string>();
+	for (unsigned int i = 0; i < assignTokens.size(); i++) {
+		if (isValidConstant(assignTokens[i]) || isValidVarName(assignTokens[i])) {
+			postfixRHS.push_back(assignTokens[i]);
+		}
+		else if (assignTokens[i] == "(") {
+			opStack.push_back(assignTokens[i]);
+		}
+		else if (assignTokens[i] == ")") {
+			while (opStack.back() != "(") {
+				postfixRHS.push_back(opStack.back());
+				opStack.pop_back();
+			}
+			opStack.pop_back();
+		}
+		else if (assignTokens[i] == "+" || assignTokens[i] == "-") {
+			while (opStack.size() > 0 && (opStack.back() == "+" || opStack.back() == "-")) {
+				postfixRHS.push_back(opStack.back());
+				opStack.pop_back();
+			}
+			opStack.push_back(assignTokens[i]);
+		}
+		else if (assignTokens[i] == "*" || assignTokens[i] == "/" || assignTokens[i] == "%") {
+			while (opStack.size() > 0 && (opStack.back() == "*" || opStack.back() == "/" || opStack.back() == "%")) {
+				postfixRHS.push_back(opStack.back());
+				opStack.pop_back();
+			}
+			opStack.push_back(assignTokens[i]);
+		}
+	}
+	while (opStack.size() > 0) {
+		postfixRHS.push_back(opStack.back());
+		opStack.pop_back();
+	}
+	// DEBUG
+	for (unsigned int i = 0; i < postfixRHS.size(); i++) {
+		cout << postfixRHS[i] << " ";
+	}
+	cout << endl;
+	// DEBUG
+	//extract all possible substrings from the postfix notation
+	//start at each possible location and attempt to build a string, terminating if a string cannot be a valid pattern
+	vector<string> rhsSubstring = vector<string>();
+	string currentSubstr;
+	int tokenCount, opCount;
+	for (unsigned int i = 0; i < postfixRHS.size() - 1; i++) {
+		currentSubstr = "";
+		tokenCount = opCount = 0;
+		for (unsigned int j = i; j < postfixRHS.size(); j++) {
+			currentSubstr += postfixRHS[j];
+			if (isValidVarName(postfixRHS[j]) || isValidConstant(postfixRHS[j])) {
+				tokenCount++;
+			}
+			else {
+				opCount++;
+			}
+			if (currentSubstr.length() > 2 && tokenCount - 1 == opCount) {
+				rhsSubstring.push_back(currentSubstr);
+			}
+			else if (opCount >= tokenCount) {
+				break;
+			}
+		}
+	}
+	// DEBUG
+	for (unsigned int i = 0; i < rhsSubstring.size(); i++) {
+		cout << rhsSubstring[i] << endl;
+	}
 	//set lhs var
 	pkb->insertVar(lhsVar);
 	setModifies(statementNumber, currProcedure, lhsVar);
@@ -705,11 +773,18 @@ int Parser::handleCall(string callLine) {
 }
 
 bool Parser::setNext(int stmtNum, Container closingType) {
+	//first statement in a procedure cannot possibly be 2nd argument in next
+	//set boolean and return
+	if (firstInProc) {
+		firstInProc = false;
+		return true;
+	}
 	//for case of first line in else
 	if (firstInElse) {
 		firstInElse = false;
 		cout << parentVector.back() << " " << statementNumber << "first line in else " << endl;
-		return true;//pkb->setNext(ifStmtTracker.back(), stmtNum);
+		//pkb->setNext(ifStmtTracker.back(), stmtNum);
+		return true;
 	}
 	//for case of close bracket involving while
 	if (closingType == WHILEC) {
