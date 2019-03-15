@@ -7,26 +7,22 @@
 #include <unordered_set>
 #include <unordered_map> 
 
-using namespace std;
-
 class ResultProjector {
 private:
+	void combineOneSynonym(unordered_set<int> queryResults, vector<string> synonyms);
+	void combineTwoSynonyms(unordered_map<int, unordered_set<int>> queryResults, vector<string> synonyms);
 	bool synonymExists(string);
-	void addOneSyn(string, unordered_map<string, list<int>>);
-	void addTwoSyn(string, string, unordered_map<string, list<int>>);
-	void filterSynInTable(string, list<int>);
+	void addOneSyn(string key, unordered_set<int> results);
+	void addTwoSyn(string key1, string key2, unordered_map<int, unordered_set<int>> results);
+	void filterOneSynInTable(string key, unordered_set<int> queryResults);
+	void filterTwoSynInSameTable(string key1, string key2, unordered_map<int, unordered_set<int>> queryResults);
+	void mergeOneSyn(string existKey, string newKey, unordered_map<int, unordered_set<int>> queryResults);
+	void mergeTables(string key1, string key2, unordered_map<int, unordered_set<int>> queryResults);
+	bool existInMap(int key, unordered_map<int, unordered_set<int>> umap);
+	bool existInMap(string key, unordered_map<string, int> umap);
+	bool existInSet(int key, unordered_set<int> uset);
 	void cleanUpTables(string);
-	void filterOldTable(int, string);
-	bool resultExists(int, list<int>);
-	void eraseTableRow(int, unordered_map<string, list<int>>&, string);
-	void mergeOneSyn(string, string, unordered_map<string, list<int>>);
-	void duplicateResultsForRestOfTable(int, unordered_map<string, list<int>>&);
-	int findIndex(int, list<int>);
-	int getCorrespondingResult(int, list<int>);
-	int getAndDeleteCorrespondingResult(int, string, string, unordered_map<string, list<int>>&);
-	void combineDependentResults(string, string, unordered_map<string, list<int>>);
-	bool dependentResultExists(string, string, int, int, unordered_map<string, list<int>>);
-	void mergeTables(int, string, list<int>);
+	unordered_map<int, unordered_set<int>> invertResults(unordered_map<int, unordered_set<int>> queryResults);
 
 	list<string> getSelectedClauseInTable(Type, list<int>, PKB);
 	list<string> getSelectedClauseNotInTable(Type, PKB);
@@ -40,10 +36,12 @@ private:
 
 public:
 	void resetResults();
-	bool combineResults(unordered_map<string, list<int>> queryResults);
+	bool ResultProjector::combineResults(unordered_set<int> queryResultsOneSynonym, vector<string> synonyms);
+	bool ResultProjector::combineResults(unordered_map<int, unordered_set<int>> queryResultsTwoSynonyms, vector<string> synonyms);
 	list<string> getResults(DesignEntity selectedSynonym, PKB pkb);
+
 	void printTables(); // for debugging
 	unordered_map<string, int> getSynonymTable(); // for testing
-	unordered_map<int, unordered_map<string, list<int>>> getSynonymResults(); // for testing
+	unordered_map<int, unordered_set<unordered_map<string, int>>> ResultProjector::getSynonymResults(); // for testing
 
 };
