@@ -24,6 +24,7 @@ class Parser {
 	vector<int> currentFollowVector = vector<int>();
 	vector<vector<int>> allFollowStack = vector<vector<int>>();
 	vector<Container> containerTracker = vector<Container>();
+	unordered_map<string, int> procCalledByTable;
 	//trackers for next
 	bool firstInProc = false;
 	bool firstInElse = false;
@@ -36,8 +37,14 @@ private:
 	bool setParent(int);
 	bool setModifies(int, string, string);
 	bool setUses(int, string, string);
+	bool setCallUses();
+	bool setCallModifies();
+	bool setModifiesProc();
+	bool setUsesProc();
 	bool setFollow(int);
 	bool setNext(int, Container);
+	bool setCalls(string, string);
+	bool setCallsT();
 
 	string leftTrim(string, string);
 	string rightTrim(string, string);

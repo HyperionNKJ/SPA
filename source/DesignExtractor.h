@@ -16,7 +16,6 @@ class DesignExtractor {
 	unordered_map<string, unordered_set<string>> procUsesTable;
 	unordered_map<string, unordered_set<string>> procModifiesTable;
 	vector<string> topoSortedProc;
-	unordered_map<string, int> procCalledByTable;
 
 private:
 	bool topologicalSortCalls();
@@ -28,10 +27,12 @@ public:
 	bool insertProc(string);
 	bool insertProcUses(string, string);
 	bool insertProcModifies(string, string);
-	bool insertProcCalledBy(string, int);
 	void setPKB(PKB*);
 
 	bool processCalls();
-	bool processIndirectUsesModifies();
-	void processCallsTransitive();
+
+	unordered_map<string, unordered_set<string>> getProcUsesTable();
+	unordered_map<string, unordered_set<string>> getProcModifiesTable();
+	unordered_map<string, unordered_set<string>> getCallGraph();
+	unordered_set<string> getProcList();
 };

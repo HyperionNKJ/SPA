@@ -43,11 +43,6 @@ bool DesignExtractor::insertProcModifies(string procName, string varName) {
 	return true;
 }
 
-bool DesignExtractor::insertProcCalledBy(string procName, int stmtNum) {
-	procCalledByTable.insert({ procName, stmtNum });
-	return true;
-}
-
 bool DesignExtractor::processCalls() {
 	bool result = topologicalSortCalls();
 	if (!result) {
@@ -66,31 +61,6 @@ bool DesignExtractor::processCalls() {
 		}
 		for (const auto &elem : procUsesTable[currProc]) {
 			pkb->setUses(currProc, elem);
-		}
-	}
-	//next need to populate pkb with call statement uses/modifies
-	//need to validate here the procedure exists
-	if (!processIndirectUsesModifies()) {
-		return false;
-	}
-	//finally need to process calls*
-	processCallsTransitive();
-	return true;
-}
-
-bool DesignExtractor::processIndirectUsesModifies() {
-	for (const auto &elem : procCalledByTable) {
-		string procName = elem.first;
-		int stmtNum = elem.second;
-		if (procList.count(procName) < 1) {
-			cout << "Call to non-existent procedure at line " << stmtNum << endl;
-			return false;
-		}
-		for (const auto &elem : procModifiesTable[procName]) {
-			pkb->setModifies(stmtNum, elem);
-		}
-		for (const auto &elem : procUsesTable[procName]) {
-			pkb->setUses(stmtNum, elem);
 		}
 	}
 	return true;
@@ -135,26 +105,6 @@ bool DesignExtractor::topologicalVisit(string procName, unordered_set<string>* v
 	return true;
 }
 
-void DesignExtractor::processCallsTransitive() {
-	//for each procedure, go through the calls graph with BFS and generate calls*. Not the most efficient but it will do.
-	//then insert into PKB
-	for (const auto &proc : procList) {
-		queue<string> bfsQueue;
-		for (const auto &calledProc : callGraph[proc]) {
-			bfsQueue.push(calledProc);
-		}
-		while (bfsQueue.size() > 0) {
-			string currCalledTProc = bfsQueue.front();
-			bfsQueue.pop();
-			//pkb->insertCallsT(proc, currCalledTProc);
-			//pkb->insertCalledByT(currCalledTProc, proc);
-			for (const auto &calledProc : callGraph[currCalledTProc]) {
-				bfsQueue.push(calledProc);
-			}
-		}
-	}
-}
-
 void DesignExtractor::updateProcModifies(string procToUpdate, string procCalled) {
 	for (const auto &elem : procModifiesTable[procCalled]) {
 		procModifiesTable[procToUpdate].insert(elem);
@@ -169,4 +119,20 @@ void DesignExtractor::updateProcUses(string procToUpdate, string procCalled) {
 
 void DesignExtractor::setPKB(PKB * p) {
 	pkb = p;
+}
+
+unordered_map<string, unordered_set<string>> DesignExtractor::getProcUsesTable() {
+	return procUsesTable;
+}
+
+unordered_map<string, unordered_set<string>> DesignExtractor::getProcModifiesTable() {
+	return procModifiesTable;
+}
+
+unordered_map<string, unordered_set<string>> DesignExtractor::getCallGraph() {
+	return callGraph;
+}
+
+unordered_set<string> DesignExtractor::getProcList() {
+	return procList;
 }

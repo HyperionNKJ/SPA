@@ -105,6 +105,8 @@ int Parser::parse(string fileName, PKB& p) {
 		}
 	}
 	de.processCalls();
+	setCallsT();
+	setCallUses();
 	return 0;
 }
 
@@ -766,9 +768,8 @@ int Parser::handleCall(string callLine) {
 	//pkb->insertStmtType(statementNumber, CALL);
 	currentFollowVector.push_back(statementNumber);
 	
-	de.insertProcCalledBy(currProcedure, statementNumber);
-	de.insertCall(currProcedure, calledProcName);
-
+	procCalledByTable.insert({ currProcedure, statementNumber });
+	setCalls(currProcedure, calledProcName);
 	return 0;
 }
 
@@ -958,6 +959,55 @@ bool Parser::setUses(int currStatementNum, string currProc, string varName) {
 	pkb->setUses(currStatementNum, varName);
 	de.insertProcUses(currProc, varName);
 	return true;
+}
+
+bool Parser::setCallUses() {
+	unordered_set<string> procList = de.getProcList();
+	unordered_map<string, unordered_set<string>> procModifiesTable = de.getProcModifiesTable();
+	unordered_map<string, unordered_set<string>> procUsesTable = de.getProcUsesTable();
+	for (const auto &elem : procCalledByTable) {
+		string procName = elem.first;
+		int stmtNum = elem.second;
+		if (procList.count(procName) < 1) {
+			cout << "Call to non-existent procedure at line " << stmtNum << endl;
+			return false;
+		}
+		for (const auto &elem : procModifiesTable[procName]) {
+			pkb->setModifies(stmtNum, elem);
+		}
+		for (const auto &elem : procUsesTable[procName]) {
+			pkb->setUses(stmtNum, elem);
+		}
+	}
+	return true;
+}
+
+bool Parser::setCalls(string currProcedure, string calledProcName) {
+	//pkb->insertCalls(currProcedure, calledProcName);
+	//pkb->insertCalledBy(calledProcName, currProcedure);
+	de.insertCall(currProcedure, calledProcName);
+}
+
+bool Parser::setCallsT() {
+	unordered_map<string, unordered_set<string>> callGraph = de.getCallGraph();
+	unordered_set<string> procList = de.getProcList();
+	//for each procedure, go through the calls graph with BFS and generate calls*.
+	//then insert into PKB
+	for (const auto &proc : procList) {
+		queue<string> bfsQueue;
+		for (const auto &calledProc : callGraph[proc]) {
+			bfsQueue.push(calledProc);
+		}
+		while (bfsQueue.size() > 0) {
+			string currCalledTProc = bfsQueue.front();
+			bfsQueue.pop();
+			//pkb->insertCallsT(proc, currCalledTProc);
+			//pkb->insertCalledByT(currCalledTProc, proc);
+			for (const auto &calledProc : callGraph[currCalledTProc]) {
+				bfsQueue.push(calledProc);
+			}
+		}
+	}
 }
 
 void Parser::setPKB(PKB * p) {
