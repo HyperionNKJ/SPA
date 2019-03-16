@@ -24,21 +24,16 @@ private:
 	void cleanUpTables(string);
 	unordered_map<int, unordered_set<int>> invertResults(unordered_map<int, unordered_set<int>> queryResults);
 
-	list<string> getSelectedClauseInTable(Type, list<int>, PKB);
-	list<string> getSelectedClauseNotInTable(Type, PKB);
-	list<string> convertVarIndexToVar(unordered_set<int>, PKB);
-	list<string> convertVarIndexToVar(list<int>, PKB);
-	list<string> convertProcIndexToProc(unordered_set<int>, PKB);
-	list<string> convertProcIndexToProc(list<int>, PKB);
-	list<string> convertIndexToString(unordered_set<int>, PKB);
-	list<string> convertIndexToString(list<int>, PKB);
-	list<string> convertSetToList(unordered_set<string>);
+	string convertSynonymResultToRequired(Type, int, PKB);
+	list<unordered_map<string, string>> getSelectedClauseNotInTable(DesignEntity, PKB);
+	list<unordered_map<string, string>> convertSetToList(unordered_set<string>, string);
+	list<unordered_map<string, string>> convertSetToList(unordered_set<int>, string);
 
 public:
 	void resetResults();
 	bool ResultProjector::combineResults(unordered_set<int> queryResultsOneSynonym, vector<string> synonyms);
 	bool ResultProjector::combineResults(unordered_map<int, unordered_set<int>> queryResultsTwoSynonyms, vector<string> synonyms);
-	list<string> getResults(DesignEntity selectedSynonym, PKB pkb);
+	list<string> getResults(vector<DesignEntity> selectedSynonyms, PKB pkb);
 
 	void printTables(); // for debugging
 	unordered_map<string, int> getSynonymTable(); // for testing

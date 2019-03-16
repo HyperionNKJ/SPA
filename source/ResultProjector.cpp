@@ -26,141 +26,176 @@ unordered_map<int, list<unordered_map<string, int>>> ResultProjector::getSynonym
 	return synonymResults;
 }
 
-list<string> ResultProjector::getResults(DesignEntity selectedSynonym, PKB pkb) {
-	list<string> projectedResults;
-	Type type = selectedSynonym.getType();
+list<string> ResultProjector::getResults(vector<DesignEntity> selectedSynonyms, PKB pkb) {
+	// TODO: BOOLEAN
 
-	if (synonymExists(selectedSynonym.getValue())) {
-		int tableNum = synonymTable.at(selectedSynonym.getValue());
-		list<int> results = synonymResults.at(tableNum).at(selectedSynonym.getValue());
-
-		projectedResults = getSelectedClauseInTable(type, results, pkb);
-	}
-	else {
-		projectedResults = getSelectedClauseNotInTable(type, pkb);
-	}
-	// sort and remove duplicates
-	projectedResults.sort();
-	projectedResults.unique();
-
-	return projectedResults;
-}
-
-list<string> ResultProjector::getSelectedClauseInTable(Type type, list<int> results, PKB pkb) {
-	list<string> projectedResults;
-	switch (type) {
-		case Type::VARIABLE:
-			projectedResults = convertVarIndexToVar(results, pkb);
-			break;
-		case Type::PROCEDURE:
-			projectedResults = convertProcIndexToProc(results, pkb);
-			break;
-		default: // STATEMENTS and CONSTANTS
-			projectedResults = convertIndexToString(results, pkb);
-			break;
+	vector<string> selectedSynonymsOrder;
+	unordered_map<int, list<DesignEntity>> selectedSynonymTableMap;
+	unordered_map<string, Type> selectedSynonymAttrRef; // TODO
+	
+	// 1. Loop through all selected synonyms and get their table numbers
+	for (auto selectedSynonym : selectedSynonyms) {
+		selectedSynonymsOrder.push_back(selectedSynonym.getValue());
+		string synonym = selectedSynonym.getValue();
+		int tableNum;
+		if (synonymExists(synonym)) {
+			tableNum = synonymTable[selectedSynonym.getValue()];
 		}
+		else {
+			tableNum = -1;
+		}
+		selectedSynonymTableMap.at(tableNum).push_back(selectedSynonym);
+		// TODO put mapping for selectedSynonymAttrRef
+	}
+
+	// 2. For each tableNum, put selected results in an unordered_map
+	vector<list<unordered_map<string, string>>> allTableResults;
+	for (auto tableMap : selectedSynonymTableMap) {
+		list<unordered_map<string, string>> selectedResults;
+		if (tableMap.first == -1) { // synonym does not exist in table
+			for (auto selectedSyn : tableMap.second) {
+				selectedResults = getSelectedClauseNotInTable(selectedSyn, pkb);
+			}
+		}
+		else {
+			list<unordered_map<string, int>> results = synonymResults[tableMap.first];
+			for (auto result : results) {
+				unordered_map<string, string> rowResult;
+				for (auto selectedSyn : tableMap.second) {
+					// TODO: add in attrRef (call, read, print)
+					string convertedResult = convertSynonymResultToRequired(selectedSyn.getType(), result.at(selectedSyn.getValue()), pkb);
+					rowResult[selectedSyn.getValue()] = convertedResult;
+				}
+				selectedResults.push_back(rowResult);
+			}
+		}
+		allTableResults.push_back(selectedResults);
+	}
+
+	// 3. Cross product all maps
+	list<unordered_map<string, string>> finalMaps;
+	if (!allTableResults.empty()) {
+		finalMaps = allTableResults.at(0);
+		for (size_t i = 1; i < allTableResults.size(); i++) {
+			list<unordered_map<string, string>> tableResults = allTableResults.at(i);
+
+			int size = finalMaps.size();
+			int count = 0; // for early break, no need loop through all that just added
+			for (auto finalMap : finalMaps) {
+				if (count == size) {
+					break;
+				}
+				for (auto tableResult : tableResults) {
+					unordered_map<string, string> newResult = finalMap; // merge 2 maps together
+					newResult.insert(tableResult.begin(), tableResult.end());
+					finalMaps.push_back(newResult);
+				}
+				finalMaps.pop_front();
+				count++;
+			}
+		}
+	}
+	
+	// 4. Convert to required format
+	list<string> projectedResults;
+	if (!selectedSynonymsOrder.empty()) {
+		for (auto finalMap : finalMaps) {
+			string resultString = finalMap[selectedSynonymsOrder.at(0)];
+			for (size_t i = 1; i < selectedSynonymsOrder.size(); i++) {
+				resultString += " " + finalMap[selectedSynonymsOrder.at(i)];
+			}
+			projectedResults.push_back(resultString);
+		}
+	}
 	return projectedResults;
 }
 
-list<string> ResultProjector::getSelectedClauseNotInTable(Type type, PKB pkb) {
+string ResultProjector::convertSynonymResultToRequired(Type type, int result, PKB pkb) {
+	string convertedResult;
+	switch (type) {
+	case Type::VARIABLE:
+		convertedResult = pkb.getVarAtIdx(result);
+		break;
+	case Type::PROCEDURE:
+		convertedResult = pkb.getProcAtIdx(result);
+		break;
+	default: // EVERYTHING ELSE
+		convertedResult = to_string(result);
+		break;
+	}
+	return convertedResult;
+}
+
+list<unordered_map<string, string>> ResultProjector::getSelectedClauseNotInTable(DesignEntity synonym, PKB pkb) {
 	unordered_set<int> results;
-	list<string> projectedResults;
-	//STATEMENT, READ, PRINT, CALL, WHILE, IF, ASSIGN, VARIABLE, CONSTANT, PROCEDURE, UNDERSCORE, FIXED
+	list<unordered_map<string, string>> projectedResults;
+	//STATEMENT, READ, PRINT, CALL, WHILE, IF, ASSIGN, VARIABLE, CONSTANT, PROCEDURE, UNDERSCORE, FIXED --> need to update
+
+	// TODO: AttrRef in each case, see if need convert
+	Type type = synonym.getType();
 
 	switch (type) {
 		case Type::STATEMENT:
 			results = pkb.getAllStmts();
-			projectedResults = convertIndexToString(results, pkb);
+			projectedResults = convertSetToList(results, synonym.getValue());
 			break;
+		/*case Type::PROG_LINE:
+			results = pkb.getAllStmts();
+			projectedResults = convertSetToList(results, synonym.getValue());
+			break;*/
 		case Type::READ:
 			results = pkb.getReadStmts();
-			projectedResults = convertIndexToString(results, pkb);
+			projectedResults = convertSetToList(results, synonym.getValue());
 			break;
 		case Type::PRINT:
 			results = pkb.getPrintStmts();
-			projectedResults = convertIndexToString(results, pkb);
+			projectedResults = convertSetToList(results, synonym.getValue());
 			break;
 		/*case Type::CALL:	// call statements
 			results = pkb.getAllVariables();
 			break;*/
 		case Type::WHILE:
 			results = pkb.getWhileStmts();
-			projectedResults = convertIndexToString(results, pkb);
+			projectedResults = convertSetToList(results, synonym.getValue());
 			break;
 		case Type::IF:
 			results = pkb.getIfStmts();
-			projectedResults = convertIndexToString(results, pkb);
+			projectedResults = convertSetToList(results, synonym.getValue());
 			break;
 		case Type::ASSIGN:
 			results = pkb.getAssignStmts();
-			projectedResults = convertIndexToString(results, pkb);
+			projectedResults = convertSetToList(results, synonym.getValue());
 			break;
 		case Type::VARIABLE:
-			projectedResults = convertSetToList(pkb.getAllVariables());
+			projectedResults = convertSetToList(pkb.getAllVariables(), synonym.getValue());
 			break;
 		case Type::CONSTANT:
 			results = pkb.getAllConstant();
-			projectedResults = convertIndexToString(results, pkb);
+			projectedResults = convertSetToList(results, synonym.getValue());
 			break;
 		case Type::PROCEDURE:
-			projectedResults = convertSetToList(pkb.getAllProcedures());
+			projectedResults = convertSetToList(pkb.getAllProcedures(), synonym.getValue());
 			break;
 		}
 	return projectedResults;
 }
 
-list<string> ResultProjector::convertVarIndexToVar(unordered_set<int> resultSet, PKB pkb) {
-	list<string> results;
-	for (auto varIndex : resultSet) {
-		results.push_back(pkb.getVarAtIdx(varIndex));
+list<unordered_map<string, string>> ResultProjector::convertSetToList(unordered_set<string> resultSet, string synonym) {
+	list<unordered_map<string, string>> results;
+	unordered_map<string, string> row;
+	for (string result : resultSet) {
+		row[synonym] = result;
+		results.push_back(row);
 	}
 	return results;
 }
 
-list<string> ResultProjector::convertVarIndexToVar(list<int> resultList, PKB pkb) {
-	list<string> results;
-	for (auto varIndex : resultList) {
-		results.push_back(pkb.getVarAtIdx(varIndex));
-	}
-	return results;
-}
-
-list<string> ResultProjector::convertProcIndexToProc(unordered_set<int> resultSet, PKB pkb) {
-	list<string> results;
-	for (auto procIndex : resultSet) {
-		results.push_back(pkb.getProcAtIdx(procIndex)); // new API from PKB
-	}
-	return results;
-}
-
-list<string> ResultProjector::convertProcIndexToProc(list<int> resultList, PKB pkb) {
-	list<string> results;
-	for (auto procIndex : resultList) {
-		results.push_back(pkb.getProcAtIdx(procIndex)); // new API from PKB
-	}
-	return results;
-}
-
-list<string> ResultProjector::convertIndexToString(unordered_set<int> resultSet, PKB pkb) {
-	list<string> results;
-	for (auto resultIndex : resultSet) {
-		results.push_back(to_string(resultIndex));
-	}
-	return results;
-}
-
-list<string> ResultProjector::convertIndexToString(list<int> resultList, PKB pkb) {
-	list<string> results;
-	for (auto resultIndex : resultList) {
-		results.push_back(to_string(resultIndex));
-	}
-	return results;
-}
-
-list<string> ResultProjector::convertSetToList(unordered_set<string> resultSet) {
-	list<string> results;
-	for (auto result : resultSet) {
-		results.push_back(result);
+list<unordered_map<string, string>> ResultProjector::convertSetToList(unordered_set<int> resultSet, string synonym) {
+	list<unordered_map<string, string>> results;
+	unordered_map<string, string> row;
+	for (int result : resultSet) {
+		row[synonym] = to_string(result);
+		results.push_back(row);
 	}
 	return results;
 }
