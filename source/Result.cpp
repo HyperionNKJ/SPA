@@ -35,7 +35,7 @@ void Result::setAnswer(const string& stmtSynonym, const string& variableSynonym,
 		int stmtNum = itr->first;
 		unordered_set<string> variableNames = itr->second;
 		auto it = variableNames.begin();
-		for (int i = 0; i < variableNames.size(); i++) {
+		for (unsigned int i = 0; i < variableNames.size(); i++) {
 			stmtList.push_back(stmtNum);
 			variableIndices.push_back(varToIndexTable.at(*it));
 			it++;
@@ -53,7 +53,7 @@ void Result::setAnswer(const string& stmt1Synonym, const string& stmt2Synonym, c
 		int stmt1Num = itr->first;
 		unordered_set<int> stmt2Numbers = itr->second;
 		auto it = stmt2Numbers.begin();
-		for (int i = 0; i < stmt2Numbers.size(); i++) {
+		for (unsigned int i = 0; i < stmt2Numbers.size(); i++) {
 			stmt1List.push_back(stmt1Num);
 			stmt2List.push_back(*it);
 			it++;

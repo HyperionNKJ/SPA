@@ -9,11 +9,12 @@
 #include <stack>
 #include "PKB.h"
 #include "Type.h"
-
-using namespace std;
+#include "DesignExtractor.h"
 
 class Parser {
 	PKB * pkb;
+	DesignExtractor de;
+	enum Container { WHILEC, IFC, ELSEC, NONEC };
 	bool withinProcedure = false;
 	bool emptyProcedure = true;
 	bool expectElse = false;
@@ -22,14 +23,34 @@ class Parser {
 	vector<int> parentVector = vector<int>();
 	vector<int> currentFollowVector = vector<int>();
 	vector<vector<int>> allFollowStack = vector<vector<int>>();
-	vector<int> containerTracker = vector<int>();
+	vector<Container> containerTracker = vector<Container>();
+	unordered_map<string, int> procCalledByTable;
+	//trackers for next
+	bool firstInProc = false;
+	bool firstInElse = false;
+	vector<int> lastInIfTracker = vector<int>();
+	vector<int> lastInElseTracker = vector<int>();
+	int closedIfCount = 0;
 	string currProcedure;
 
 private:
 	bool setParent(int);
-	bool setModifies(int, string);
-	bool setUses(int, string);
+	bool setModifies(int, string, string);
+	bool setUses(int, string, string);
+	bool setCallUses();
+	bool setCallModifies();
+	bool setModifiesProc();
+	bool setUsesProc();
 	bool setFollow(int);
+	bool setNext(int, Container);
+	bool setCalls(string, string);
+	bool setCallsT();
+
+	string leftTrim(string, string);
+	string rightTrim(string, string);
+	bool isValidVarName(string);
+	bool isValidConstant(string);
+	vector<string> tokeniseString(string, string);
 public:
 
 	bool checkProcedure(string);
@@ -56,17 +77,14 @@ public:
 	bool checkRelExpr(string);
 	bool checkRelFactor(string);
 
+	bool checkCall(string);
+	int handleCall(string);
+
 	int handleCloseBracket(string);
 
 	int getStatementIntent(string);
 	int parse(string, PKB&);
 	vector<string> loadFile(string);
-
-	string leftTrim(string, string);
-	string rightTrim(string, string);
-	bool isValidVarName(string);
-	bool isValidConstant(string);
-	vector<string> tokeniseString(string, string);
 
 	//setter/getter functions for testing
 	void setPKB(PKB*);

@@ -6,8 +6,6 @@
 #include <regex>
 #include <algorithm>
 
-using namespace std;
-
 #include "Parser.h"
 #include "pkb.h"
 #include "Type.h"
@@ -22,10 +20,6 @@ static int KEY_READ = 6;
 static int KEY_PRINT = 7;
 static int KEY_CLOSE_BRACKET = 8;
 static int KEY_CALL = 9;
-//Static integers to keep track of the container statements in the stack
-static int WHILECONTAINER = 100;
-static int IFCONTAINER = 101;
-static int ELSECONTAINER = 102;
 
 static string varNameRegex = "([[:alpha:]]([[:alnum:]])*)";
 static string constantRegex = "[[:digit:]]+";
@@ -34,6 +28,7 @@ static string openCurlyRegex = "\\{";
 
 int Parser::parse(string fileName, PKB& p) {
 	pkb = &p;
+	de.setPKB(&p);
 	try {
 		loadFile(fileName);
 	}
@@ -93,6 +88,7 @@ int Parser::parse(string fileName, PKB& p) {
 						cout << "Else statement without accompanying if found just before line " << statementNumber << endl;
 					}
 					else if (intent == KEY_CALL) {
+						result = handleCall(sourceCode[i]);
 						statementNumber++;
 						emptyProcedure = false;
 					}
@@ -108,6 +104,9 @@ int Parser::parse(string fileName, PKB& p) {
 			return -1;
 		}
 	}
+	de.processCalls();
+	setCallsT();
+	setCallUses();
 	return 0;
 }
 
@@ -172,9 +171,12 @@ int Parser::handleProcedure(string procLine) {
 
 	bool result;
 	result = pkb->insertProc(procedureName);
+	de.insertProc(procedureName);
+	
 	currProcedure = procedureName;
 	withinProcedure = true;
 	emptyProcedure = true;
+	firstInProc = true;
 	return 0;
 }
 
@@ -282,7 +284,8 @@ int Parser::handleAssignment(string assignmentLine) {
 	
 	setParent(statementNumber);
 	setFollow(statementNumber);
-	//Separate variable names, constants and operation/brackets from each other to pass to pkb
+	setNext(statementNumber, NONEC);
+	//Separate variable names, constants and operation/brackets from each other
 	vector<string> assignTokens = vector<string>();
 	string lhsVar = cleanedAssignment.substr(0, cleanedAssignment.find_first_of("="));
 	string rhs = cleanedAssignment.substr(cleanedAssignment.find_first_of("=") + 1, string::npos);
@@ -303,15 +306,84 @@ int Parser::handleAssignment(string assignmentLine) {
 	if (!currToken.empty()) {
 		assignTokens.push_back(currToken);
 	}
-
+	//form postfix expression
+	vector<string> postfixRHS = vector<string>();
+	vector<string> opStack = vector<string>();
+	for (unsigned int i = 0; i < assignTokens.size(); i++) {
+		if (isValidConstant(assignTokens[i]) || isValidVarName(assignTokens[i])) {
+			postfixRHS.push_back(assignTokens[i]);
+		}
+		else if (assignTokens[i] == "(") {
+			opStack.push_back(assignTokens[i]);
+		}
+		else if (assignTokens[i] == ")") {
+			while (opStack.back() != "(") {
+				postfixRHS.push_back(opStack.back());
+				opStack.pop_back();
+			}
+			opStack.pop_back();
+		}
+		else if (assignTokens[i] == "+" || assignTokens[i] == "-") {
+			while (opStack.size() > 0 && (opStack.back() == "+" || opStack.back() == "-")) {
+				postfixRHS.push_back(opStack.back());
+				opStack.pop_back();
+			}
+			opStack.push_back(assignTokens[i]);
+		}
+		else if (assignTokens[i] == "*" || assignTokens[i] == "/" || assignTokens[i] == "%") {
+			while (opStack.size() > 0 && (opStack.back() == "*" || opStack.back() == "/" || opStack.back() == "%")) {
+				postfixRHS.push_back(opStack.back());
+				opStack.pop_back();
+			}
+			opStack.push_back(assignTokens[i]);
+		}
+	}
+	while (opStack.size() > 0) {
+		postfixRHS.push_back(opStack.back());
+		opStack.pop_back();
+	}
+	// DEBUG
+	for (unsigned int i = 0; i < postfixRHS.size(); i++) {
+		cout << postfixRHS[i] << " ";
+	}
+	cout << endl;
+	// DEBUG
+	//extract all possible substrings from the postfix notation
+	//start at each possible location and attempt to build a string, terminating if a string cannot be a valid pattern
+	vector<string> rhsSubstring = vector<string>();
+	string currentSubstr;
+	int tokenCount, opCount;
+	for (unsigned int i = 0; i < postfixRHS.size() - 1; i++) {
+		currentSubstr = "";
+		tokenCount = opCount = 0;
+		for (unsigned int j = i; j < postfixRHS.size(); j++) {
+			currentSubstr += postfixRHS[j];
+			if (isValidVarName(postfixRHS[j]) || isValidConstant(postfixRHS[j])) {
+				tokenCount++;
+			}
+			else {
+				opCount++;
+			}
+			if (currentSubstr.length() > 2 && tokenCount - 1 == opCount) {
+				rhsSubstring.push_back(currentSubstr);
+			}
+			else if (opCount >= tokenCount) {
+				break;
+			}
+		}
+	}
+	// DEBUG
+	for (unsigned int i = 0; i < rhsSubstring.size(); i++) {
+		cout << rhsSubstring[i] << endl;
+	}
 	//set lhs var
 	pkb->insertVar(lhsVar);
-	setModifies(statementNumber, lhsVar);
+	setModifies(statementNumber, currProcedure, lhsVar);
 	//set rhs var, constants
 	for (unsigned int i = 0; i < assignTokens.size(); i++) {
 		if (isValidVarName(assignTokens[i])) {
 			pkb->insertVar(assignTokens[i]);
-			setUses(statementNumber, assignTokens[i]);
+			setUses(statementNumber, currProcedure, assignTokens[i]);
 		}
 		else if (isValidConstant(assignTokens[i])) {
 			pkb->insertConstant(stoi(assignTokens[i]));
@@ -346,7 +418,9 @@ int Parser::handleRead(string readLine) {
 
 	setParent(statementNumber);
 	setFollow(statementNumber);
-	setModifies(statementNumber, varName);
+	setNext(statementNumber, NONEC);
+
+	setModifies(statementNumber, currProcedure, varName);
 	pkb->insertVar(varName);
 	pkb->insertStmtType(statementNumber, READ);
 	currentFollowVector.push_back(statementNumber);
@@ -376,7 +450,8 @@ int Parser::handlePrint(string printLine) {
 
 	setParent(statementNumber);
 	setFollow(statementNumber);
-	setUses(statementNumber, varName);
+	setNext(statementNumber, NONEC);
+	setUses(statementNumber, currProcedure, varName);
 	pkb->insertVar(varName);
 	pkb->insertStmtType(statementNumber, PRINT);
 	currentFollowVector.push_back(statementNumber);
@@ -411,11 +486,12 @@ int Parser::handleWhile(string whileLine) {
 	//set relationships
 	setParent(statementNumber);
 	setFollow(statementNumber);
+	setNext(statementNumber, NONEC);
 
 	//update parent, container, follows trackers
 	currentFollowVector.push_back(statementNumber);
 	parentVector.push_back(statementNumber);
-	containerTracker.push_back(WHILECONTAINER);
+	containerTracker.push_back(WHILEC);
 	allFollowStack.push_back(currentFollowVector);
 	currentFollowVector.clear();
 	pkb->insertStmtType(statementNumber, WHILE);
@@ -428,7 +504,7 @@ int Parser::handleWhile(string whileLine) {
 	for (unsigned int i = 0; i < tokens.size(); i++) {
 		if (isValidVarName(tokens[i])) {
 			pkb->insertVar(tokens[i]);
-			setUses(statementNumber, tokens[i]);
+			setUses(statementNumber, currProcedure, tokens[i]);
 		}
 		else if (isValidConstant(tokens[i])) {
 			pkb->insertConstant(stoi(tokens[i]));
@@ -465,11 +541,12 @@ int Parser::handleIf(string ifLine) {
 	//set follow, parent relationships
 	setParent(statementNumber);
 	setFollow(statementNumber);
+	setNext(statementNumber, NONEC);
 
 	//update parent, follow, container trackers
 	currentFollowVector.push_back(statementNumber);
 	parentVector.push_back(statementNumber);
-	containerTracker.push_back(IFCONTAINER);
+	containerTracker.push_back(IFC);
 	allFollowStack.push_back(currentFollowVector);
 	currentFollowVector.clear();
 	pkb->insertStmtType(statementNumber, IF);
@@ -482,7 +559,7 @@ int Parser::handleIf(string ifLine) {
 	for (unsigned int i = 0; i < tokens.size(); i++) {
 		if (isValidVarName(tokens[i])) {
 			pkb->insertVar(tokens[i]);
-			setUses(statementNumber, tokens[i]);
+			setUses(statementNumber, currProcedure, tokens[i]);
 		}
 		else if (isValidConstant(tokens[i])) {
 			pkb->insertConstant(stoi(tokens[i]));
@@ -509,7 +586,8 @@ int Parser::handleElse(string elseLine) {
 	//reset follow tracker
 	//set container tracker
 	expectElse = false;
-	containerTracker.push_back(ELSECONTAINER);
+	firstInElse = true;
+	containerTracker.push_back(ELSEC);
 	currentFollowVector.clear();
 	return 0;
 }
@@ -639,7 +717,7 @@ int Parser::handleCloseBracket(string closeBracket) {
 		//clear follow vector
 		//set else checker and container for if
 		currentFollowVector.clear();
-		if (containerTracker.back() == WHILECONTAINER || containerTracker.back() == ELSECONTAINER) {
+		if (containerTracker.back() == WHILEC || containerTracker.back() == ELSEC) {
 			if (parentVector.size() == 0) {
 				cout << "Unexpected error when parsing end of container statement. Parent vector is empty. At line " << statementNumber << endl;
 				return -1;
@@ -651,13 +729,111 @@ int Parser::handleCloseBracket(string closeBracket) {
 			parentVector.pop_back();
 			currentFollowVector = allFollowStack.back();
 			allFollowStack.pop_back();
+			//track consecutive closed if/else statements
+			setNext(statementNumber, containerTracker.back());
 		}
-		else if (containerTracker.back() == IFCONTAINER) {
+		else if (containerTracker.back() == IFC) {
 			expectElse = true;
+			lastInIfTracker.push_back(statementNumber - 1);
 		}
 		containerTracker.pop_back();
 	}
 	return 0;
+}
+
+bool Parser::checkCall(string callLine) {
+	string callRegexString = spaceRegex + "call" + spaceRegex + varNameRegex + spaceRegex + ";" + spaceRegex;
+	regex callRegex(callRegexString);
+	if (!regex_match(callLine, callRegex)) {
+		cout << "Call statement is invalid at line " << statementNumber << endl;
+		return false;
+	}
+	return true;
+}
+
+int Parser::handleCall(string callLine) {
+	if (!checkCall(callLine)) {
+		return -1;
+	}
+	//extract proc name
+	size_t startPos = callLine.find_first_of("call");
+	size_t endPos = callLine.find_first_of(";");
+	string calledProcName = callLine.substr(startPos + 4, endPos - startPos - 4);
+	calledProcName = leftTrim(calledProcName, " \t");
+	calledProcName = rightTrim(calledProcName, " \t");
+
+	setParent(statementNumber);
+	setFollow(statementNumber);
+	setNext(statementNumber, NONEC);
+	//pkb->insertStmtType(statementNumber, CALL);
+	currentFollowVector.push_back(statementNumber);
+	
+	procCalledByTable.insert({ currProcedure, statementNumber });
+	setCalls(currProcedure, calledProcName);
+	return 0;
+}
+
+bool Parser::setNext(int stmtNum, Container closingType) {
+	//first statement in a procedure cannot possibly be 2nd argument in next
+	//set boolean and return
+	if (firstInProc) {
+		firstInProc = false;
+		return true;
+	}
+	//for case of first line in else
+	if (firstInElse) {
+		firstInElse = false;
+		cout << parentVector.back() << " " << statementNumber << "first line in else " << endl;
+		//pkb->setNext(ifStmtTracker.back(), stmtNum);
+		return true;
+	}
+	//for case of close bracket involving while
+	if (closingType == WHILEC) {
+		int lastWhile = parentVector.back();
+		if (closedIfCount > 0) {
+			while (closedIfCount > 0) {
+				cout << lastInIfTracker.back() << " " << lastWhile << "closed while with if involved" << endl;
+				cout << lastInElseTracker.back() << " " << lastWhile << endl;
+				cout << lastWhile << " " << statementNumber << endl;
+				//pkb->setNext(lastInIfTracker.back(), lastWhile);
+				//pkb->setNext(lastInElseTracker.back(), lastWhile);
+				//pkb->setNext(lastWhile, statementNumber);
+				lastInIfTracker.pop_back();
+				lastInElseTracker.pop_back();
+				closedIfCount--;
+			}
+		}
+		else {
+			cout << lastWhile << " " << statementNumber << " end of while with no if involved" << endl;
+			cout << statementNumber - 1 << " " << lastWhile << endl;
+			//pkb->setNext(lastWhile, stmtNum);
+			//pkb->setNext(stmtNum-1, lastWhile);
+		}
+		return true;
+	}
+	//for case of close bracket involving else
+	if (closingType == ELSEC) {
+		lastInElseTracker.push_back(statementNumber - 1);
+		closedIfCount++;
+		return true;
+	}
+	//for case of not first line in else, neither is it closing bracket.
+	if (closedIfCount > 0) {
+		while (closedIfCount > 0) {
+			cout << lastInIfTracker.back() << " " << statementNumber << "closed if no container " << endl;
+			cout << lastInElseTracker.back() << " " << statementNumber << endl;
+			//pkb->setNext(lastInIfTracker.back(), stmtNum);
+			//pkb->setNext(lastInElseTracker.back(), stmtNum);
+			lastInIfTracker.pop_back();
+			lastInElseTracker.pop_back();
+			closedIfCount--;
+		}
+	}
+	else {
+		cout << statementNumber - 1 << " " << statementNumber << "first nothing involved" << endl;
+		//pkb->setNext(stmtNum-1, stmtNum);
+	}
+	return true;
 }
 
 vector<string> Parser::loadFile(string fileName) {
@@ -767,22 +943,71 @@ bool Parser::setFollow(int currStatementNum) {
 	return true;
 }
 
-bool Parser::setModifies(int currStatementNum, string varName) {
+bool Parser::setModifies(int currStatementNum, string currProc, string varName) {
 	for (unsigned int i = 0; i < parentVector.size(); i++) {
 		pkb->setModifies(parentVector[i], varName);
 	}
 	pkb->setModifies(currStatementNum, varName);
-	pkb->setModifies(currProcedure, varName);
+	de.insertProcModifies(currProc, varName);
 	return true;
 }
 
-bool Parser::setUses(int currStatementNum, string varName) {
+bool Parser::setUses(int currStatementNum, string currProc, string varName) {
 	for (unsigned int i = 0; i < parentVector.size(); i++) {
 		pkb->setUses(parentVector[i], varName);
 	}
 	pkb->setUses(currStatementNum, varName);
-	pkb->setUses(currProcedure, varName);
+	de.insertProcUses(currProc, varName);
 	return true;
+}
+
+bool Parser::setCallUses() {
+	unordered_set<string> procList = de.getProcList();
+	unordered_map<string, unordered_set<string>> procModifiesTable = de.getProcModifiesTable();
+	unordered_map<string, unordered_set<string>> procUsesTable = de.getProcUsesTable();
+	for (const auto &elem : procCalledByTable) {
+		string procName = elem.first;
+		int stmtNum = elem.second;
+		if (procList.count(procName) < 1) {
+			cout << "Call to non-existent procedure at line " << stmtNum << endl;
+			return false;
+		}
+		for (const auto &elem : procModifiesTable[procName]) {
+			pkb->setModifies(stmtNum, elem);
+		}
+		for (const auto &elem : procUsesTable[procName]) {
+			pkb->setUses(stmtNum, elem);
+		}
+	}
+	return true;
+}
+
+bool Parser::setCalls(string currProcedure, string calledProcName) {
+	//pkb->insertCalls(currProcedure, calledProcName);
+	//pkb->insertCalledBy(calledProcName, currProcedure);
+	de.insertCall(currProcedure, calledProcName);
+}
+
+bool Parser::setCallsT() {
+	unordered_map<string, unordered_set<string>> callGraph = de.getCallGraph();
+	unordered_set<string> procList = de.getProcList();
+	//for each procedure, go through the calls graph with BFS and generate calls*.
+	//then insert into PKB
+	for (const auto &proc : procList) {
+		queue<string> bfsQueue;
+		for (const auto &calledProc : callGraph[proc]) {
+			bfsQueue.push(calledProc);
+		}
+		while (bfsQueue.size() > 0) {
+			string currCalledTProc = bfsQueue.front();
+			bfsQueue.pop();
+			//pkb->insertCallsT(proc, currCalledTProc);
+			//pkb->insertCalledByT(currCalledTProc, proc);
+			for (const auto &calledProc : callGraph[currCalledTProc]) {
+				bfsQueue.push(calledProc);
+			}
+		}
+	}
 }
 
 void Parser::setPKB(PKB * p) {
