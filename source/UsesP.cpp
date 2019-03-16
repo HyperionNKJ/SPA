@@ -1,12 +1,12 @@
-#include "ModifiesP.h"
+#include "UsesP.h"
 #include <unordered_set>
 #include <string>
 
-ModifiesP::ModifiesP(const DesignEntity& paraOne, const DesignEntity& paraTwo) : Clause(paraOne, paraTwo) {}
+UsesP::UsesP(const DesignEntity& paraOne, const DesignEntity& paraTwo) : Clause(paraOne, paraTwo) {}
 
-Result ModifiesP::evaluate(const PKB& pkb) {
+Result UsesP::evaluate(const PKB& pkb) {
 	this->pkb = pkb;
-	Type paraOneType = paraOne.getType(); 
+	Type paraOneType = paraOne.getType();
 	Type paraTwoType = paraTwo.getType();
 	string paraOneValue = paraOne.getValue();
 	string paraTwoValue = paraTwo.getValue();
@@ -50,10 +50,10 @@ Result ModifiesP::evaluate(const PKB& pkb) {
 	return *result;
 }
 
-// case Modifies("main", v)
-Result* ModifiesP::evaluateFixedVariable(const string& procName, const string& variableSynonym) {
+// case Uses("main", v)
+Result* UsesP::evaluateFixedVariable(const string& procName, const string& variableSynonym) {
 	Result* result = new Result();
-	unordered_set<string> answer = pkb.getVarModifiedByProc(procName);
+	unordered_set<string> answer = pkb.getVarUsedByProc(procName);
 	if (!answer.empty()) {
 		result->setPassed(true);
 		result->setAnswer(variableSynonym, answer, pkb.getProcTable());
@@ -64,24 +64,24 @@ Result* ModifiesP::evaluateFixedVariable(const string& procName, const string& v
 	return result;
 }
 
-// case Modifies("main", _)
-Result* ModifiesP::evaluateFixedUnderscore(const string& procName) {
+// case Uses("main", _)
+Result* UsesP::evaluateFixedUnderscore(const string& procName) {
 	Result* result = new Result();
-	result->setPassed(pkb.doesProcModifies(procName));
+	result->setPassed(pkb.doesProcUses(procName));
 	return result;
 }
 
-// case Modifies("main", "count")
-Result* ModifiesP::evaluateFixedFixed(const string& procName, const string& varName) {
+// case Uses("main", "count")
+Result* UsesP::evaluateFixedFixed(const string& procName, const string& varName) {
 	Result* result = new Result();
-	result->setPassed(pkb.isProcModifies(procName, varName));
+	result->setPassed(pkb.isProcUses(procName, varName));
 	return result;
 }
 
-// case Modifies(p, v)
-Result* ModifiesP::evaluateSynonymVariable(const string& procSynonym, const string& variableSynonym) {
+// case Uses(p, v)
+Result* UsesP::evaluateSynonymVariable(const string& procSynonym, const string& variableSynonym) {
 	Result* result = new Result();
-	unordered_map<string, unordered_set<string>> answer = pkb.getModifiesProcVarPairs();
+	unordered_map<string, unordered_set<string>> answer = pkb.getUsesProcVarPairs();
 	if (!answer.empty()) {
 		result->setPassed(true);
 		result->setAnswer(procSynonym, variableSynonym, answer, pkb.getProcTable(), pkb.getVarTable());
@@ -92,10 +92,10 @@ Result* ModifiesP::evaluateSynonymVariable(const string& procSynonym, const stri
 	return result;
 }
 
-// case Modifies(p, _)
-Result* ModifiesP::evaluateSynonymUnderscore(const string& procSynonym) {
+// case Uses(p, _)
+Result* UsesP::evaluateSynonymUnderscore(const string& procSynonym) {
 	Result* result = new Result();
-	unordered_set<string> answer = pkb.getProcThatModifiesVar();
+	unordered_set<string> answer = pkb.getProcThatUsesVar();
 	if (!answer.empty()) {
 		result->setPassed(true);
 		result->setAnswer(procSynonym, answer, pkb.getProcTable());
@@ -106,10 +106,10 @@ Result* ModifiesP::evaluateSynonymUnderscore(const string& procSynonym) {
 	return result;
 }
 
-// case Modifies(p, "count")
-Result* ModifiesP::evaluateSynonymFixed(const string& procSynonym, const string& varName) {
+// case Uses(p, "count")
+Result* UsesP::evaluateSynonymFixed(const string& procSynonym, const string& varName) {
 	Result* result = new Result();
-	unordered_set<string> answer = pkb.getProcThatModifiesVar(varName);
+	unordered_set<string> answer = pkb.getProcThatUsesVar(varName);
 	if (!answer.empty()) {
 		result->setPassed(true);
 		result->setAnswer(procSynonym, answer, pkb.getProcTable());
