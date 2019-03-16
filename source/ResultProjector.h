@@ -42,6 +42,6 @@ public:
 
 	void printTables(); // for debugging
 	unordered_map<string, int> getSynonymTable(); // for testing
-	unordered_map<int, unordered_set<unordered_map<string, int>>> ResultProjector::getSynonymResults(); // for testing
+	unordered_map<int, list<unordered_map<string, int>>> ResultProjector::getSynonymResults(); // for testing
 
 };

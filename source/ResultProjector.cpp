@@ -4,11 +4,11 @@
 #include <iostream>
 #include <string>
 
-static unordered_map<string, int> synonymTable;
-static unordered_map<int, unordered_set<unordered_map<string, int>>> synonymResults;
-static int index;
-
 using namespace std;
+
+static unordered_map<string, int> synonymTable;
+static unordered_map<int, list<unordered_map<string, int>>> synonymResults;
+static int index;
 
 // Reset tables for new query
 void ResultProjector::resetResults()
@@ -22,7 +22,7 @@ unordered_map<string, int> ResultProjector::getSynonymTable() {
 	return synonymTable;
 }
 
-unordered_map<int, unordered_set<unordered_map<string, int>>> ResultProjector::getSynonymResults() {
+unordered_map<int, list<unordered_map<string, int>>> ResultProjector::getSynonymResults() {
 	return synonymResults;
 }
 
@@ -225,7 +225,7 @@ void ResultProjector::combineTwoSynonyms(unordered_map<int, unordered_set<int>> 
 		}
 		else {
 			unordered_map<int, unordered_set<int>> invertedQueryResults = invertResults(queryResults);
-			mergeOneSyn(key2, key1, queryResults);
+			mergeOneSyn(key2, key1, invertedQueryResults);
 		}
 	}
 	else { // no common synonyms
@@ -245,11 +245,11 @@ bool ResultProjector::synonymExists(string synonym) {
 void ResultProjector::addOneSyn(string key, unordered_set<int> results) {
 	synonymTable[key] = index;
 
-	unordered_set<unordered_map<string, int>> newSet;
+	list<unordered_map<string, int>> newSet;
 	unordered_map<string, int> newSetEntry;
 	for (const auto result : results) {
 		newSetEntry[key] = result;
-		newSet.insert(newSetEntry);
+		newSet.push_back(newSetEntry);
 	}
 
 	synonymResults[index] = newSet;
@@ -260,12 +260,13 @@ void ResultProjector::addTwoSyn(string key1, string key2, unordered_map<int, uno
 	synonymTable[key1] = index;
 	synonymTable[key2] = index;
 
-	unordered_set<unordered_map<string, int>> newSet;
+	list<unordered_map<string, int>> newSet;
 	unordered_map<string, int> newSetEntry;
 	for (const auto result: results) {
+		newSetEntry[key1] = result.first;
 		for (const auto key2Results : result.second) {
-			newSetEntry[key1] = key2Results;
-			newSet.insert(newSetEntry);
+			newSetEntry[key2] = key2Results;
+			newSet.push_back(newSetEntry);
 		}
 	}
 
@@ -276,7 +277,7 @@ void ResultProjector::addTwoSyn(string key1, string key2, unordered_map<int, uno
 // Filters the synonym's results such that only overlapped results remains
 void ResultProjector::filterOneSynInTable(string key, unordered_set<int> queryResults) {
 	int tableNum = synonymTable[key];
-	unordered_set<unordered_map<string, int>>& prevResults = synonymResults[tableNum];
+	list<unordered_map<string, int>>& prevResults = synonymResults[tableNum];
 
 	for (auto itr = prevResults.begin(); itr != prevResults.end();) {
 		int prevKeyValue = (*itr).at(key);
@@ -293,7 +294,7 @@ void ResultProjector::filterOneSynInTable(string key, unordered_set<int> queryRe
 // Filters two synonyms results such that only overlapped results remains
 void ResultProjector::filterTwoSynInSameTable(string key1, string key2, unordered_map<int, unordered_set<int>> queryResults) {
 	int tableNum = synonymTable[key1];
-	unordered_set<unordered_map<string, int>>& prevResults = synonymResults[tableNum];
+	list<unordered_map<string, int>>& prevResults = synonymResults[tableNum];
 
 	for (auto itr = prevResults.begin(); itr != prevResults.end();) {
 		int prevKey1Value = (*itr).at(key1);
@@ -317,20 +318,23 @@ void ResultProjector::filterTwoSynInSameTable(string key1, string key2, unordere
 
 void ResultProjector::mergeOneSyn(string existKey, string newKey, unordered_map<int, unordered_set<int>> queryResults) {
 	int tableNum = synonymTable[existKey];
-	unordered_set<unordered_map<string, int>>& prevResults = synonymResults[tableNum];
+	list<unordered_map<string, int>>& prevResults = synonymResults[tableNum];
 
 	for (auto itr = prevResults.begin(); itr != prevResults.end();) {
 		int prevKey1Value = (*itr).at(existKey);
 
 		if (existInMap(prevKey1Value, queryResults)) { // results overlap
 			if (!existInMap(newKey, (*itr))) { // dependent result not added before (for when iterating to end of map when adding duplicated results)
-				unordered_map<string, int> currRow = (*itr); // get a copy of current row result !!!NEED TO CHECK IF REF OR COPY
+				unordered_map<string, int> currRow = (*itr); // get a copy of current row result
 				for (auto dependentResult : queryResults.at(prevKey1Value)) { // duplicate rows
 					currRow[newKey] = dependentResult;
-					prevResults.insert(currRow);
+					prevResults.push_back(currRow);
 				}
 				itr = prevResults.erase(itr); // delete current row since updated row is added at the back
-			} // ignore if newKey already exists because its the rows we duplicated
+			}
+			else { // ignore if newKey already exists because its the rows we duplicated
+				break; // early break because all behind are the new rows just added
+			}
 		}
 		else {
 			itr = prevResults.erase(itr);
@@ -347,9 +351,9 @@ void ResultProjector::mergeTables(string key1, string key2, unordered_map<int, u
 	int key1InitialTableNum = synonymTable[key1];
 	int key2InitialTableNum = synonymTable[key2];
 
-	unordered_set<unordered_map<string, int>> key1PrevResults = synonymResults[key1InitialTableNum];
-	unordered_set<unordered_map<string, int>> key2PrevResults = synonymResults[key2InitialTableNum];
-	unordered_set<unordered_map<string, int>> newResultsSet;
+	list<unordered_map<string, int>> key1PrevResults = synonymResults[key1InitialTableNum];
+	list<unordered_map<string, int>> key2PrevResults = synonymResults[key2InitialTableNum];
+	list<unordered_map<string, int>> newResultsSet;
 
 	for (auto key1PrevResult : key1PrevResults) {
 		int prevKey1Value = key1PrevResult[key1];
@@ -359,7 +363,7 @@ void ResultProjector::mergeTables(string key1, string key2, unordered_map<int, u
 				if (existInSet(prevKey2Value, queryResults[prevKey1Value])) { // results overlap for key2
 					unordered_map<string, int> newResult = key1PrevResult; // merge 2 maps together
 					newResult.insert(key2PrevResult.begin(), key2PrevResult.end());
-					newResultsSet.insert(newResult);
+					newResultsSet.push_back(newResult);
 				}
 			}
 		}
@@ -368,12 +372,21 @@ void ResultProjector::mergeTables(string key1, string key2, unordered_map<int, u
 	// delete tables
 	synonymResults.erase(key1InitialTableNum);
 	synonymResults.erase(key2InitialTableNum);
-	synonymTable.erase(key1);
-	synonymTable.erase(key2);
 
-	if (newResultsSet.size() != 0) { // redo formatting for new merged table
-		synonymTable[key1] = index;
-		synonymTable[key2] = index;
+	// update synonymTable indexes
+	unordered_map<string, int> synTable = synonymTable; // cannot just iterate using synonymTable, error when erasing
+	for (auto synonym : synTable) {
+		if (newResultsSet.size() != 0) {
+			if (synonym.second == key1InitialTableNum || synonym.second == key2InitialTableNum) { // update to new table
+				synonymTable[synonym.first] = index;
+			}
+		}
+		else { // no more results, remove from table
+			synonymTable.erase(synonym.first);
+		}
+	}
+	
+	if (newResultsSet.size() != 0) { // add in new table
 		synonymResults[index] = newResultsSet;
 		index++;
 	}
@@ -411,19 +424,23 @@ void ResultProjector::cleanUpTables(string key) {
 		return;
 	}
 
+	bool tableDeleted = false;
 	// clean up synonymTable and synonymResults when there are no more entries in it
 	int tableNum = synonymTable[key];
 	if (synonymResults.find(tableNum) != synonymResults.end()) { // table exists
 		if (synonymResults.at(tableNum).empty()) { // no more entries in table
 			synonymResults.erase(tableNum);
+			tableDeleted = true;
 		}
 	}
 
 	// erase all synonyms associated with the table with no entries
-	unordered_map<string, int> synTable = synonymTable; // **Check if have error during erase if just iterate using synonymTable
-	for (auto synonym : synTable) {
-		if (synonym.second == tableNum) {
-			synonymTable.erase(synonym.first);
+	if (tableDeleted) {
+		unordered_map<string, int> synTable = synonymTable; // cannot just iterate using synonymTable, error when erasing
+		for (auto synonym : synTable) {
+			if (synonym.second == tableNum) {
+				synonymTable.erase(synonym.first);
+			}
 		}
 	}
 }
