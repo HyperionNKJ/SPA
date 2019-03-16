@@ -97,6 +97,10 @@ Result* ParentT::evaluateFixedFixed(const string& parentStmtNum, const string& c
 // case Parent*(i, a)
 Result* ParentT::evaluateSynonymSynonym(const string& parentSynonym, const string& childSynonym, const Type& parentType, const Type& childType) {
 	Result* result = new Result();
+	if (parentSynonym == childSynonym) {
+		result->setPassed(false);
+		return result;
+	}
 	unordered_map<int, unordered_set<int>> answer = pkb.getParentChildrenTPairs(parentType, childType);
 	if (!answer.empty()) {
 		result->setPassed(true);

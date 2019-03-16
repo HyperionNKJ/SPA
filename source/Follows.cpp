@@ -98,6 +98,10 @@ Result* Follows::evaluateFixedFixed(const string& leaderStmtNum, const string& f
 // case Follows(r, a)
 Result* Follows::evaluateSynonymSynonym(const string& leaderSynonym, const string& followerSynonym, const Type& leaderType, const Type& followerType) {
 	Result* result = new Result();
+	if (leaderSynonym == followerSynonym) {
+		result->setPassed(false);
+		return result;
+	}
 	unordered_map<int, int> answer = pkb.getLeaderFollowerPairs(leaderType, followerType);
 	if (!answer.empty()) {
 		result->setPassed(true);
