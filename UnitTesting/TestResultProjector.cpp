@@ -1000,9 +1000,175 @@ namespace UnitTesting {
 			Assert::IsTrue(sameTable);
 			Assert::IsTrue(sameResult);
 		}
+		TEST_METHOD(combineTwoTwoTwoWithOneCommonSynonymSameTable) {
+			ResultProjector resultProjector;
+			// set up
+			resultProjector.resetResults();
+
+			vector<string> result1Synonym{ "a", "b" };
+			vector<string> result2Synonym{ "b", "c" };
+			vector<string> result3Synonym{ "c", "d" };
+
+			unordered_map<int, unordered_set<int>> result1;
+			unordered_map<int, unordered_set<int>> result2;
+			unordered_map<int, unordered_set<int>> result3;
+			result1 = { {2, {1,3}},
+						{5, {4,6}},
+						{6, {2,8,3}} };
+			result2 = { {1, {2}},
+						{2, {3,9}},
+						{4, {7,4,1}},
+						{8, {6}} };
+			result3 = { {1, {2}},
+						{2, {5}},
+						{3, {6}},
+						{4, {1,8}},
+						{7, {8}} };
+
+			// combining results
+			resultProjector.combineResults(result1, result1Synonym);
+			resultProjector.combineResults(result2, result2Synonym);
+			resultProjector.combineResults(result3, result3Synonym);
+
+			// expected results
+			unordered_map<string, int> expectedSynonymTable;
+			expectedSynonymTable["a"] = 0;
+			expectedSynonymTable["b"] = 0;
+			expectedSynonymTable["c"] = 0;
+			expectedSynonymTable["d"] = 0;
+
+			unordered_map<int, list<unordered_map<string, int>>> expectedSynonymResults;
+			list<unordered_map<string, int>> expectedResults;
+			expectedResults.push_back({ {"a", 2}, {"b", 1}, {"c", 2}, {"d", 5} });
+			expectedResults.push_back({ {"a", 5}, {"b", 4}, {"c", 7}, {"d", 8} });
+			expectedResults.push_back({ {"a", 5}, {"b", 4}, {"c", 4}, {"d", 1} });
+			expectedResults.push_back({ {"a", 5}, {"b", 4}, {"c", 4}, {"d", 8} });
+			expectedResults.push_back({ {"a", 5}, {"b", 4}, {"c", 1}, {"d", 2} });
+			expectedResults.push_back({ {"a", 6}, {"b", 2}, {"c", 3}, {"d", 6} });
+			expectedSynonymResults[0] = expectedResults;
+
+			// compare results
+			bool sameTable = expectedSynonymTable == resultProjector.getSynonymTable();
+			bool sameResult = expectedSynonymResults == resultProjector.getSynonymResults();
+			Assert::IsTrue(sameTable);
+			Assert::IsTrue(sameResult);
+		}
+		TEST_METHOD(combineTwoTwoTwoWithOneCommonSynonymSameTable2) {
+			ResultProjector resultProjector;
+			// set up
+			resultProjector.resetResults();
+
+			vector<string> result1Synonym{ "a", "b" };
+			vector<string> result2Synonym{ "c", "b" };
+			vector<string> result3Synonym{ "c", "d" };
+
+			unordered_map<int, unordered_set<int>> result1;
+			unordered_map<int, unordered_set<int>> result2;
+			unordered_map<int, unordered_set<int>> result3;
+			result1 = { {2, {1,3}},
+						{5, {4,6}},
+						{6, {2,8,3}} };
+			result2 = { {2, {1}},
+						{3, {2}},
+						{9, {2}},
+						{7, {4}},
+						{4, {4}},
+						{1, {4}},
+						{6, {8}} };
+			result3 = { {1, {2}},
+						{2, {5}},
+						{3, {6}},
+						{4, {1,8}},
+						{7, {8}} };
+
+			// combining results
+			resultProjector.combineResults(result1, result1Synonym);
+			resultProjector.combineResults(result2, result2Synonym);
+			resultProjector.combineResults(result3, result3Synonym);
+
+			// expected results
+			unordered_map<string, int> expectedSynonymTable;
+			expectedSynonymTable["a"] = 0;
+			expectedSynonymTable["b"] = 0;
+			expectedSynonymTable["c"] = 0;
+			expectedSynonymTable["d"] = 0;
+
+			unordered_map<int, list<unordered_map<string, int>>> expectedSynonymResults;
+			list<unordered_map<string, int>> expectedResults;
+			expectedResults.push_back({ {"a", 2}, {"b", 1}, {"c", 2}, {"d", 5} });
+			expectedResults.push_back({ {"a", 5}, {"b", 4}, {"c", 1}, {"d", 2} });
+			expectedResults.push_back({ {"a", 5}, {"b", 4}, {"c", 7}, {"d", 8} });
+			expectedResults.push_back({ {"a", 5}, {"b", 4}, {"c", 4}, {"d", 1} });
+			expectedResults.push_back({ {"a", 5}, {"b", 4}, {"c", 4}, {"d", 8} });
+			expectedResults.push_back({ {"a", 6}, {"b", 2}, {"c", 3}, {"d", 6} });
+			expectedSynonymResults[0] = expectedResults;
+
+			// compare results
+			bool sameTable = expectedSynonymTable == resultProjector.getSynonymTable();
+			bool sameResult = expectedSynonymResults == resultProjector.getSynonymResults();
+			Assert::IsTrue(sameTable);
+			Assert::IsTrue(sameResult);
+		}
+		TEST_METHOD(combineTwoTwoTwoWithOneCommonSynonymSameTable3) {
+			ResultProjector resultProjector;
+			// set up
+			resultProjector.resetResults();
+
+			vector<string> result1Synonym{ "a", "b" };
+			vector<string> result2Synonym{ "a", "c" };
+			vector<string> result3Synonym{ "b", "d" };
+
+			unordered_map<int, unordered_set<int>> result1;
+			unordered_map<int, unordered_set<int>> result2;
+			unordered_map<int, unordered_set<int>> result3;
+			result1 = { {2, {1,3}},
+						{4, {4,6}},
+						{6, {2,8,3}} };
+			result2 = { {1, {2}},
+						{2, {3,9}},
+						{4, {7,4,1}},
+						{8, {6}} };
+			result3 = { {1, {2}},
+						{2, {5}},
+						{3, {6}},
+						{4, {1,8}},
+						{7, {8}} };
+
+			// combining results
+			resultProjector.combineResults(result1, result1Synonym);
+			resultProjector.combineResults(result2, result2Synonym);
+			resultProjector.combineResults(result3, result3Synonym);
+
+			// expected results
+			unordered_map<string, int> expectedSynonymTable;
+			expectedSynonymTable["a"] = 0;
+			expectedSynonymTable["b"] = 0;
+			expectedSynonymTable["c"] = 0;
+			expectedSynonymTable["d"] = 0;
+
+			unordered_map<int, list<unordered_map<string, int>>> expectedSynonymResults;
+			list<unordered_map<string, int>> expectedResults;
+			expectedResults.push_back({ {"a", 2}, {"b", 1}, {"c", 3}, {"d", 2} });
+			expectedResults.push_back({ {"a", 2}, {"b", 1}, {"c", 9}, {"d", 2} });
+			expectedResults.push_back({ {"a", 2}, {"b", 3}, {"c", 3}, {"d", 6} });
+			expectedResults.push_back({ {"a", 2}, {"b", 3}, {"c", 9}, {"d", 6} });
+			expectedResults.push_back({ {"a", 4}, {"b", 4}, {"c", 7}, {"d", 1} });
+			expectedResults.push_back({ {"a", 4}, {"b", 4}, {"c", 7}, {"d", 8} });
+			expectedResults.push_back({ {"a", 4}, {"b", 4}, {"c", 4}, {"d", 1} });
+			expectedResults.push_back({ {"a", 4}, {"b", 4}, {"c", 4}, {"d", 8} });
+			expectedResults.push_back({ {"a", 4}, {"b", 4}, {"c", 1}, {"d", 1} });
+			expectedResults.push_back({ {"a", 4}, {"b", 4}, {"c", 1}, {"d", 8} });
+			expectedSynonymResults[0] = expectedResults;
+
+			// compare results
+			bool sameTable = expectedSynonymTable == resultProjector.getSynonymTable();
+			bool sameResult = expectedSynonymResults == resultProjector.getSynonymResults();
+			Assert::IsTrue(sameTable);
+			Assert::IsTrue(sameResult);
+		}
 
 		// testing merging different tables
-		TEST_METHOD(combineOneOneTwoWithTwoCommonSynonym) {
+		TEST_METHOD(combineOneOneTwoWithTwoCommonSynonymDiffTable) {
 			ResultProjector resultProjector;
 			// set up
 			resultProjector.resetResults();
@@ -1046,7 +1212,7 @@ namespace UnitTesting {
 			Assert::IsTrue(sameTable);
 			Assert::IsTrue(sameResult);
 		}
-		TEST_METHOD(combineOneTwoTwoWithTwoCommonSynonym2) {
+		TEST_METHOD(combineOneTwoTwoWithTwoCommonSynonymDiffTable) {
 			ResultProjector resultProjector;
 			// set up
 			resultProjector.resetResults();
@@ -1086,6 +1252,60 @@ namespace UnitTesting {
 			expectedResults.push_back({ {"a", 1}, {"b", 2}, {"c", 2} });
 			expectedResults.push_back({ {"a", 2}, {"b", 5}, {"c", 3} });
 			expectedResults.push_back({ {"a", 2}, {"b", 5}, {"c", 9} });
+			expectedSynonymResults[2] = expectedResults;
+
+			// compare results
+			bool sameTable = expectedSynonymTable == resultProjector.getSynonymTable();
+			bool sameResult = expectedSynonymResults == resultProjector.getSynonymResults();
+			Assert::IsTrue(sameTable);
+			Assert::IsTrue(sameResult);
+		}
+		TEST_METHOD(combineTwoTwoTwoWithTwoCommonSynonymDiffTable) {
+			ResultProjector resultProjector;
+			// set up
+			resultProjector.resetResults();
+
+			vector<string> result1Synonym{ "b", "d" };
+			vector<string> result2Synonym{ "a", "c" };
+			vector<string> result3Synonym{ "a", "b" };
+
+			unordered_map<int, unordered_set<int>> result1;
+			unordered_map<int, unordered_set<int>> result2;
+			unordered_map<int, unordered_set<int>> result3;
+			result1 = { {2, {1,3}},
+						{5, {4,6}},
+						{6, {2,8,3}} };
+			result2 = { {1, {2}},
+						{2, {3,9}},
+						{4, {7,4,1}},
+						{8, {6}} };
+			result3 = { {1, {2}},
+						{2, {5}},
+						{3, {6}},
+						{4, {1}},
+						{5, {2}},
+						{7, {8}} };
+
+			// combining results
+			resultProjector.combineResults(result1, result1Synonym);
+			resultProjector.combineResults(result2, result2Synonym);
+			resultProjector.combineResults(result3, result3Synonym);
+
+			// expected results
+			unordered_map<string, int> expectedSynonymTable;
+			expectedSynonymTable["a"] = 2;
+			expectedSynonymTable["b"] = 2;
+			expectedSynonymTable["c"] = 2;
+			expectedSynonymTable["d"] = 2;
+
+			unordered_map<int, list<unordered_map<string, int>>> expectedSynonymResults;
+			list<unordered_map<string, int>> expectedResults;
+			expectedResults.push_back({ {"a", 1}, {"b", 2}, {"c", 2}, {"d", 1} });
+			expectedResults.push_back({ {"a", 1}, {"b", 2}, {"c", 2}, {"d", 3} });
+			expectedResults.push_back({ {"a", 2}, {"b", 5}, {"c", 3}, {"d", 4} });
+			expectedResults.push_back({ {"a", 2}, {"b", 5}, {"c", 3}, {"d", 6} });
+			expectedResults.push_back({ {"a", 2}, {"b", 5}, {"c", 9}, {"d", 4} });
+			expectedResults.push_back({ {"a", 2}, {"b", 5}, {"c", 9}, {"d", 6} });
 			expectedSynonymResults[2] = expectedResults;
 
 			// compare results
