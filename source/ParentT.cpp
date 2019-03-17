@@ -13,7 +13,7 @@ Result ParentT::evaluate(const PKB& pkb) {
 
 	if (paraOneType == FIXED) {
 		if (paraTwoType == STATEMENT || paraTwoType == READ || paraTwoType == PRINT
-			|| paraTwoType == WHILE || paraTwoType == IF || paraTwoType == ASSIGN) {
+			|| paraTwoType == WHILE || paraTwoType == IF || paraTwoType == ASSIGN || paraTwoType == CALL || paraTwoType == PROGLINE) {
 			result = this->evaluateFixedSynonym(paraOneValue, paraTwoValue, paraTwoType);
 		}
 		else if (paraTwoType == UNDERSCORE) {
@@ -27,9 +27,9 @@ Result ParentT::evaluate(const PKB& pkb) {
 			result->setPassed(false);
 		}
 	}
-	else if (paraOneType == STATEMENT || paraOneType == WHILE || paraOneType == IF) {
+	else if (paraOneType == STATEMENT || paraOneType == WHILE || paraOneType == IF || paraOneType == PROGLINE) {
 		if (paraTwoType == STATEMENT || paraTwoType == READ || paraTwoType == PRINT
-			|| paraTwoType == WHILE || paraTwoType == IF || paraTwoType == ASSIGN) {
+			|| paraTwoType == WHILE || paraTwoType == IF || paraTwoType == ASSIGN || paraTwoType == CALL || paraTwoType == PROGLINE) {
 			result = this->evaluateSynonymSynonym(paraOneValue, paraTwoValue, paraOneType, paraTwoType);
 		}
 		else if (paraTwoType == UNDERSCORE) {
@@ -45,7 +45,7 @@ Result ParentT::evaluate(const PKB& pkb) {
 	}
 	else if (paraOneType == UNDERSCORE) {
 		if (paraTwoType == STATEMENT || paraTwoType == READ || paraTwoType == PRINT
-			|| paraTwoType == WHILE || paraTwoType == IF || paraTwoType == ASSIGN) {
+			|| paraTwoType == WHILE || paraTwoType == IF || paraTwoType == ASSIGN || paraTwoType == CALL || paraTwoType == PROGLINE) {
 			result = this->evaluateUnderscoreSynonym(paraTwoValue, paraTwoType);
 		}
 		else if (paraTwoType == UNDERSCORE) {

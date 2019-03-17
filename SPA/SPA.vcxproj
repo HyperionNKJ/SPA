@@ -16,6 +16,7 @@
     <ClCompile Include="..\source\DesignExtractor.cpp" />
     <ClCompile Include="..\source\Follows.cpp" />
     <ClCompile Include="..\source\FollowsT.cpp" />
+    <ClCompile Include="..\source\ModifiesP.cpp" />
     <ClCompile Include="..\source\ModifiesS.cpp" />
     <ClCompile Include="..\source\Parent.cpp" />
     <ClCompile Include="..\source\ParentT.cpp" />
@@ -34,6 +35,7 @@
     <ClCompile Include="..\source\ResultProjector.cpp" />
     <ClCompile Include="..\source\Statement.cpp" />
     <ClCompile Include="..\source\SuchThatClause.cpp" />
+    <ClCompile Include="..\source\UsesP.cpp" />
     <ClCompile Include="..\source\UsesS.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -42,6 +44,7 @@
     <ClInclude Include="..\source\DesignEntityTypeFactory.h" />
     <ClInclude Include="..\source\DesignExtractor.h" />
     <ClInclude Include="..\source\FollowsT.h" />
+    <ClInclude Include="..\source\ModifiesP.h" />
     <ClInclude Include="..\source\ModifiesS.h" />
     <ClInclude Include="..\source\ParameterType.h" />
     <ClInclude Include="..\source\Parent.h" />
@@ -63,6 +66,7 @@
     <ClInclude Include="..\source\StatementType.h" />
     <ClInclude Include="..\source\SuchThatClause.h" />
     <ClInclude Include="..\source\Type.h" />
+    <ClInclude Include="..\source\UsesP.h" />
     <ClInclude Include="..\source\UsesS.h" />
   </ItemGroup>
   <ItemGroup>
