@@ -22,12 +22,20 @@ unordered_map<string, int> ResultProjector::getSynonymTable() {
 	return synonymTable;
 }
 
+void ResultProjector::setSynonymTable(unordered_map<string, int> synTable) {
+	synonymTable = synTable;
+}
+
 unordered_map<int, list<unordered_map<string, int>>> ResultProjector::getSynonymResults() {
 	return synonymResults;
 }
 
+void ResultProjector::setSynonymResults(unordered_map<int, list<unordered_map<string, int>>> synResults) {
+	synonymResults = synResults;
+}
+
 list<string> ResultProjector::getResults(vector<DesignEntity> selectedSynonyms, PKB pkb) {
-	// TODO: BOOLEAN
+	// TODO: BOOLEAN --> check if synonymTable is empty (empty = false; !empty = true)
 
 	vector<string> selectedSynonymsOrder;
 	unordered_map<int, list<DesignEntity>> selectedSynonymTableMap;
@@ -44,7 +52,7 @@ list<string> ResultProjector::getResults(vector<DesignEntity> selectedSynonyms, 
 		else {
 			tableNum = -1;
 		}
-		selectedSynonymTableMap.at(tableNum).push_back(selectedSynonym);
+		selectedSynonymTableMap[tableNum].push_back(selectedSynonym);
 		// TODO put mapping for selectedSynonymAttrRef
 	}
 
@@ -81,16 +89,17 @@ list<string> ResultProjector::getResults(vector<DesignEntity> selectedSynonyms, 
 
 			int size = finalMaps.size();
 			int count = 0; // for early break, no need loop through all that just added
-			for (auto finalMap : finalMaps) {
+
+			for (auto& itr = finalMaps.begin(); itr != finalMaps.end();) {
 				if (count == size) {
 					break;
 				}
 				for (auto tableResult : tableResults) {
-					unordered_map<string, string> newResult = finalMap; // merge 2 maps together
+					unordered_map<string, string> newResult = (*itr); // merge 2 maps together
 					newResult.insert(tableResult.begin(), tableResult.end());
 					finalMaps.push_back(newResult);
 				}
-				finalMaps.pop_front();
+				itr = finalMaps.erase(itr);
 				count++;
 			}
 		}

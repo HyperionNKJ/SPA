@@ -1314,5 +1314,206 @@ namespace UnitTesting {
 			Assert::IsTrue(sameTable);
 			Assert::IsTrue(sameResult);
 		}
+
+		// -----------------------------------------------------------------------------------------------------
+		// test select
+		TEST_METHOD(selectOneSynonym) {
+			ResultProjector resultProjector;
+			// set up
+			static unordered_map<string, int> synonymTable;
+			static unordered_map<int, list<unordered_map<string, int>>> synonymResults;
+
+			synonymTable["a"] = 0;
+			synonymTable["b"] = 0;
+			synonymTable["c"] = 0;
+
+			list<unordered_map<string, int>> synonymResult;
+			synonymResult.push_back({ {"a", 1}, {"b", 2}, {"c", 2} });
+			synonymResult.push_back({ {"a", 3}, {"b", 1}, {"c", 1} });
+			synonymResult.push_back({ {"a", 7}, {"b", 2}, {"c", 9} });
+			synonymResult.push_back({ {"a", 2}, {"b", 4}, {"c", 5} });
+			synonymResult.push_back({ {"a", 5}, {"b", 5}, {"c", 7} });
+			synonymResults[0] = synonymResult;
+
+			resultProjector.setSynonymTable(synonymTable);
+			resultProjector.setSynonymResults(synonymResults);
+
+			vector<DesignEntity> selectedSynonyms = { DesignEntity("a", Type::STATEMENT) };
+			PKB pkb; // dummy
+
+			// get results
+			list<string> actualResults = resultProjector.getResults(selectedSynonyms, pkb);
+			list<string> expectedResults = { "1", "3", "7", "2", "5" };
+
+			Assert::IsTrue(isSameResult(expectedResults, actualResults));
+		}
+		TEST_METHOD(selectTupleSameTable) {
+			ResultProjector resultProjector;
+			// set up
+			static unordered_map<string, int> synonymTable;
+			static unordered_map<int, list<unordered_map<string, int>>> synonymResults;
+
+			synonymTable["a"] = 0;
+			synonymTable["b"] = 0;
+			synonymTable["c"] = 0;
+
+			list<unordered_map<string, int>> synonymResult;
+			synonymResult.push_back({ {"a", 1}, {"b", 2}, {"c", 2} });
+			synonymResult.push_back({ {"a", 3}, {"b", 1}, {"c", 1} });
+			synonymResult.push_back({ {"a", 7}, {"b", 2}, {"c", 9} });
+			synonymResult.push_back({ {"a", 2}, {"b", 4}, {"c", 5} });
+			synonymResult.push_back({ {"a", 5}, {"b", 5}, {"c", 7} });
+			synonymResults[0] = synonymResult;
+
+			resultProjector.setSynonymTable(synonymTable);
+			resultProjector.setSynonymResults(synonymResults);
+
+			vector<DesignEntity> selectedSynonyms = {	DesignEntity("b", Type::STATEMENT),
+														DesignEntity("a", Type::ASSIGN) };
+			PKB pkb; // dummy
+			
+			// get results
+			list<string> actualResults = resultProjector.getResults(selectedSynonyms, pkb);
+			list<string> expectedResults = { "2 1", "1 3", "2 7", "4 2", "5 5" };
+
+			Assert::IsTrue(isSameResult(expectedResults, actualResults));
+		}
+		TEST_METHOD(selectTupleDiffTable) {
+			ResultProjector resultProjector;
+			// set up
+			static unordered_map<string, int> synonymTable;
+			static unordered_map<int, list<unordered_map<string, int>>> synonymResults;
+
+			synonymTable["a"] = 0;
+			synonymTable["b"] = 0;
+			synonymTable["c"] = 1;
+			synonymTable["d"] = 1;
+
+			list<unordered_map<string, int>> synonymResult1;
+			synonymResult1.push_back({ {"a", 1}, {"b", 2} });
+			synonymResult1.push_back({ {"a", 3}, {"b", 1} });
+			synonymResult1.push_back({ {"a", 7}, {"b", 2} });
+			synonymResults[0] = synonymResult1;
+			list<unordered_map<string, int>> synonymResult2;
+			synonymResult2.push_back({ {"c", 11}, {"d", 22} });
+			synonymResult2.push_back({ {"c", 33}, {"d", 11} });
+			synonymResult2.push_back({ {"c", 77}, {"d", 22} });
+			synonymResults[1] = synonymResult2;
+
+			resultProjector.setSynonymTable(synonymTable);
+			resultProjector.setSynonymResults(synonymResults);
+
+			vector<DesignEntity> selectedSynonyms = {	DesignEntity("b", Type::STATEMENT),
+														DesignEntity("c", Type::ASSIGN) };
+			PKB pkb; // dummy
+
+			// get results
+			list<string> actualResults = resultProjector.getResults(selectedSynonyms, pkb);
+			list<string> expectedResults = {	"2 11", "2 33", "2 77",
+												"1 11", "1 33", "1 77",
+												"2 11", "2 33", "2 77" };
+
+			Assert::IsTrue(isSameResult(expectedResults, actualResults));
+		}
+		TEST_METHOD(selectTupleDiffTable2) {
+			ResultProjector resultProjector;
+			// set up
+			static unordered_map<string, int> synonymTable;
+			static unordered_map<int, list<unordered_map<string, int>>> synonymResults;
+
+			synonymTable["a"] = 0;
+			synonymTable["b"] = 0;
+			synonymTable["c"] = 1;
+			synonymTable["d"] = 1;
+
+			list<unordered_map<string, int>> synonymResult1;
+			synonymResult1.push_back({ {"a", 1}, {"b", 2} });
+			synonymResult1.push_back({ {"a", 3}, {"b", 1} });
+			synonymResult1.push_back({ {"a", 7}, {"b", 2} });
+			synonymResults[0] = synonymResult1;
+			list<unordered_map<string, int>> synonymResult2;
+			synonymResult2.push_back({ {"c", 11}, {"d", 22} });
+			synonymResult2.push_back({ {"c", 33}, {"d", 11} });
+			synonymResult2.push_back({ {"c", 77}, {"d", 22} });
+			synonymResults[1] = synonymResult2;
+
+			resultProjector.setSynonymTable(synonymTable);
+			resultProjector.setSynonymResults(synonymResults);
+
+			vector<DesignEntity> selectedSynonyms = {	DesignEntity("b", Type::STATEMENT),
+														DesignEntity("c", Type::ASSIGN),
+														DesignEntity("a", Type::ASSIGN) };
+			PKB pkb; // dummy
+
+			// get results
+			list<string> actualResults = resultProjector.getResults(selectedSynonyms, pkb);
+			list<string> expectedResults = {	"2 11 1", "2 33 1", "2 77 1",
+												"1 11 3", "1 33 3", "1 77 3",
+												"2 11 7", "2 33 7", "2 77 7" };
+
+			Assert::IsTrue(isSameResult(expectedResults, actualResults));
+		}
+		TEST_METHOD(selectTupleDiffTable3) {
+			ResultProjector resultProjector;
+			// set up
+			static unordered_map<string, int> synonymTable;
+			static unordered_map<int, list<unordered_map<string, int>>> synonymResults;
+
+			synonymTable["a"] = 0;
+			synonymTable["b"] = 0;
+			synonymTable["c"] = 1;
+			synonymTable["d"] = 1;
+			synonymTable["e"] = 2;
+
+			list<unordered_map<string, int>> synonymResult1;
+			synonymResult1.push_back({ {"a", 1}, {"b", 2} });
+			synonymResult1.push_back({ {"a", 3}, {"b", 1} });
+			synonymResult1.push_back({ {"a", 7}, {"b", 2} });
+			synonymResults[0] = synonymResult1;
+			list<unordered_map<string, int>> synonymResult2;
+			synonymResult2.push_back({ {"c", 11}, {"d", 22} });
+			synonymResult2.push_back({ {"c", 33}, {"d", 11} });
+			synonymResult2.push_back({ {"c", 77}, {"d", 22} });
+			synonymResults[1] = synonymResult2;
+			list<unordered_map<string, int>> synonymResult3;
+			synonymResult3.push_back({ {"e", 4} });
+			synonymResult3.push_back({ {"e", 6} });
+			synonymResults[2] = synonymResult3;
+
+			resultProjector.setSynonymTable(synonymTable);
+			resultProjector.setSynonymResults(synonymResults);
+
+			vector<DesignEntity> selectedSynonyms = {	DesignEntity("b", Type::STATEMENT),
+														DesignEntity("e", Type::ASSIGN),
+														DesignEntity("c", Type::ASSIGN) };
+			PKB pkb; // dummy
+
+			// get results
+			list<string> actualResults = resultProjector.getResults(selectedSynonyms, pkb);
+			list<string> expectedResults = {	"2 4 11", "2 6 11", "2 4 33", "2 6 33", "2 4 77", "2 6 77",
+												"1 4 11", "1 6 11", "1 4 33", "1 6 33", "1 4 77", "1 6 77",
+												"2 4 11", "2 6 11", "2 4 33", "2 6 33", "2 4 77", "2 6 77" };
+
+			Assert::IsTrue(isSameResult(expectedResults, actualResults));
+		}
+
+		// ---------------------------------- HELPER FUNCTIONS -----------------------------------------------
+		// order in list does not matter
+		bool isSameResult(list<string> expectedResults, list<string> actualResults) {
+			if (expectedResults.size() != actualResults.size()) {
+				return false;
+			}
+
+			unordered_set<string> expectedResultsSet;
+			for (auto expectedResult : expectedResults) {
+				expectedResultsSet.insert(expectedResult);
+			}
+			for (auto actualResult : actualResults) {
+				if (expectedResultsSet.find(actualResult) == expectedResultsSet.end()) {
+					return false;
+				}
+			}
+			return true;
+		}
 	};
 }
