@@ -35,7 +35,24 @@ void ResultProjector::setSynonymResults(unordered_map<int, list<unordered_map<st
 }
 
 list<string> ResultProjector::getResults(vector<DesignEntity> selectedSynonyms, PKB pkb) {
-	// TODO: BOOLEAN --> check if synonymTable is empty (empty = false; !empty = true)
+
+	list<string> projectedResults;
+
+	// TODO: BOOLEAN
+	// early return if it's BOOLEAN
+	// actually if no common results, should be return false and break out of loop in QueryEvaluator and return FALSE already.
+	// No need to wait till getResults()
+	/*if (selectedSynonyms.size() == 1) {
+		if (selectedSynonyms.at(0).getType() == Type::BOOLEAN) {
+			if (synonymTable.empty()) {
+				projectedResults.push_back("FALSE");
+			}
+			else {
+				projectedResults.push_back("TRUE");
+			}
+			return projectedResults;
+		}
+	}*/
 
 	vector<string> selectedSynonymsOrder;
 	unordered_map<int, list<DesignEntity>> selectedSynonymTableMap;
@@ -106,7 +123,6 @@ list<string> ResultProjector::getResults(vector<DesignEntity> selectedSynonyms, 
 	}
 	
 	// 4. Convert to required format
-	list<string> projectedResults;
 	if (!selectedSynonymsOrder.empty()) {
 		for (auto finalMap : finalMaps) {
 			string resultString = finalMap[selectedSynonymsOrder.at(0)];
