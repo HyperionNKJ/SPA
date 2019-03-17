@@ -1,0 +1,5 @@
+1 - Select assign that is followed by anything
+assign a1; stmt s2;
+Select a1 such that Follows* (a1, s2) and Modifies (s2, "a") such that Uses (s2, "a")
+8
+5000
