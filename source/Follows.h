@@ -1,7 +1,6 @@
 #pragma once
 #include "Clause.h"
 
-// consider combining Follows and FollowsT into a single class with "isTransitive" as boolean.
 class Follows : public Clause {
 private:
 	Result* evaluateFixedSynonym(const string&, const string&, const Type&); // e.g. Follows(12, w)

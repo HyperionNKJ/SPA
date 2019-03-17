@@ -1,7 +1,6 @@
 #pragma once
 #include "Clause.h"
 
-// consider combining Parent and ParentT into a single class with "isTransitive" as boolean.
 class Parent : public Clause {
 private:
 	Result* evaluateFixedSynonym(const string&, const string&, const Type&); // e.g. Parent(12, w)
