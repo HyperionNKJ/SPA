@@ -1,6 +1,6 @@
 #include "Pattern.h"
 
-Pattern::Pattern(const DesignEntity& subject, const DesignEntity& paraOne, const DesignEntity& paraTwo) : Clause(paraOne, paraTwo) {
+Pattern::Pattern(const DesignEntity& subject, const DesignEntity& paraOne, const DesignEntity& paraTwo) : Clause(paraOne, paraTwo, ClauseType::PATTERN_ASSIGN) {
 	this->subject = subject;
 }
 

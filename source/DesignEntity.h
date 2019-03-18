@@ -7,13 +7,12 @@ using namespace std;
 
 class DesignEntity {
 private:
-	
-
-public:
 	string value;
 	Type type;
 	AttrRef attrRef;
 
+public:
+	
 	DesignEntity();
 	DesignEntity(const string&, const Type&);
 	DesignEntity(const string&, const Type&, const AttrRef&);

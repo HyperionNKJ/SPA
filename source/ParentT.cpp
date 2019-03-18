@@ -1,6 +1,6 @@
 #include "ParentT.h"
 
-ParentT::ParentT(const DesignEntity& paraOne, const DesignEntity& paraTwo) : Clause(paraOne, paraTwo) {}
+ParentT::ParentT(const DesignEntity& paraOne, const DesignEntity& paraTwo) : Clause(paraOne, paraTwo, ClauseType::PARENT_T) {}
 
 Result ParentT::evaluate(const PKB& pkb) {
 	this->pkb = pkb;
