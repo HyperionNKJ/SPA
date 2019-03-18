@@ -108,6 +108,9 @@
     <ClCompile Include="..\source\Next.cpp">
       <Filter>Source Files\Clauses</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\NextT.cpp">
+      <Filter>Source Files\Clauses</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\DesignEntity.h">
@@ -207,6 +210,9 @@
       <Filter>Header Files\Clauses</Filter>
     </ClInclude>
     <ClInclude Include="..\source\Next.h">
+      <Filter>Header Files\Clauses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\NextT.h">
       <Filter>Header Files\Clauses</Filter>
     </ClInclude>
   </ItemGroup>

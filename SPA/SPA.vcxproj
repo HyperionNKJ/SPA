@@ -21,6 +21,7 @@
     <ClCompile Include="..\source\ModifiesP.cpp" />
     <ClCompile Include="..\source\ModifiesS.cpp" />
     <ClCompile Include="..\source\Next.cpp" />
+    <ClCompile Include="..\source\NextT.cpp" />
     <ClCompile Include="..\source\Parent.cpp" />
     <ClCompile Include="..\source\ParentT.cpp" />
     <ClCompile Include="..\source\Parser.cpp" />
@@ -53,6 +54,7 @@
     <ClInclude Include="..\source\ModifiesP.h" />
     <ClInclude Include="..\source\ModifiesS.h" />
     <ClInclude Include="..\source\Next.h" />
+    <ClInclude Include="..\source\NextT.h" />
     <ClInclude Include="..\source\ParameterType.h" />
     <ClInclude Include="..\source\Parent.h" />
     <ClInclude Include="..\source\ParentT.h" />
