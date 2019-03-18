@@ -436,13 +436,13 @@ void ResultProjector::mergeTables(string key1, string key2, unordered_map<int, u
 	// update synonymTable indexes
 	unordered_map<string, int> synTable = synonymTable; // cannot just iterate using synonymTable, error when erasing
 	for (auto synonym : synTable) {
-		if (newResultsSet.size() != 0) {
-			if (synonym.second == key1InitialTableNum || synonym.second == key2InitialTableNum) { // update to new table
+		if (synonym.second == key1InitialTableNum || synonym.second == key2InitialTableNum) {
+			if (newResultsSet.size() != 0) { // update to new table
 				synonymTable[synonym.first] = index;
 			}
-		}
-		else { // no more results, remove from table
-			synonymTable.erase(synonym.first);
+			else { // no more results, remove from table
+				synonymTable.erase(synonym.first);
+			}
 		}
 	}
 	
