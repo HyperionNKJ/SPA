@@ -773,7 +773,8 @@ bool Parser::setNext(int stmtNum, Container closingType) {
 	if (firstInElse) {
 		firstInElse = false;
 		cout << parentVector.back() << " " << statementNumber << "first line in else " << endl;
-		//pkb->setNext(ifStmtTracker.back(), stmtNum);
+		pkb->setNext(parentVector.back(), stmtNum);
+		pkb->setPrevious(parentVector.back(), stmtNum);
 		return true;
 	}
 	//for case of close bracket involving while
@@ -784,9 +785,14 @@ bool Parser::setNext(int stmtNum, Container closingType) {
 				cout << lastInIfTracker.back() << " " << lastWhile << "closed while with if involved" << endl;
 				cout << lastInElseTracker.back() << " " << lastWhile << endl;
 				cout << lastWhile << " " << statementNumber << endl;
-				//pkb->setNext(lastInIfTracker.back(), lastWhile);
-				//pkb->setNext(lastInElseTracker.back(), lastWhile);
-				//pkb->setNext(lastWhile, statementNumber);
+				
+				pkb->setNext(lastInIfTracker.back(), lastWhile);
+				pkb->setPrevious(lastInIfTracker.back(), lastWhile);
+				pkb->setNext(lastInElseTracker.back(), lastWhile);
+				pkb->setPrevious(lastInElseTracker.back(), lastWhile);
+				pkb->setNext(lastWhile, statementNumber);
+				pkb->setPrevious(lastWhile, statementNumber);
+				
 				lastInIfTracker.pop_back();
 				lastInElseTracker.pop_back();
 				closedIfCount--;
@@ -795,8 +801,10 @@ bool Parser::setNext(int stmtNum, Container closingType) {
 		else {
 			cout << lastWhile << " " << statementNumber << " end of while with no if involved" << endl;
 			cout << statementNumber - 1 << " " << lastWhile << endl;
-			//pkb->setNext(lastWhile, stmtNum);
-			//pkb->setNext(stmtNum-1, lastWhile);
+			pkb->setNext(lastWhile, stmtNum);
+			pkb->setPrevious(lastWhile, stmtNum);
+			pkb->setNext(stmtNum - 1, lastWhile);
+			pkb->setPrevious(stmtNum - 1, lastWhile);
 		}
 		return true;
 	}
@@ -811,8 +819,12 @@ bool Parser::setNext(int stmtNum, Container closingType) {
 		while (closedIfCount > 0) {
 			cout << lastInIfTracker.back() << " " << statementNumber << "closed if no container " << endl;
 			cout << lastInElseTracker.back() << " " << statementNumber << endl;
-			//pkb->setNext(lastInIfTracker.back(), stmtNum);
-			//pkb->setNext(lastInElseTracker.back(), stmtNum);
+			
+			pkb->setNext(lastInIfTracker.back(), stmtNum);
+			pkb->setPrevious(lastInIfTracker.back(), stmtNum);
+			pkb->setNext(lastInElseTracker.back(), stmtNum);
+			pkb->setPrevious(lastInElseTracker.back(), stmtNum);
+			
 			lastInIfTracker.pop_back();
 			lastInElseTracker.pop_back();
 			closedIfCount--;
@@ -820,7 +832,8 @@ bool Parser::setNext(int stmtNum, Container closingType) {
 	}
 	else {
 		cout << statementNumber - 1 << " " << statementNumber << "first nothing involved" << endl;
-		//pkb->setNext(stmtNum-1, stmtNum);
+		pkb->setNext(stmtNum - 1, stmtNum);
+		pkb->setPrevious(stmtNum - 1, stmtNum);
 	}
 	return true;
 }
@@ -983,8 +996,8 @@ bool Parser::setProcIndirectUsesModifies() {
 }
 
 bool Parser::setCalls(string currProcedure, string calledProcName) {
-	//pkb->insertCalls(currProcedure, calledProcName);
-	//pkb->insertCalledBy(calledProcName, currProcedure);
+	pkb->setCalls(currProcedure, calledProcName);
+	pkb->setCalledBy(calledProcName, currProcedure);
 	de.insertCall(currProcedure, calledProcName);
 	return true;
 }
@@ -1002,8 +1015,8 @@ bool Parser::setCallsT() {
 		while (bfsQueue.size() > 0) {
 			string currCalledTProc = bfsQueue.front();
 			bfsQueue.pop();
-			//pkb->insertCallsT(proc, currCalledTProc);
-			//pkb->insertCalledByT(currCalledTProc, proc);
+			pkb->setCallsT(proc, currCalledTProc);
+			pkb->setCalledByT(currCalledTProc, proc);
 			for (const auto &calledProc : callGraph[currCalledTProc]) {
 				bfsQueue.push(calledProc);
 			}
