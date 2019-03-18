@@ -1,8 +1,4 @@
 #include "ResultProjector.h"
-#include "DesignEntity.h"
-#include "PKB.h"
-#include <iostream>
-#include <string>
 
 using namespace std;
 
@@ -38,11 +34,10 @@ list<string> ResultProjector::getResults(vector<DesignEntity> selectedSynonyms, 
 
 	list<string> projectedResults;
 
-	// TODO: BOOLEAN
-	// early return if it's BOOLEAN
+	// early return if it's BOOLEAN. Just put in case.
 	// actually if no common results, should be return false and break out of loop in QueryEvaluator and return FALSE already.
 	// No need to wait till getResults()
-	/*if (selectedSynonyms.size() == 1) {
+	if (selectedSynonyms.size() == 1) {
 		if (selectedSynonyms.at(0).getType() == Type::BOOLEAN) {
 			if (synonymTable.empty()) {
 				projectedResults.push_back("FALSE");
@@ -52,11 +47,10 @@ list<string> ResultProjector::getResults(vector<DesignEntity> selectedSynonyms, 
 			}
 			return projectedResults;
 		}
-	}*/
+	}
 
 	vector<string> selectedSynonymsOrder;
 	unordered_map<int, list<DesignEntity>> selectedSynonymTableMap;
-	unordered_map<string, Type> selectedSynonymAttrRef; // TODO
 	
 	// 1. Loop through all selected synonyms and get their table numbers
 	for (auto selectedSynonym : selectedSynonyms) {
@@ -70,7 +64,6 @@ list<string> ResultProjector::getResults(vector<DesignEntity> selectedSynonyms, 
 			tableNum = -1;
 		}
 		selectedSynonymTableMap[tableNum].push_back(selectedSynonym);
-		// TODO put mapping for selectedSynonymAttrRef
 	}
 
 	// 2. For each tableNum, put selected results in an unordered_map
@@ -87,8 +80,7 @@ list<string> ResultProjector::getResults(vector<DesignEntity> selectedSynonyms, 
 			for (auto result : results) {
 				unordered_map<string, string> rowResult;
 				for (auto selectedSyn : tableMap.second) {
-					// TODO: add in attrRef (call, read, print)
-					string convertedResult = convertSynonymResultToRequired(selectedSyn.getType(), result.at(selectedSyn.getValue()), pkb);
+					string convertedResult = convertSynonymResultToRequired(selectedSyn.getType(), result.at(selectedSyn.getValue()), selectedSyn.getAttrRef(), pkb);
 					rowResult[selectedSyn.getValue()] = convertedResult;
 				}
 				selectedResults.push_back(rowResult);
@@ -135,7 +127,7 @@ list<string> ResultProjector::getResults(vector<DesignEntity> selectedSynonyms, 
 	return projectedResults;
 }
 
-string ResultProjector::convertSynonymResultToRequired(Type type, int result, PKB pkb) {
+string ResultProjector::convertSynonymResultToRequired(Type type, int result, AttrRef attrRef, PKB pkb) {
 	string convertedResult;
 	switch (type) {
 	case Type::VARIABLE:
@@ -143,6 +135,30 @@ string ResultProjector::convertSynonymResultToRequired(Type type, int result, PK
 		break;
 	case Type::PROCEDURE:
 		convertedResult = pkb.getProcAtIdx(result);
+		break;
+	case Type::CALL:
+		if (attrRef == AttrRef::PROC_NAME) {
+			convertedResult = pkb.getCallAtIdx(result);
+		}
+		else {
+			convertedResult = to_string(result);
+		}
+		break;
+	case Type::READ:
+		if (attrRef == AttrRef::VAR_NAME) {
+			convertedResult = pkb.getReadAtIdx(result);
+		}
+		else {
+			convertedResult = to_string(result);
+		}
+		break;
+	case Type::PRINT:
+		if (attrRef == AttrRef::VAR_NAME) {
+			convertedResult = pkb.getPrintAtIdx(result);
+		}
+		else {
+			convertedResult = to_string(result);
+		}
 		break;
 	default: // EVERYTHING ELSE
 		convertedResult = to_string(result);
@@ -152,51 +168,55 @@ string ResultProjector::convertSynonymResultToRequired(Type type, int result, PK
 }
 
 list<unordered_map<string, string>> ResultProjector::getSelectedClauseNotInTable(DesignEntity synonym, PKB pkb) {
-	unordered_set<int> results;
 	list<unordered_map<string, string>> projectedResults;
 	//STATEMENT, READ, PRINT, CALL, WHILE, IF, ASSIGN, VARIABLE, CONSTANT, PROCEDURE, UNDERSCORE, FIXED --> need to update
 
-	// TODO: AttrRef in each case, see if need convert
 	Type type = synonym.getType();
 
 	switch (type) {
 		case Type::STATEMENT:
-			results = pkb.getAllStmts();
-			projectedResults = convertSetToList(results, synonym.getValue());
+			projectedResults = convertSetToList(pkb.getAllStmts(), synonym.getValue());
 			break;
-		/*case Type::PROG_LINE:
-			results = pkb.getAllStmts();
-			projectedResults = convertSetToList(results, synonym.getValue());
-			break;*/
+		case Type::PROGLINE:
+			projectedResults = convertSetToList(pkb.getAllProgLineStmts(), synonym.getValue());
+			break;
 		case Type::READ:
-			results = pkb.getReadStmts();
-			projectedResults = convertSetToList(results, synonym.getValue());
+			if (synonym.getAttrRef() == AttrRef::VAR_NAME) {
+				projectedResults = convertSetToList(pkb.getReadVarName(), synonym.getValue());
+			}
+			else {
+				projectedResults = convertSetToList(pkb.getReadStmts(), synonym.getValue());
+			}
 			break;
 		case Type::PRINT:
-			results = pkb.getPrintStmts();
-			projectedResults = convertSetToList(results, synonym.getValue());
+			if (synonym.getAttrRef() == AttrRef::VAR_NAME) {
+				projectedResults = convertSetToList(pkb.getPrintVarName(), synonym.getValue());
+			}
+			else {
+				projectedResults = convertSetToList(pkb.getPrintStmts(), synonym.getValue());
+			}
 			break;
-		/*case Type::CALL:	// call statements
-			results = pkb.getAllVariables();
-			break;*/
+		case Type::CALL:	// call statements
+			if (synonym.getAttrRef() == AttrRef::PROC_NAME) {
+				projectedResults = convertSetToList(pkb.getAllCallProcName(), synonym.getValue());
+			} else {
+				projectedResults = convertSetToList(pkb.getAllCallStmts(), synonym.getValue());
+			}
+			break;
 		case Type::WHILE:
-			results = pkb.getWhileStmts();
-			projectedResults = convertSetToList(results, synonym.getValue());
+			projectedResults = convertSetToList(pkb.getWhileStmts(), synonym.getValue());
 			break;
 		case Type::IF:
-			results = pkb.getIfStmts();
-			projectedResults = convertSetToList(results, synonym.getValue());
+			projectedResults = convertSetToList(pkb.getIfStmts(), synonym.getValue());
 			break;
 		case Type::ASSIGN:
-			results = pkb.getAssignStmts();
-			projectedResults = convertSetToList(results, synonym.getValue());
+			projectedResults = convertSetToList(pkb.getAssignStmts(), synonym.getValue());
 			break;
 		case Type::VARIABLE:
 			projectedResults = convertSetToList(pkb.getAllVariables(), synonym.getValue());
 			break;
 		case Type::CONSTANT:
-			results = pkb.getAllConstant();
-			projectedResults = convertSetToList(results, synonym.getValue());
+			projectedResults = convertSetToList(pkb.getAllConstant(), synonym.getValue());
 			break;
 		case Type::PROCEDURE:
 			projectedResults = convertSetToList(pkb.getAllProcedures(), synonym.getValue());

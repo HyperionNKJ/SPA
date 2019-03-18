@@ -1,9 +1,11 @@
 #pragma once
 
 #include "DesignEntity.h"
+#include "AttrRef.h"
 #include "PKB.h"
 #include <stdio.h>
 #include <iostream>
+#include <string>
 #include <unordered_set>
 #include <unordered_map> 
 
@@ -23,7 +25,7 @@ private:
 	void cleanUpTables(string);
 	unordered_map<int, unordered_set<int>> invertResults(unordered_map<int, unordered_set<int>> queryResults);
 
-	string convertSynonymResultToRequired(Type, int, PKB);
+	string convertSynonymResultToRequired(Type, int, AttrRef, PKB);
 	list<unordered_map<string, string>> getSelectedClauseNotInTable(DesignEntity, PKB);
 	list<unordered_map<string, string>> convertSetToList(unordered_set<string>, string);
 	list<unordered_map<string, string>> convertSetToList(unordered_set<int>, string);
