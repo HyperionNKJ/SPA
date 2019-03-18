@@ -1,0 +1,50 @@
+1 - Select stmt such that Modifies (stmt, variable)
+stmt s; variable v;
+Select s such that Modifies (s, v)
+1, 2, 3, 4, 5, 6, 8, 10
+5000
+2 - Select assign such that Modifies (assign, variable)
+assign a; variable v;
+Select a such that Modifies (a, v)
+1, 2, 3, 4, 5, 10
+5000
+3 - Select read such that Modifies (read, variable)
+read r; variable v;
+Select r such that Modifies (r, v)
+6, 8
+5000
+4 - Select procedure such that modifies variable
+procedure p; variable v;
+Select p such that Modifies (p, v)
+main, P, Q
+5000
+5 - Select procedure with given name such that modifies variable
+procedure p; variable v;
+Select p such that Modifies (p, v) with p.procName="R"
+none
+5000
+6 - Select procedure such that modifies variable with given name
+procedure p; variable v;
+Select p such that Modifies (p, v) with v.varName="x"
+main, P, Q
+5000
+7 - Select procedure such that modifies variable with given name
+procedure p;
+Select p such that Modifies (p, "x")
+main, P, Q
+5000
+8 - Select variables modified by procedure with given name
+variable v;
+Select v such that Modifies ("main", v)
+a, b, c, x, k
+5000
+9 - Select variables modified by stmt with given number
+variable v;
+Select v such that Modifies (5, v)
+a
+5000
+10 - Select variables modified by stmt with given number
+variable v;
+Select v such that Modifies (21, v)
+none
+5000
