@@ -302,6 +302,19 @@ bool ResultProjector::synonymExists(string synonym) {
 	return false;
 }
 
+unordered_set<int> ResultProjector::getPossibleValues(string synonym) {
+	unordered_set<int> possibleValues;
+
+	if (synonymExists(synonym)) {
+		int tableNum = synonymTable.at(synonym);
+		list<unordered_map<string, int>> resultTable = synonymResults.at(tableNum);
+		for (auto result : resultTable) {
+			possibleValues.insert(result.at(synonym));
+		}
+	}
+	return possibleValues;
+}
+
 void ResultProjector::addOneSyn(string key, unordered_set<int> results) {
 	synonymTable[key] = index;
 

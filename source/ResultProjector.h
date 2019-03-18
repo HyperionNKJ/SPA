@@ -11,7 +11,6 @@ class ResultProjector {
 private:
 	void combineOneSynonym(unordered_set<int> queryResults, vector<string> synonyms);
 	void combineTwoSynonyms(unordered_map<int, unordered_set<int>> queryResults, vector<string> synonyms);
-	bool synonymExists(string);
 	void addOneSyn(string key, unordered_set<int> results);
 	void addTwoSyn(string key1, string key2, unordered_map<int, unordered_set<int>> results);
 	void filterOneSynInTable(string key, unordered_set<int> queryResults);
@@ -31,9 +30,11 @@ private:
 
 public:
 	void resetResults();
-	bool ResultProjector::combineResults(unordered_set<int> queryResultsOneSynonym, vector<string> synonyms);
-	bool ResultProjector::combineResults(unordered_map<int, unordered_set<int>> queryResultsTwoSynonyms, vector<string> synonyms);
+	bool combineResults(unordered_set<int> queryResultsOneSynonym, vector<string> synonyms);
+	bool combineResults(unordered_map<int, unordered_set<int>> queryResultsTwoSynonyms, vector<string> synonyms);
 	list<string> getResults(vector<DesignEntity> selectedSynonyms, PKB pkb);
+	bool synonymExists(string synonym);
+	unordered_set<int> getPossibleValues(string synonym);
 
 	void printTables(); // for debugging
 	unordered_map<string, int> getSynonymTable(); // for testing
