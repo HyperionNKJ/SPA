@@ -15,6 +15,5 @@ private:
 
 public:
 	Pattern(const DesignEntity&, const DesignEntity&, const DesignEntity&); // In order of subject, left arg, right arg of pattern clause
-
 	Result evaluate(const PKB&) override;
 };

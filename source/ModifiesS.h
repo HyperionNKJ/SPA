@@ -12,6 +12,5 @@ private:
 
 public:
 	ModifiesS(const DesignEntity&, const DesignEntity&);
-
 	Result evaluate(const PKB&) override;
 };

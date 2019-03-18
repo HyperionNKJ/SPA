@@ -15,6 +15,5 @@ private:
 
 public:
 	Follows(const DesignEntity&, const DesignEntity&);
-
 	Result evaluate(const PKB&) override;
 };

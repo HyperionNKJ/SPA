@@ -15,6 +15,5 @@ private:
 
 public:
 	CallsT(const DesignEntity&, const DesignEntity&);
-
 	Result evaluate(const PKB&) override;
 };

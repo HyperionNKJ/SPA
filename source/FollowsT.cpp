@@ -1,6 +1,6 @@
 #include "FollowsT.h"
 
-FollowsT::FollowsT(const DesignEntity& paraOne, const DesignEntity& paraTwo) : Clause(paraOne, paraTwo) {}
+FollowsT::FollowsT(const DesignEntity& paraOne, const DesignEntity& paraTwo) : Clause(paraOne, paraTwo, ClauseType::FOLLOWS_T) {}
 
 Result FollowsT::evaluate(const PKB& pkb) {
 	this->pkb = pkb;

@@ -15,6 +15,5 @@ private:
 
 public:
 	Parent(const DesignEntity&, const DesignEntity&);
-
 	Result evaluate(const PKB&) override;
 };
