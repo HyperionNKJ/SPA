@@ -10,7 +10,6 @@
 #include "Type.h"
 
 class DesignExtractor {
-	PKB * pkb;
 	unordered_set<string> procList;
 	unordered_map<string, unordered_set<string>> callGraph;
 	unordered_map<string, unordered_set<string>> procUsesTable;
@@ -27,7 +26,6 @@ public:
 	bool insertProc(string);
 	bool insertProcUses(string, string);
 	bool insertProcModifies(string, string);
-	void setPKB(PKB*);
 
 	bool processCalls();
 

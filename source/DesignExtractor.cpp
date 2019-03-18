@@ -9,38 +9,32 @@
 #include "PKB.h"
 
 bool DesignExtractor::insertProc(string procName) {
-	procList.insert(procName);
+	return procList.insert(procName).second;
 	return true;
 }
 
 bool DesignExtractor::insertCall(string procCalling, string procCalled) {
 	if (callGraph.count(procCalling) < 1) {
 		callGraph[procCalling] = { procCalled };
+		return true;
 	}
-	else {
-		callGraph[procCalling].insert(procCalled);
-	}
-	return true;
+	return callGraph[procCalling].insert(procCalled).second;
 }
 
 bool DesignExtractor::insertProcUses(string procName, string varName) {
 	if (procUsesTable.count(procName) < 1) {
 		procUsesTable[procName] = { varName };
+		return true;
 	}
-	else {
-		procUsesTable[procName].insert(varName);
-	}
-	return true;
+	return procUsesTable[procName].insert(varName).second;
 }
 
 bool DesignExtractor::insertProcModifies(string procName, string varName) {
 	if (procModifiesTable.count(procName) < 1) {
 		procModifiesTable[procName] = { varName };
+		return true;
 	}
-	else {
-		procModifiesTable[procName].insert(varName);
-	}
-	return true;
+	return procModifiesTable[procName].insert(varName).second;
 }
 
 bool DesignExtractor::processCalls() {
@@ -54,13 +48,6 @@ bool DesignExtractor::processCalls() {
 		for (const auto &proc : calledByProc) {
 			updateProcModifies(currProc, proc);
 			updateProcUses(currProc, proc);
-		}
-		//can populate pkb with proc info here
-		for (const auto &elem : procModifiesTable[currProc]) {
-			pkb->setModifies(currProc, elem);
-		}
-		for (const auto &elem : procUsesTable[currProc]) {
-			pkb->setUses(currProc, elem);
 		}
 	}
 	return true;
@@ -97,7 +84,10 @@ bool DesignExtractor::topologicalVisit(string procName, unordered_set<string>* v
 	else {
 		currentDFSVisited->insert(procName);
 		for (const auto &nextProc : callGraph[procName]) {
-			topologicalVisit(nextProc, visitedProc, currentDFSVisited);
+			bool result = topologicalVisit(nextProc, visitedProc, currentDFSVisited);
+			if (!result) {
+				return false;
+			}
 		}
 	}
 	visitedProc->insert(procName);
@@ -115,10 +105,6 @@ void DesignExtractor::updateProcUses(string procToUpdate, string procCalled) {
 	for (const auto &elem : procUsesTable[procCalled]) {
 		procUsesTable[procToUpdate].insert(elem);
 	}
-}
-
-void DesignExtractor::setPKB(PKB * p) {
-	pkb = p;
 }
 
 unordered_map<string, unordered_set<string>> DesignExtractor::getProcUsesTable() {

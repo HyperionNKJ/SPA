@@ -10,17 +10,6 @@
 #include "pkb.h"
 #include "Type.h"
 
-//Static integers to pass information on keyword in the statement
-static int KEY_PROCEDURE = 1;
-static int KEY_ASSIGN = 2;
-static int KEY_IF = 3;
-static int KEY_ELSE = 4;
-static int KEY_WHILE = 5;
-static int KEY_READ = 6;
-static int KEY_PRINT = 7;
-static int KEY_CLOSE_BRACKET = 8;
-static int KEY_CALL = 9;
-
 static string varNameRegex = "([[:alpha:]]([[:alnum:]])*)";
 static string constantRegex = "[[:digit:]]+";
 static string spaceRegex = "[[:s:]]*";
@@ -28,7 +17,6 @@ static string openCurlyRegex = "\\{";
 
 int Parser::parse(string fileName, PKB& p) {
 	pkb = &p;
-	de.setPKB(&p);
 	try {
 		loadFile(fileName);
 	}
@@ -37,7 +25,7 @@ int Parser::parse(string fileName, PKB& p) {
 		return -1;
 	}
 	for (unsigned int i = 0; i < sourceCode.size(); i++) {
-		int intent = getStatementIntent(sourceCode[i]);
+		STATEMENT_KEY intent = getStatementIntent(sourceCode[i]);
 		int result = 0;
 		if (intent == KEY_PROCEDURE) {
 			result = handleProcedure(sourceCode[i]);
@@ -106,11 +94,12 @@ int Parser::parse(string fileName, PKB& p) {
 	}
 	de.processCalls();
 	setCallsT();
-	setCallUses();
+	setCallUsesModifies();
+	setProcIndirectUsesModifies();
 	return 0;
 }
 
-int Parser::getStatementIntent(string line) {
+STATEMENT_KEY Parser::getStatementIntent(string line) {
 	//check assignment first for potential variable names being keywords
 	if (line.find("=", 0) != string::npos && line.find("<=") == string::npos && line.find("==") == string::npos
 		&& line.find(">=") == string::npos && line.find("!=") == string::npos) {
@@ -145,7 +134,7 @@ int Parser::getStatementIntent(string line) {
 	if (tokenLine[0] == "}") {
 		return KEY_CLOSE_BRACKET;
 	}
-	return -1;
+	return KEY_ERROR;
 }
 
 bool Parser::checkProcedure(string procLine) {
@@ -961,17 +950,13 @@ bool Parser::setUses(int currStatementNum, string currProc, string varName) {
 	return true;
 }
 
-bool Parser::setCallUses() {
+bool Parser::setCallUsesModifies() {
 	unordered_set<string> procList = de.getProcList();
 	unordered_map<string, unordered_set<string>> procModifiesTable = de.getProcModifiesTable();
 	unordered_map<string, unordered_set<string>> procUsesTable = de.getProcUsesTable();
 	for (const auto &elem : procCalledByTable) {
 		string procName = elem.first;
 		int stmtNum = elem.second;
-		if (procList.count(procName) < 1) {
-			cout << "Call to non-existent procedure at line " << stmtNum << endl;
-			return false;
-		}
 		for (const auto &elem : procModifiesTable[procName]) {
 			pkb->setModifies(stmtNum, elem);
 		}
@@ -982,10 +967,26 @@ bool Parser::setCallUses() {
 	return true;
 }
 
+bool Parser::setProcIndirectUsesModifies() {
+	unordered_set<string> procList = de.getProcList();
+	unordered_map<string, unordered_set<string>> procModifiesTable = de.getProcModifiesTable();
+	unordered_map<string, unordered_set<string>> procUsesTable = de.getProcUsesTable();
+	for (const auto &elem : procList) {
+		string procName = elem;
+		for (const auto &elem : procModifiesTable[procName]) {
+			pkb->setModifies(procName, elem);
+		}
+		for (const auto &elem : procUsesTable[procName]) {
+			pkb->setUses(procName, elem);
+		}
+	}
+}
+
 bool Parser::setCalls(string currProcedure, string calledProcName) {
 	//pkb->insertCalls(currProcedure, calledProcName);
 	//pkb->insertCalledBy(calledProcName, currProcedure);
 	de.insertCall(currProcedure, calledProcName);
+	return true;
 }
 
 bool Parser::setCallsT() {
@@ -1008,6 +1009,7 @@ bool Parser::setCallsT() {
 			}
 		}
 	}
+	return true;
 }
 
 void Parser::setPKB(PKB * p) {
