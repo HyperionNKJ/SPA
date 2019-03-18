@@ -23,8 +23,8 @@ unordered_set<string> Clause::getSynonyms() {
 	return synonyms; // may return 0, 1, or 2 synonyms in a set
 }
 
-void Clause::setPossibleValues(const unordered_map<string, unordered_set<int>>& possibleValues) {
-	this->possibleValues = possibleValues;
+void Clause::setReducedDomain(const unordered_map<string, unordered_set<int>>& reducedDomain) {
+	this->reducedDomain = reducedDomain;
 }
 
 

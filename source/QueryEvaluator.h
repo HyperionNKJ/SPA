@@ -6,7 +6,7 @@
 
 class QueryEvaluator {
 private:
-	void setPossibleValues(Clause*, ResultProjector*);
+	void findReducedDomain(Clause*, ResultProjector*);
 
 public:
 	std::list<std::string> evaluate(ProcessedQuery&, const PKB&);

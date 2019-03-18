@@ -21,7 +21,7 @@ protected:
 	PKB pkb;
 
 	// reduced domain values that synonym/s (if exist) can take, based on the intermediate table. Only used by computionally expensive clause: Next*
-	unordered_map<string, unordered_set<int>> possibleValues; 
+	unordered_map<string, unordered_set<int>> reducedDomain; 
 
 	Clause(const DesignEntity&, const DesignEntity&, const ClauseType&);
 
@@ -30,6 +30,6 @@ public:
 	void setParaOne(const DesignEntity&);
 	void setParaTwo(const DesignEntity&);
 	unordered_set<string> getSynonyms(); // may return 0, 1 or 2 synonyms
-	void setPossibleValues(const unordered_map<string, unordered_set<int>>&);
+	void setReducedDomain(const unordered_map<string, unordered_set<int>>&);
 	virtual Result evaluate(const PKB&) = 0;
 };

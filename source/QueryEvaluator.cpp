@@ -11,7 +11,7 @@ std::list<std::string> QueryEvaluator::evaluate(ProcessedQuery& processedQuery, 
 	std::unordered_set<Clause*> clauses = processedQuery.getClauses();
 	for (auto clause : clauses) {
 		if (clause->getClauseType() == NEXT_T) {
-			setPossibleValues(clause, &resultProjector);
+			findReducedDomain(clause, &resultProjector); // reduce domain based on resultProjector's intermediate table
 		}
 
 		Result clauseResult = clause->evaluate(pkb);
@@ -28,13 +28,13 @@ std::list<std::string> QueryEvaluator::evaluate(ProcessedQuery& processedQuery, 
 	return resultProjector.getResults(processedQuery.getSelectedSynonym(), pkb); // To be clarified.
 }
 
-void QueryEvaluator::setPossibleValues(Clause* clause, ResultProjector* resultProjector) {
+void QueryEvaluator::findReducedDomain(Clause* clause, ResultProjector* resultProjector) {
 	unordered_set<string> synonyms = clause->getSynonyms(); // 0, 1, or 2 synonyms
-	unordered_map<string, unordered_set<int>> possibleValues;
+	unordered_map<string, unordered_set<int>> reducedDomain;
 	for (auto s : synonyms) {
 		if (resultProjector->synonymExists(s)) {
-			possibleValues.insert({ s, resultProjector->getPossibleValues(s) });
+			reducedDomain.insert({ s, resultProjector->getPossibleValues(s) });
 		}
 	}
-	clause->setPossibleValues(possibleValues);
+	clause->setReducedDomain(reducedDomain);
 }
