@@ -10,17 +10,6 @@
 #include "pkb.h"
 #include "Type.h"
 
-//Static integers to pass information on keyword in the statement
-static int KEY_PROCEDURE = 1;
-static int KEY_ASSIGN = 2;
-static int KEY_IF = 3;
-static int KEY_ELSE = 4;
-static int KEY_WHILE = 5;
-static int KEY_READ = 6;
-static int KEY_PRINT = 7;
-static int KEY_CLOSE_BRACKET = 8;
-static int KEY_CALL = 9;
-
 static string varNameRegex = "([[:alpha:]]([[:alnum:]])*)";
 static string constantRegex = "[[:digit:]]+";
 static string spaceRegex = "[[:s:]]*";
@@ -28,7 +17,6 @@ static string openCurlyRegex = "\\{";
 
 int Parser::parse(string fileName, PKB& p) {
 	pkb = &p;
-	de.setPKB(&p);
 	try {
 		loadFile(fileName);
 	}
@@ -37,7 +25,7 @@ int Parser::parse(string fileName, PKB& p) {
 		return -1;
 	}
 	for (unsigned int i = 0; i < sourceCode.size(); i++) {
-		int intent = getStatementIntent(sourceCode[i]);
+		STATEMENT_KEY intent = getStatementIntent(sourceCode[i]);
 		int result = 0;
 		if (intent == KEY_PROCEDURE) {
 			result = handleProcedure(sourceCode[i]);
@@ -106,11 +94,12 @@ int Parser::parse(string fileName, PKB& p) {
 	}
 	de.processCalls();
 	setCallsT();
-	setCallUses();
+	setCallUsesModifies();
+	setProcIndirectUsesModifies();
 	return 0;
 }
 
-int Parser::getStatementIntent(string line) {
+STATEMENT_KEY Parser::getStatementIntent(string line) {
 	//check assignment first for potential variable names being keywords
 	if (line.find("=", 0) != string::npos && line.find("<=") == string::npos && line.find("==") == string::npos
 		&& line.find(">=") == string::npos && line.find("!=") == string::npos) {
@@ -145,7 +134,7 @@ int Parser::getStatementIntent(string line) {
 	if (tokenLine[0] == "}") {
 		return KEY_CLOSE_BRACKET;
 	}
-	return -1;
+	return KEY_ERROR;
 }
 
 bool Parser::checkProcedure(string procLine) {
@@ -784,7 +773,8 @@ bool Parser::setNext(int stmtNum, Container closingType) {
 	if (firstInElse) {
 		firstInElse = false;
 		cout << parentVector.back() << " " << statementNumber << "first line in else " << endl;
-		//pkb->setNext(ifStmtTracker.back(), stmtNum);
+		pkb->setNext(parentVector.back(), stmtNum);
+		pkb->setPrevious(parentVector.back(), stmtNum);
 		return true;
 	}
 	//for case of close bracket involving while
@@ -795,9 +785,14 @@ bool Parser::setNext(int stmtNum, Container closingType) {
 				cout << lastInIfTracker.back() << " " << lastWhile << "closed while with if involved" << endl;
 				cout << lastInElseTracker.back() << " " << lastWhile << endl;
 				cout << lastWhile << " " << statementNumber << endl;
-				//pkb->setNext(lastInIfTracker.back(), lastWhile);
-				//pkb->setNext(lastInElseTracker.back(), lastWhile);
-				//pkb->setNext(lastWhile, statementNumber);
+				
+				pkb->setNext(lastInIfTracker.back(), lastWhile);
+				pkb->setPrevious(lastInIfTracker.back(), lastWhile);
+				pkb->setNext(lastInElseTracker.back(), lastWhile);
+				pkb->setPrevious(lastInElseTracker.back(), lastWhile);
+				pkb->setNext(lastWhile, statementNumber);
+				pkb->setPrevious(lastWhile, statementNumber);
+				
 				lastInIfTracker.pop_back();
 				lastInElseTracker.pop_back();
 				closedIfCount--;
@@ -806,8 +801,10 @@ bool Parser::setNext(int stmtNum, Container closingType) {
 		else {
 			cout << lastWhile << " " << statementNumber << " end of while with no if involved" << endl;
 			cout << statementNumber - 1 << " " << lastWhile << endl;
-			//pkb->setNext(lastWhile, stmtNum);
-			//pkb->setNext(stmtNum-1, lastWhile);
+			pkb->setNext(lastWhile, stmtNum);
+			pkb->setPrevious(lastWhile, stmtNum);
+			pkb->setNext(stmtNum - 1, lastWhile);
+			pkb->setPrevious(stmtNum - 1, lastWhile);
 		}
 		return true;
 	}
@@ -822,8 +819,12 @@ bool Parser::setNext(int stmtNum, Container closingType) {
 		while (closedIfCount > 0) {
 			cout << lastInIfTracker.back() << " " << statementNumber << "closed if no container " << endl;
 			cout << lastInElseTracker.back() << " " << statementNumber << endl;
-			//pkb->setNext(lastInIfTracker.back(), stmtNum);
-			//pkb->setNext(lastInElseTracker.back(), stmtNum);
+			
+			pkb->setNext(lastInIfTracker.back(), stmtNum);
+			pkb->setPrevious(lastInIfTracker.back(), stmtNum);
+			pkb->setNext(lastInElseTracker.back(), stmtNum);
+			pkb->setPrevious(lastInElseTracker.back(), stmtNum);
+			
 			lastInIfTracker.pop_back();
 			lastInElseTracker.pop_back();
 			closedIfCount--;
@@ -831,7 +832,8 @@ bool Parser::setNext(int stmtNum, Container closingType) {
 	}
 	else {
 		cout << statementNumber - 1 << " " << statementNumber << "first nothing involved" << endl;
-		//pkb->setNext(stmtNum-1, stmtNum);
+		pkb->setNext(stmtNum - 1, stmtNum);
+		pkb->setPrevious(stmtNum - 1, stmtNum);
 	}
 	return true;
 }
@@ -961,17 +963,13 @@ bool Parser::setUses(int currStatementNum, string currProc, string varName) {
 	return true;
 }
 
-bool Parser::setCallUses() {
+bool Parser::setCallUsesModifies() {
 	unordered_set<string> procList = de.getProcList();
 	unordered_map<string, unordered_set<string>> procModifiesTable = de.getProcModifiesTable();
 	unordered_map<string, unordered_set<string>> procUsesTable = de.getProcUsesTable();
 	for (const auto &elem : procCalledByTable) {
 		string procName = elem.first;
 		int stmtNum = elem.second;
-		if (procList.count(procName) < 1) {
-			cout << "Call to non-existent procedure at line " << stmtNum << endl;
-			return false;
-		}
 		for (const auto &elem : procModifiesTable[procName]) {
 			pkb->setModifies(stmtNum, elem);
 		}
@@ -982,10 +980,26 @@ bool Parser::setCallUses() {
 	return true;
 }
 
+bool Parser::setProcIndirectUsesModifies() {
+	unordered_set<string> procList = de.getProcList();
+	unordered_map<string, unordered_set<string>> procModifiesTable = de.getProcModifiesTable();
+	unordered_map<string, unordered_set<string>> procUsesTable = de.getProcUsesTable();
+	for (const auto &elem : procList) {
+		string procName = elem;
+		for (const auto &elem : procModifiesTable[procName]) {
+			pkb->setModifies(procName, elem);
+		}
+		for (const auto &elem : procUsesTable[procName]) {
+			pkb->setUses(procName, elem);
+		}
+	}
+}
+
 bool Parser::setCalls(string currProcedure, string calledProcName) {
-	//pkb->insertCalls(currProcedure, calledProcName);
-	//pkb->insertCalledBy(calledProcName, currProcedure);
+	pkb->setCalls(currProcedure, calledProcName);
+	pkb->setCalledBy(calledProcName, currProcedure);
 	de.insertCall(currProcedure, calledProcName);
+	return true;
 }
 
 bool Parser::setCallsT() {
@@ -1001,13 +1015,14 @@ bool Parser::setCallsT() {
 		while (bfsQueue.size() > 0) {
 			string currCalledTProc = bfsQueue.front();
 			bfsQueue.pop();
-			//pkb->insertCallsT(proc, currCalledTProc);
-			//pkb->insertCalledByT(currCalledTProc, proc);
+			pkb->setCallsT(proc, currCalledTProc);
+			pkb->setCalledByT(currCalledTProc, proc);
 			for (const auto &calledProc : callGraph[currCalledTProc]) {
 				bfsQueue.push(calledProc);
 			}
 		}
 	}
+	return true;
 }
 
 void Parser::setPKB(PKB * p) {

@@ -5,20 +5,6 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-//statics from parser. Patchwork solution for now
-static int KEY_PROCEDURE = 1;
-static int KEY_ASSIGN = 2;
-static int KEY_IF = 3;
-static int KEY_ELSE = 4;
-static int KEY_WHILE = 5;
-static int KEY_READ = 6;
-static int KEY_PRINT = 7;
-static int KEY_CLOSE_BRACKET = 8;
-static int KEY_CALL = 9;
-static int WHILECONTAINER = 100;
-static int IFCONTAINER = 101;
-static int ELSECONTAINER = 102;
-
 namespace UnitTesting {
 	TEST_CLASS(TestParser) {
 	public:
@@ -261,7 +247,7 @@ namespace UnitTesting {
 
 		TEST_METHOD(TestGetStatementIntent) {
 			Parser parser;
-			int result;
+			STATEMENT_KEY result;
 
 			result = parser.getStatementIntent("procedure a{");
 			Assert::AreEqual(result, KEY_PROCEDURE, L"incorrect", LINE_INFO());

@@ -31,6 +31,7 @@ public:
 	bool insertConstant(int constant);
 	bool insertProc(string procName);
 	bool insertStmtType(int stmtNum, Type type);
+	bool insertCPRStmtType(int stmtNum, Type type, string name);
 
 	bool setFollows(int leader, int follower);
 	bool setFollowsT(int leader, int follower);
@@ -49,6 +50,14 @@ public:
 	bool setUses(string procName, string varName);
 
 	bool insertAssignStmt(int stmtNum, string var, vector<string> assignmentStmt);
+
+	bool setCalls(string proc1, string proc2);
+	bool setCalledBy(string proc1, string proc2);
+	bool setCallsT(string proc1, string proc2);
+	bool setCalledByT(string proc1, string proc2);
+
+	bool setNext(int prevLine, int nextLine);
+	bool setPrevious(int prevLine, int nextLine);
 
 	// PQL APIs
 	unordered_set<int> getAllStmts();
@@ -117,4 +126,16 @@ public:
 	bool doesAssignStmtUse(int stmtNum, string entity);
 	string getVarModifiedByAssignStmt(int stmtNum);
 	unordered_set<int> getAssignStmtsThatModifiesVar(string varName);
+
+	int getCallIdx(string procName);
+	string getCallAtIdx(int idx);
+	int getReadIdx(string varName);
+	string getReadAtIdx(int idx);
+	int getPrintIdx(string varName);
+	string getPrintAtIdx(int idx);
+
+	unordered_set<int> getCallStmts();
+	unordered_set<string> getCallProcNames();
+	unordered_set<string> getReadVarNames();
+	unordered_set<string> getPrintVarNames();
 };

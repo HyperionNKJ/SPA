@@ -11,36 +11,46 @@
 #include "Type.h"
 #include "DesignExtractor.h"
 
+enum Container { WHILEC, IFC, ELSEC, NONEC };
+enum STATEMENT_KEY {
+	KEY_PROCEDURE, KEY_ASSIGN, KEY_IF, KEY_ELSE, KEY_WHILE,
+	KEY_READ, KEY_PRINT, KEY_CLOSE_BRACKET, KEY_CALL, KEY_ERROR
+};
+
 class Parser {
 	PKB * pkb;
 	DesignExtractor de;
-	enum Container { WHILEC, IFC, ELSEC, NONEC };
+
 	bool withinProcedure = false;
 	bool emptyProcedure = true;
 	bool expectElse = false;
+	string currProcedure;
 	vector<string> sourceCode = vector<string>();
 	int statementNumber = 1;
+	
+	//trackers for parent, follows
 	vector<int> parentVector = vector<int>();
 	vector<int> currentFollowVector = vector<int>();
 	vector<vector<int>> allFollowStack = vector<vector<int>>();
 	vector<Container> containerTracker = vector<Container>();
+	
+	//trackers for calls
 	unordered_map<string, int> procCalledByTable;
+	
 	//trackers for next
 	bool firstInProc = false;
 	bool firstInElse = false;
 	vector<int> lastInIfTracker = vector<int>();
 	vector<int> lastInElseTracker = vector<int>();
 	int closedIfCount = 0;
-	string currProcedure;
+	
 
 private:
 	bool setParent(int);
 	bool setModifies(int, string, string);
 	bool setUses(int, string, string);
-	bool setCallUses();
-	bool setCallModifies();
-	bool setModifiesProc();
-	bool setUsesProc();
+	bool setCallUsesModifies();
+	bool setProcIndirectUsesModifies();
 	bool setFollow(int);
 	bool setNext(int, Container);
 	bool setCalls(string, string);
@@ -82,7 +92,7 @@ public:
 
 	int handleCloseBracket(string);
 
-	int getStatementIntent(string);
+	STATEMENT_KEY getStatementIntent(string);
 	int parse(string, PKB&);
 	vector<string> loadFile(string);
 

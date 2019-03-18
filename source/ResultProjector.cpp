@@ -1,11 +1,9 @@
 #include "ResultProjector.h"
-#include "DesignEntity.h"
-#include "PKB.h"
-#include <iostream>
-#include <string>
+
+using namespace std;
 
 static unordered_map<string, int> synonymTable;
-static unordered_map<int, unordered_map<string, list<int>>> synonymResults;
+static unordered_map<int, list<unordered_map<string, int>>> synonymResults;
 static int index;
 
 // Reset tables for new query
@@ -20,231 +18,299 @@ unordered_map<string, int> ResultProjector::getSynonymTable() {
 	return synonymTable;
 }
 
-unordered_map<int, unordered_map<string, list<int>>> ResultProjector::getSynonymResults() {
+void ResultProjector::setSynonymTable(unordered_map<string, int> synTable) {
+	synonymTable = synTable;
+}
+
+unordered_map<int, list<unordered_map<string, int>>> ResultProjector::getSynonymResults() {
 	return synonymResults;
 }
 
-list<string> ResultProjector::getResults(DesignEntity selectedSynonym, PKB pkb) {
-	list<string> projectedResults;
-	Type type = selectedSynonym.getType();
-
-	if (synonymExists(selectedSynonym.getValue())) {
-		int tableNum = synonymTable.at(selectedSynonym.getValue());
-		list<int> results = synonymResults.at(tableNum).at(selectedSynonym.getValue());
-
-		projectedResults = getSelectedClauseInTable(type, results, pkb);
-	}
-	else {
-		projectedResults = getSelectedClauseNotInTable(type, pkb);
-	}
-	// sort and remove duplicates
-	projectedResults.sort();
-	projectedResults.unique();
-
-	return projectedResults;
+void ResultProjector::setSynonymResults(unordered_map<int, list<unordered_map<string, int>>> synResults) {
+	synonymResults = synResults;
 }
 
-list<string> ResultProjector::getSelectedClauseInTable(Type type, list<int> results, PKB pkb) {
+list<string> ResultProjector::getResults(vector<DesignEntity> selectedSynonyms, PKB pkb) {
+
 	list<string> projectedResults;
-	switch (type) {
-		case Type::VARIABLE:
-			projectedResults = convertVarIndexToVar(results, pkb);
-			break;
-		case Type::PROCEDURE:
-			projectedResults = convertProcIndexToProc(results, pkb);
-			break;
-		default: // STATEMENTS and CONSTANTS
-			projectedResults = convertIndexToString(results, pkb);
-			break;
+
+	// early return if it's BOOLEAN. Just put in case.
+	// actually if no common results, should be return false and break out of loop in QueryEvaluator and return FALSE already.
+	// No need to wait till getResults()
+	if (selectedSynonyms.size() == 1) {
+		if (selectedSynonyms.at(0).getType() == Type::BOOLEAN) {
+			if (synonymTable.empty()) {
+				projectedResults.push_back("FALSE");
+			}
+			else {
+				projectedResults.push_back("TRUE");
+			}
+			return projectedResults;
 		}
+	}
+
+	vector<string> selectedSynonymsOrder;
+	unordered_map<int, list<DesignEntity>> selectedSynonymTableMap;
+	
+	// 1. Loop through all selected synonyms and get their table numbers
+	for (auto selectedSynonym : selectedSynonyms) {
+		selectedSynonymsOrder.push_back(selectedSynonym.getValue());
+		string synonym = selectedSynonym.getValue();
+		int tableNum;
+		if (synonymExists(synonym)) {
+			tableNum = synonymTable[selectedSynonym.getValue()];
+		}
+		else {
+			tableNum = -1;
+		}
+		selectedSynonymTableMap[tableNum].push_back(selectedSynonym);
+	}
+
+	// 2. For each tableNum, put selected results in an unordered_map
+	vector<list<unordered_map<string, string>>> allTableResults;
+	for (auto tableMap : selectedSynonymTableMap) {
+		list<unordered_map<string, string>> selectedResults;
+		if (tableMap.first == -1) { // synonym does not exist in table
+			for (auto selectedSyn : tableMap.second) {
+				selectedResults = getSelectedClauseNotInTable(selectedSyn, pkb);
+			}
+		}
+		else {
+			list<unordered_map<string, int>> results = synonymResults[tableMap.first];
+			for (auto result : results) {
+				unordered_map<string, string> rowResult;
+				for (auto selectedSyn : tableMap.second) {
+					string convertedResult = convertSynonymResultToRequired(selectedSyn.getType(), result.at(selectedSyn.getValue()), selectedSyn.getAttrRef(), pkb);
+					rowResult[selectedSyn.getValue()] = convertedResult;
+				}
+				selectedResults.push_back(rowResult);
+			}
+		}
+		allTableResults.push_back(selectedResults);
+	}
+
+	// 3. Cross product all maps
+	list<unordered_map<string, string>> finalMaps;
+	if (!allTableResults.empty()) {
+		finalMaps = allTableResults.at(0);
+		for (size_t i = 1; i < allTableResults.size(); i++) {
+			list<unordered_map<string, string>> tableResults = allTableResults.at(i);
+
+			int size = finalMaps.size();
+			int count = 0; // for early break, no need loop through all that just added
+
+			for (auto& itr = finalMaps.begin(); itr != finalMaps.end();) {
+				if (count == size) {
+					break;
+				}
+				for (auto tableResult : tableResults) {
+					unordered_map<string, string> newResult = (*itr); // merge 2 maps together
+					newResult.insert(tableResult.begin(), tableResult.end());
+					finalMaps.push_back(newResult);
+				}
+				itr = finalMaps.erase(itr);
+				count++;
+			}
+		}
+	}
+	
+	// 4. Convert to required format
+	if (!selectedSynonymsOrder.empty()) {
+		for (auto finalMap : finalMaps) {
+			string resultString = finalMap[selectedSynonymsOrder.at(0)];
+			for (size_t i = 1; i < selectedSynonymsOrder.size(); i++) {
+				resultString += " " + finalMap[selectedSynonymsOrder.at(i)];
+			}
+			projectedResults.push_back(resultString);
+		}
+	}
 	return projectedResults;
 }
 
-list<string> ResultProjector::getSelectedClauseNotInTable(Type type, PKB pkb) {
-	unordered_set<int> results;
-	list<string> projectedResults;
-	//STATEMENT, READ, PRINT, CALL, WHILE, IF, ASSIGN, VARIABLE, CONSTANT, PROCEDURE, UNDERSCORE, FIXED
+string ResultProjector::convertSynonymResultToRequired(Type type, int result, AttrRef attrRef, PKB pkb) {
+	string convertedResult;
+	switch (type) {
+	case Type::VARIABLE:
+		convertedResult = pkb.getVarAtIdx(result);
+		break;
+	case Type::PROCEDURE:
+		convertedResult = pkb.getProcAtIdx(result);
+		break;
+	case Type::CALL:
+		if (attrRef == AttrRef::PROC_NAME) {
+			convertedResult = pkb.getCallAtIdx(result);
+		}
+		else {
+			convertedResult = to_string(result);
+		}
+		break;
+	case Type::READ:
+		if (attrRef == AttrRef::VAR_NAME) {
+			convertedResult = pkb.getReadAtIdx(result);
+		}
+		else {
+			convertedResult = to_string(result);
+		}
+		break;
+	case Type::PRINT:
+		if (attrRef == AttrRef::VAR_NAME) {
+			convertedResult = pkb.getPrintAtIdx(result);
+		}
+		else {
+			convertedResult = to_string(result);
+		}
+		break;
+	default: // EVERYTHING ELSE
+		convertedResult = to_string(result);
+		break;
+	}
+	return convertedResult;
+}
+
+list<unordered_map<string, string>> ResultProjector::getSelectedClauseNotInTable(DesignEntity synonym, PKB pkb) {
+	list<unordered_map<string, string>> projectedResults;
+	//STATEMENT, READ, PRINT, CALL, WHILE, IF, ASSIGN, VARIABLE, CONSTANT, PROCEDURE, UNDERSCORE, FIXED --> need to update
+
+	Type type = synonym.getType();
 
 	switch (type) {
 		case Type::STATEMENT:
-			results = pkb.getAllStmts();
-			projectedResults = convertIndexToString(results, pkb);
+			projectedResults = convertSetToList(pkb.getAllStmts(), synonym.getValue());
+			break;
+		case Type::PROGLINE:
+			projectedResults = convertSetToList(pkb.getAllStmts(), synonym.getValue());
 			break;
 		case Type::READ:
-			results = pkb.getReadStmts();
-			projectedResults = convertIndexToString(results, pkb);
+			if (synonym.getAttrRef() == AttrRef::VAR_NAME) {
+				projectedResults = convertSetToList(pkb.getReadVarNames(), synonym.getValue());
+			}
+			else {
+				projectedResults = convertSetToList(pkb.getReadStmts(), synonym.getValue());
+			}
 			break;
 		case Type::PRINT:
-			results = pkb.getPrintStmts();
-			projectedResults = convertIndexToString(results, pkb);
+			if (synonym.getAttrRef() == AttrRef::VAR_NAME) {
+				projectedResults = convertSetToList(pkb.getPrintVarNames(), synonym.getValue());
+			}
+			else {
+				projectedResults = convertSetToList(pkb.getPrintStmts(), synonym.getValue());
+			}
 			break;
-		/*case Type::CALL:	// call statements
-			results = pkb.getAllVariables();
-			break;*/
+		case Type::CALL:	// call statements
+			if (synonym.getAttrRef() == AttrRef::PROC_NAME) {
+				projectedResults = convertSetToList(pkb.getCallProcNames(), synonym.getValue());
+			} else {
+				projectedResults = convertSetToList(pkb.getCallStmts(), synonym.getValue());
+			}
+			break;
 		case Type::WHILE:
-			results = pkb.getWhileStmts();
-			projectedResults = convertIndexToString(results, pkb);
+			projectedResults = convertSetToList(pkb.getWhileStmts(), synonym.getValue());
 			break;
 		case Type::IF:
-			results = pkb.getIfStmts();
-			projectedResults = convertIndexToString(results, pkb);
+			projectedResults = convertSetToList(pkb.getIfStmts(), synonym.getValue());
 			break;
 		case Type::ASSIGN:
-			results = pkb.getAssignStmts();
-			projectedResults = convertIndexToString(results, pkb);
+			projectedResults = convertSetToList(pkb.getAssignStmts(), synonym.getValue());
 			break;
 		case Type::VARIABLE:
-			projectedResults = convertSetToList(pkb.getAllVariables());
+			projectedResults = convertSetToList(pkb.getAllVariables(), synonym.getValue());
 			break;
 		case Type::CONSTANT:
-			results = pkb.getAllConstant();
-			projectedResults = convertIndexToString(results, pkb);
+			projectedResults = convertSetToList(pkb.getAllConstant(), synonym.getValue());
 			break;
 		case Type::PROCEDURE:
-			projectedResults = convertSetToList(pkb.getAllProcedures());
+			projectedResults = convertSetToList(pkb.getAllProcedures(), synonym.getValue());
 			break;
 		}
 	return projectedResults;
 }
 
-list<string> ResultProjector::convertVarIndexToVar(unordered_set<int> resultSet, PKB pkb) {
-	list<string> results;
-	for (auto varIndex : resultSet) {
-		results.push_back(pkb.getVarAtIdx(varIndex));
+list<unordered_map<string, string>> ResultProjector::convertSetToList(unordered_set<string> resultSet, string synonym) {
+	list<unordered_map<string, string>> results;
+	unordered_map<string, string> row;
+	for (string result : resultSet) {
+		row[synonym] = result;
+		results.push_back(row);
 	}
 	return results;
 }
 
-list<string> ResultProjector::convertVarIndexToVar(list<int> resultList, PKB pkb) {
-	list<string> results;
-	for (auto varIndex : resultList) {
-		results.push_back(pkb.getVarAtIdx(varIndex));
+list<unordered_map<string, string>> ResultProjector::convertSetToList(unordered_set<int> resultSet, string synonym) {
+	list<unordered_map<string, string>> results;
+	unordered_map<string, string> row;
+	for (int result : resultSet) {
+		row[synonym] = to_string(result);
+		results.push_back(row);
 	}
 	return results;
 }
 
-list<string> ResultProjector::convertProcIndexToProc(unordered_set<int> resultSet, PKB pkb) {
-	list<string> results;
-	for (auto procIndex : resultSet) {
-		results.push_back(pkb.getProcAtIdx(procIndex)); // new API from PKB
-	}
-	return results;
-}
-
-list<string> ResultProjector::convertProcIndexToProc(list<int> resultList, PKB pkb) {
-	list<string> results;
-	for (auto procIndex : resultList) {
-		results.push_back(pkb.getProcAtIdx(procIndex)); // new API from PKB
-	}
-	return results;
-}
-
-list<string> ResultProjector::convertIndexToString(unordered_set<int> resultSet, PKB pkb) {
-	list<string> results;
-	for (auto resultIndex : resultSet) {
-		results.push_back(to_string(resultIndex));
-	}
-	return results;
-}
-
-list<string> ResultProjector::convertIndexToString(list<int> resultList, PKB pkb) {
-	list<string> results;
-	for (auto resultIndex : resultList) {
-		results.push_back(to_string(resultIndex));
-	}
-	return results;
-}
-
-list<string> ResultProjector::convertSetToList(unordered_set<string> resultSet) {
-	list<string> results;
-	for (auto result : resultSet) {
-		results.push_back(result);
-	}
-	return results;
-}
-
-bool ResultProjector::combineResults(unordered_map<string, list<int>> queryResults) {
+bool ResultProjector::combineResults(unordered_set<int> queryResultsOneSynonym, vector<string> synonyms) { // one synonym
 	// check if empty result is passed in
-	if (queryResults.empty()) {
+	if (queryResultsOneSynonym.empty() || synonyms.size() != 1) {
 		return false;
 	}
-	for (auto queryResult : queryResults) {
-		if (queryResult.second.empty()) {
-			return false;
-		}
-	}
 
-	// main logic
-	vector<string> synonyms;
-
-	for (auto synonym : queryResults)
-		synonyms.push_back(synonym.first);
-
-	if (synonyms.size() == 1) { // one synonym in a clause
-		string key = synonyms.at(0);
-		if (synonymExists(key)) { // 1 common synonym
-			filterSynInTable(key, queryResults.at(key));
-		}
-		else { // no common synonym
-			addOneSyn(key, queryResults);
-		}
-	}
-	else if (synonyms.size() == 2) { // two synonyms in a clause
-		string key1 = synonyms.at(0);
-		string key2 = synonyms.at(1);
-		bool key1Exists = synonymExists(key1);
-		bool key2Exists = synonymExists(key2);
-
-		if (key1Exists && key2Exists) { // 2 common synonyms
-			filterSynInTable(key1, queryResults.at(key1));
-			filterSynInTable(key2, queryResults.at(key2));
-
-			if (synonymTable.at(key1) == synonymTable.at(key2)) { // Both synonyms in same table
-				combineDependentResults(key1, key2, queryResults);
-			}
-			else { // diff table
-				// key1 has larger existing table. Merge key2 table with key1 table
-				if (synonymResults.at(synonymTable.at(key1)).size() > synonymResults.at(synonymTable.at(key2)).size()) {
-					int key2InitialTableNum = synonymTable.at(key2);
-
-					mergeOneSyn(key1, key2, queryResults);
-					filterSynInTable(key2, synonymResults.at(key2InitialTableNum).at(key2));
-					filterOldTable(key2InitialTableNum, key2);
-					mergeTables(key2InitialTableNum, key2, synonymResults.at(synonymTable.at(key1)).at(key1));
-				}
-				else {
-					int key1InitialTableNum = synonymTable.at(key1);
-
-					mergeOneSyn(key2, key1, queryResults);
-					filterSynInTable(key1, synonymResults.at(key1InitialTableNum).at(key1));
-					filterOldTable(key1InitialTableNum, key1);
-					mergeTables(key1InitialTableNum, key1, synonymResults.at(synonymTable.at(key2)).at(key2));
-				}
-			}
-		}
-		else if (key1Exists || key2Exists) { // 1 common synonym
-			if (key1Exists) {
-				filterSynInTable(key1, queryResults.at(key1));
-				if (synonymExists(key1)) {
-					mergeOneSyn(key1, key2, queryResults);
-				}
-			}
-			else {
-				filterSynInTable(key2, queryResults.at(key2));
-				if (synonymExists(key2)) {
-					mergeOneSyn(key2, key1, queryResults);
-				}
-			}
-		}
-		else { // no common synonyms
-			addTwoSyn(key1, key2, queryResults);
-		}
-	}
+	combineOneSynonym(queryResultsOneSynonym, synonyms);
 
 	if (synonymExists(synonyms.at(0))) {
 		return true;
 	}
 	return false; // no more common combined results
+}
+
+bool ResultProjector::combineResults(unordered_map<int, unordered_set<int>> queryResultsTwoSynonyms, vector<string> synonyms) { // two synonyms
+	// check if empty result is passed in
+	if (queryResultsTwoSynonyms.empty() || synonyms.size() != 2) {
+		return false;
+	}
+	
+	combineTwoSynonyms(queryResultsTwoSynonyms, synonyms);
+
+	if (synonymExists(synonyms.at(0)) && synonymExists(synonyms.at(1))) {
+		return true;
+	}
+	return false; // no more common combined results
+}
+
+void ResultProjector::combineOneSynonym(unordered_set<int> queryResults, vector<string> synonyms) {
+	string key = synonyms.at(0);
+
+	if (synonymExists(key)) { // 1 common synonym
+		filterOneSynInTable(key, queryResults);
+	}
+	else { // no common synonym
+		addOneSyn(key, queryResults);
+	}
+}
+
+void ResultProjector::combineTwoSynonyms(unordered_map<int, unordered_set<int>> queryResults, vector<string> synonyms) {
+	string key1 = synonyms.at(0);
+	string key2 = synonyms.at(1);
+	bool key1Exists = synonymExists(key1);
+	bool key2Exists = synonymExists(key2);
+
+	if (key1Exists && key2Exists) { // 2 common synonyms
+
+		if (synonymTable.at(key1) == synonymTable.at(key2)) { // Both synonyms in same table
+			filterTwoSynInSameTable(key1, key2, queryResults);
+		}
+		else { // diff table
+			mergeTables(key1, key2, queryResults);
+		}
+	}
+	else if (key1Exists || key2Exists) { // 1 common synonym
+		if (key1Exists) {
+			mergeOneSyn(key1, key2, queryResults);
+		}
+		else {
+			unordered_map<int, unordered_set<int>> invertedQueryResults = invertResults(queryResults);
+			mergeOneSyn(key2, key1, invertedQueryResults);
+		}
+	}
+	else { // no common synonyms
+		addTwoSyn(key1, key2, queryResults);
+	}
 }
 
 bool ResultProjector::synonymExists(string synonym) {
@@ -256,284 +322,234 @@ bool ResultProjector::synonymExists(string synonym) {
 	return false;
 }
 
-void ResultProjector::addOneSyn(string key, unordered_map<string, list<int>> results) {
+unordered_set<int> ResultProjector::getPossibleValues(string synonym) {
+	unordered_set<int> possibleValues;
+
+	if (synonymExists(synonym)) {
+		int tableNum = synonymTable.at(synonym);
+		list<unordered_map<string, int>> resultTable = synonymResults.at(tableNum);
+		for (auto result : resultTable) {
+			possibleValues.insert(result.at(synonym));
+		}
+	}
+	return possibleValues;
+}
+
+void ResultProjector::addOneSyn(string key, unordered_set<int> results) {
 	synonymTable[key] = index;
-	synonymResults[index] = results;
+
+	list<unordered_map<string, int>> newSet;
+	unordered_map<string, int> newSetEntry;
+	for (const auto result : results) {
+		newSetEntry[key] = result;
+		newSet.push_back(newSetEntry);
+	}
+
+	synonymResults[index] = newSet;
 	index++;
 }
 
-void ResultProjector::addTwoSyn(string key1, string key2, unordered_map<string, list<int>> results) {
+void ResultProjector::addTwoSyn(string key1, string key2, unordered_map<int, unordered_set<int>> results) {
 	synonymTable[key1] = index;
 	synonymTable[key2] = index;
-	synonymResults[index] = results;
+
+	list<unordered_map<string, int>> newSet;
+	unordered_map<string, int> newSetEntry;
+	for (const auto result: results) {
+		newSetEntry[key1] = result.first;
+		for (const auto key2Results : result.second) {
+			newSetEntry[key2] = key2Results;
+			newSet.push_back(newSetEntry);
+		}
+	}
+
+	synonymResults[index] = newSet;
 	index++;
 }
 
 // Filters the synonym's results such that only overlapped results remains
-void ResultProjector::filterSynInTable(string key, list<int> queryResults) {
-	int tableNum = synonymTable.at(key);
-	list<int>& prevResults = synonymResults.at(tableNum).at(key);
-	int rowIndex = 0;
+void ResultProjector::filterOneSynInTable(string key, unordered_set<int> queryResults) {
+	int tableNum = synonymTable[key];
+	list<unordered_map<string, int>>& prevResults = synonymResults[tableNum];
 
 	for (auto itr = prevResults.begin(); itr != prevResults.end();) {
-		if (!resultExists(*itr, queryResults)) { // results do not overlap
-			eraseTableRow(rowIndex, synonymResults.at(tableNum), key);
+		int prevKeyValue = (*itr).at(key);
+		if (!existInSet(prevKeyValue, queryResults)) { // results do not overlap
 			itr = prevResults.erase(itr);
-			rowIndex--;
 		}
 		else {
 			itr++;
 		}
-		rowIndex++;
 	}
 	cleanUpTables(key);
 }
 
-void ResultProjector::cleanUpTables(string key) {
-	if (synonymTable.empty()) {
-		return;
-	}
-
-	// clean up synonymTable and synonymResults when there are no more entries in it
-	int tableNum = synonymTable.at(key);
-
-	unordered_map<string, list<int>> table = synonymResults.at(tableNum); // cannot just iterate using synonymResults.at(tableNum), error when erasing
-	for (auto synonym : table) {
-		if (synonym.second.empty()) { // remove synonym entry from synonym results if no more entries
-			string synonymToDelete = synonym.first;
-			synonymResults.at(tableNum).erase(synonymToDelete);
-			synonymTable.erase(synonymToDelete);
-		}
-	}
-
-	if (synonymResults.at(tableNum).empty()) { // no more entries in table
-		synonymResults.erase(tableNum);
-	}
-}
-
-void ResultProjector::filterOldTable(int initialTableNum, string key) {
-	list<int>& prevResults = synonymResults.at(initialTableNum).at(key);
-	list<int> updatedResults = synonymResults.at(synonymTable.at(key)).at(key);
-	int rowIndex = 0;
+// Filters two synonyms results such that only overlapped results remains
+void ResultProjector::filterTwoSynInSameTable(string key1, string key2, unordered_map<int, unordered_set<int>> queryResults) {
+	int tableNum = synonymTable[key1];
+	list<unordered_map<string, int>>& prevResults = synonymResults[tableNum];
 
 	for (auto itr = prevResults.begin(); itr != prevResults.end();) {
-		if (!resultExists(*itr, updatedResults)) { // results do not overlap
-			eraseTableRow(rowIndex, synonymResults.at(initialTableNum), key);
+		int prevKey1Value = (*itr).at(key1);
+		int prevKey2Value = (*itr).at(key2);
+
+		if (existInMap(prevKey1Value, queryResults)) {
+			if (existInSet(prevKey2Value, queryResults[prevKey1Value])) { // results overlap
+				itr++;
+			}
+			else {
+				itr = prevResults.erase(itr);
+			}
+		}
+		else {
 			itr = prevResults.erase(itr);
-			rowIndex--;
 		}
-		else {
-			itr++;
-		}
-		rowIndex++;
-	}
-	cleanUpTables(key);
-}
-
-void ResultProjector::mergeTables(int initialTableNum, string mergingKey, list<int> updatedResults) {
-	unordered_map<string, list<int>> prevTable = synonymResults.at(initialTableNum);
-
-	int newTableIndex = synonymTable.at(mergingKey);
-	unordered_map<string, list<int>> curTable = synonymResults.at(synonymTable.at(mergingKey));
-	list<int> curResults = curTable.at(mergingKey);
-
-	for (auto synonym : prevTable) {
-		if (synonym.first != mergingKey) {
-			list<int> newKeyResultsSorted;
-			for (auto curResult : curResults) {
-				int listIndex = findIndex(curResult, prevTable.at(mergingKey));
-				list<int>::iterator itr;
-				itr = prevTable.at(synonym.first).begin();
-				advance(itr, listIndex);
-				newKeyResultsSorted.push_back(*itr);
-			}
-			synonymTable[synonym.first] = newTableIndex;
-			curTable[synonym.first] = newKeyResultsSorted;
-		}
-	}
-	synonymResults.erase(initialTableNum);
-}
-
-bool ResultProjector::resultExists(int target, list<int> resultsList) {
-	return find(resultsList.begin(), resultsList.end(), target) != resultsList.end();
-}
-
-// Delete dependent variables' index in the same table as the deleted item
-void ResultProjector::eraseTableRow(int rowIndex, unordered_map<string, list<int>>& synResTable, string key) {
-	list<int>::iterator itr;
-
-	for (auto& synonym : synResTable) {
-		if (synonym.first.compare(key) != 0) { // list containing cur key has already been deleted
-			itr = synonym.second.begin();
-			advance(itr, rowIndex);
-			synonym.second.erase(itr);
-		}
-	}
-}
-
-void ResultProjector::mergeOneSyn(string existKey, string newKey, unordered_map<string, list<int>> results) {
-	int tableIndex = synonymTable.at(existKey);
-	unordered_map<string, list<int>>& resultTable = synonymResults.at(tableIndex);
-	list<int> prevResults = resultTable.at(existKey);
-
-	list<int> newKeyResultsSorted;
-	list<int>::iterator itr;
-	unordered_map<int, int> synonymIndexInPrevResults;
-	unordered_map<int, int>::iterator mapItr;
-	int listIndex = 0;
-
-	// merging with current results
-	for (auto prevResult : prevResults) {
-		mapItr = synonymIndexInPrevResults.find(prevResult);
-		if (mapItr == synonymIndexInPrevResults.end()) { // synonym did not appear originally
-			if (resultExists(prevResult, results.at(existKey))) {
-				newKeyResultsSorted.push_back(getAndDeleteCorrespondingResult(prevResult, existKey, newKey, results));
-				synonymIndexInPrevResults[prevResult] = listIndex;
-			}
-		}
-		else {
-			int prevSetCorrespondingResult = getCorrespondingResult(synonymIndexInPrevResults[prevResult], newKeyResultsSorted);
-			newKeyResultsSorted.push_back(prevSetCorrespondingResult);
-		}
-		listIndex++;
-	}
-
-	// repeated results in new results
-	if (!results.at(existKey).empty()) {
-		// for dependent pair
-		list<int> existKeyResults = results.at(existKey);
-		list<int> newKeyResults = results.at(newKey);
-		int listIndex = 0;
-		int prevResultIndex = 0;
-
-		for (auto existKeyResult : existKeyResults) {
-			if (resultExists(existKeyResult, prevResults)) { // result overlaps with existing results
-				prevResultIndex = 0;
-				for (auto prevResult : prevResults) {
-					if (prevResult == existKeyResult) {
-						duplicateResultsForRestOfTable(prevResultIndex, resultTable);
-						newKeyResultsSorted.push_back(getCorrespondingResult(listIndex, newKeyResults));
-					}
-					prevResultIndex++;
-				}
-			}
-			listIndex++;
-		}
-	}
-
-	// repeated results in old results
-	if (prevResults.size() > newKeyResultsSorted.size()) {
-		int startIndex = newKeyResultsSorted.size();
-		int endIndex = prevResults.size();
-		list<int>::iterator itr;
-		for (int i = startIndex; i < endIndex; i++) {
-			itr = prevResults.begin();
-			advance(itr, i);
-			int listIndex = 0;
-			for (auto prevResult : prevResults) {
-				if (prevResult == *itr) {
-					newKeyResultsSorted.push_back(getCorrespondingResult(listIndex, newKeyResultsSorted));
-					break;
-				}
-				listIndex++;
-			}
-		}
-	}
-
-	synonymTable[newKey] = tableIndex;
-	resultTable[newKey] = newKeyResultsSorted;
-}
-
-void ResultProjector::duplicateResultsForRestOfTable(int listIndex, unordered_map<string, list<int>>& table) {
-	list<int>::iterator itr;
-
-	for (auto& synonym : table) {
-		itr = synonym.second.begin();
-		advance(itr, listIndex);
-		synonym.second.push_back(*itr);
-		continue;
-	}
-}
-
-int ResultProjector::findIndex(int target, list<int> targetList) {
-	int listIndex = 0;
-
-	for (auto result : targetList) {
-		if (result != target) {
-			listIndex++;
-		}
-		else {
-			break;
-		}
-	}
-	return listIndex;
-}
-
-int ResultProjector::getCorrespondingResult(int listIndex, list<int> resultList) {
-	list<int>::iterator itr;
-	itr = resultList.begin();
-	advance(itr, listIndex);
-
-	return *itr;
-}
-
-int ResultProjector::getAndDeleteCorrespondingResult(int prevResult, string existKey, string newKey, unordered_map<string, list<int>>& results) {
-	list<int>& existKeyResults = results.at(existKey);
-	list<int>& newKeyResults = results.at(newKey);
-	list<int>::iterator itr;
-	int listIndex = 0;
-
-	for (itr = existKeyResults.begin(); itr != existKeyResults.end(); ++itr) {
-		if (*itr == prevResult) { // overlapping results
-			break;
-		}
-		else {
-			listIndex++;
-		}
-	}
-	// delete result from result list so will not add in again subsequently
-	existKeyResults.erase(itr);
-
-	itr = newKeyResults.begin();
-	advance(itr, listIndex);
-	int correspondingResult = *itr;
-	newKeyResults.erase(itr);
-
-	return correspondingResult;
-}
-
-void ResultProjector::combineDependentResults(string key1, string key2, unordered_map<string, list<int>> results) {
-	list<int> prevResultsKey1 = synonymResults.at(synonymTable.at(key1)).at(key1);
-	list<int> prevResultsKey2 = synonymResults.at(synonymTable.at(key2)).at(key2);
-
-	int loopIndex = 0;
-	int listIndex = 0;
-
-	for (auto prevResultKey1 : prevResultsKey1) {
-		int dependentResult = getCorrespondingResult(loopIndex, prevResultsKey2);
-		if (!dependentResultExists(key1, key2, prevResultKey1, dependentResult, results)) {
-			eraseTableRow(listIndex, synonymResults.at(synonymTable.at(key1)), ""); // empty string passed because erase entire row
-			listIndex--;
-		}
-		listIndex++;
-		loopIndex++;
 	}
 	cleanUpTables(key1);
 	cleanUpTables(key2);
 }
 
-bool ResultProjector::dependentResultExists(string key1, string key2, int prevResultKey1, int dependentResult, unordered_map<string, list<int>> results) {
-	int listIndex = 0;
+void ResultProjector::mergeOneSyn(string existKey, string newKey, unordered_map<int, unordered_set<int>> queryResults) {
+	int tableNum = synonymTable[existKey];
+	list<unordered_map<string, int>>& prevResults = synonymResults[tableNum];
 
-	for (auto result : results.at(key1)) {
-		if (result == prevResultKey1) {
-			if (getCorrespondingResult(listIndex, results.at(key2)) == dependentResult) {
-				return true;
+	for (auto itr = prevResults.begin(); itr != prevResults.end();) {
+		int prevKey1Value = (*itr).at(existKey);
+
+		if (existInMap(prevKey1Value, queryResults)) { // results overlap
+			if (!existInMap(newKey, (*itr))) { // dependent result not added before (for when iterating to end of map when adding duplicated results)
+				unordered_map<string, int> currRow = (*itr); // get a copy of current row result
+				for (auto dependentResult : queryResults.at(prevKey1Value)) { // duplicate rows
+					currRow[newKey] = dependentResult;
+					prevResults.push_back(currRow);
+				}
+				itr = prevResults.erase(itr); // delete current row since updated row is added at the back
+			}
+			else { // ignore if newKey already exists because its the rows we duplicated
+				break; // early break because all behind are the new rows just added
 			}
 		}
-		listIndex++;
+		else {
+			itr = prevResults.erase(itr);
+		}
+	}
+	cleanUpTables(existKey);
+
+	if (synonymExists(existKey)) { // still have results after merging
+		synonymTable[newKey] = tableNum;
+	}
+}
+
+void ResultProjector::mergeTables(string key1, string key2, unordered_map<int, unordered_set<int>> queryResults) {
+	int key1InitialTableNum = synonymTable[key1];
+	int key2InitialTableNum = synonymTable[key2];
+
+	list<unordered_map<string, int>> key1PrevResults = synonymResults[key1InitialTableNum];
+	list<unordered_map<string, int>> key2PrevResults = synonymResults[key2InitialTableNum];
+	list<unordered_map<string, int>> newResultsSet;
+
+	for (auto key1PrevResult : key1PrevResults) {
+		int prevKey1Value = key1PrevResult[key1];
+		if (existInMap(prevKey1Value, queryResults)) { // results overlap for key1
+			for (auto key2PrevResult : key2PrevResults) {
+				int prevKey2Value = key2PrevResult[key2];
+				if (existInSet(prevKey2Value, queryResults[prevKey1Value])) { // results overlap for key2
+					unordered_map<string, int> newResult = key1PrevResult; // merge 2 maps together
+					newResult.insert(key2PrevResult.begin(), key2PrevResult.end());
+					newResultsSet.push_back(newResult);
+				}
+			}
+		}
+	}
+
+	// delete tables
+	synonymResults.erase(key1InitialTableNum);
+	synonymResults.erase(key2InitialTableNum);
+
+	// update synonymTable indexes
+	unordered_map<string, int> synTable = synonymTable; // cannot just iterate using synonymTable, error when erasing
+	for (auto synonym : synTable) {
+		if (synonym.second == key1InitialTableNum || synonym.second == key2InitialTableNum) {
+			if (newResultsSet.size() != 0) { // update to new table
+				synonymTable[synonym.first] = index;
+			}
+			else { // no more results, remove from table
+				synonymTable.erase(synonym.first);
+			}
+		}
+	}
+	
+	if (newResultsSet.size() != 0) { // add in new table
+		synonymResults[index] = newResultsSet;
+		index++;
+	}
+}
+
+bool ResultProjector::existInMap(int key, unordered_map<int, unordered_set<int>> umap) {
+	if (!umap.empty()) {
+		if (umap.find(key) != umap.end()) {
+			return true;
+		}
 	}
 	return false;
+}
+
+bool ResultProjector::existInMap(string key, unordered_map<string, int> umap) {
+	if (!umap.empty()) {
+		if (umap.find(key) != umap.end()) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool ResultProjector::existInSet(int key, unordered_set<int> uset) {
+	if (!uset.empty()) {
+		if (uset.find(key) != uset.end()) {
+			return true;
+		}
+	}
+	return false;
+}
+
+void ResultProjector::cleanUpTables(string key) {
+	if (synonymTable.empty() || synonymResults.empty()) {
+		return;
+	}
+
+	bool tableDeleted = false;
+	// clean up synonymTable and synonymResults when there are no more entries in it
+	int tableNum = synonymTable[key];
+	if (synonymResults.find(tableNum) != synonymResults.end()) { // table exists
+		if (synonymResults.at(tableNum).empty()) { // no more entries in table
+			synonymResults.erase(tableNum);
+			tableDeleted = true;
+		}
+	}
+
+	// erase all synonyms associated with the table with no entries
+	if (tableDeleted) {
+		unordered_map<string, int> synTable = synonymTable; // cannot just iterate using synonymTable, error when erasing
+		for (auto synonym : synTable) {
+			if (synonym.second == tableNum) {
+				synonymTable.erase(synonym.first);
+			}
+		}
+	}
+}
+
+unordered_map<int, unordered_set<int>> ResultProjector::invertResults(unordered_map<int, unordered_set<int>> queryResults) {
+	unordered_map<int, unordered_set<int>> newResults;
+
+	for (auto queryResult : queryResults) {
+		int key = queryResult.first;
+		unordered_set<int> values = queryResult.second;
+
+		for (auto value : values) {
+			newResults[value].insert(key);
+		}
+	}
+	return newResults;
 }
 
 // For debugging purposes
@@ -545,11 +561,12 @@ void ResultProjector::printTables() {
 	cout << "SynonymResults: " << endl;
 	for (auto x : synonymResults) {
 		cout << "Table " << x.first << "-- ";
-		for (auto v : x.second) {
-			std::cout << v.first << ": ";
-			for (auto z : v.second)
-				cout << z << " ";
+		for (auto results : x.second) {
+			for (auto result : results) {
+				std::cout << result.first << ": " << result.second << ", ";
+			}
 		}
+		cout << "------------------------------ " << endl;
 	}
 	cout << endl;
 }
