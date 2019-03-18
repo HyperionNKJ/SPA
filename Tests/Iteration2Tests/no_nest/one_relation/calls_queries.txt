@@ -1,0 +1,15 @@
+1 - Select all stmts that calls Q
+stmt s;
+Select s such that Calls (s, "Q")
+10, 13
+5000
+2 - Select all procedures called by stmt with given number
+procedure p;
+Select p such that Calls (4, p)
+P, Q
+5000
+3 - Select procedure that calls another procedure
+procedure p, q;
+Select p.procName such that Calls (p, q)
+main, P
+5000

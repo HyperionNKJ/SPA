@@ -1,0 +1,5 @@
+1 - Select assign that is followed by assign and modifies variable
+assign a1; stmt s2;
+Select a1 such that Follows (a1, s2) and Modifies (s2, "a")
+18
+5000
