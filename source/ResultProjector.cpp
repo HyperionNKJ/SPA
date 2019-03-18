@@ -178,11 +178,11 @@ list<unordered_map<string, string>> ResultProjector::getSelectedClauseNotInTable
 			projectedResults = convertSetToList(pkb.getAllStmts(), synonym.getValue());
 			break;
 		case Type::PROGLINE:
-			projectedResults = convertSetToList(pkb.getAllProgLineStmts(), synonym.getValue());
+			projectedResults = convertSetToList(pkb.getAllStmts(), synonym.getValue());
 			break;
 		case Type::READ:
 			if (synonym.getAttrRef() == AttrRef::VAR_NAME) {
-				projectedResults = convertSetToList(pkb.getReadVarName(), synonym.getValue());
+				projectedResults = convertSetToList(pkb.getReadVarNames(), synonym.getValue());
 			}
 			else {
 				projectedResults = convertSetToList(pkb.getReadStmts(), synonym.getValue());
@@ -190,7 +190,7 @@ list<unordered_map<string, string>> ResultProjector::getSelectedClauseNotInTable
 			break;
 		case Type::PRINT:
 			if (synonym.getAttrRef() == AttrRef::VAR_NAME) {
-				projectedResults = convertSetToList(pkb.getPrintVarName(), synonym.getValue());
+				projectedResults = convertSetToList(pkb.getPrintVarNames(), synonym.getValue());
 			}
 			else {
 				projectedResults = convertSetToList(pkb.getPrintStmts(), synonym.getValue());
@@ -198,9 +198,9 @@ list<unordered_map<string, string>> ResultProjector::getSelectedClauseNotInTable
 			break;
 		case Type::CALL:	// call statements
 			if (synonym.getAttrRef() == AttrRef::PROC_NAME) {
-				projectedResults = convertSetToList(pkb.getAllCallProcName(), synonym.getValue());
+				projectedResults = convertSetToList(pkb.getCallProcNames(), synonym.getValue());
 			} else {
-				projectedResults = convertSetToList(pkb.getAllCallStmts(), synonym.getValue());
+				projectedResults = convertSetToList(pkb.getCallStmts(), synonym.getValue());
 			}
 			break;
 		case Type::WHILE:
