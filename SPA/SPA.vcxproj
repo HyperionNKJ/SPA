@@ -11,6 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\source\Calls.cpp" />
+    <ClCompile Include="..\source\CallsT.cpp" />
     <ClCompile Include="..\source\Clause.cpp" />
     <ClCompile Include="..\source\DesignEntity.cpp" />
     <ClCompile Include="..\source\DesignExtractor.cpp" />
@@ -39,10 +41,13 @@
     <ClCompile Include="..\source\UsesS.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\source\Calls.h" />
+    <ClInclude Include="..\source\CallsT.h" />
     <ClInclude Include="..\source\Clause.h" />
     <ClInclude Include="..\source\DesignEntity.h" />
     <ClInclude Include="..\source\DesignEntityTypeFactory.h" />
     <ClInclude Include="..\source\DesignExtractor.h" />
+    <ClInclude Include="..\source\Follows.h" />
     <ClInclude Include="..\source\FollowsT.h" />
     <ClInclude Include="..\source\ModifiesP.h" />
     <ClInclude Include="..\source\ModifiesS.h" />

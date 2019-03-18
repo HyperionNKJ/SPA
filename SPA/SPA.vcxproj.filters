@@ -13,36 +13,21 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\Clauses">
+      <UniqueIdentifier>{717c3b1e-b8f3-41b9-89fe-565e716ee1ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Clauses">
+      <UniqueIdentifier>{363a016e-52b4-4728-8cac-0700d33ddd7a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\source\Clause.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\DesignEntity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\source\DesignExtractor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\Follows.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\FollowsT.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\ModifiesS.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\Parent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\ParentT.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\Parser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\Pattern.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\source\PatternClause.cpp">
@@ -84,45 +69,54 @@
     <ClCompile Include="..\source\SuchThatClause.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\UsesS.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\source\ModifiesS.cpp">
+      <Filter>Source Files\Clauses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Clause.cpp">
+      <Filter>Source Files\Clauses</Filter>
     </ClCompile>
     <ClCompile Include="..\source\ModifiesP.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Clauses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\UsesS.cpp">
+      <Filter>Source Files\Clauses</Filter>
     </ClCompile>
     <ClCompile Include="..\source\UsesP.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Clauses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Parent.cpp">
+      <Filter>Source Files\Clauses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\ParentT.cpp">
+      <Filter>Source Files\Clauses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Follows.cpp">
+      <Filter>Source Files\Clauses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\FollowsT.cpp">
+      <Filter>Source Files\Clauses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Pattern.cpp">
+      <Filter>Source Files\Clauses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Calls.cpp">
+      <Filter>Source Files\Clauses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\CallsT.cpp">
+      <Filter>Source Files\Clauses</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\Clause.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\DesignEntity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\DesignEntityTypeFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\FollowsT.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\ModifiesS.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\ParameterType.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\Parent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\ParentT.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\Parser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\Pattern.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\PatternClause.h">
@@ -170,17 +164,44 @@
     <ClInclude Include="..\source\Type.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\UsesS.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\DesignExtractor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\source\Clause.h">
+      <Filter>Header Files\Clauses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\ModifiesS.h">
+      <Filter>Header Files\Clauses</Filter>
+    </ClInclude>
     <ClInclude Include="..\source\ModifiesP.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Clauses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\UsesS.h">
+      <Filter>Header Files\Clauses</Filter>
     </ClInclude>
     <ClInclude Include="..\source\UsesP.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Clauses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Parent.h">
+      <Filter>Header Files\Clauses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\ParentT.h">
+      <Filter>Header Files\Clauses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\FollowsT.h">
+      <Filter>Header Files\Clauses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Calls.h">
+      <Filter>Header Files\Clauses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Pattern.h">
+      <Filter>Header Files\Clauses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Follows.h">
+      <Filter>Header Files\Clauses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\CallsT.h">
+      <Filter>Header Files\Clauses</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
