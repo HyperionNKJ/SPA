@@ -140,6 +140,30 @@ bool PKB::insertAssignStmt(int stmtNum, string var, vector<string> assignmentStm
 	return isSuccessfulInsert;
 }
 
+bool PKB::setCalls(string proc1, string proc2) {
+	return callMap.insert({proc1, proc2}).second;
+}
+
+bool PKB::setCalledBy(string proc1, string proc2) {
+	return calledByMap.insert({proc2, proc1}).second;
+}
+
+bool PKB::setCallsT(string proc1, string proc2) {
+	return callsTMap[proc1].insert(proc2).second;
+}
+
+bool PKB::setCalledByT(string proc1, string proc2) {
+	return calledByTMap[proc2].insert(proc1).second;
+}
+
+bool PKB::setNext(int prevLine, int nextLine) {
+	return nextMap.insert({prevLine, nextLine}).second;
+}
+
+bool PKB::setPrevious(int prevLine, int nextLine) {
+	return prevMap.insert({nextLine, prevLine}).second;
+}
+
 // PQL APIs
 unordered_set<int> PKB::getAllStmts() {
 	return allStmts;

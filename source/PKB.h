@@ -19,11 +19,12 @@ private:
 	vector<string> varTableByIdx, procTableByIdx;
 	unordered_set<int> allStmts, readStmts, printStmts, whileStmts, ifStmts, assignStmts, constSet;
 	unordered_map<int, unordered_set<int>> leaderTMap, followerTMap, parentMap, parentTMap, childrenTMap;
-	unordered_map<int, int> leaderMap, followerMap, childrenMap;
+	unordered_map<int, int> leaderMap, followerMap, childrenMap, nextMap, prevMap;
 	unordered_map<string, unordered_set<int>> assignModifyingVarMap, assignModifiedVarMap, modifiesByVarMap, usesByVarMap;
 	unordered_map<int, string> assignStmtVarMap;
 	unordered_map<int, unordered_set<string>> assignUseVarMap, modifiesByStmtNumMap, usesByStmtNumMap;
-	unordered_map<string, unordered_set<string>> modifiesByProcMap, usesByProcMap;
+	unordered_map<string, string> callMap, calledByMap;
+	unordered_map<string, unordered_set<string>> modifiesByProcMap, usesByProcMap, callsTMap, calledByTMap;
 
 public:
 	// Frontend APIs
@@ -138,4 +139,19 @@ public:
 	unordered_set<string> getCallProcNames();
 	unordered_set<string> getReadVarNames();
 	unordered_set<string> getPrintVarNames();
+
+	bool isProcModifies(string procName, string varName);
+	bool doesProcModifies(string procName);
+	unordered_set<string> getVarModifiedByProc(string procName);
+	unordered_map<string, unordered_set<string>> getModifiesProcVarPairs();
+	unordered_set<string> getProcThatModifiesVar();
+	unordered_set<string> getProcThatModifiesVar(string varName);
+	unordered_map<string, int> getProcUsesTable();
+
+	bool isProcUses(string procName, string varName);
+	bool doesProcUses(string procName);
+	unordered_set<string> getVarUsedByProc(string procName);
+	unordered_map<string, unordered_set<string>> getUsesProcVarPairs();
+	unordered_set<string> getProcThatUsesVar();
+	unordered_set<string> getProcThatUsesVar(string varName);
 };
