@@ -1,8 +1,14 @@
-#include "FollowsT.h"
+#include "Next.h"
 
-FollowsT::FollowsT(const DesignEntity& paraOne, const DesignEntity& paraTwo) : Clause(paraOne, paraTwo, ClauseType::FOLLOWS_T) {}
+Next::Next(const DesignEntity& paraOne, const DesignEntity& paraTwo) : Clause(paraOne, paraTwo, ClauseType::NEXT) {}
 
-Result FollowsT::evaluate(const PKB& pkb) {
+/**
+ * Definitions:
+ * 1. Previous is a program line which can be executed before another program line. This another program line is said to be its Next.
+ * e.g. Next (1,2) -> 1 is the Previous; 2 is the Next
+ * 2. Next is a program line which can be executed after another program line. This another program line is said to be its Previous.
+*/
+Result Next::evaluate(const PKB& pkb) {
 	this->pkb = pkb;
 	Type paraOneType = paraOne.getType();
 	Type paraTwoType = paraTwo.getType();
@@ -67,13 +73,13 @@ Result FollowsT::evaluate(const PKB& pkb) {
 	return *result;
 }
 
-// case Follows*(12, w)
-Result* FollowsT::evaluateFixedSynonym(const string& leaderStmtNum, const string& followerSynonym, const Type& followerType) {
+// case Next(12, a)
+Result* Next::evaluateFixedSynonym(const string& previousLineNum, const string& nextSynonym, const Type& nextType) {
 	Result* result = new Result();
-	unordered_set<int> answer = pkb.getFollowerTOf(stoi(leaderStmtNum), followerType);
+	unordered_set<int> answer = pkb.getNextOf(stoi(previousLineNum), nextType);
 	if (!answer.empty()) {
 		result->setPassed(true);
-		result->setAnswer(followerSynonym, answer);
+		result->setAnswer(nextSynonym, answer);
 	}
 	else {
 		result->setPassed(false);
@@ -81,31 +87,31 @@ Result* FollowsT::evaluateFixedSynonym(const string& leaderStmtNum, const string
 	return result;
 }
 
-// case Follows*(3, _)
-Result* FollowsT::evaluateFixedUnderscore(const string& leaderStmtNum) {
+// case Next(12, _)
+Result* Next::evaluateFixedUnderscore(const string& previousLineNum) {
 	Result* result = new Result();
-	result->setPassed(pkb.hasFollower(stoi(leaderStmtNum)));
+	result->setPassed(pkb.hasNext(stoi(previousLineNum)));
 	return result;
 }
 
-// case Follows*(4, 6)
-Result* FollowsT::evaluateFixedFixed(const string& leaderStmtNum, const string& followerStmtNum) {
+// case Next(12, 13)
+Result* Next::evaluateFixedFixed(const string& previousLineNum, const string& nextLineNum) {
 	Result* result = new Result();
-	result->setPassed(pkb.isFollowsT(stoi(leaderStmtNum), stoi(followerStmtNum)));
+	result->setPassed(pkb.isNext(stoi(previousLineNum), stoi(nextLineNum)));
 	return result;
 }
 
-// case Follows*(r, a)
-Result* FollowsT::evaluateSynonymSynonym(const string& leaderSynonym, const string& followerSynonym, const Type& leaderType, const Type& followerType) {
+// case Next(s, s1)
+Result* Next::evaluateSynonymSynonym(const string& previousSynonym, const string& nextSynonym, const Type& previousType, const Type& nextType) {
 	Result* result = new Result();
-	if (leaderSynonym == followerSynonym) {
+	if (previousSynonym == nextSynonym) {
 		result->setPassed(false);
 		return result;
 	}
-	unordered_map<int, unordered_set<int>> answer = pkb.getLeaderFollowerTPairs(leaderType, followerType);
+	unordered_map<int, unordered_set<int>> answer = pkb.getPreviousNextPairs(previousType, nextType);
 	if (!answer.empty()) {
 		result->setPassed(true);
-		result->setAnswer(leaderSynonym, followerSynonym, answer);
+		result->setAnswer(previousSynonym, nextSynonym, answer);
 	}
 	else {
 		result->setPassed(false);
@@ -113,13 +119,13 @@ Result* FollowsT::evaluateSynonymSynonym(const string& leaderSynonym, const stri
 	return result;
 }
 
-// case Follows*(pr, _)
-Result* FollowsT::evaluateSynonymUnderscore(const string& leaderSynonym, const Type& leaderType) {
+// case Next(w, _)
+Result* Next::evaluateSynonymUnderscore(const string& previousSynonym, const Type& previousType) {
 	Result* result = new Result();
-	unordered_set<int> answer = pkb.getLeaderStmts(leaderType);
+	unordered_set<int> answer = pkb.getPreviousLines(previousType);
 	if (!answer.empty()) {
 		result->setPassed(true);
-		result->setAnswer(leaderSynonym, answer);
+		result->setAnswer(previousSynonym, answer);
 	}
 	else {
 		result->setPassed(false);
@@ -127,13 +133,13 @@ Result* FollowsT::evaluateSynonymUnderscore(const string& leaderSynonym, const T
 	return result;
 }
 
-// case Follows*(s, 12)
-Result* FollowsT::evaluateSynonymFixed(const string& leaderSynonym, const string& followerStmtNum, const Type& leaderType) {
+// case Next(s, 14)
+Result* Next::evaluateSynonymFixed(const string& previousSynonym, const string& nextLineNum, const Type& previousType) {
 	Result* result = new Result();
-	unordered_set<int> answer = pkb.getLeaderTOf(stoi(followerStmtNum), leaderType);
+	unordered_set<int> answer = pkb.getPreviousOf(stoi(nextLineNum), previousType);
 	if (!answer.empty()) {
 		result->setPassed(true);
-		result->setAnswer(leaderSynonym, answer);
+		result->setAnswer(previousSynonym, answer);
 	}
 	else {
 		result->setPassed(false);
@@ -141,13 +147,13 @@ Result* FollowsT::evaluateSynonymFixed(const string& leaderSynonym, const string
 	return result;
 }
 
-// case Follows*(_, a)
-Result* FollowsT::evaluateUnderscoreSynonym(const string& followerSynonym, const Type& followerType) {
+// case Next(_, pl)
+Result* Next::evaluateUnderscoreSynonym(const string& nextSynonym, const Type& nextType) {
 	Result* result = new Result();
-	unordered_set<int> answer = pkb.getFollowerStmts(followerType);
+	unordered_set<int> answer = pkb.getNextLines(nextType);
 	if (!answer.empty()) {
 		result->setPassed(true);
-		result->setAnswer(followerSynonym, answer);
+		result->setAnswer(nextSynonym, answer);
 	}
 	else {
 		result->setPassed(false);
@@ -155,17 +161,17 @@ Result* FollowsT::evaluateUnderscoreSynonym(const string& followerSynonym, const
 	return result;
 }
 
-// case Follows*(_, _)
-Result* FollowsT::evaluateUnderscoreUnderscore() {
+// case Next(_, _)
+Result* Next::evaluateUnderscoreUnderscore() {
 	Result* result = new Result();
-	unordered_set<int> leaders = pkb.getLeaderStmts(Type::STATEMENT);
-	result->setPassed(!leaders.empty());
+	unordered_set<int> previousLines = pkb.getPreviousLines(Type::PROGLINE);
+	result->setPassed(!previousLines.empty());
 	return result;
 }
 
-// case Follows*(_, 23)
-Result* FollowsT::evaluateUnderscoreFixed(const string& followerStmtNum) {
+// case Next(_, 23)
+Result* Next::evaluateUnderscoreFixed(const string& nextLineNum) {
 	Result* result = new Result();
-	result->setPassed(pkb.hasLeader(stoi(followerStmtNum)));
+	result->setPassed(pkb.hasPrevious(stoi(nextLineNum)));
 	return result;
 }

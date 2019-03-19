@@ -12,6 +12,5 @@ private:
 
 public:
 	UsesS(const DesignEntity&, const DesignEntity&);
-
 	Result evaluate(const PKB&) override;
 };

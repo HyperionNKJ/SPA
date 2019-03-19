@@ -2,7 +2,7 @@
 #include <unordered_set>
 #include <string>
 
-ModifiesS::ModifiesS(const DesignEntity& paraOne, const DesignEntity& paraTwo) : Clause(paraOne, paraTwo) {}
+ModifiesS::ModifiesS(const DesignEntity& paraOne, const DesignEntity& paraTwo) : Clause(paraOne, paraTwo, ClauseType::MODIFIES_S) {}
 
 Result ModifiesS::evaluate(const PKB& pkb) {
 	this->pkb = pkb;
@@ -28,7 +28,8 @@ Result ModifiesS::evaluate(const PKB& pkb) {
 			result->setPassed(false);
 		}
 	} 
-	else if (paraOneType == STATEMENT || paraOneType == READ || paraOneType == WHILE || paraOneType == IF || paraOneType == ASSIGN) {
+	else if (paraOneType == STATEMENT || paraOneType == READ || paraOneType == WHILE || paraOneType == IF 
+		|| paraOneType == ASSIGN || paraOneType == CALL || paraOneType == PROGLINE) {
 		if (paraTwoType == VARIABLE) {
 			result = this->evaluateSynonymVariable(paraOneValue, paraTwoValue, paraOneType);
 		}

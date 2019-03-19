@@ -1,6 +1,6 @@
 #include "Follows.h"
 
-Follows::Follows(const DesignEntity& paraOne, const DesignEntity& paraTwo) : Clause(paraOne, paraTwo) {}
+Follows::Follows(const DesignEntity& paraOne, const DesignEntity& paraTwo) : Clause(paraOne, paraTwo, ClauseType::FOLLOWS) {}
 
 Result Follows::evaluate(const PKB& pkb) {
 	this->pkb = pkb;
@@ -13,7 +13,7 @@ Result Follows::evaluate(const PKB& pkb) {
 
 	if (paraOneType == FIXED) {
 		if (paraTwoType == STATEMENT || paraTwoType == READ || paraTwoType == PRINT
-			|| paraTwoType == WHILE || paraTwoType == IF || paraTwoType == ASSIGN) {
+			|| paraTwoType == WHILE || paraTwoType == IF || paraTwoType == ASSIGN || paraTwoType == CALL || paraTwoType == PROGLINE) {
 			result = this->evaluateFixedSynonym(paraOneValue, paraTwoValue, paraTwoType);
 		}
 		else if (paraTwoType == UNDERSCORE) {
@@ -28,9 +28,9 @@ Result Follows::evaluate(const PKB& pkb) {
 		}
 	}
 	else if (paraOneType == STATEMENT || paraOneType == READ || paraOneType == PRINT 
-		|| paraOneType == WHILE || paraOneType == IF || paraOneType == ASSIGN) {
+		|| paraOneType == WHILE || paraOneType == IF || paraOneType == ASSIGN || paraOneType == CALL || paraOneType == PROGLINE) {
 		if (paraTwoType == STATEMENT || paraTwoType == READ || paraTwoType == PRINT
-			|| paraTwoType == WHILE || paraTwoType == IF || paraTwoType == ASSIGN) {
+			|| paraTwoType == WHILE || paraTwoType == IF || paraTwoType == ASSIGN || paraTwoType == CALL || paraTwoType == PROGLINE) {
 			result = this->evaluateSynonymSynonym(paraOneValue, paraTwoValue, paraOneType, paraTwoType);
 		}
 		else if (paraTwoType == UNDERSCORE) {
@@ -46,7 +46,7 @@ Result Follows::evaluate(const PKB& pkb) {
 	}
 	else if (paraOneType == UNDERSCORE) {
 		if (paraTwoType == STATEMENT || paraTwoType == READ || paraTwoType == PRINT
-			|| paraTwoType == WHILE || paraTwoType == IF || paraTwoType == ASSIGN) {
+			|| paraTwoType == WHILE || paraTwoType == IF || paraTwoType == ASSIGN || paraTwoType == CALL || paraTwoType == PROGLINE) {
 			result = this->evaluateUnderscoreSynonym(paraTwoValue, paraTwoType);
 		}
 		else if (paraTwoType == UNDERSCORE) {
@@ -98,6 +98,10 @@ Result* Follows::evaluateFixedFixed(const string& leaderStmtNum, const string& f
 // case Follows(r, a)
 Result* Follows::evaluateSynonymSynonym(const string& leaderSynonym, const string& followerSynonym, const Type& leaderType, const Type& followerType) {
 	Result* result = new Result();
+	if (leaderSynonym == followerSynonym) {
+		result->setPassed(false);
+		return result;
+	}
 	unordered_map<int, int> answer = pkb.getLeaderFollowerPairs(leaderType, followerType);
 	if (!answer.empty()) {
 		result->setPassed(true);
