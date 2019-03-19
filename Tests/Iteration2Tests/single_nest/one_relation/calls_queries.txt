@@ -1,15 +1,15 @@
 1 - Select all procedure that calls Q
 prcedure p;
 Select p such that Calls (p, "Q")
-P
+main
 5000
 2 - Select all procedures called by main
 procedure p;
 Select p.procName such that Calls* ("main", p)
-P, Q
+Q, P
 5000
 3 - Select procedure tuples that calls another procedure
 procedure p, q;
 Select <p, q> such that Calls* (p, q)
-<main, P>, <main, Q>, <P, Q>
+<main, Q>, <main, P>, <Q, P>
 5000

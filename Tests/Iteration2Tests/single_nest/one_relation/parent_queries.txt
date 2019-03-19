@@ -1,0 +1,35 @@
+1 - Select stmt that is parent of read
+stmt s; read r;
+Select s such that Parent (s, r)
+none
+5000
+2 - Select stmt that is parent of print
+stmt s; print pn;
+Select s such that Parent (s, pn)
+none
+5000
+3 - Select assign that has parent
+assign a;
+Select a such that Parent (_, a)
+10, 11, 13, 14, 18, 19, 20, 21, 23, 24
+5000
+4 - Select assign that has specific parent
+assign a;
+Select a such that Parent (12, a)
+13, 14
+5000
+5 - Select stmt that is parent of assign with pattern
+stmt s; assign a;
+Select s such that Parent (s, a) pattern a ("x", _)
+9, 17
+5000
+6 - Select assign with pattern that has while as parent
+while w; assign a;
+Select a such that Parent (w, a) pattern a (_, _"x"_)
+none
+5000
+7 - Select assign with pattern that has if as parent
+assign a; if ifs;
+Select a such that Parent (ifs, a) pattern a ("x", _)
+10, 18
+5000

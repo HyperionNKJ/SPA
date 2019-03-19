@@ -1,0 +1,20 @@
+1 - Select stmt that is parent of assign with pattern
+stmt s; assign a;
+Select s such that Parent (s, a) pattern a ("a", _)
+6, 9
+5000
+2 - Select stmt that is indirect parent of assign with pattern
+stmt s; assign a;
+Select s such that Parent* (s, a) pattern a ("c", _)
+2, 3, 6, 9, 10
+5000
+3 - Select assign with pattern that indirectly has if as parent
+assign a; if ifs;
+Select a such that Parent* (ifs, a) pattern a ("k", _)
+none
+5000
+4 - Select assign with pattern that indirectly has specified stmt as parent
+assign a; if ifs;
+Select a such that Parent* (2, a) pattern a ("c", _)
+5, 7
+5000

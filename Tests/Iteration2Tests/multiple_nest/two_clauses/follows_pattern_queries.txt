@@ -1,0 +1,30 @@
+1 - Select assign that is followed by anything
+assign a1; stmt s2;
+Select a1 such that Follows (a1, s2) pattern a1 ("x", _) 
+4, 12, 15
+5000
+2 - Select assign with constant that is followed by anything
+assign a1; assign a2;
+Select a1 such that Follows (a1, a2) pattern a2 (_, _"16"_) 
+4
+5000
+3 - Select assign to variable that is followed by anything
+assign a1; stmt s2;
+Select a1 such that Follows (a1, s2) pattern a1 ("y", _) 
+none
+5000
+4 - Select assign with constant that is indirectly followed by assign
+assign a1; assign a2;
+Select a1 such that Follows* (a1, a2) pattern a2 (_, _"x"_) 
+12, 15
+5000
+5 - Select assign with constant that indirectly follows read
+assign a1; read r1;
+Select a1 such that Follows* (r1, a1) pattern a1 (_, _"x"_) 
+16
+5000
+6 - Select assign with constant that is indirectly followed by stmt
+stmt s; assign a1; variable v;
+Select s such that Follows* (s, a1) pattern a1 (v, _"x"_) 
+12, 15, 1, 2, 9
+5000

@@ -8,11 +8,11 @@ procedure p;
 Select p with p.procName = "P"
 TRUE
 5000
-3 - Find variable with given variable name
+3 - Find variable with given name
 variable v;
 read r;
 Select r with v.varName = "a"
-1, 2, 3, 16
+1, 2, 3, 14
 5000
 4 - Find variable with given name
 variable v;
@@ -22,8 +22,8 @@ none
 5000
 5 - Find call-variable tuple with given name and stmt number
 variable v; call cl;
-Select <cl, v> with v.varName = "x" and cl.stmt# = 13
-<13, x>
+Select <cl, v> with v.varName = "y" and cl.stmt# = 13
+none
 5000
 6 - Find stmt with given number that does not exist
 stmt s;
@@ -32,8 +32,8 @@ none
 5000
 7 - Find constant with value
 constant c;
-Select c with c.value = 16
-16
+Select c with c.value = 15
+none
 5000
 8 - Find invalid constant with value
 constant c;

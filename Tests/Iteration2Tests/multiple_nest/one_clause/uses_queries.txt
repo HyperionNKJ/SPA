@@ -1,0 +1,25 @@
+1 - Select variable used in if container
+variable v; if ifs;
+Select v such that Uses (ifs, v)
+b, x, a, c
+5000
+2 - Select variable used in while container
+variable v; while w;
+Select v such that Uses (w, v)
+c, x, a, b
+5000
+3 - Select variable used in one if container
+variable v;
+Select v such that Uses (10, v)
+b, c, a, x
+5000
+4 - Select variable used in one while container
+variable v;
+Select v such that Uses (3, v)
+c, x, a
+5000
+5 - Select stmt uses certain variable
+stmt s;
+Select s such that Uses (s, "c")
+2, 3, 6, 8, 9, 10, 13, 15
+5000

@@ -1,0 +1,20 @@
+1 - Select variable inside if container with certain assignment pattern
+if ifs; assign a; variable v;
+Select v such that Modifies (ifs, v) pattern a (v, _"x"_)
+c, x
+5000
+2 - Select assign with certain pattern inside if container that doesn't exist
+if ifs; assign a; variable v;
+Select a such that Modifies (ifs, v) pattern a (v, _"y"_)
+none
+5000
+3 - Select variable modified in while container with pattern
+while w; assign a; variable v;
+Select v such that Modifies (w, v) pattern a (v, _"a"_)
+x, c, b, a
+5000
+4 - Select variable modified in assign with pattern
+while w; assign a; variable v;
+Select v such that Modifies (a, v) pattern a ("b", _"a"_)
+b
+5000
