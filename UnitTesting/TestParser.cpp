@@ -247,7 +247,7 @@ namespace UnitTesting {
 
 		TEST_METHOD(TestGetStatementIntent) {
 			Parser parser;
-			STATEMENT_KEY result;
+			Statement_Key result;
 
 			result = parser.getStatementIntent("procedure a{");
 			Assert::AreEqual(result, KEY_PROCEDURE, L"incorrect", LINE_INFO());

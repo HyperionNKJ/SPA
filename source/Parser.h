@@ -12,7 +12,7 @@
 #include "DesignExtractor.h"
 
 enum Container { WHILEC, IFC, ELSEC, NONEC };
-enum STATEMENT_KEY {
+enum Statement_Key {
 	KEY_PROCEDURE, KEY_ASSIGN, KEY_IF, KEY_ELSE, KEY_WHILE,
 	KEY_READ, KEY_PRINT, KEY_CLOSE_BRACKET, KEY_CALL, KEY_ERROR
 };
@@ -21,6 +21,7 @@ class Parser {
 	PKB * pkb;
 	DesignExtractor de;
 
+	string errorMessage = "";
 	bool withinProcedure = false;
 	bool emptyProcedure = true;
 	bool expectElse = false;
@@ -92,7 +93,7 @@ public:
 
 	int handleCloseBracket(string);
 
-	STATEMENT_KEY getStatementIntent(string);
+	Statement_Key getStatementIntent(string);
 	int parse(string, PKB&);
 	vector<string> loadFile(string);
 

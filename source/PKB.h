@@ -154,4 +154,11 @@ public:
 	unordered_map<string, unordered_set<string>> getUsesProcVarPairs();
 	unordered_set<string> getProcThatUsesVar();
 	unordered_set<string> getProcThatUsesVar(string varName);
+
+	bool isNextT(int, int);
+	bool hasNextT(int);
+	bool hasPreviousT(int);
+	unordered_set<int> getNextTOf(int, Type);
+	unordered_set<int> getPreviousTOf(int, Type);
+	unordered_map<int, unordered_set<int>> getPreviousNextTPairs(Type, Type);
 };

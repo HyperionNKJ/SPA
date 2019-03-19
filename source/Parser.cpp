@@ -25,7 +25,7 @@ int Parser::parse(string fileName, PKB& p) {
 		return -1;
 	}
 	for (unsigned int i = 0; i < sourceCode.size(); i++) {
-		STATEMENT_KEY intent = getStatementIntent(sourceCode[i]);
+		Statement_Key intent = getStatementIntent(sourceCode[i]);
 		int result = 0;
 		if (intent == KEY_PROCEDURE) {
 			result = handleProcedure(sourceCode[i]);
@@ -99,7 +99,7 @@ int Parser::parse(string fileName, PKB& p) {
 	return 0;
 }
 
-STATEMENT_KEY Parser::getStatementIntent(string line) {
+Statement_Key Parser::getStatementIntent(string line) {
 	//check assignment first for potential variable names being keywords
 	if (line.find("=", 0) != string::npos && line.find("<=") == string::npos && line.find("==") == string::npos
 		&& line.find(">=") == string::npos && line.find("!=") == string::npos) {
@@ -295,7 +295,7 @@ int Parser::handleAssignment(string assignmentLine) {
 	if (!currToken.empty()) {
 		assignTokens.push_back(currToken);
 	}
-	//form postfix expression
+	//form postfix expression using Dijkstra Shunting Yard
 	vector<string> postfixRHS = vector<string>();
 	vector<string> opStack = vector<string>();
 	for (unsigned int i = 0; i < assignTokens.size(); i++) {
@@ -331,12 +331,6 @@ int Parser::handleAssignment(string assignmentLine) {
 		postfixRHS.push_back(opStack.back());
 		opStack.pop_back();
 	}
-	// DEBUG
-	for (unsigned int i = 0; i < postfixRHS.size(); i++) {
-		cout << postfixRHS[i] << " ";
-	}
-	cout << endl;
-	// DEBUG
 	//extract all possible substrings from the postfix notation
 	//start at each possible location and attempt to build a string, terminating if a string cannot be a valid pattern
 	vector<string> rhsSubstring = vector<string>();
@@ -346,15 +340,15 @@ int Parser::handleAssignment(string assignmentLine) {
 		currentSubstr = "";
 		tokenCount = opCount = 0;
 		for (unsigned int j = i; j < postfixRHS.size(); j++) {
-			currentSubstr += postfixRHS[j];
+			currentSubstr += postfixRHS[j] + " ";
 			if (isValidVarName(postfixRHS[j]) || isValidConstant(postfixRHS[j])) {
 				tokenCount++;
 			}
 			else {
 				opCount++;
 			}
-			if (currentSubstr.length() > 2 && tokenCount - 1 == opCount) {
-				rhsSubstring.push_back(currentSubstr);
+			if ((currentSubstr.length() > 2 && tokenCount - 1 == opCount) || (currentSubstr.length() == 1 && tokenCount == 1)) {
+				rhsSubstring.push_back(rightTrim(currentSubstr, " "));
 			}
 			else if (opCount >= tokenCount) {
 				break;
@@ -408,10 +402,10 @@ int Parser::handleRead(string readLine) {
 	setParent(statementNumber);
 	setFollow(statementNumber);
 	setNext(statementNumber, NONEC);
-
 	setModifies(statementNumber, currProcedure, varName);
 	pkb->insertVar(varName);
-	pkb->insertStmtType(statementNumber, READ);
+	pkb->insertCPRStmtType(statementNumber, READ, varName);
+
 	currentFollowVector.push_back(statementNumber);
 	return 0;
 }
@@ -442,7 +436,8 @@ int Parser::handlePrint(string printLine) {
 	setNext(statementNumber, NONEC);
 	setUses(statementNumber, currProcedure, varName);
 	pkb->insertVar(varName);
-	pkb->insertStmtType(statementNumber, PRINT);
+	pkb->insertCPRStmtType(statementNumber, PRINT, varName);
+
 	currentFollowVector.push_back(statementNumber);
 	return 0;
 }
@@ -754,7 +749,7 @@ int Parser::handleCall(string callLine) {
 	setParent(statementNumber);
 	setFollow(statementNumber);
 	setNext(statementNumber, NONEC);
-	//pkb->insertStmtType(statementNumber, CALL);
+	pkb->insertCPRStmtType(statementNumber, CALL, calledProcName);
 	currentFollowVector.push_back(statementNumber);
 	
 	procCalledByTable.insert({ currProcedure, statementNumber });
