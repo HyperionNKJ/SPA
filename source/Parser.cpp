@@ -1059,3 +1059,7 @@ vector<vector<int>> Parser::getAllFollowStack() {
 string Parser::getCurrentProcedure() {
 	return currProcedure;
 }
+
+unordered_map<string, int> Parser::getProcCalledByTable() {
+	return procCalledByTable;
+}

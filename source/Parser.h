@@ -100,12 +100,14 @@ public:
 	//setter/getter functions for testing
 	void setPKB(PKB*);
 	void setStatementNumber(int);
-	int getStatementNumber();
 	void setCurrentFollowVector(vector<int>);
 	void setParentVector(vector<int>);
+	void setAllFollowStack(vector<vector<int>>);
+
+	int getStatementNumber();
 	vector<int> getParentVector();
 	vector<int> getCurrentFollowVector();
-	void setAllFollowStack(vector<vector<int>>);
 	vector<vector<int>> getAllFollowStack();
 	string getCurrentProcedure();
+	unordered_map<string, int> getProcCalledByTable();
 };
