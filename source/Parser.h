@@ -110,4 +110,5 @@ public:
 	vector<vector<int>> getAllFollowStack();
 	string getCurrentProcedure();
 	unordered_map<string, int> getProcCalledByTable();
+	string getErrorMessage();
 };
