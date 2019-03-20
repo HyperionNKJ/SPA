@@ -1,0 +1,15 @@
+1 - Select stmt next to given stmt number
+stmt s;
+Select s such that Next (18, s)
+11
+5000
+2 - Check while loop next
+stmt s;
+Select s such that Next* (23, s)
+22, 23, 24, 25, 26
+5000
+3 - Check while loop next with given stmt numbers
+stmt s;
+Select s such that Next* (20, s) with s.stmt# = 21
+TRUE
+5000
