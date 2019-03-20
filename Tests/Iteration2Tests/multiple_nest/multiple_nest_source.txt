@@ -22,7 +22,14 @@ procedure P {
 							a = a+1;
 						} else {}
 					} else {}
-				} else {}			
+				}
+				else { 
+					if (b < c) then {
+						x = x + 1;
+					} else {
+						a = a + 1;
+					}
+				}			
 			} else {}
 		}
 	}
