@@ -220,7 +220,7 @@ Result* NextT::evaluateSynonymFixed(const string& previousSynonym, const string&
 		}
 	}
 	else {
-		unordered_set<int> answer = pkb.getPreviousTOf(stoi(nextLineNum), previousType);
+		answer = pkb.getPreviousTOf(stoi(nextLineNum), previousType);
 	}
 	if (!answer.empty()) {
 		result->setPassed(true);
@@ -245,7 +245,7 @@ Result* NextT::evaluateUnderscoreSynonym(const string& nextSynonym, const Type& 
 		}
 	}
 	else {
-		unordered_set<int> answer = pkb.getNextLines(nextType);
+		answer = pkb.getNextLines(nextType);
 	}
 
 	if (!answer.empty()) {

@@ -8,99 +8,87 @@ void Result::setPassed(bool isPassed) {
 	this->isPassed = isPassed;
 }
 
-bool Result::hasAnswer() {
-	return !(this->answer.empty());
+vector<string> Result::getSynonyms() {
+	return this->synonyms;
 }
 
-unordered_map<string, list<int>> Result::getAnswer() {
-	return this->answer;
+int Result::getNumOfSyn() {
+	return this->synonyms.size();
 }
 
-// store variables as int corresponding to their index in varTable
-void Result::setAnswer(const string& variableSynonym, const unordered_set<string>& variables, const unordered_map<string, int>& varToIndexTable) {
-	list<int> variableIndices;
-	for (auto itr = variables.begin(); itr != variables.end(); itr++) { 
-		string variable = *itr;
-		variableIndices.push_back(varToIndexTable.at(variable));
+unordered_set<int> Result::getOneSynAnswer() {
+	return this->oneSynonymAnswer;
+}
+
+unordered_map<int, unordered_set<int>> Result::getTwoSynAnswer() {
+	return this->twoSynonymAnswer;
+}
+
+void Result::setAnswer(const string& synonym, const unordered_set<string>& answer, const unordered_map<string, int>& indexTable) {
+	this->synonyms.push_back(synonym);
+	for (auto stringEntity : answer) { // convert all strings to their corresponding index as per the given variable/procedure table
+		oneSynonymAnswer.insert(indexTable.at(stringEntity));
 	}
-	unordered_map<string, list<int>> formattedAnswer({ {variableSynonym, variableIndices} });
-	this->answer = formattedAnswer;
 }
 
-void Result::setAnswer(const string& stmtSynonym, const string& variableSynonym, const unordered_map<int, unordered_set<string>>& answer, const unordered_map<string, int>& varToIndexTable) {
-	list<int> stmtList;
-	list<int> variableIndices;
+void Result::setAnswer(const string& keySynonym, const string& valueSynonym, const unordered_map<string, unordered_set<string>>& answer, const unordered_map<string, int>& indexTable) {
+	this->setAnswer(keySynonym, valueSynonym, answer, indexTable, indexTable);
+}
 
-	for (auto itr = answer.begin(); itr != answer.end(); itr++) {
-		int stmtNum = itr->first;
-		unordered_set<string> variableNames = itr->second;
-		auto it = variableNames.begin();
-		for (unsigned int i = 0; i < variableNames.size(); i++) {
-			stmtList.push_back(stmtNum);
-			variableIndices.push_back(varToIndexTable.at(*it));
-			it++;
+void Result::setAnswer(const string& synonym, const int& answer) {
+	this->synonyms.push_back(synonym);
+	this->oneSynonymAnswer.insert(answer);
+}
+
+void Result::setAnswer(const string& keySynonym, const string& valueSynonym, const unordered_map<int, int>& answer) {
+	this->synonyms.push_back(keySynonym);
+	this->synonyms.push_back(valueSynonym);
+	for (auto pair : answer) {
+		this->twoSynonymAnswer.insert({ pair.first, {pair.second} });
+	}
+}
+
+void Result::setAnswer(const string& synonym, const unordered_set<int>& answer) {
+	this->synonyms.push_back(synonym);
+	this->oneSynonymAnswer = answer;
+}
+
+void Result::setAnswer(const string& keySynonym, const string& valueSynonym, const unordered_map<int, unordered_set<int>>& answer) {
+	this->synonyms.push_back(keySynonym);
+	this->synonyms.push_back(valueSynonym);
+	this->twoSynonymAnswer = answer;
+}
+
+void Result::setAnswer(const string& keySynonym, const string& valueSynonym, const unordered_map<string, unordered_set<string>>& answer, const unordered_map<string, int>& keyIndexTable, const unordered_map<string, int>& valueIndexTable) {
+	this->synonyms.push_back(keySynonym);
+	this->synonyms.push_back(valueSynonym);
+	for (auto pair : answer) {
+		int keyIntEntity = keyIndexTable.at(pair.first);
+		unordered_set<int> valueIntEntities;
+		for (auto valueStringEntity : pair.second) {
+			valueIntEntities.insert(valueIndexTable.at(valueStringEntity));
 		}
+		this->twoSynonymAnswer.insert({ keyIntEntity, valueIntEntities });
 	}
-	unordered_map<string, list<int>> formattedAnswer({ {stmtSynonym, stmtList}, {variableSynonym, variableIndices} });
-	this->answer = formattedAnswer;
 }
 
-void Result::setAnswer(const string& stmt1Synonym, const string& stmt2Synonym, const unordered_map<int, unordered_set<int>>& answer) {
-	list<int> stmt1List;
-	list<int> stmt2List;
-
-	for (auto itr = answer.begin(); itr != answer.end(); itr++) {
-		int stmt1Num = itr->first;
-		unordered_set<int> stmt2Numbers = itr->second;
-		auto it = stmt2Numbers.begin();
-		for (unsigned int i = 0; i < stmt2Numbers.size(); i++) {
-			stmt1List.push_back(stmt1Num);
-			stmt2List.push_back(*it);
-			it++;
+void Result::setAnswer(const string& keySynonym, const string& valueSynonym, const unordered_map<int, unordered_set<string>>& answer, const unordered_map<string, int>& indexTable) {
+	this->synonyms.push_back(keySynonym);
+	this->synonyms.push_back(valueSynonym);
+	for (auto pair : answer) {
+		unordered_set<int> valueIntEntities;
+		for (auto valueStringEntity : pair.second) {
+			valueIntEntities.insert(indexTable.at(valueStringEntity));
+			
 		}
+		this->twoSynonymAnswer.insert({ pair.first, valueIntEntities });
 	}
-	unordered_map<string, list<int>> formattedAnswer({ {stmt1Synonym, stmt1List}, {stmt2Synonym, stmt2List} });
-	this->answer = formattedAnswer;
 }
 
-void Result::setAnswer(const string& stmtSynonym, const unordered_set<int>& stmtNums) {
-	list<int> stmtList(stmtNums.begin(), stmtNums.end());
-	unordered_map<string, list<int>> formattedAnswer({ {stmtSynonym, stmtList}});
-	this->answer = formattedAnswer;
-}
-
-void Result::setAnswer(const string& stmtSynonym, const int& answer) {
-	list<int> stmtList({ answer });
-	unordered_map<string, list<int>> formattedAnswer({ {stmtSynonym, stmtList} });
-	this->answer = formattedAnswer;
-}
-
-void Result::setAnswer(const string& stmt1Synonym, const string& stmt2Synonym, const unordered_map<int, int>& answer) {
-	list<int> stmt1List;
-	list<int> stmt2List;
-
-	for (auto itr = answer.begin(); itr != answer.end(); itr++) {
-		int stmt1Num = itr->first;
-		int stmt2Num = itr->second;
-
-		stmt1List.push_back(stmt1Num);
-		stmt2List.push_back(stmt2Num);
+void Result::setAnswer(const string& keySynonym, const string& valueSynonym, const unordered_map<int, string>& answer, const unordered_map<string, int>& indexTable) {
+	this->synonyms.push_back(keySynonym);
+	this->synonyms.push_back(valueSynonym);
+	for (auto pair : answer) {
+		this->twoSynonymAnswer.insert({ pair.first, {indexTable.at(pair.second)} });
 	}
-	unordered_map<string, list<int>> formattedAnswer({ {stmt1Synonym, stmt1List}, {stmt2Synonym, stmt2List} });
-	this->answer = formattedAnswer;
-}
-
-void Result::setAnswer(const string& stmtSynonym, const string& variableSynonym, const unordered_map<int, string>& answer, const unordered_map<string, int>& varToIndexTable) {
-	list<int> stmtList;
-	list<int> variableIndices;
-
-	for (auto itr = answer.begin(); itr != answer.end(); itr++) {
-		int stmtNum = itr->first;
-		string variable = itr->second;
-
-		stmtList.push_back(stmtNum);
-		variableIndices.push_back(varToIndexTable.at(variable));
-	}
-	unordered_map<string, list<int>> formattedAnswer({ {stmtSynonym, stmtList}, {variableSynonym, variableIndices} });
-	this->answer = formattedAnswer;
 }
