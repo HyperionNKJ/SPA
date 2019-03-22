@@ -17,7 +17,11 @@ TestWrapper::TestWrapper() {
 
 // method for parsing the SIMPLE source
 void TestWrapper::parse(std::string filename) {
-	parser.parse(filename, pkb);
+	int result = parser.parse(filename, pkb);
+	if (result != 0) {
+		cout << parser.getErrorMessage() << endl;
+		exit(1);
+	}
 }
 
 // method to evaluating a query

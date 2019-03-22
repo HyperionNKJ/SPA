@@ -21,7 +21,7 @@ int Parser::parse(string fileName, PKB& p) {
 		loadFile(fileName);
 	}
 	catch (int err) {
-		cout << "Failed to open file" << endl;
+		errorMessage = "Failed to open file";
 		return -1;
 	}
 	for (unsigned int i = 0; i < sourceCode.size(); i++) {
@@ -32,12 +32,12 @@ int Parser::parse(string fileName, PKB& p) {
 		}
 		else {
 			if (!withinProcedure) {
-				cout << "All statements should be contained within procedures. Error at line " << statementNumber << endl;
+				errorMessage = "All statements should be contained within procedures. Error at line " + statementNumber;
 				return false;
 			}
 			else {
 				if (expectElse && intent != KEY_ELSE) {
-					cout << "Expected an else statement at line " << statementNumber << endl;
+					errorMessage = "Expected an else statement at line " + statementNumber;
 					result = -1;
 				}
 				else {
@@ -73,7 +73,7 @@ int Parser::parse(string fileName, PKB& p) {
 						result = handleElse(sourceCode[i]);
 					}
 					else if (intent == KEY_ELSE && expectElse == false) {
-						cout << "Else statement without accompanying if found just before line " << statementNumber << endl;
+						errorMessage = "Else statement without accompanying if found just before line " + statementNumber;
 					}
 					else if (intent == KEY_CALL) {
 						result = handleCall(sourceCode[i]);
@@ -81,7 +81,7 @@ int Parser::parse(string fileName, PKB& p) {
 						emptyProcedure = false;
 					}
 					else {
-						cout << "Statement of unknown type encountered at line " << statementNumber << endl;
+						errorMessage = "Statement of unknown type encountered at line " + statementNumber;
 						result = -1;
 					}
 				}
@@ -174,11 +174,11 @@ bool Parser::checkAssignment(string assignmentLine) {
 	string lhsLine = assignmentLine.substr(0, equalPos);
 	string rhsLine = assignmentLine.substr(equalPos + 1, string::npos);
 	if (!isValidVarName(lhsLine)) {
-		cout << "Error in left hand side of assignment statement at line" << statementNumber << endl;
+		errorMessage = "Error in left hand side of assignment statement at line" + statementNumber;
 		return false;
 	}
 	if (!checkExpr(rhsLine)) {
-		cout << "Error in right hand side of assignment statement at line " << statementNumber << endl;
+		errorMessage = "Error in right hand side of assignment statement at line " + statementNumber;
 		return false;
 	}
 	return true;
@@ -202,12 +202,12 @@ bool Parser::checkExpr(string expr) {
 			}
 		}
 		else if (bracketTracker < 0) {
-			cout << "Extra mismatched ( bracket encountered in assignment statement at line " << statementNumber << endl;
+			errorMessage = "Extra mismatched ( bracket encountered in assignment statement at line " + statementNumber;
 			return false;
 		}
 	}
 	if (bracketTracker > 0) {
-		cout << "Extra mismatched ) bracket encountered in assignment statement at line " << statementNumber << endl;
+		errorMessage = "Extra mismatched ) bracket encountered in assignment statement at line " + statementNumber;
 		return false;
 	}
 	//reach the end with no + or -, check for single term
@@ -233,7 +233,7 @@ bool Parser::checkTerm(string term) {
 			}
 		}
 		else if (bracketTracker < 0) {
-			cout << "Extra mismatched ( bracket encountered in assignment statement at line " << statementNumber << endl;
+			errorMessage = "Extra mismatched ( bracket encountered in assignment statement at line " + statementNumber;
 			return false;
 		}
 	}
@@ -254,7 +254,7 @@ bool Parser::checkFactor(string factor) {
 	if (openBracketPos == 0 && closeBracketPos == factor.length()-1) {
 		return checkExpr(factor.substr(openBracketPos+1, closeBracketPos - openBracketPos - 1));
 	}
-	cout << "Failed in parsing a Factor in statement at line " << statementNumber << endl;
+	errorMessage = "Failed in parsing a Factor in statement at line " + statementNumber;
 	return false;
 }
 
@@ -382,7 +382,7 @@ bool Parser::checkRead(string readLine) {
 	string readRegexString = spaceRegex + "read" + spaceRegex + varNameRegex + spaceRegex + ";" + spaceRegex;
 	regex readRegex(readRegexString);
 	if (!regex_match(readLine, readRegex)) {
-		cout << "Read statement is invalid at line " << statementNumber << endl;
+		errorMessage = "Read statement is invalid at line " + statementNumber;
 		return false;
 	}
 	return true;
@@ -414,7 +414,7 @@ bool Parser::checkPrint(string printLine) {
 	string printRegexString = spaceRegex + "print" + spaceRegex + varNameRegex + spaceRegex + ";" + spaceRegex;
 	regex printRegex(printRegexString);
 	if (!regex_match(printLine, printRegex)) {
-		cout << "Print statement is invalid at line " << statementNumber << endl;
+		errorMessage = "Print statement is invalid at line " + statementNumber;
 		return false;
 	}
 	return true;
@@ -448,7 +448,7 @@ bool Parser::checkWhile(string whileLine) {
 	size_t firstOpenBracket = whileLine.find_first_of("(");
 	size_t lastCloseBracket = whileLine.find_last_of(")");
 	if (firstOpenBracket == string::npos || lastCloseBracket == string::npos) {
-		cout << "Missing ( and ) brackets around the conditional expession at line " << statementNumber << endl;
+		errorMessage = "Missing ( and ) brackets around the conditional expession at line " + statementNumber;
 		return false;
 	}
 	string truncWhileLine = whileLine.substr(0, firstOpenBracket) + whileLine.substr(lastCloseBracket+1, string::npos);
@@ -456,7 +456,7 @@ bool Parser::checkWhile(string whileLine) {
 	string whileRegexString = spaceRegex + "while" + spaceRegex + openCurlyRegex + spaceRegex;
 	regex whileRegex(whileRegexString);
 	if (!regex_match(truncWhileLine, whileRegex)) {
-		cout << "Unexpected tokens in the while statement at line " << statementNumber << endl;
+		errorMessage = "Unexpected tokens in the while statement at line " + statementNumber;
 		return false;
 	}
 	return checkCondExpr(condExprLine);
@@ -503,7 +503,7 @@ bool Parser::checkIf(string ifLine) {
 	size_t firstOpenBracket = ifLine.find_first_of("(");
 	size_t lastCloseBracket = ifLine.find_last_of(")");
 	if (firstOpenBracket == string::npos || lastCloseBracket == string::npos) {
-		cout << "Missing ( and ) brackets around the conditional expression at line " << statementNumber << endl;
+		errorMessage = "Missing ( and ) brackets around the conditional expression at line " + statementNumber;
 		return false;
 	}
 	string truncIfLine = ifLine.substr(0, firstOpenBracket) + ifLine.substr(lastCloseBracket+1, string::npos);
@@ -511,7 +511,7 @@ bool Parser::checkIf(string ifLine) {
 	string ifRegexString = spaceRegex + "if" + spaceRegex + "then" + spaceRegex + openCurlyRegex + spaceRegex;
 	regex ifRegex(ifRegexString);
 	if (!regex_match(truncIfLine, ifRegex)) {
-		cout << "Unexpected tokens in the if statement at line " << statementNumber << endl;
+		errorMessage = "Unexpected tokens in the if statement at line " + statementNumber;
 		return false;
 	}
 	return checkCondExpr(condExprLine);
@@ -556,7 +556,7 @@ bool Parser::checkElse(string elseLine) {
 	string elseRegexString = spaceRegex + "else" + spaceRegex + openCurlyRegex;
 	regex elseRegex(elseRegexString);
 	if (!regex_match(elseLine, elseRegex)) {
-		cout << "Else statement has unexpected tokens just before line " << statementNumber << endl;
+		errorMessage = "Else statement has unexpected tokens just before line " + statementNumber;
 		return false;
 	}
 	return true;
@@ -587,7 +587,7 @@ bool Parser::checkCondExpr(string condExpr) {
 	condExpr = cleanedCondExpr;
 	//check that brackets wrap the expression, without unexpected tokens
 	if (condExpr.find_first_of("(") != 0 || condExpr.find_last_of(")") != (condExpr.length() - 1)) {
-		cout << "Found unexpected token when expecting ( and ) around conditional expression at line " << statementNumber << endl;
+		errorMessage = "Found unexpected token when expecting ( and ) around conditional expression at line " + statementNumber;
 		return false;
 	}
 	//remove external brackets
@@ -622,7 +622,7 @@ bool Parser::checkCondExpr(string condExpr) {
 				return checkCondExpr(firstCondExpr) & checkCondExpr(secondCondExpr);
 			}
 			else {
-				cout << "Could not successfully parse conditional expression, missing and/or operator at line " << statementNumber << endl;
+				errorMessage = "Could not successfully parse conditional expression, missing and/or operator at line " + statementNumber;
 				return false;
 			}
 		}
@@ -640,10 +640,10 @@ bool Parser::checkCondExpr(string condExpr) {
 		}
 	}
 	if (bracketCount > 0) {
-		cout << "Mismatch in number of ( and ) brackets in conditional expression at line " << statementNumber << endl;
+		errorMessage = "Mismatch in number of ( and ) brackets in conditional expression at line " + statementNumber;
 		return false;
 	}
-	cout << "Could not successfully parse the conditional expression at line " << statementNumber << endl;
+	errorMessage = "Could not successfully parse the conditional expression at line " + statementNumber;
 	return false;
 }																
 
@@ -665,7 +665,7 @@ bool Parser::checkRelExpr(string relExpr) {
 		string secondRelFactor = relExpr.substr(relOpPos + offset, string::npos);
 		return checkRelFactor(firstRelFactor) & checkRelFactor(secondRelFactor);
 	}
-	cout << "Could not find a relational operator at line " << statementNumber << endl;
+	errorMessage = "Could not find a relational operator at line " + statementNumber;
 	return false;
 }
 
@@ -684,7 +684,7 @@ int Parser::handleCloseBracket(string closeBracket) {
 	//if no container statements tracked, assume close bracket is for procedure
 	if (containerTracker.size() < 1) {
 		if (emptyProcedure) {
-			cout << "A procedure cannot be empty" << endl;
+			errorMessage = "A procedure cannot be empty";
 			return -1;
 		}
 		//clean up all relationship trackers
@@ -703,11 +703,11 @@ int Parser::handleCloseBracket(string closeBracket) {
 		currentFollowVector.clear();
 		if (containerTracker.back() == WHILEC || containerTracker.back() == ELSEC) {
 			if (parentVector.size() == 0) {
-				cout << "Unexpected error when parsing end of container statement. Parent vector is empty. At line " << statementNumber << endl;
+				errorMessage = "Unexpected error when parsing end of container statement. Parent vector is empty. At line " + statementNumber;
 				return -1;
 			}
 			if (allFollowStack.size() == 0) {
-				cout << "Unexpected error when parsing end of container statement. Follow stack is empty. At line " << statementNumber << endl;
+				errorMessage = "Unexpected error when parsing end of container statement. Follow stack is empty. At line " + statementNumber;
 				return -1;
 			}
 			parentVector.pop_back();
@@ -729,7 +729,7 @@ bool Parser::checkCall(string callLine) {
 	string callRegexString = spaceRegex + "call" + spaceRegex + varNameRegex + spaceRegex + ";" + spaceRegex;
 	regex callRegex(callRegexString);
 	if (!regex_match(callLine, callRegex)) {
-		cout << "Call statement is invalid at line " << statementNumber << endl;
+		errorMessage = "Call statement is invalid at line " + statementNumber;
 		return false;
 	}
 	return true;
@@ -1058,4 +1058,12 @@ vector<vector<int>> Parser::getAllFollowStack() {
 
 string Parser::getCurrentProcedure() {
 	return currProcedure;
+}
+
+unordered_map<string, int> Parser::getProcCalledByTable() {
+	return procCalledByTable;
+}
+
+string Parser::getErrorMessage() {
+	return errorMessage;
 }
