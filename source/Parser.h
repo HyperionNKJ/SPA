@@ -57,6 +57,8 @@ private:
 	bool setCalls(string, string);
 	bool setCallsT();
 
+	vector<string> loadFile(string);
+
 	string leftTrim(string, string);
 	string rightTrim(string, string);
 	bool isValidVarName(string);
@@ -95,7 +97,6 @@ public:
 
 	Statement_Key getStatementIntent(string);
 	int parse(string, PKB&);
-	vector<string> loadFile(string);
 
 	//setter/getter functions for testing
 	void setPKB(PKB*);
