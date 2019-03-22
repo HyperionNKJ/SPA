@@ -57,9 +57,6 @@
     <ClCompile Include="..\source\QueryTokenizer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\Result.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\ResultProjector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -96,9 +93,6 @@
     <ClCompile Include="..\source\FollowsT.cpp">
       <Filter>Source Files\Clauses</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\Pattern.cpp">
-      <Filter>Source Files\Clauses</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\Calls.cpp">
       <Filter>Source Files\Clauses</Filter>
     </ClCompile>
@@ -109,6 +103,12 @@
       <Filter>Source Files\Clauses</Filter>
     </ClCompile>
     <ClCompile Include="..\source\NextT.cpp">
+      <Filter>Source Files\Clauses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Result.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\PatternAssign.cpp">
       <Filter>Source Files\Clauses</Filter>
     </ClCompile>
   </ItemGroup>
@@ -150,9 +150,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\QueryTokenizer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\Result.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\ResultProjector.h">
@@ -200,9 +197,6 @@
     <ClInclude Include="..\source\Calls.h">
       <Filter>Header Files\Clauses</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\Pattern.h">
-      <Filter>Header Files\Clauses</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\Follows.h">
       <Filter>Header Files\Clauses</Filter>
     </ClInclude>
@@ -213,6 +207,12 @@
       <Filter>Header Files\Clauses</Filter>
     </ClInclude>
     <ClInclude Include="..\source\NextT.h">
+      <Filter>Header Files\Clauses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Result.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\PatternAssign.h">
       <Filter>Header Files\Clauses</Filter>
     </ClInclude>
   </ItemGroup>
