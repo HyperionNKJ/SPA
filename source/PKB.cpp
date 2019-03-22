@@ -1198,13 +1198,15 @@ bool PKB::isNextT(int firstLine, int secondLine) {
 			}
 			toExplore = nextExplore;
 			if (toExplore == secondLine) {
-				return true;
+				found = true;
 			}
 		}
 		else {
-			return false;
+			found = false;
+			break;
 		}
 	}
+	return found;
 }
 
 unordered_set<int> PKB::getNextTOf(int firstLine, Type stmtType) {
