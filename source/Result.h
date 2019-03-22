@@ -11,6 +11,8 @@ private:
 	unordered_set<int> oneSynonymAnswer; // data structure to store answer in the case of 1 synonym
 	unordered_map<int, unordered_set<int>> twoSynonymAnswer; // in the case of 2 synonyms. Key = synonyms[0], Value = synonyms[1]
 
+	unordered_set<int> convertStringsToIndices(const unordered_set<string>&, const unordered_map<string, int>&);
+
 public:
 	bool hasPassed();
 	void setPassed(bool);
