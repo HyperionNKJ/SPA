@@ -1,0 +1,15 @@
+1 - Select assign that is followed by assign and modifies variable
+assign a1; stmt s2; variable v;
+Select a1 such that Follows (a1, s2) and Modifies (s2, v) with v.varName = "a"
+7, 23, 33
+5000
+2 - Select assign that is followed by assign and modifies variable
+assign a; variable v;
+Select a1 such that Modifies (a, v) such that Uses (a, v)
+6, 7, 8, 12, 18, 20, 21, 30
+5000
+3 - Select procedure that uses given variable and call given procedure
+procedure p, q;
+Select p.procName such that Uses (p, "a") and Calls (p, q) with q.procName = "Q"
+P
+5000

@@ -5,6 +5,6 @@ none
 5000
 2 - Select stmt next to any stmt
 stmt s1, s2;
-Select s such that Next* (s1, s2)
+Select s1 such that Next* (s1, s2)
 none
 5000

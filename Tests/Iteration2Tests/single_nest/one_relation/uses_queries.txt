@@ -1,0 +1,45 @@
+1 - Select variable used in if container
+variable v; if ifs;
+Select v such that Uses (ifs, v)
+a, b, c, x
+5000
+2 - Select variable used in while container
+variable v; while w;
+Select v such that Uses (w, v)
+a, b, c
+5000
+3 - Select variable used in if condition
+variable v;
+Select v such that Uses (4, v)
+a, b, c, k, x
+5000
+4 - Select variable used in while condition
+variable v;
+Select v such that Uses (8, v)
+a, b
+5000
+5 - Select stmt uses certain variable
+stmt s;
+Select s such that Uses (s, "x")
+9, 10, 17, 18, 27
+5000
+6 - Select all stmts if specified stmt uses z
+stmt s;
+Select s such that Uses (7, "z")
+none
+5000
+7 - Select variable inside if container with certain assignment pattern
+if ifs; assign a; variable v;
+Select v such that Uses (ifs, v) pattern a (v, _)
+a, b, c, x
+5000
+8 - Select variable inside while container with certain assignment pattern
+while w; assign a; variable v;
+Select v such that Uses (w, v) pattern a (v, _)
+a, b, c
+5000
+9 - Select assign to varible used by if statement
+if ifs; assign a; variable v;
+Select a such that Uses (ifs, v) pattern a (v, _)
+5,6,7,8,10,11,13,14,15,18,19,20,21,23,24,25
+5000

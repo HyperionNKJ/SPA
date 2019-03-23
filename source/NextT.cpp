@@ -127,7 +127,7 @@ Result* NextT::evaluateSynonymSynonym(const string& previousSynonym, const strin
 	bool keyIsPrevSyn; // true if above answer's key = previousSynonym & value = nextSynonym. false otherwise.
 
 	if (hasReducedDomainForPrevSyn && hasReducedDomainForNextSyn) { // if both synonyms exist in intermediate table
-		if (prevSynPossibleValues.size < nextSynPossibleValues.size) {
+		if (prevSynPossibleValues.size() < nextSynPossibleValues.size()) {
 			keyIsPrevSyn = evaluateSynSynFromPrev(prevSynPossibleValues, nextType, pkb, answer);
 		}
 		else {
@@ -160,10 +160,10 @@ Result* NextT::evaluateSynonymSynonym(const string& previousSynonym, const strin
 }
 
 // Helper method for evaluateSynonymSynonym()
-bool NextT::evaluateSynSynFromPrev(const unordered_set<int>& prevSynPossibleValues, const Type& nextType, const PKB& pkb, unordered_map<int, unordered_set<int>>& answer) {
+bool NextT::evaluateSynSynFromPrev(const unordered_set<int>& prevSynPossibleValues, const Type& nextType, PKB& pkb, unordered_map<int, unordered_set<int>>& answer) {
 	for (auto prevValue : prevSynPossibleValues) {
 		unordered_set<int> nextValues = pkb.getNextTOf(prevValue, nextType);
-		if (!nextValues.empty) {
+		if (!nextValues.empty()) {
 			answer.insert({ prevValue, nextValues }); 
 		}
 	}
@@ -171,10 +171,10 @@ bool NextT::evaluateSynSynFromPrev(const unordered_set<int>& prevSynPossibleValu
 }
 
 // Helper method for evaluateSynonymSynonym()
-bool NextT::evaluateSynSynFromNext(const unordered_set<int>& nextSynPossibleValues, const Type& previousType, const PKB& pkb, unordered_map<int, unordered_set<int>>& answer) {
+bool NextT::evaluateSynSynFromNext(const unordered_set<int>& nextSynPossibleValues, const Type& previousType, PKB& pkb, unordered_map<int, unordered_set<int>>& answer) {
 	for (auto nextValue : nextSynPossibleValues) {
 		unordered_set<int> prevValues = pkb.getPreviousTOf(nextValue, previousType); 
-		if (!prevValues.empty) {
+		if (!prevValues.empty()) {
 			answer.insert({ nextValue, prevValues });
 		}
 	}
@@ -214,13 +214,13 @@ Result* NextT::evaluateSynonymFixed(const string& previousSynonym, const string&
 	if (reducedDomain.count(previousSynonym)) {
 		unordered_set<int> possibleValues = reducedDomain.at(previousSynonym);
 		for (auto value : possibleValues) {
-			if (pkb.isNextT(value, nextLineNum)) {
+			if (pkb.isNextT(value, stoi(nextLineNum))) {
 				answer.insert(value);
 			}
 		}
 	}
 	else {
-		unordered_set<int> answer = pkb.getPreviousTOf(stoi(nextLineNum), previousType);
+		answer = pkb.getPreviousTOf(stoi(nextLineNum), previousType);
 	}
 	if (!answer.empty()) {
 		result->setPassed(true);
@@ -245,7 +245,7 @@ Result* NextT::evaluateUnderscoreSynonym(const string& nextSynonym, const Type& 
 		}
 	}
 	else {
-		unordered_set<int> answer = pkb.getNextLines(nextType);
+		answer = pkb.getNextLines(nextType);
 	}
 
 	if (!answer.empty()) {

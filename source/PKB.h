@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <queue>
 #include <unordered_set>
 #include <unordered_map>
 #include "Type.h"
@@ -13,6 +14,7 @@ typedef short PROC;
 
 class PKB {
 private:
+<<<<<<< HEAD
 	unordered_set<string> varSet, procSet, callSet, printSet, readSet, modifiesProcSet, usesProcSet;
 	unordered_map<string, int> varTableByName, procTableByName, callTableByName, printTableByName, readTableByName;
 	vector<string> varTableByIdx, procTableByIdx, callTableByIdx, printTableByIdx, readTableByIdx;
@@ -21,6 +23,17 @@ private:
 	unordered_map<int, int> leaderMap, followerMap, childrenMap, nextMap, prevMap;
 	unordered_map<string, unordered_set<int>> modifiesByVarMap, usesByVarMap, patternMap, fullPatternMap;
 	unordered_map<int, unordered_set<string>> modifiesByStmtNumMap, usesByStmtNumMap;
+=======
+	unordered_set<string> varSet, procSet;
+	unordered_map<string, int> varTableByName, procTableByName;
+	vector<string> varTableByIdx, procTableByIdx;
+	unordered_set<int> allStmts, readStmts, printStmts, whileStmts, ifStmts, assignStmts, constSet;
+	unordered_map<int, unordered_set<int>> leaderTMap, followerTMap, parentMap, parentTMap, childrenTMap, nextMap, prevMap;
+	unordered_map<int, int> leaderMap, followerMap, childrenMap;
+	unordered_map<string, unordered_set<int>> assignModifyingVarMap, assignModifiedVarMap, modifiesByVarMap, usesByVarMap;
+	unordered_map<int, string> assignStmtVarMap;
+	unordered_map<int, unordered_set<string>> assignUseVarMap, modifiesByStmtNumMap, usesByStmtNumMap;
+>>>>>>> 9aa5af709f4eb3e680dcd70b0803ccf5c4ee424a
 	unordered_map<string, string> callMap, calledByMap;
 	unordered_map<string, unordered_set<string>> modifiesByProcMap, varModifiedByProcMap, usesByProcMap, varUsedByProcMap, callsTMap, calledByTMap;
 
@@ -160,6 +173,43 @@ public:
 
 	string getVarModifiedByAssignStmt(int stmtNum);
 	unordered_set<int> getAssignStmtsThatModifiesVar(string varName);
+<<<<<<< HEAD
 	unordered_set<int> getAssignStmtsWithSubMatch(string subString);
 	unordered_set<int> getAssignStmtsWithExactMatch(string exactString);
+=======
+
+	int getCallIdx(string procName);
+	string getCallAtIdx(int idx);
+	int getReadIdx(string varName);
+	string getReadAtIdx(int idx);
+	int getPrintIdx(string varName);
+	string getPrintAtIdx(int idx);
+
+	unordered_set<int> getCallStmts();
+	unordered_set<string> getCallProcNames();
+	unordered_set<string> getReadVarNames();
+	unordered_set<string> getPrintVarNames();
+
+	bool isProcModifies(string procName, string varName);
+	bool doesProcModifies(string procName);
+	unordered_set<string> getVarModifiedByProc(string procName);
+	unordered_map<string, unordered_set<string>> getModifiesProcVarPairs();
+	unordered_set<string> getProcThatModifiesVar();
+	unordered_set<string> getProcThatModifiesVar(string varName);
+	unordered_map<string, int> getProcUsesTable();
+
+	bool isProcUses(string procName, string varName);
+	bool doesProcUses(string procName);
+	unordered_set<string> getVarUsedByProc(string procName);
+	unordered_map<string, unordered_set<string>> getUsesProcVarPairs();
+	unordered_set<string> getProcThatUsesVar();
+	unordered_set<string> getProcThatUsesVar(string varName);
+
+	bool isNextT(int, int);
+	bool hasNextT(int);
+	bool hasPreviousT(int);
+	unordered_set<int> getNextTOf(int, Type);
+	unordered_set<int> getPreviousTOf(int, Type);
+	unordered_map<int, unordered_set<int>> getPreviousNextTPairs(Type, Type);
+>>>>>>> 9aa5af709f4eb3e680dcd70b0803ccf5c4ee424a
 };

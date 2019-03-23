@@ -12,7 +12,7 @@
 #include "DesignExtractor.h"
 
 enum Container { WHILEC, IFC, ELSEC, NONEC };
-enum STATEMENT_KEY {
+enum Statement_Key {
 	KEY_PROCEDURE, KEY_ASSIGN, KEY_IF, KEY_ELSE, KEY_WHILE,
 	KEY_READ, KEY_PRINT, KEY_CLOSE_BRACKET, KEY_CALL, KEY_ERROR
 };
@@ -21,6 +21,7 @@ class Parser {
 	PKB * pkb;
 	DesignExtractor de;
 
+	string errorMessage = "";
 	bool withinProcedure = false;
 	bool emptyProcedure = true;
 	bool expectElse = false;
@@ -55,6 +56,8 @@ private:
 	bool setNext(int, Container);
 	bool setCalls(string, string);
 	bool setCallsT();
+
+	vector<string> loadFile(string);
 
 	string leftTrim(string, string);
 	string rightTrim(string, string);
@@ -92,19 +95,21 @@ public:
 
 	int handleCloseBracket(string);
 
-	STATEMENT_KEY getStatementIntent(string);
+	Statement_Key getStatementIntent(string);
 	int parse(string, PKB&);
-	vector<string> loadFile(string);
 
 	//setter/getter functions for testing
 	void setPKB(PKB*);
 	void setStatementNumber(int);
-	int getStatementNumber();
 	void setCurrentFollowVector(vector<int>);
 	void setParentVector(vector<int>);
+	void setAllFollowStack(vector<vector<int>>);
+
+	int getStatementNumber();
 	vector<int> getParentVector();
 	vector<int> getCurrentFollowVector();
-	void setAllFollowStack(vector<vector<int>>);
 	vector<vector<int>> getAllFollowStack();
 	string getCurrentProcedure();
+	unordered_map<string, int> getProcCalledByTable();
+	string getErrorMessage();
 };

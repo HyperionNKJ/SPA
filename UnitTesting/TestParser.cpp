@@ -234,6 +234,23 @@ namespace UnitTesting {
 			Assert::AreEqual(result, false, L"incorrect", LINE_INFO());
 		}
 
+		TEST_METHOD(TestCheckCall) {
+			Parser parser;
+			bool result;
+
+			result = parser.checkRead("call ABCDE;");
+			Assert::AreEqual(result, true, L"incorrect", LINE_INFO());
+
+			result = parser.checkRead("	call	AnotherPRoC   ;");
+			Assert::AreEqual(result, true, L"incorrect", LINE_INFO());
+
+			result = parser.checkRead("call 123xyz;");
+			Assert::AreEqual(result, false, L"incorrect", LINE_INFO());
+
+			result = parser.checkRead("call first second;");
+			Assert::AreEqual(result, false, L"incorrect", LINE_INFO());
+		}
+
 		TEST_METHOD(TestCheckElse) {
 			Parser parser;
 			bool result;
@@ -247,7 +264,7 @@ namespace UnitTesting {
 
 		TEST_METHOD(TestGetStatementIntent) {
 			Parser parser;
-			STATEMENT_KEY result;
+			Statement_Key result;
 
 			result = parser.getStatementIntent("procedure a{");
 			Assert::AreEqual(result, KEY_PROCEDURE, L"incorrect", LINE_INFO());
@@ -486,6 +503,42 @@ namespace UnitTesting {
 			Assert::IsTrue(equalFollowVector, L"incorrect", LINE_INFO());
 			Assert::IsTrue(equalParentVector, L"incorrect", LINE_INFO());
 			Assert::IsTrue(equalAllFollowStack, L"incorrect", LINE_INFO());
+		}
+
+		TEST_METHOD(TestHandleCalls) {
+			Parser parser;
+			PKB pkb;
+			parser.setPKB(&pkb);
+			int result;
+
+			parser.setStatementNumber(7);
+			vector<int> testFollowVector = { 5, 6 };
+			vector<int> expectedFollowVector = vector<int>(testFollowVector);
+			expectedFollowVector.push_back(7);
+			vector<int> expectedParentVector = { 1, 2 };
+
+			vector<int> tempVector = { 4 };
+			vector<vector<int>> expectedAllFollowStack = vector<vector<int>>();
+			expectedAllFollowStack.push_back(tempVector);
+
+			unordered_map<string, int> expectedProcCalledByTable;
+			expectedProcCalledByTable.insert({ "proc2", 7 });
+
+			parser.setParentVector(expectedParentVector);
+			parser.setCurrentFollowVector(testFollowVector);
+			parser.setAllFollowStack(expectedAllFollowStack);
+
+			result = parser.handleAssignment("	call proc2  ;");
+			Assert::AreEqual(result, 0, L"incorrect", LINE_INFO());
+			bool equalFollowVector = parser.getCurrentFollowVector() == expectedFollowVector;
+			bool equalParentVector = parser.getParentVector() == expectedParentVector;
+			bool equalAllFollowStack = parser.getAllFollowStack() == expectedAllFollowStack;
+			bool equalProcCalledByTable = parser.getProcCalledByTable() == expectedProcCalledByTable;
+			Assert::IsTrue(equalFollowVector, L"incorrect", LINE_INFO());
+			Assert::IsTrue(equalParentVector, L"incorrect", LINE_INFO());
+			Assert::IsTrue(equalAllFollowStack, L"incorrect", LINE_INFO());
+			Assert::IsTrue(equalProcCalledByTable, L"incorrect", LINE_INFO());
+
 		}
 	};
 }

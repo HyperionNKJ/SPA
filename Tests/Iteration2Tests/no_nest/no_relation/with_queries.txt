@@ -8,22 +8,20 @@ procedure p;
 Select p with p.procName = "P"
 TRUE
 5000
-3 - Find variable with given name
-variable v;
-read r;
+3 - Find variable with given variable name
+variable v; read r;
 Select r with v.varName = "a"
-1, 2, 3, 14
+1, 2, 3, 16
 5000
 4 - Find variable with given name
-variable v;
-print pt;
+variable v; print pt;
 Select pt with v.varName = "y"
 none
 5000
 5 - Find call-variable tuple with given name and stmt number
 variable v; call cl;
-Select <cl, v> with v.varName = "y" and cl.stmt# = 13
-<13, y>
+Select <cl, v> with v.varName = "x" and cl.stmt# = 13
+<13, x>
 5000
 6 - Find stmt with given number that does not exist
 stmt s;
@@ -44,7 +42,7 @@ none
 constant c;
 stmt s;
 Select s with s.stmt#=c.value
-16
+7, 15, 16
 5000
 10 - Select boolean by assignment stmt number
 assign a;

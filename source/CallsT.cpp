@@ -69,7 +69,7 @@ Result* CallsT::evaluateFixedSynonym(const string& callerName, const string& rec
 	unordered_set<string> answer = pkb.getReceiverTOf(callerName);
 	if (!answer.empty()) {
 		result->setPassed(true);
-		result->setAnswer(receiverSynonym, answer);
+		result->setAnswer(receiverSynonym, answer, pkb.getProcTable());
 	}
 	else {
 		result->setPassed(false);
@@ -101,7 +101,7 @@ Result* CallsT::evaluateSynonymSynonym(const string& callerSynonym, const string
 	unordered_map<string, unordered_set<string>> answer = pkb.getCallerReceiverTPairs();
 	if (!answer.empty()) {
 		result->setPassed(true);
-		result->setAnswer(callerSynonym, receiverSynonym, answer);
+		result->setAnswer(callerSynonym, receiverSynonym, answer, pkb.getProcTable());
 	}
 	else {
 		result->setPassed(false);
@@ -115,7 +115,7 @@ Result* CallsT::evaluateSynonymUnderscore(const string& callerSynonym) {
 	unordered_set<string> answer = pkb.getCallerProcedures();
 	if (!answer.empty()) {
 		result->setPassed(true);
-		result->setAnswer(callerSynonym, answer);
+		result->setAnswer(callerSynonym, answer, pkb.getProcTable());
 	}
 	else {
 		result->setPassed(false);
@@ -129,7 +129,7 @@ Result* CallsT::evaluateSynonymFixed(const string& callerSynonym, const string& 
 	unordered_set<string> answer = pkb.getCallerTOf(receiverName);
 	if (!answer.empty()) {
 		result->setPassed(true);
-		result->setAnswer(callerSynonym, answer);
+		result->setAnswer(callerSynonym, answer, pkb.getProcTable());
 	}
 	else {
 		result->setPassed(false);
@@ -143,7 +143,7 @@ Result* CallsT::evaluateUnderscoreSynonym(const string& receiverSynonym) {
 	unordered_set<string> answer = pkb.getReceiverProcedures();
 	if (!answer.empty()) {
 		result->setPassed(true);
-		result->setAnswer(receiverSynonym, answer);
+		result->setAnswer(receiverSynonym, answer, pkb.getProcTable());
 	}
 	else {
 		result->setPassed(false);

@@ -217,11 +217,11 @@ bool PKB::setCalledByT(string proc1, string proc2) {
 }
 
 bool PKB::setNext(int prevLine, int nextLine) {
-	return nextMap.insert({prevLine, nextLine}).second;
+	return nextMap[prevLine].insert(nextLine).second;
 }
 
 bool PKB::setPrevious(int prevLine, int nextLine) {
-	return prevMap.insert({nextLine, prevLine}).second;
+	return prevMap[nextLine].insert(prevLine).second;
 }
 
 // PQL APIs
@@ -809,4 +809,153 @@ unordered_set<int> PKB::getAssignStmtsWithSubMatch(string subString) {
 
 unordered_set<int> PKB::getAssignStmtsWithExactMatch(string exactString) {
 	return fullPatternMap[exactString];
+}
+
+/******** Alvin's methods for Next* *************/
+
+bool PKB::isNextT(int firstLine, int secondLine) {
+	unordered_set<int> visitedLines;
+	unordered_set<int> currentNextLines;
+	int toExplore = firstLine;
+	bool found = false;
+	while (!found) {
+		if (nextMap.count(toExplore) > 0) {
+			int nextExplore = -1;
+			currentNextLines = nextMap[firstLine];
+			for (auto &elem : currentNextLines) {
+				if (elem > nextExplore && elem <= secondLine) {
+					nextExplore = elem;
+				}
+			}
+			toExplore = nextExplore;
+			if (toExplore == secondLine) {
+				found = true;
+			}
+		}
+		else {
+			found = false;
+			break;
+		}
+	}
+	return found;
+}
+
+unordered_set<int> PKB::getNextTOf(int firstLine, Type stmtType) {
+	unordered_set<int> visitedLines;
+	unordered_set<int> typedStmtSet, resultSet;
+	switch (stmtType) {
+	case STATEMENT:
+		typedStmtSet = allStmts;
+		break;
+	case READ:
+		typedStmtSet = readStmts;
+		break;
+	case PRINT:
+		typedStmtSet = printStmts;
+		break;
+	case WHILE:
+		typedStmtSet = whileStmts;
+		break;
+	case IF:
+		typedStmtSet = ifStmts;
+		break;
+	case ASSIGN:
+		typedStmtSet = assignStmts;
+		break;
+	}
+	queue<int> linesQueue;
+	for (auto &elem : nextMap[firstLine]) {
+		linesQueue.push(elem);
+	}
+	while (linesQueue.size() > 0) {
+		int currLine = linesQueue.front();
+		linesQueue.pop();
+		if (visitedLines.count(currLine) <= 0) {
+			visitedLines.insert(currLine);
+			for (auto &elem : nextMap[currLine]) {
+				linesQueue.push(elem);
+			}
+		}
+	}
+	for (auto &elem : visitedLines) {
+		if (typedStmtSet.count(elem) > 0) {
+			resultSet.insert(elem);
+		}
+	}
+	return resultSet;
+}
+
+unordered_set<int> PKB::getPreviousTOf(int firstLine, Type stmtType) {
+	unordered_set<int> visitedLines;
+	unordered_set<int> typedStmtSet, resultSet;
+	switch (stmtType) {
+	case STATEMENT:
+		typedStmtSet = allStmts;
+		break;
+	case READ:
+		typedStmtSet = readStmts;
+		break;
+	case PRINT:
+		typedStmtSet = printStmts;
+		break;
+	case WHILE:
+		typedStmtSet = whileStmts;
+		break;
+	case IF:
+		typedStmtSet = ifStmts;
+		break;
+	case ASSIGN:
+		typedStmtSet = assignStmts;
+		break;
+	}
+	queue<int> linesQueue;
+	for (auto &elem : prevMap[firstLine]) {
+		linesQueue.push(elem);
+	}
+	while (linesQueue.size() > 0) {
+		int currLine = linesQueue.front();
+		linesQueue.pop();
+		if (visitedLines.count(currLine) <= 0) {
+			visitedLines.insert(currLine);
+			for (auto &elem : prevMap[currLine]) {
+				linesQueue.push(elem);
+			}
+		}
+	}
+	for (auto &elem : visitedLines) {
+		if (typedStmtSet.count(elem) > 0) {
+			resultSet.insert(elem);
+		}
+	}
+	return resultSet;
+}
+
+unordered_map<int, unordered_set<int>> PKB::getPreviousNextTPairs(Type firstStmtType, Type secondStmtType) {
+	unordered_map<int, unordered_set<int>> resultMap;
+	unordered_set<int> typedStmtSet;
+	switch (firstStmtType) {
+	case STATEMENT:
+		typedStmtSet = allStmts;
+		break;
+	case READ:
+		typedStmtSet = readStmts;
+		break;
+	case PRINT:
+		typedStmtSet = printStmts;
+		break;
+	case WHILE:
+		typedStmtSet = whileStmts;
+		break;
+	case IF:
+		typedStmtSet = ifStmts;
+		break;
+	case ASSIGN:
+		typedStmtSet = assignStmts;
+		break;
+	}
+	for (auto &elem : typedStmtSet) {
+		unordered_set<int> resultSet = getNextTOf(elem, secondStmtType);
+		resultMap[elem] = resultSet;
+	}
+	return resultMap;
 }

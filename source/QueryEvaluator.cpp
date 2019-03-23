@@ -15,8 +15,16 @@ std::list<std::string> QueryEvaluator::evaluate(ProcessedQuery& processedQuery, 
 		}
 
 		Result clauseResult = clause->evaluate(pkb);
-		if (clauseResult.hasPassed() && clauseResult.hasAnswer()) { // hasPassed && noAnswer denotes a True/False clause
-			bool hasResultSoFar = resultProjector.combineResults(clauseResult.getAnswer());
+		int numOfSyn = clauseResult.getNumOfSyn();
+		if (clauseResult.hasPassed() && numOfSyn != 0) { // if clause has synonym/s, send to ResultProjector to merge.
+			bool hasResultSoFar;
+			vector<string> synonyms = clauseResult.getSynonyms();
+			if (numOfSyn == 1) {
+				hasResultSoFar = resultProjector.combineResults(clauseResult.getOneSynAnswer(), synonyms);
+			}
+			else if (numOfSyn == 2) { 
+				hasResultSoFar = resultProjector.combineResults(clauseResult.getTwoSynAnswer(), synonyms);
+			}
 			if (!hasResultSoFar) {
 				return emptyResult; 
 			}
@@ -25,7 +33,7 @@ std::list<std::string> QueryEvaluator::evaluate(ProcessedQuery& processedQuery, 
 			return emptyResult;
 		}
 	}
-	return resultProjector.getResults(processedQuery.getSelectedSynonym(), pkb); // To be clarified.
+	return resultProjector.getResults(processedQuery.getSelectedSynonym(), pkb);
 }
 
 void QueryEvaluator::findReducedDomain(Clause* clause, ResultProjector* resultProjector) {

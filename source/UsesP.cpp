@@ -56,7 +56,7 @@ Result* UsesP::evaluateFixedVariable(const string& procName, const string& varia
 	unordered_set<string> answer = pkb.getVarUsedByProc(procName);
 	if (!answer.empty()) {
 		result->setPassed(true);
-		result->setAnswer(variableSynonym, answer, pkb.getProcTable());
+		result->setAnswer(variableSynonym, answer, pkb.getVarTable());
 	}
 	else {
 		result->setPassed(false);
