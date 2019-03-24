@@ -48,8 +48,101 @@ namespace UnitTesting {
 
 			result = pkb.insertStmtType(10, STATEMENT);
 			Assert::IsTrue(result);
+			result = pkb.insertStmtType(11, READ);
+			Assert::IsTrue(result);
+			result = pkb.insertStmtType(12, WHILE);
+			Assert::IsTrue(result);
+			result = pkb.insertStmtType(13, IF);
+			Assert::IsTrue(result);
+			result = pkb.insertStmtType(14, ASSIGN);
+			Assert::IsTrue(result);
+			result = pkb.insertStmtType(15, PRINT);
+			Assert::IsTrue(result);
 
 			result = pkb.insertStmtType(10, STATEMENT);
+			Assert::IsFalse(result);
+			result = pkb.insertStmtType(11, READ);
+			Assert::IsFalse(result);
+			result = pkb.insertStmtType(12, WHILE);
+			Assert::IsFalse(result);
+			result = pkb.insertStmtType(13, IF);
+			Assert::IsFalse(result);
+			result = pkb.insertStmtType(14, ASSIGN);
+			Assert::IsFalse(result);
+			result = pkb.insertStmtType(15, PRINT);
+			Assert::IsFalse(result);
+
+			result = pkb.insertStmtType(16, CALL);
+			Assert::IsFalse(result);
+		}
+
+		TEST_METHOD(TestInsertCPRStmtType) {
+			PKB pkb;
+			bool result;
+
+			result = pkb.insertCPRStmtType(1, CALL, "proc");
+			Assert::IsTrue(result);
+			result = pkb.insertCPRStmtType(2, READ, "var1");
+			Assert::IsTrue(result);
+			result = pkb.insertCPRStmtType(3, PRINT, "var2")
+			Assert::IsTrue(result);
+
+			result = pkb.insertCPRStmtType(1, CALL, "proc");
+			Assert::IsFalse(result);
+			result = pkb.insertCPRStmtType(2, READ, "var1");
+			Assert::IsFalse(result);
+			result = pkb.insertCPRStmtType(3, PRINT, "var2")
+			Assert::IsFalse(result);
+
+			result = pkb.insertCPRStmtType(4, STATEMENT, "test");
+			Assert::IsFalse(result);
+		}
+
+		TEST_METHOD(TestInsertPattern) {
+			PKB pkb;
+			bool result;
+
+			result = pkb.insertPattern("a b +", 23);
+			Assert::IsTrue(result);
+			result = pkb.insertPattern("a b +", 24);
+			Assert::IsTrue(result);
+			result = pkb.insertPattern("a b +", 23);
+			Assert::IsFalse(result);
+		}
+
+		TEST_METHOD(TestInsertFullPattern) {
+			PKB pkb;
+			bool result;
+
+			result = pkb.insertPattern("a b c * +", 23);
+			Assert::IsTrue(result);
+			result = pkb.insertPattern("a b c * +", 24);
+			Assert::IsTrue(result);
+			result = pkb.insertPattern("a b c * +", 23);
+			Assert::IsFalse(result);
+		}
+
+		TEST_METHOD(TestInsertIfControlVar) {
+			PKB pkb;
+			bool result;
+
+			result = pkb.insertIfControlVar(32, "x");
+			Assert::IsTrue(result);
+			result = pkb.insertIfControlVar(32, "y");
+			Assert::IsTrue(result);
+			result = pkb.insertIfControlVar(32, "x");
+			Assert::IsFalse(result);
+		}
+
+		TEST_METHOD(TestInsertWhileControlVar) {
+			PKB pkb;
+			bool result;
+
+			result = pkb.insertWhileControlVar(32, "x");
+			Assert::IsTrue(result);
+			result = pkb.insertWhileControlVar(32, "y");
+			Assert::IsTrue(result);
+			result = pkb.insertWhileControlVar(32, "x");
 			Assert::IsFalse(result);
 		}
 
@@ -148,6 +241,12 @@ namespace UnitTesting {
 			result = pkb.setModifies(4, "var");
 			Assert::IsTrue(result);
 
+			result = pkb.setModifies(4, "var2");
+			Assert::IsTrue(result);
+
+			result = pkb.setModifies(5, "var");
+			Assert::IsTrue(result);
+
 			result = pkb.setModifies(4, "var");
 			Assert::IsFalse(result);
 		}
@@ -185,16 +284,97 @@ namespace UnitTesting {
 			Assert::IsFalse(result);
 		}
 
-		TEST_METHOD(TestSetAssignStmt) {
+		TEST_METHOD(TestSetCalls) {
 			PKB pkb;
 			bool result;
-			vector<string> assignmentStmt = { "y", "+", "z" };
 
-			result = pkb.insertAssignStmt(4, "x", assignmentStmt);
+			result = pkb.setCalls("caller", "callee");
 			Assert::IsTrue(result);
-
-			result = pkb.insertAssignStmt(4, "x", assignmentStmt);
+			result = pkb.setCalls("caller", "callee2");
+			Assert::IsTrue(result);
+			result = pkb.setCalls("caller", "callee");
 			Assert::IsFalse(result);
+		}
+
+		TEST_METHOD(TestSetCalledBy) {
+			PKB pkb;
+			bool result;
+
+			result = pkb.setCalledBy("callee", "caller");
+			Assert::IsTrue(result);
+			result = pkb.setCalledBy("callee", "caller2");
+			Assert::IsTrue(result);
+			result = pkb.setCalledBy("callee", "caller");
+			Assert::IsFalse(result);
+		}
+
+		TEST_METHOD(TestSetCallsT) {
+			PKB pkb;
+			bool result;
+
+			result = pkb.setCallsT("caller", "callee");
+			Assert::IsTrue(result);
+			result = pkb.setCallsT("caller", "callee2");
+			Assert::IsTrue(result);
+			result = pkb.setCallsT("caller", "callee");
+			Assert::IsFalse(result);
+		}
+
+		TEST_METHOD(TestSetCalledByT) {
+			PKB pkb;
+			bool result;
+
+			result = pkb.setCalledByT("callee", "caller");
+			Assert::IsTrue(result);
+			result = pkb.setCalledByT("callee", "caller2");
+			Assert::IsTrue(result);
+			result = pkb.setCalledByT("callee", "caller");
+			Assert::IsFalse(result);
+		}
+
+		TEST_METHOD(TestSetNext) {
+			PKB pkb;
+			bool result;
+
+			result = pkb.setNext(1, 2);
+			Assert::IsTrue(result);
+			result = pkb.setNext(2, 3);
+			Assert::IsTrue(result);
+			result = pkb.setNext(1, 2);
+			Assert::IsFalse(result);
+		}
+
+		TEST_METHOD(TestSetPrevious) {
+			PKB pkb;
+			bool result;
+
+			result = pkb.setPrevious(5, 4);
+			Assert::IsTrue(result);
+			result = pkb.setPrevious(4, 3);
+			Assert::IsTrue(result);
+			result = pkb.setPrevious(5, 4);
+			Assert::IsFalse(result);
+		}
+
+		// PQL side
+		TEST_METHOD(TestGetParentChildrenPairs) {
+			PKB pkb;
+			bool result;
+			unordered_map<int, unordered_set<int>> expectedMap, testMap;
+			expectedMap = { {1, {2, 3}}}
+
+			pkb.insertStmtType(1, WHILE);
+			pkb.insertStmtType(2, READ);
+			pkb.insertStmtType(3, READ);
+			pkb.insertStmtType(4, ASSIGN);
+
+			PKB.setParent(1, 2);
+			PKB.setParent(1, 3);
+			PKB.setParent(1, 4);
+
+			testMap = pkb.getParentChildrenPairs(WHILE, READ);
+			result = expectedMap == testMap;
+			Assert::IsTrue(result);
 		}
 
 	};
