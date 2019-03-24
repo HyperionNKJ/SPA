@@ -334,7 +334,7 @@ int Parser::handleAssignment(string assignmentLine) {
 	//extract all possible substrings from the postfix notation
 	//start at each possible location and attempt to build a string, terminating if a string cannot be a valid pattern
 	vector<string> rhsSubstring = vector<string>();
-	string currentSubstr;
+	string currentSubstr, fullExpr = "";
 	int tokenCount, opCount;
 	for (unsigned int i = 0; i < postfixRHS.size() - 1; i++) {
 		currentSubstr = "";
@@ -356,10 +356,16 @@ int Parser::handleAssignment(string assignmentLine) {
 			}
 		}
 	}
-	// DEBUG
-	for (unsigned int i = 0; i < rhsSubstring.size(); i++) {
-		cout << rhsSubstring[i] << endl;
+	for (unsigned int i = 0; i < postfixRHS.size(); i++) {
+		fullExpr += postfixRHS[i] + " ";
 	}
+
+	//set PKB for pattern statements
+	pkb->insertFullPattern(fullExpr, statementNumber);
+	for (unsigned int i = 0; i < rhsSubstring.size(); i++) {
+		pkb->insertPattern(rhsSubstring[i], statementNumber);
+	}
+
 	//set lhs var
 	pkb->insertVar(lhsVar);
 	setModifies(statementNumber, currProcedure, lhsVar);
@@ -489,6 +495,7 @@ int Parser::handleWhile(string whileLine) {
 		if (isValidVarName(tokens[i])) {
 			pkb->insertVar(tokens[i]);
 			setUses(statementNumber, currProcedure, tokens[i]);
+			pkb->insertWhileControlVar(statementNumber, tokens[i]);
 		}
 		else if (isValidConstant(tokens[i])) {
 			pkb->insertConstant(stoi(tokens[i]));
@@ -544,6 +551,7 @@ int Parser::handleIf(string ifLine) {
 		if (isValidVarName(tokens[i])) {
 			pkb->insertVar(tokens[i]);
 			setUses(statementNumber, currProcedure, tokens[i]);
+			pkb->insertIfControlVar(statementNumber, tokens[i]);
 		}
 		else if (isValidConstant(tokens[i])) {
 			pkb->insertConstant(stoi(tokens[i]));
