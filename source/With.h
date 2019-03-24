@@ -38,7 +38,7 @@ private:
 	unordered_map<int, int> getCommonValueMap(const unordered_set<int>&, const unordered_set<int>&);
 	unordered_map<string, unordered_set<string>> getStrStrPairWithCommonStr(const unordered_set<string>&);
 	unordered_map<int, unordered_set<int>> getIntIntPairWithCommonStr(const unordered_set<string>&, const Type&, const Type&);
-	unordered_map<int, unordered_set<string>> getIntStrPairWithCommonStr(const unordered_set<string>&, const Type&);
+	unordered_map<string, unordered_set<int>> getStrIntPairWithCommonStr(const unordered_set<string>&, const Type&);
 
 
 	Result* evaulateIntInt(const string&, const string&); // e.g. 12 = 15

@@ -140,16 +140,14 @@ Result With::evaluate(const PKB& pkb) {
 
 // e.g. 12 = 15
 Result* With::evaulateIntInt(const string& numOne, const string& numTwo) {
-	Result* result = new Result();
-	result->setPassed(numOne == numTwo);
-	return result;
+	return evaluateStrStr(numOne, numTwo);
 } 
 
 // e.g. 12 = n
 Result* With::evaulateIntSyn(const string& num, const string& progLineSyn) {
 	Result* result = new Result();
 	int progLineNum = stoi(num);
-	if (pkb.getNumOfProgLines() >= progLineNum) {
+	if (pkb.getAllStmts().size() >= progLineNum) {
 		result->setPassed(true);
 		result->setAnswer(progLineSyn, progLineNum);
 	}
@@ -179,7 +177,6 @@ Result* With::evaulateIntAttrRefInt(const string& num, const string& synonym, co
 	Result* result = new Result();
 	int stmtNum = stoi(num);
 	unordered_set<int> validStatements = getValidStmts(type);
-
 	if (validStatements.count(stmtNum)) {
 		result->setPassed(true);
 		result->setAnswer(synonym, stmtNum);
@@ -326,10 +323,10 @@ Result* With::evaulateAttrRefStrAttrRefStr(const string& synOne, const Type& typ
 			result->setAnswer(synOne, synTwo, getIntIntPairWithCommonStr(commonString, typeOne, typeTwo));
 		}
 		else if (oneIsStringTyped && !twoIsStringTyped) { // // e.g. var.varName = print.varName, var is string typed and print is int typed
-			result->setAnswer(synTwo, synOne, getIntStrPairWithCommonStr(commonString, typeTwo), getIndexTable(typeOne));
+			result->setAnswer(synOne, synTwo, getStrIntPairWithCommonStr(commonString, typeTwo), getIndexTable(typeOne));
 		}
 		else { // // e.g. read.varName = proc.procName, read is int typed and proc is string typed
-			result->setAnswer(synOne, synTwo, getIntStrPairWithCommonStr(commonString, typeOne), getIndexTable(typeTwo));
+			result->setAnswer(synTwo, synOne, getStrIntPairWithCommonStr(commonString, typeOne), getIndexTable(typeTwo));
 		}
 	}
 	else {
@@ -338,18 +335,11 @@ Result* With::evaulateAttrRefStrAttrRefStr(const string& synOne, const Type& typ
 	return result;
 }
 
-unordered_map<int, unordered_set<string>> With::getIntStrPairWithCommonStr(const unordered_set<string>& commonStr, const Type& type) {
-	unordered_map<int, unordered_set<string>> answer;
+unordered_map<string, unordered_set<int>> With::getStrIntPairWithCommonStr(const unordered_set<string>& commonStr, const Type& type) {
+	unordered_map<string, unordered_set<int>> answer;
 	for (auto str : commonStr) {
 		unordered_set<int> validStmts = getStmtNums(type, str);
-		for (auto stmtNum : validStmts) {
-			if (answer.count(stmtNum)) {
-				answer.at(stmtNum).insert(str);
-			}
-			else {
-				answer.insert({ stmtNum, { str } });
-			}
-		}
+		answer.insert({ str, validStmts });
 	}
 	return answer;
 }
@@ -366,7 +356,7 @@ unordered_map<int, unordered_set<int>> With::getIntIntPairWithCommonStr(const un
 	return stmtPair;
 }
 
-// Utility function to duplicate a string set to map = {x, {x}}. This format is required by Result's setAnswer function.
+// Function to duplicate a string set to map = {x, {x}}. This format is required by Result's setAnswer function.
 unordered_map<string, unordered_set<string>> With::getStrStrPairWithCommonStr(const unordered_set<string>& set) {
 	unordered_map<string, unordered_set<string>> duplicatedMap;
 	for (auto str : set) {
