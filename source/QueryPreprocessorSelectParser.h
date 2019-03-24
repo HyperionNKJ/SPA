@@ -11,6 +11,8 @@ public:
 	static const std::regex INT_REGEX;
 	static const std::regex REL_REF_REGEX;
 
+	ProcessedQuery query;
+
 	QueryPreprocessorSelectParser(const std::string& statement, ProcessedQuery& processedQuery);
 
 	bool parse();
@@ -18,7 +20,6 @@ private:
 	enum ClauseType { RESULT, SUCH_THAT, PATTERN, WITH };
 
 	const std::string STATEMENT;
-	ProcessedQuery query;
 
 	bool parseResultCl(std::string& resultCl);
 	bool parseSuchThatCl(std::string& suchThatCl);

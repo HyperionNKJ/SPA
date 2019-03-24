@@ -36,7 +36,7 @@ bool QueryPreprocessorDeclareParser::parse() {
 		}
 
 		// insert synonym into declarations map
-		query.insertDeclaration(synonym, designEntity);
+		query.declarations.insert({ synonym, designEntity });
 	}
 
 	return true;

@@ -4,6 +4,8 @@
 
 class QueryPreprocessorPatternParser {
 public:
+	ProcessedQuery query;
+
 	QueryPreprocessorPatternParser(std::string& clause, ProcessedQuery& query);
 
 	bool parse();
@@ -14,7 +16,6 @@ private:
 	static const std::regex EXPRESSION_REGEX;
 
 	std::string clause;
-	ProcessedQuery query;
 
 	DesignEntity parseEntRef(std::string& parameter);
 	DesignEntity parseExpression(std::string& expression);

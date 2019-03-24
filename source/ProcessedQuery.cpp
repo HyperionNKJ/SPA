@@ -12,7 +12,8 @@ ProcessedQuery::ProcessedQuery() {
 
 bool ProcessedQuery::insertDeclaration(const std::string& synonym,
 	const Type& type) {
-	return declarations.insert({ synonym, type }).second;
+	declarations.insert({ synonym, type });
+	return true;
 }
 
 void ProcessedQuery::addResultClElement(const DesignEntity& element) {

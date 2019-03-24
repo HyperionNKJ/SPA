@@ -93,17 +93,20 @@ bool QueryPreprocessorSelectParser::parse() {
 		size_t clauseEndPos = selectCl.find(SPACE, typeSize + 6);
 		if (clauseEndPos == std::string::npos) {
 			clause = selectCl.substr(typeSize);
+			selectCl = "";
 		} else {
 			clause = selectCl.substr(typeSize, clauseEndPos - typeSize);
+			selectCl.erase(0, clauseEndPos + 1);
 		}
 
-		selectCl.erase(0, clauseEndPos + 1);
+		
 
 		bool status;
 		if (type == "such that") {
 			status = parseSuchThatCl(clause);
 		} else if (type == "pattern") {
 			QueryPreprocessorPatternParser parsePatternCl(clause, query);
+			query = parsePatternCl.query;
 			status = parsePatternCl.parse();
 		} else if (type == "with") {
 			status = parseWithCl(clause);
@@ -118,6 +121,7 @@ bool QueryPreprocessorSelectParser::parse() {
 			std::string rel = clause.substr(0, relSize);
 			if (query.declarations.find(rel) != query.declarations.end() && clauseType == ClauseType::SUCH_THAT) {
 				QueryPreprocessorPatternParser parsePatternCl(clause, query);
+				query = parsePatternCl.query;
 				status = parsePatternCl.parse();
 			} else if (clause.find('=') != std::string::npos && clauseType == ClauseType::WITH) {
 				parseWithCl(clause);
@@ -203,55 +207,45 @@ bool QueryPreprocessorSelectParser::parseSuchThatCl(std::string& suchThatCl) {
 		return false;
 	}
 
-	DesignEntity paramOne;
-	DesignEntity paramTwo;
-
-	if (!regex_match(parameters[0], IDENT_REGEX)) {
-		paramOne = parseParameter(parameters[0]);
-		return false;
-	}
-
-	if (!regex_match(parameters[1], IDENT_REGEX)) {
-		paramTwo = parseParameter(parameters[1]);
-		return false;
-	}
+	DesignEntity paramOne = parseParameter(parameters[0]);
+	DesignEntity paramTwo = parseParameter(parameters[1]);
 
 	if (rel == "Calls") {
-		Calls suchThatClause(paramOne, paramTwo);
-		query.addClause(&suchThatClause);
+		Calls* suchThatClause = new Calls(paramOne, paramTwo);
+		query.addClause(suchThatClause);
 	} else if (rel == "Calls*") {
-		CallsT suchThatClause(paramOne, paramTwo);
-		query.addClause(&suchThatClause);
+		CallsT* suchThatClause = new CallsT(paramOne, paramTwo);
+		query.addClause(suchThatClause);
 	} else if (rel == "Follows") {
-		Follows suchThatClause(paramOne, paramTwo);
-		query.addClause(&suchThatClause);
+		Follows* suchThatClause = new Follows(paramOne, paramTwo);
+		query.addClause(suchThatClause);
 	} else if (rel == "Follows*") {
-		FollowsT suchThatClause(paramOne, paramTwo);
-		query.addClause(&suchThatClause);
+		FollowsT* suchThatClause = new FollowsT(paramOne, paramTwo);
+		query.addClause(suchThatClause);
 	} else if (rel == "Modifies") {
 		if (paramOne.getType() == Type::PROCEDURE || regex_match(paramOne.getValue(), IDENT_REGEX)) {
-			ModifiesP suchThatClause(paramOne, paramTwo);
-			query.addClause(&suchThatClause);
+			ModifiesP* suchThatClause = new ModifiesP(paramOne, paramTwo);
+			query.addClause(suchThatClause);
 		} else {
-			ModifiesS suchThatClause(paramOne, paramTwo);
-			query.addClause(&suchThatClause);
+			ModifiesS* suchThatClause = new ModifiesS(paramOne, paramTwo);
+			query.addClause(suchThatClause);
 		}
 	} else if (rel == "Next") {
-		Next suchThatClause(paramOne, paramTwo);
-		query.addClause(&suchThatClause);
+		Next* suchThatClause = new Next(paramOne, paramTwo);
+		query.addClause(suchThatClause);
 	} else if (rel == "Next*") {
-		NextT suchThatClause(paramOne, paramTwo);
-		query.addClause(&suchThatClause);
+		NextT* suchThatClause = new NextT(paramOne, paramTwo);
+		query.addClause(suchThatClause);
 	} else if (rel == "Parent") {
-		Parent suchThatClause(paramOne, paramTwo);
-		query.addClause(&suchThatClause);
+		Parent* suchThatClause = new Parent(paramOne, paramTwo);
+		query.addClause(suchThatClause);
 	} else if (rel == "Uses") {
 		if (paramOne.getType() == Type::PROCEDURE || regex_match(paramOne.getValue(), IDENT_REGEX)) {
-			UsesP suchThatClause(paramOne, paramTwo);
-			query.addClause(&suchThatClause);
+			UsesP* suchThatClause = new UsesP(paramOne, paramTwo);
+			query.addClause(suchThatClause);
 		} else {
-			UsesS suchThatClause(paramOne, paramTwo);
-			query.addClause(&suchThatClause);
+			UsesS* suchThatClause = new UsesS(paramOne, paramTwo);
+			query.addClause(suchThatClause);
 		}
 	}
 

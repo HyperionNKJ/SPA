@@ -37,5 +37,15 @@ namespace UnitTesting {
 
 			Assert::IsTrue(result == expected);
 		}
+		TEST_METHOD(removeExtraWhiteSpaceSpecialCharacters) {
+			std::string original = "Select  < a  ,  b > such that Uses ( a , _ \" b \" _);";
+			std::string expected = "Select <a,b> such that Uses(a,_\"b\"_;";
+
+			QueryPreprocessorFormatter formatter(original);
+
+			std::string result = formatter.getFormattedQuery();
+
+			Assert::IsTrue(result == expected);
+		}
 	};
 }
