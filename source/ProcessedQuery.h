@@ -4,7 +4,6 @@
 #include <unordered_set>
 #include "Clause.h"
 #include "PatternClause.h"
-#include "SuchThatClause.h"
 
 class ProcessedQuery {
 public:
