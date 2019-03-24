@@ -21,7 +21,7 @@ const regex QueryPreprocessorPatternParser::INT_REGEX(INT);
 constexpr char REL_REF[] = "^(Modifies|Uses|Calls|Calls\\*|Parent|Parent\\*|Follows|Follows\\*|Next|Next\\*|Affects|Affects\\*)$";
 const regex QueryPreprocessorPatternParser::REL_REF_REGEX(REL_REF);
 
-constexpr char EXPRESSION[] = "^[a-zA-z0-9()*\\/%+- ]+$";
+constexpr char EXPRESSION[] = "^[a-zA-z0-9()*/%+\\- ]+$";
 const regex QueryPreprocessorPatternParser::EXPRESSION_REGEX(EXPRESSION);
 
 // Initializes a newly created QueryPreprocessorPatternParser.
