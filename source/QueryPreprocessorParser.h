@@ -1,7 +1,6 @@
 #pragma once
 
 #include "ProcessedQuery.h"
-#include "Statement.h"
 
 class QueryPreprocessorParser {
 public:

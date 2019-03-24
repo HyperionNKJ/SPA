@@ -11,11 +11,9 @@
 #include "NextT.h"
 #include "Parent.h"
 #include "ParentT.h"
-#include "PatternAssign.h"
-#include "PatternIf.h"
-#include "PatternWhile.h"
 #include "QueryPreprocessorHelper.h"
 #include "QueryPreprocessorDeclareParser.h"
+#include "QueryPreprocessorPatternParser.h"
 #include "QueryPreprocessorSelectParser.h"
 #include "UsesP.h"
 #include "UsesS.h"
@@ -105,7 +103,8 @@ bool QueryPreprocessorSelectParser::parse() {
 		if (type == "such that") {
 			status = parseSuchThatCl(clause);
 		} else if (type == "pattern") {
-			status = parsePatternCl(clause);
+			QueryPreprocessorPatternParser parsePatternCl(clause, query);
+			status = parsePatternCl.parse();
 		} else if (type == "with") {
 			status = parseWithCl(clause);
 		} else {
@@ -157,7 +156,7 @@ bool QueryPreprocessorSelectParser::parseResultCl(std::string& resultCl) {
 		}
 	} else if (resultCl == "BOOLEAN") {
 		DesignEntity element("", Type::BOOLEAN);
-		resultClElemList.push_back(element);
+		query.addResultClElement(element);
 	} else {
 		bool status = parseElem(resultCl);
 		if (!status) {
@@ -256,68 +255,6 @@ bool QueryPreprocessorSelectParser::parseSuchThatCl(std::string& suchThatCl) {
 	return true;
 }
 
-bool QueryPreprocessorSelectParser::parsePatternCl(std::string& patternCl) {
-	size_t synonymSize = patternCl.find('(');
-	size_t closeBracketPos = patternCl.find(')');
-
-	// first close bracket must be the last close bracket
-	// close bracket must be the last character in pattern clause
-	if (closeBracketPos + 1 != patternCl.size()) {
-		return false;
-	}
-
-	// open bracket should exist
-	if (synonymSize == std::string::npos) {
-		return false;
-	}
-
-	// extract synonym and check that it exist in declarations
-	std::string synonymString = patternCl.substr(0, synonymSize);
-	std::unordered_map<std::string, Type>::const_iterator element = query.declarations.find(synonymString);
-	if (element == query.declarations.end()) {
-		return false;
-	}
-	Type designEntity = element->second;
-	DesignEntity synonym(synonymString, designEntity);
-
-	// erase synonym and the brackets
-	patternCl = patternCl.substr(synonymSize + 1, closeBracketPos - synonymSize - 1);
-
-	// parse pattern parameters
-	std::vector<string> parameters = QueryPreprocessorHelper::split(patternCl, COMMA);
-	if (designEntity == Type::ASSIGN && parameters.size() == 2) {
-		// assign pattern
-		DesignEntity paramOne = parseParameter(parameters[0]);
-		DesignEntity paramTwo = parseExpresion(parameters[1]);
-
-		if (paramOne.getType() == Type::INVALID || paramTwo.getType() == Type::INVALID) {
-			return false;
-		}
-
-		PatternAssign pattern(synonym, paramOne, paramTwo);
-		query.addClause(&pattern);
-	} else if (designEntity == Type::WHILE 
-			&& parameters.size() == 2
-			&& parameters[1] == "_") {
-		// while pattern
-		DesignEntity paramOne = parseParameter(parameters[0]);
-		PatternWhile pattern(synonym, paramOne);
-		query.addClause(&pattern);
-	} else if (designEntity == Type::IF 
-			&& parameters.size() == 3
-			&& parameters[1] == "_"
-			&& parameters[2] == "_") {
-		// if pattern
-		DesignEntity paramOne = parseParameter(parameters[0]);
-		PatternIf pattern(synonym, paramOne);
-		query.addClause(&pattern);
-	} else {
-		return false;
-	}
-
-	return true;
-}
-
 bool QueryPreprocessorSelectParser::parseWithCl(std::string& withCl) {
 	size_t lhsSize = withCl.find('=');
 	if (lhsSize == std::string::npos) {
@@ -370,7 +307,7 @@ bool QueryPreprocessorSelectParser::parseElem(std::string& elem) {
 
 		Type designEntity = result->second;
 		DesignEntity element(elem, designEntity);
-		resultClElemList.push_back(element);
+		query.addResultClElement(element);
 	} else {
 		size_t resultClSynonymEnd = elem.find(CALL_OPERATOR);
 		std::string synonym = elem.substr(0, resultClSynonymEnd);
@@ -405,65 +342,7 @@ bool QueryPreprocessorSelectParser::parseElem(std::string& elem) {
 		}
 
 		DesignEntity element(synonym, designEntity, attrRef);
-		resultClElemList.push_back(element);
-	}
-}
-
-DesignEntity QueryPreprocessorSelectParser::parseAttrRef(std::string elem) {
-	size_t synonymSize = elem.find(CALL_OPERATOR);
-	std::string synonym = elem.substr(0, synonymSize);
-	std::string attrRefString = elem.substr(synonymSize + 1);
-
-	// synonym does not exist in declare clause
-	std::unordered_map<std::string, Type>::const_iterator result;
-	result = query.declarations.find(synonym);
-	if (result != query.declarations.end()) {
-		return DesignEntity("", Type::INVALID);
-	}
-
-	Type designEntity = result->second;
-
-	// attrRef is invalid
-	if (attrRefString != "procName"
-		&& attrRefString != "varName"
-		&& attrRefString != "value"
-		&& attrRefString != "stmt#") {
-		return DesignEntity("", Type::INVALID);
-	}
-
-	AttrRef attrRef = QueryPreprocessorHelper::getAttrRef(attrRefString);
-
-	if (!isValidSynonymAttrRefPair(designEntity, attrRef)) {
-		return DesignEntity("", Type::INVALID);
-	}
-
-	return DesignEntity(synonym, designEntity, attrRef);
-}
-
-DesignEntity QueryPreprocessorSelectParser::parseExpresion(std::string& expression) {
-	std::string test = "^[a-zA-z0-9()*\\/%+- ]+$";
-	regex testtest(test);
-
-	if (expression[0] == '"' && expression.back() == '"') {
-		expression = expression.substr(1, expression.size() - 2);
-
-		//convert to postfix
-
-		if (regex_match(expression, testtest)) {
-			return DesignEntity(expression, Type::INVALID);
-		}
-
-		return DesignEntity(expression, Type::PATTERN_EXACT);
-	} else if (expression[0] == '_' && expression[1] == '"' && expression.find("\"_") == expression.size() - 2) {
-		expression = expression.substr(2, expression.size() - 3);
-
-		//convert to postfix
-
-		if (regex_match(expression, testtest)) {
-			return DesignEntity(expression, Type::INVALID);
-		}
-
-		return DesignEntity(expression, Type::PATTERN_SUB);
+		query.addResultClElement(element);
 	}
 }
 

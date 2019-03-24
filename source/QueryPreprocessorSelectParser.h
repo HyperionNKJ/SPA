@@ -4,7 +4,6 @@
 #include <unordered_set>
 #include "ProcessedQuery.h"
 #include "Type.h"
-#include "Statement.h"
 
 class QueryPreprocessorSelectParser {
 public:
@@ -19,8 +18,6 @@ private:
 	enum ClauseType { RESULT, SUCH_THAT, PATTERN, WITH };
 
 	const std::string STATEMENT;
-
-	std::vector<DesignEntity> resultClElemList;
 	ProcessedQuery query;
 
 	bool parseResultCl(std::string& resultCl);
