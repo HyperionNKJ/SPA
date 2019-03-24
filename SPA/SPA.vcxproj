@@ -40,6 +40,7 @@
     <ClCompile Include="..\source\QueryPreprocessorPatternParser.cpp" />
     <ClCompile Include="..\source\QueryPreprocessorSelectParser.cpp" />
     <ClCompile Include="..\source\QueryPreprocessorTokenizer.cpp" />
+    <ClCompile Include="..\source\QueryPreprocessorWithParser.cpp" />
     <ClCompile Include="..\source\QueryProcessor.cpp" />
     <ClCompile Include="..\source\Result.cpp" />
     <ClCompile Include="..\source\ResultProjector.cpp" />
@@ -81,6 +82,7 @@
     <ClInclude Include="..\source\QueryPreprocessorPatternParser.h" />
     <ClInclude Include="..\source\QueryPreprocessorSelectParser.h" />
     <ClInclude Include="..\source\QueryPreprocessorTokenizer.h" />
+    <ClInclude Include="..\source\QueryPreprocessorWithParser.h" />
     <ClInclude Include="..\source\QueryProcessor.h" />
     <ClInclude Include="..\source\QueryTokenizer.h" />
     <ClInclude Include="..\source\Result.h" />

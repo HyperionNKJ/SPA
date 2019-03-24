@@ -1,3 +1,4 @@
+#include <regex>
 #include <sstream>
 #include <string>
 #include <unordered_map>
@@ -6,6 +7,11 @@
 #include "AttrRef.h"
 #include "Type.h"
 #include "QueryPreprocessorHelper.h"
+
+static std::string varNameRegex = "([[:alpha:]]([[:alnum:]])*)";
+static std::string constantRegex = "[[:digit:]]+";
+static std::string spaceRegex = "[[:s:]]*";
+static std::string openCurlyRegex = "\\{";
 
 const std::unordered_map<std::string, Type> QueryPreprocessorHelper::STRING_TO_TYPE = {
 	{"assign", Type::ASSIGN},
@@ -62,43 +68,30 @@ bool QueryPreprocessorHelper::isReservedWord(const std::string& target) {
 	return RESERVED_WORD.find(target) != RESERVED_WORD.end();
 }
 
-// Example program
-#include <iostream>
-#include <string>
-#include <vector>
-#include <regex>
-
-using namespace std;
-
-static string varNameRegex = "([[:alpha:]]([[:alnum:]])*)";
-static string constantRegex = "[[:digit:]]+";
-static string spaceRegex = "[[:s:]]*";
-static string openCurlyRegex = "\\{";
-
-bool isValidVarName(string line) {
-	string varNameRegexString = spaceRegex + varNameRegex + spaceRegex;
-	regex varRegex(varNameRegexString);
-	if (!regex_match(line, varRegex)) {
+bool isValidVarName(const std::string& line) {
+	std::string varNameRegexString = spaceRegex + varNameRegex + spaceRegex;
+	std::regex varRegex(varNameRegexString);
+	if (!std::regex_match(line, varRegex)) {
 		return false;
 	}
 	return true;
 }
 
-bool isValidConstant(string line) {
-	string constantRegexString = spaceRegex + constantRegex + spaceRegex;
-	regex constRegex(constantRegexString);
-	if (!regex_match(line, constRegex)) {
+bool isValidConstant(const std::string& line) {
+	std::string constantRegexString = spaceRegex + constantRegex + spaceRegex;
+	std::regex constRegex(constantRegexString);
+	if (!std::regex_match(line, constRegex)) {
 		return false;
 	}
 	return true;
 }
 
-std::string getPostFix(const string& infix) {
+std::string QueryPreprocessorHelper::getPostFix(const std::string& infix) {
 	//Separate variable names, constants and operation/brackets from each other
-	vector<string> assignTokens = vector<string>();
-	string lhsVar = infix.substr(0, infix.find_first_of("="));
-	string rhs = infix.substr(infix.find_first_of("=") + 1, string::npos);
-	string currToken = "";
+	std::vector<std::string> assignTokens = std::vector<std::string>();
+	std::string lhsVar = infix.substr(0, infix.find_first_of("="));
+	std::string rhs = infix.substr(infix.find_first_of("=") + 1, std::string::npos);
+	std::string currToken = "";
 	for (unsigned int i = 0; i < rhs.length(); i++) {
 		//assignment should have only alphanum and bracket/op. Less than 48 in ascii must be a bracket/op
 		if (rhs[i] < 48) {
@@ -116,8 +109,8 @@ std::string getPostFix(const string& infix) {
 		assignTokens.push_back(currToken);
 	}
 	//form postfix expression using Dijkstra Shunting Yard
-	vector<string> postfixRHS = vector<string>();
-	vector<string> opStack = vector<string>();
+	std::vector<std::string> postfixRHS = std::vector<std::string>();
+	std::vector<std::string> opStack = std::vector<std::string>();
 	for (unsigned int i = 0; i < assignTokens.size(); i++) {
 		if (isValidConstant(assignTokens[i]) || isValidVarName(assignTokens[i])) {
 			postfixRHS.push_back(assignTokens[i]);
@@ -154,7 +147,7 @@ std::string getPostFix(const string& infix) {
 
 	std::string postFix;
 
-	for (string elem : postfixRHS) {
+	for (std::string elem : postfixRHS) {
 		postFix += elem + ' ';
 	}
 

@@ -117,7 +117,8 @@ bool QueryPreprocessorSelectParser::parse() {
 			// If rel is found in declarations, the clause is a pattern clause
 			std::string rel = clause.substr(0, relSize);
 			if (query.declarations.find(rel) != query.declarations.end() && clauseType == ClauseType::SUCH_THAT) {
-				parsePatternCl(clause);
+				QueryPreprocessorPatternParser parsePatternCl(clause, query);
+				status = parsePatternCl.parse();
 			} else if (clause.find('=') != std::string::npos && clauseType == ClauseType::WITH) {
 				parseWithCl(clause);
 			} else if (clauseType == ClauseType::SUCH_THAT) {
@@ -400,4 +401,35 @@ DesignEntity QueryPreprocessorSelectParser::parseParameter(std::string& paramete
 	}
 
 	return DesignEntity("", Type::INVALID);
+}
+
+DesignEntity QueryPreprocessorSelectParser::parseAttrRef(std::string elem) {
+	size_t synonymSize = elem.find(CALL_OPERATOR);
+	std::string synonym = elem.substr(0, synonymSize);
+	std::string attrRefString = elem.substr(synonymSize + 1);
+
+	// synonym does not exist in declare clause
+	std::unordered_map<std::string, Type>::const_iterator result;
+	result = query.declarations.find(synonym);
+	if (result != query.declarations.end()) {
+		return DesignEntity("", Type::INVALID);
+	}
+
+	Type designEntity = result->second;
+
+	// attrRef is invalid
+	if (attrRefString != "procName"
+		&& attrRefString != "varName"
+		&& attrRefString != "value"
+		&& attrRefString != "stmt#") {
+		return DesignEntity("", Type::INVALID);
+	}
+
+	AttrRef attrRef = QueryPreprocessorHelper::getAttrRef(attrRefString);
+
+	if (!isValidSynonymAttrRefPair(designEntity, attrRef)) {
+		return DesignEntity("", Type::INVALID);
+	}
+
+	return DesignEntity(synonym, designEntity, attrRef);
 }

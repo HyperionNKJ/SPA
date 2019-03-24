@@ -22,13 +22,11 @@ private:
 
 	bool parseResultCl(std::string& resultCl);
 	bool parseSuchThatCl(std::string& suchThatCl);
-	bool parsePatternCl(std::string& patternCl);
 	bool parseWithCl(std::string& withCl);
 
 	bool parseElem(std::string& elem);
 
 	DesignEntity parseParameter(std::string& parameter);
-	DesignEntity parseExpresion(std::string& expression);
 	DesignEntity parseAttrRef(std::string elem);
 
 	static bool isValidSynonymAttrRefPair(Type de, AttrRef attrRef);
