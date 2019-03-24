@@ -70,7 +70,6 @@ public:
 	unordered_set<string> getAllVariables();
 	unordered_set<int> getAllConstant();
 	unordered_set<string> getAllProcedures();
-	unordered_map<string, int> getVarTable();
 	unordered_set<int> getCallStmts();
 	unordered_set<string> getCallProcNames();
 	unordered_set<string> getPrintVarNames();
@@ -156,8 +155,8 @@ public:
 
 	string getVarModifiedByAssignStmt(int stmtNum);
 	unordered_set<int> getAssignStmtsThatModifiesVar(string varName);
-	unordered_set<int> getAssignStmtsWithSubMatch(string subString);
-	unordered_set<int> getAssignStmtsWithExactMatch(string exactString);
+	unordered_set<int> getAssignStmtWithSubMatch(string subString);
+	unordered_set<int> getAssignStmtWithExactMatch(string exactString);
 
 	bool isCalls(string callerName, string receiverName);
 	bool isCallsT(string callerName, string receiverName);

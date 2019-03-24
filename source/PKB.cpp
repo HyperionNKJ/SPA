@@ -128,6 +128,7 @@ bool PKB::insertCPRStmtType(int stmtNum, Type type, string name) {
 			break;
 		default:
 			return false;
+		typedByNameMap[name].insert(stmtNum);
 		isValidStmt = allStmts.insert(stmtNum).second && typedStmtSet.insert(stmtNum).second;
 	}
 	if (!isValidStmt)
@@ -137,7 +138,6 @@ bool PKB::insertCPRStmtType(int stmtNum, Type type, string name) {
 		typedNameSet.insert(name);
 		typedVector.push_back(name);
 		typedTable.insert({name, typedVector.size() - 1});
-		typedByNameMap[name].insert(stmtNum);
 		return true;
 	}
 	return false;
@@ -277,10 +277,6 @@ unordered_set<int> PKB::getAllConstant() {
 
 unordered_set<string> PKB::getAllProcedures() {
 	return procSet;
-}
-
-unordered_map<string, int> PKB::getVarTable() {
-	return varTableByName;
 }
 
 unordered_set<int> PKB::getCallStmts() {
@@ -821,11 +817,11 @@ unordered_set<int> PKB::getAssignStmtsThatModifiesVar(string varName) {
 	return modifiesByVarMap[varName];
 }
 
-unordered_set<int> PKB::getAssignStmtsWithSubMatch(string subString) {
+unordered_set<int> PKB::getAssignStmtWithSubMatch(string subString) {
 	return patternMap[subString];
 }
 
-unordered_set<int> PKB::getAssignStmtsWithExactMatch(string exactString) {
+unordered_set<int> PKB::getAssignStmtWithExactMatch(string exactString) {
 	return fullPatternMap[exactString];
 }
 
