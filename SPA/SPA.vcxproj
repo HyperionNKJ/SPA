@@ -27,6 +27,8 @@
     <ClCompile Include="..\source\Parser.cpp" />
     <ClCompile Include="..\source\PatternAssign.cpp" />
     <ClCompile Include="..\source\PatternClause.cpp" />
+    <ClCompile Include="..\source\PatternIf.cpp" />
+    <ClCompile Include="..\source\PatternWhile.cpp" />
     <ClCompile Include="..\source\PKB.cpp" />
     <ClCompile Include="..\source\ProcessedQuery.cpp" />
     <ClCompile Include="..\source\QueryEvaluator.cpp" />
@@ -41,6 +43,7 @@
     <ClCompile Include="..\source\SuchThatClause.cpp" />
     <ClCompile Include="..\source\UsesP.cpp" />
     <ClCompile Include="..\source\UsesS.cpp" />
+    <ClCompile Include="..\source\With.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\Calls.h" />
@@ -61,6 +64,8 @@
     <ClInclude Include="..\source\Parser.h" />
     <ClInclude Include="..\source\PatternAssign.h" />
     <ClInclude Include="..\source\PatternClause.h" />
+    <ClInclude Include="..\source\PatternIf.h" />
+    <ClInclude Include="..\source\PatternWhile.h" />
     <ClInclude Include="..\source\PKB.h" />
     <ClInclude Include="..\source\ProcessedQuery.h" />
     <ClInclude Include="..\source\QueryEvaluator.h" />
@@ -77,6 +82,7 @@
     <ClInclude Include="..\source\Type.h" />
     <ClInclude Include="..\source\UsesP.h" />
     <ClInclude Include="..\source\UsesS.h" />
+    <ClInclude Include="..\source\With.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\SPA.vcxproj" />

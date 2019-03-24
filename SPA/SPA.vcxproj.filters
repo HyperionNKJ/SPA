@@ -111,6 +111,15 @@
     <ClCompile Include="..\source\PatternAssign.cpp">
       <Filter>Source Files\Clauses</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\PatternWhile.cpp">
+      <Filter>Source Files\Clauses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\PatternIf.cpp">
+      <Filter>Source Files\Clauses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\With.cpp">
+      <Filter>Source Files\Clauses</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\DesignEntity.h">
@@ -213,6 +222,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\PatternAssign.h">
+      <Filter>Header Files\Clauses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\PatternWhile.h">
+      <Filter>Header Files\Clauses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\PatternIf.h">
+      <Filter>Header Files\Clauses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\With.h">
       <Filter>Header Files\Clauses</Filter>
     </ClInclude>
   </ItemGroup>
