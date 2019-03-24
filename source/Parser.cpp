@@ -1001,6 +1001,7 @@ bool Parser::setProcIndirectUsesModifies() {
 			pkb->setUses(procName, elem);
 		}
 	}
+	return true;
 }
 
 bool Parser::setCalls(string currProcedure, string calledProcName) {
