@@ -347,6 +347,7 @@ int Parser::handleAssignment(string assignmentLine) {
 			else {
 				opCount++;
 			}
+			//Add expression if it is a single variable/constant, or 
 			if ((currentSubstr.length() > 2 && tokenCount - 1 == opCount) || (currentSubstr.length() == 1 && tokenCount == 1)) {
 				rhsSubstring.push_back(rightTrim(currentSubstr, " "));
 			}
@@ -372,7 +373,6 @@ int Parser::handleAssignment(string assignmentLine) {
 			pkb->insertConstant(stoi(assignTokens[i]));
 		}
 	}
-	pkb->insertAssignStmt(statementNumber, lhsVar, assignTokens);
 	pkb->insertStmtType(statementNumber, ASSIGN);
 	currentFollowVector.push_back(statementNumber);
 	return 0;
@@ -694,6 +694,10 @@ int Parser::handleCloseBracket(string closeBracket) {
 		parentVector.clear();
 		withinProcedure = false;
 		emptyProcedure = true;
+
+		lastInIfTracker.clear();
+		lastInElseTracker.clear();
+		firstInProc = true;
 		return 0;
 	}
 	else {
@@ -762,6 +766,7 @@ bool Parser::setNext(int stmtNum, Container closingType) {
 	//set boolean and return
 	if (firstInProc) {
 		firstInProc = false;
+		lastStmtInFlow = stmtNum;
 		return true;
 	}
 	//for case of first line in else
@@ -770,6 +775,7 @@ bool Parser::setNext(int stmtNum, Container closingType) {
 		cout << parentVector.back() << " " << statementNumber << "first line in else " << endl;
 		pkb->setNext(parentVector.back(), stmtNum);
 		pkb->setPrevious(parentVector.back(), stmtNum);
+		lastStmtInFlow = stmtNum;
 		return true;
 	}
 	//for case of close bracket involving while
@@ -785,8 +791,6 @@ bool Parser::setNext(int stmtNum, Container closingType) {
 				pkb->setPrevious(lastInIfTracker.back(), lastWhile);
 				pkb->setNext(lastInElseTracker.back(), lastWhile);
 				pkb->setPrevious(lastInElseTracker.back(), lastWhile);
-				pkb->setNext(lastWhile, statementNumber);
-				pkb->setPrevious(lastWhile, statementNumber);
 				
 				lastInIfTracker.pop_back();
 				lastInElseTracker.pop_back();
@@ -796,11 +800,10 @@ bool Parser::setNext(int stmtNum, Container closingType) {
 		else {
 			cout << lastWhile << " " << statementNumber << " end of while with no if involved" << endl;
 			cout << statementNumber - 1 << " " << lastWhile << endl;
-			pkb->setNext(lastWhile, stmtNum);
-			pkb->setPrevious(lastWhile, stmtNum);
-			pkb->setNext(stmtNum - 1, lastWhile);
-			pkb->setPrevious(stmtNum - 1, lastWhile);
+			pkb->setNext(lastStmtInFlow, lastWhile);
+			pkb->setPrevious(lastStmtInFlow, lastWhile);
 		}
+		lastStmtInFlow = lastWhile;
 		return true;
 	}
 	//for case of close bracket involving else
@@ -824,11 +827,13 @@ bool Parser::setNext(int stmtNum, Container closingType) {
 			lastInElseTracker.pop_back();
 			closedIfCount--;
 		}
+		lastStmtInFlow = stmtNum;
 	}
 	else {
 		cout << statementNumber - 1 << " " << statementNumber << "first nothing involved" << endl;
-		pkb->setNext(stmtNum - 1, stmtNum);
-		pkb->setPrevious(stmtNum - 1, stmtNum);
+		pkb->setNext(lastStmtInFlow, stmtNum);
+		pkb->setPrevious(lastStmtInFlow, stmtNum);
+		lastStmtInFlow = stmtNum;
 	}
 	return true;
 }

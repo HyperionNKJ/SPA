@@ -44,7 +44,7 @@ class Parser {
 	vector<int> lastInIfTracker = vector<int>();
 	vector<int> lastInElseTracker = vector<int>();
 	int closedIfCount = 0;
-	
+	int lastStmtInFlow = -1;
 
 private:
 	bool setParent(int);
