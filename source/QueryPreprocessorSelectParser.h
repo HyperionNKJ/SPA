@@ -31,6 +31,8 @@ private:
 	bool parseElem(std::string& elem);
 
 	DesignEntity parseParameter(std::string& parameter);
+	DesignEntity parseExpresion(std::string& expression);
+	DesignEntity parseAttrRef(std::string elem);
 
 	static bool isValidSynonymAttrRefPair(Type de, AttrRef attrRef);
 };
