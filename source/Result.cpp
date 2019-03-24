@@ -72,6 +72,14 @@ void Result::setAnswer(const string& keySynonym, const string& valueSynonym, con
 	}
 }
 
+void Result::setAnswer(const string& keySynonym, const string& valueSynonym, const unordered_map<string, unordered_set<int>>& answer, const unordered_map<string, int>& indexTable) {
+	this->synonyms.push_back(keySynonym);
+	this->synonyms.push_back(valueSynonym);
+	for (auto pair : answer) {
+		this->twoSynonymAnswer.insert({ indexTable.at(pair.first), pair.second });
+	}
+}
+
 void Result::setAnswer(const string& keySynonym, const string& valueSynonym, const unordered_map<string, unordered_set<string>>& answer, const unordered_map<string, int>& indexTable) {
 	this->setAnswer(keySynonym, valueSynonym, answer, indexTable, indexTable);
 }
@@ -85,6 +93,7 @@ void Result::setAnswer(const string& keySynonym, const string& valueSynonym, con
 		this->twoSynonymAnswer.insert({ keyIntEntity, valueIntEntities });
 	}
 }
+
 
 // Function converts a given string set to int set based on the given indexTable
 unordered_set<int> Result::convertStringsToIndices(const unordered_set<string>& stringSet, const unordered_map<string, int>& indexTable) {

@@ -31,6 +31,7 @@ public:
 	void setAnswer(const string&, const string&, const unordered_map<int, string>&, const unordered_map<string, int>&);
 	void setAnswer(const string&, const string&, const unordered_map<int, unordered_set<int>>&);
 	void setAnswer(const string&, const string&, const unordered_map<int, unordered_set<string>>&, const unordered_map<string, int>&);
+	void setAnswer(const string&, const string&, const unordered_map<string, unordered_set<int>>&, const unordered_map<string, int>&);
 	void setAnswer(const string&, const string&, const unordered_map<string, unordered_set<string>>&, const unordered_map<string, int>&);
 	void setAnswer(const string&, const string&, const unordered_map<string, unordered_set<string>>&, const unordered_map<string, int>&, const unordered_map<string, int>&);
 };
