@@ -155,8 +155,8 @@ public:
 
 	string getVarModifiedByAssignStmt(int stmtNum);
 	unordered_set<int> getAssignStmtsThatModifiesVar(string varName);
-	unordered_set<int> getAssignStmtWithSubMatch(string subString);
-	unordered_set<int> getAssignStmtWithExactMatch(string exactString);
+	unordered_set<int> getAssignStmtsWithSubMatch(string subString);
+	unordered_set<int> getAssignStmtsWithExactMatch(string exactString);
 
 	bool isCalls(string callerName, string receiverName);
 	bool isCallsT(string callerName, string receiverName);

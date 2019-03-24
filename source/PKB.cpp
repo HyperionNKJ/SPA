@@ -128,9 +128,9 @@ bool PKB::insertCPRStmtType(int stmtNum, Type type, string name) {
 			break;
 		default:
 			return false;
-		typedByNameMap[name].insert(stmtNum);
-		isValidStmt = allStmts.insert(stmtNum).second && typedStmtSet.insert(stmtNum).second;
 	}
+	typedByNameMap[name].insert(stmtNum);
+	isValidStmt = allStmts.insert(stmtNum).second && typedStmtSet.insert(stmtNum).second;
 	if (!isValidStmt)
 		return false;
 
@@ -817,11 +817,11 @@ unordered_set<int> PKB::getAssignStmtsThatModifiesVar(string varName) {
 	return modifiesByVarMap[varName];
 }
 
-unordered_set<int> PKB::getAssignStmtWithSubMatch(string subString) {
+unordered_set<int> PKB::getAssignStmtsWithSubMatch(string subString) {
 	return patternMap[subString];
 }
 
-unordered_set<int> PKB::getAssignStmtWithExactMatch(string exactString) {
+unordered_set<int> PKB::getAssignStmtsWithExactMatch(string exactString) {
 	return fullPatternMap[exactString];
 }
 
