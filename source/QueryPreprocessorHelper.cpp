@@ -151,5 +151,5 @@ std::string QueryPreprocessorHelper::getPostFix(const std::string& infix) {
 		postFix += elem + ' ';
 	}
 
-	return postFix.substr(0, postFix.size() - 2);
+	return postFix.substr(0, postFix.size() - 1);
 }

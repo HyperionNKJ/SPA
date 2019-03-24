@@ -106,8 +106,8 @@ bool QueryPreprocessorSelectParser::parse() {
 			status = parseSuchThatCl(clause);
 		} else if (type == "pattern") {
 			QueryPreprocessorPatternParser parsePatternCl(clause, query);
-			query = parsePatternCl.query;
 			status = parsePatternCl.parse();
+			query = parsePatternCl.query;
 		} else if (type == "with") {
 			status = parseWithCl(clause);
 		} else {

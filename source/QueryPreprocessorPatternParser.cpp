@@ -80,8 +80,8 @@ bool QueryPreprocessorPatternParser::parse() {
 			return false;
 		}
 
-		PatternAssign pattern(synonym, paramOne, paramTwo);
-		query.addClause(&pattern);
+		PatternAssign* pattern = new PatternAssign(synonym, paramOne, paramTwo);
+		query.addClause(pattern);
 	} else if (designEntity == Type::WHILE && paramTwoString == "_") {
 		// while pattern
 		DesignEntity paramOne = parseEntRef(paramOneString);
@@ -90,8 +90,8 @@ bool QueryPreprocessorPatternParser::parse() {
 			return false;
 		}
 
-		PatternWhile pattern(synonym, paramOne);
-		query.addClause(&pattern);
+		PatternWhile* pattern = new PatternWhile(synonym, paramOne);
+		query.addClause(pattern);
 	} else if (designEntity == Type::IF && paramTwoString == "_,_") {
 		// if pattern
 		DesignEntity paramOne = parseEntRef(paramOneString);
@@ -100,8 +100,8 @@ bool QueryPreprocessorPatternParser::parse() {
 			return false;
 		}
 
-		PatternIf pattern(synonym, paramOne);
-		query.addClause(&pattern);
+		PatternIf* pattern = new PatternIf(synonym, paramOne);
+		query.addClause(pattern);
 	} else {
 		return false;
 	}
@@ -118,8 +118,7 @@ DesignEntity QueryPreprocessorPatternParser::parseEntRef(std::string& entRef) {
 		return DesignEntity(EMPTY, Type::UNDERSCORE);
 	} else if (entRef.front() == QUOTE && entRef.back() == QUOTE) {
 		// constant
-		entRef.erase(0);
-		entRef.erase(entRef.size() - 1);
+		entRef = entRef.substr(1, entRef.size() - 2);
 
 		if (regex_match(entRef, IDENT_REGEX)) {
 			return DesignEntity(entRef, Type::FIXED);
@@ -139,12 +138,14 @@ DesignEntity QueryPreprocessorPatternParser::parseEntRef(std::string& entRef) {
 // Parse expression parameters of pattern clauses.
 // Returns DesignEntity of Type::INVALID if parameter cannot be parsed.
 DesignEntity QueryPreprocessorPatternParser::parseExpression(std::string& expression) {
-	if (expression.front() == '_'
+		if (expression == "_") {
+			return DesignEntity("", Type::UNDERSCORE);
+		} else if (expression.front() == '_'
 			&& expression.back() == '_'
 			&& expression[1] == QUOTE
 			&& expression[expression.size() - 2] == QUOTE) {
 		// sub match
-		expression = expression.substr(2, expression.size() - 3);
+		expression = expression.substr(2, expression.size() - 4);
 		expression = QueryPreprocessorHelper::getPostFix(expression);
 
 		if (regex_match(expression, EXPRESSION_REGEX)) {
