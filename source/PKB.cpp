@@ -105,7 +105,7 @@ bool PKB::insertCPRStmtType(int stmtNum, Type type, string name) {
 
 	switch(type) {
 		case CALL:
-			typedNameSet = callSet;
+			typedNameSet = calledSet;
 			typedStmtSet = callStmts;
 			typedTable = callTableByName;
 			typedVector = callTableByIdx;
@@ -201,11 +201,12 @@ bool PKB::insertFullPattern(string fullPattern, int stmtNum) {
 }
 
 bool PKB::setCalls(string proc1, string proc2) {
-	return callMap.insert({proc1, proc2}).second;
+	callSet.insert(proc1);
+	return callMap[proc1].insert(proc2).second;
 }
 
 bool PKB::setCalledBy(string proc1, string proc2) {
-	return calledByMap.insert({proc2, proc1}).second;
+	return calledByMap[proc2].insert(proc1).second;
 }
 
 bool PKB::setCallsT(string proc1, string proc2) {
@@ -270,7 +271,7 @@ unordered_set<int> PKB::getCallStmts() {
 }
 
 unordered_set<string> PKB::getCallProcNames() {
-	return callSet;
+	return calledSet;
 }
 
 unordered_set<string> PKB::getPrintVarNames() {
@@ -426,7 +427,7 @@ unordered_set<int> PKB::getStmtsThatModifiesVar(Type type) {
 }
 
 bool PKB::isProcModifies(string procName, string varName) {
-	if (modifiesByProcMap[procName].count(varName))
+	if (modifiesByProcMap.count(procName) && modifiesByProcMap[procName].count(varName))
 		return true;
 	return false;
 }
@@ -508,7 +509,7 @@ unordered_set<int> PKB::getStmtsThatUsesVar(Type type) {
 }
 
 bool PKB::isProcUses(string procName, string varName) {
-	if (usesByProcMap[procName].count(varName))
+	if (usesByProcMap.count(procName) && usesByProcMap[procName].count(varName))
 		return true;
 	return false;
 }
@@ -809,6 +810,62 @@ unordered_set<int> PKB::getAssignStmtsWithSubMatch(string subString) {
 
 unordered_set<int> PKB::getAssignStmtsWithExactMatch(string exactString) {
 	return fullPatternMap[exactString];
+}
+
+bool PKB::isCalls(string callerName, string receiverName) {
+	if (callMap.count(callerName) && callMap[callerName].count(receiverName))
+		return true;
+	return false;
+}
+
+bool PKB::isCallsT(string callerName, string receiverName) {
+	if (callsTMap.count(callerName) && callsTMap[callerName].count(receiverName))
+		return true;
+	return false;
+}
+
+bool PKB::hasReceiver(string callerName) {
+	if (callMap.count(callerName))
+		return true;
+	return false;
+}
+
+bool PKB::hasCaller(string receiverName) {
+	if (calledByMap.count(receiverName))
+		return true;
+	return false;
+}
+
+unordered_map<string, unordered_set<string>> PKB::getCallerReceiverPairs() {
+	return callMap;
+}
+
+unordered_map<string, unordered_set<string>> PKB::getCallerReceiverTPairs() {
+	return callsTMap;
+}
+
+unordered_set<string> PKB::getCallerProcedures() {
+	return callSet;
+}
+
+unordered_set<string> PKB::getReceiverProcedures() {
+	return calledSet;
+}
+
+unordered_set<string> PKB::getCallerOf(string receiverName) {
+	return calledByMap[receiverName];
+}
+
+unordered_set<string> PKB::getCallerTOf(string receiverName) {
+	return calledByTMap[receiverName];
+}
+
+unordered_set<string> PKB::getReceiverOf(string callerName) {
+	return callMap[callerName];
+}
+
+unordered_set<string> PKB::getReceiverTOf(string callerName) {
+	return callsTMap[callerName];
 }
 
 /******** Alvin's methods for Next* *************/
