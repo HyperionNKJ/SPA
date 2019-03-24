@@ -84,14 +84,14 @@ namespace UnitTesting {
 			Assert::IsTrue(result);
 			result = pkb.insertCPRStmtType(2, READ, "var1");
 			Assert::IsTrue(result);
-			result = pkb.insertCPRStmtType(3, PRINT, "var2")
+			result = pkb.insertCPRStmtType(3, PRINT, "var2");
 			Assert::IsTrue(result);
 
 			result = pkb.insertCPRStmtType(1, CALL, "proc");
 			Assert::IsFalse(result);
 			result = pkb.insertCPRStmtType(2, READ, "var1");
 			Assert::IsFalse(result);
-			result = pkb.insertCPRStmtType(3, PRINT, "var2")
+			result = pkb.insertCPRStmtType(3, PRINT, "var2");
 			Assert::IsFalse(result);
 
 			result = pkb.insertCPRStmtType(4, STATEMENT, "test");
@@ -361,16 +361,16 @@ namespace UnitTesting {
 			PKB pkb;
 			bool result;
 			unordered_map<int, unordered_set<int>> expectedMap, testMap;
-			expectedMap = { {1, {2, 3}}}
+			expectedMap = {{1, {2, 3}}};
 
 			pkb.insertStmtType(1, WHILE);
 			pkb.insertStmtType(2, READ);
 			pkb.insertStmtType(3, READ);
 			pkb.insertStmtType(4, ASSIGN);
 
-			PKB.setParent(1, 2);
-			PKB.setParent(1, 3);
-			PKB.setParent(1, 4);
+			pkb.setParent(1, 2);
+			pkb.setParent(1, 3);
+			pkb.setParent(1, 4);
 
 			testMap = pkb.getParentChildrenPairs(WHILE, READ);
 			result = expectedMap == testMap;
