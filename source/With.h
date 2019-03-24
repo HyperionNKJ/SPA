@@ -53,8 +53,6 @@ private:
 	Result* evaulateAttrRefIntSyn(const string&, const Type&, const string&);  // e.g. w.stmt# = n
 	Result* evaulateAttrRefIntConstVal(const string&, const Type&, const string&); // e.g. a.stmt# = c.value
 	Result* evaulateAttrRefIntAttrRefInt(const string&, const Type&, const string&, const Type&); // e.g. s.stmt# = w.stmt#
-
-
 	Result* evaulateAttrRefStrAttrRefStr(const string&, const Type&, const string&, const Type&); // e.g. v.varName = p.procName
 	
 public:

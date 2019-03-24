@@ -94,7 +94,6 @@ void Result::setAnswer(const string& keySynonym, const string& valueSynonym, con
 	}
 }
 
-
 // Function converts a given string set to int set based on the given indexTable
 unordered_set<int> Result::convertStringsToIndices(const unordered_set<string>& stringSet, const unordered_map<string, int>& indexTable) {
 	unordered_set<int> intSet;
