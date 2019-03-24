@@ -12,7 +12,7 @@ public:
 	static const std::regex INT_REGEX;
 	static const std::regex REL_REF_REGEX;
 
-	QueryPreprocessorSelectParser(const Statement& statement, ProcessedQuery& processedQuery);
+	QueryPreprocessorSelectParser(const std::string& statement, ProcessedQuery& processedQuery);
 
 	bool parse();
 private:
@@ -31,6 +31,8 @@ private:
 	bool parseElem(std::string& elem);
 
 	DesignEntity parseParameter(std::string& parameter);
+	DesignEntity parseExpresion(std::string& expression);
+	DesignEntity parseAttrRef(std::string elem);
 
 	static bool isValidSynonymAttrRefPair(Type de, AttrRef attrRef);
 };

@@ -101,26 +101,30 @@ bool PKB::insertCPRStmtType(int stmtNum, Type type, string name) {
 	unordered_set<string> typedNameSet;
 	unordered_set<int> typedStmtSet;
 	unordered_map<string, int> typedTable;
+	unordered_map<string, unordered_set<int>> typedByNameMap;
 	vector<string> typedVector; 
 
 	switch(type) {
 		case CALL:
-			typedNameSet = callSet;
+			typedNameSet = calledSet;
 			typedStmtSet = callStmts;
 			typedTable = callTableByName;
 			typedVector = callTableByIdx;
+			typedByNameMap = calledStmtMap;
 			break;
 		case PRINT:
 			typedNameSet = printSet;
 			typedStmtSet = printStmts;
 			typedTable = printTableByName;
 			typedVector = printTableByIdx;
+			typedByNameMap = printStmtMap;
 			break;
 		case READ:
 			typedNameSet = readSet;
 			typedStmtSet = readStmts;
 			typedTable = readTableByName;
 			typedVector = readTableByIdx;
+			typedByNameMap = readStmtMap;
 			break;
 		default:
 			return false;
@@ -133,9 +137,30 @@ bool PKB::insertCPRStmtType(int stmtNum, Type type, string name) {
 		typedNameSet.insert(name);
 		typedVector.push_back(name);
 		typedTable.insert({name, typedVector.size() - 1});
+		typedByNameMap[name].insert(stmtNum);
 		return true;
 	}
 	return false;
+}
+
+bool PKB::insertPattern(string pattern, int stmtNum) {
+	return patternMap[pattern].insert(stmtNum).second;
+}
+
+bool PKB::insertFullPattern(string fullPattern, int stmtNum) {
+	return fullPatternMap[fullPattern].insert(stmtNum).second;
+}
+
+bool PKB::insertIfControlVar(int ifStmtNum, string varName) {
+	ifControlStmtSet.insert(ifStmtNum);
+	ifControlVarMap[varName].insert(ifStmtNum);
+	return ifControlStmtMap[ifStmtNum].insert(varName).second;
+}
+
+bool PKB::insertWhileControlVar(int whileStmtNum, string varName) {
+	whileControlStmtSet.insert(whileStmtNum);
+	whileControlVarMap[varName].insert(whileStmtNum);
+	return whileControlStmtMap[whileStmtNum].insert(varName).second;
 }
 
 bool PKB::setFollows(int leader, int follower) {
@@ -192,20 +217,13 @@ bool PKB::setUses(string procName, string varName) {
 	return usesByProcMap[procName].insert(varName).second;
 }
 
-bool PKB::insertPattern(string pattern, int stmtNum) {
-	return patternMap[pattern].insert(stmtNum).second;
-}
-
-bool PKB::insertFullPattern(string fullPattern, int stmtNum) {
-	return fullPatternMap[fullPattern].insert(stmtNum).second;
-}
-
 bool PKB::setCalls(string proc1, string proc2) {
-	return callMap.insert({proc1, proc2}).second;
+	callSet.insert(proc1);
+	return callMap[proc1].insert(proc2).second;
 }
 
 bool PKB::setCalledBy(string proc1, string proc2) {
-	return calledByMap.insert({proc2, proc1}).second;
+	return calledByMap[proc2].insert(proc1).second;
 }
 
 bool PKB::setCallsT(string proc1, string proc2) {
@@ -270,7 +288,7 @@ unordered_set<int> PKB::getCallStmts() {
 }
 
 unordered_set<string> PKB::getCallProcNames() {
-	return callSet;
+	return calledSet;
 }
 
 unordered_set<string> PKB::getPrintVarNames() {
@@ -426,7 +444,7 @@ unordered_set<int> PKB::getStmtsThatModifiesVar(Type type) {
 }
 
 bool PKB::isProcModifies(string procName, string varName) {
-	if (modifiesByProcMap[procName].count(varName))
+	if (modifiesByProcMap.count(procName) && modifiesByProcMap[procName].count(varName))
 		return true;
 	return false;
 }
@@ -508,7 +526,7 @@ unordered_set<int> PKB::getStmtsThatUsesVar(Type type) {
 }
 
 bool PKB::isProcUses(string procName, string varName) {
-	if (usesByProcMap[procName].count(varName))
+	if (usesByProcMap.count(procName) && usesByProcMap[procName].count(varName))
 		return true;
 	return false;
 }
@@ -811,7 +829,67 @@ unordered_set<int> PKB::getAssignStmtsWithExactMatch(string exactString) {
 	return fullPatternMap[exactString];
 }
 
-/******** Alvin's methods for Next* *************/
+bool PKB::isCalls(string callerName, string receiverName) {
+	if (callMap.count(callerName) && callMap[callerName].count(receiverName))
+		return true;
+	return false;
+}
+
+bool PKB::isCallsT(string callerName, string receiverName) {
+	if (callsTMap.count(callerName) && callsTMap[callerName].count(receiverName))
+		return true;
+	return false;
+}
+
+bool PKB::hasReceiver(string callerName) {
+	if (callMap.count(callerName))
+		return true;
+	return false;
+}
+
+bool PKB::hasCaller(string receiverName) {
+	if (calledByMap.count(receiverName))
+		return true;
+	return false;
+}
+
+unordered_map<string, unordered_set<string>> PKB::getCallerReceiverPairs() {
+	return callMap;
+}
+
+unordered_map<string, unordered_set<string>> PKB::getCallerReceiverTPairs() {
+	return callsTMap;
+}
+
+unordered_set<string> PKB::getCallerProcedures() {
+	return callSet;
+}
+
+unordered_set<string> PKB::getReceiverProcedures() {
+	return calledSet;
+}
+
+unordered_set<string> PKB::getCallerOf(string receiverName) {
+	return calledByMap[receiverName];
+}
+
+unordered_set<string> PKB::getCallerTOf(string receiverName) {
+	return calledByTMap[receiverName];
+}
+
+unordered_set<string> PKB::getReceiverOf(string callerName) {
+	return callMap[callerName];
+}
+
+unordered_set<string> PKB::getReceiverTOf(string callerName) {
+	return callsTMap[callerName];
+}
+
+bool PKB::isNext(int prevLineNum, int nextLineNum) {
+	if (nextMap.count(prevLineNum) && nextMap[prevLineNum].count(nextLineNum))
+		return true;
+	return false;
+}
 
 bool PKB::isNextT(int firstLine, int secondLine) {
 	unordered_set<int> visitedLines;
@@ -840,74 +918,83 @@ bool PKB::isNextT(int firstLine, int secondLine) {
 	return found;
 }
 
-unordered_set<int> PKB::getNextTOf(int firstLine, Type stmtType) {
-	unordered_set<int> visitedLines;
-	unordered_set<int> typedStmtSet, resultSet;
-	switch (stmtType) {
-	case STATEMENT:
-		typedStmtSet = allStmts;
-		break;
-	case READ:
-		typedStmtSet = readStmts;
-		break;
-	case PRINT:
-		typedStmtSet = printStmts;
-		break;
-	case WHILE:
-		typedStmtSet = whileStmts;
-		break;
-	case IF:
-		typedStmtSet = ifStmts;
-		break;
-	case ASSIGN:
-		typedStmtSet = assignStmts;
-		break;
-	}
-	queue<int> linesQueue;
-	for (auto &elem : nextMap[firstLine]) {
-		linesQueue.push(elem);
-	}
-	while (linesQueue.size() > 0) {
-		int currLine = linesQueue.front();
-		linesQueue.pop();
-		if (visitedLines.count(currLine) <= 0) {
-			visitedLines.insert(currLine);
-			for (auto &elem : nextMap[currLine]) {
-				linesQueue.push(elem);
+bool PKB::hasNext(int prevLineNum) {
+	if (nextMap.count(prevLineNum))
+		return true;
+	return false;
+}
+
+bool PKB::hasPrevious(int nextLineNum) {
+	if (prevMap.count(nextLineNum))
+		return true;
+	return false;
+}
+
+unordered_map<int, unordered_set<int>> PKB::getPreviousNextPairs(Type previousType, Type nextType) {
+	unordered_set<int> prevTypedStmtSet = getTypedStmtSet(previousType), nextTypedStmtSet = getTypedStmtSet(nextType);
+	unordered_map<int, unordered_set<int>> resultMap;
+
+	for (const auto&elem: nextMap) {
+		if (prevTypedStmtSet.count(elem.first)) {
+			for (const auto&elem2: elem.second) {
+				if (nextTypedStmtSet.count(elem2))
+					resultMap[elem.first].insert(elem2);
 			}
 		}
 	}
-	for (auto &elem : visitedLines) {
-		if (typedStmtSet.count(elem) > 0) {
-			resultSet.insert(elem);
+
+	return resultMap;
+}
+
+unordered_map<int, unordered_set<int>> PKB::getPreviousNextTPairs(Type firstStmtType, Type secondStmtType) {
+	unordered_map<int, unordered_set<int>> resultMap;
+	unordered_set<int> typedStmtSet = getTypedStmtSet(firstStmtType);
+	for (auto &elem : typedStmtSet) {
+		unordered_set<int> resultSet = getNextTOf(elem, secondStmtType);
+		resultMap[elem] = resultSet;
+	}
+	return resultMap;
+}
+
+unordered_set<int> PKB::getPreviousLines(Type previousType) {
+	unordered_set<int> typedStmtSet = getTypedStmtSet(previousType), resultSet;
+
+	for (const auto&elem : nextMap) {
+		if (typedStmtSet.count(elem.first))
+			resultSet.insert(elem.first);
+	}
+
+	return resultSet;
+}
+
+unordered_set<int> PKB::getNextLines(Type nextType) {
+	unordered_set<int> typedStmtSet = getTypedStmtSet(nextType), resultSet;
+
+	for (const auto&elem : prevMap) {
+		if (typedStmtSet.count(elem.first))
+			resultSet.insert(elem.first);
+	}
+
+	return resultSet;
+}
+
+unordered_set<int> PKB::getPreviousOf(int nextLineNum, Type previousType) {
+	unordered_set<int> typedStmtSet = getTypedStmtSet(previousType), resultSet;
+
+	if (prevMap.count(nextLineNum)) {
+		for (const auto&elem : prevMap[nextLineNum]) {
+			if (typedStmtSet.count(elem)) {
+				resultSet.insert(elem);
+			}
 		}
 	}
+
 	return resultSet;
 }
 
 unordered_set<int> PKB::getPreviousTOf(int firstLine, Type stmtType) {
 	unordered_set<int> visitedLines;
-	unordered_set<int> typedStmtSet, resultSet;
-	switch (stmtType) {
-	case STATEMENT:
-		typedStmtSet = allStmts;
-		break;
-	case READ:
-		typedStmtSet = readStmts;
-		break;
-	case PRINT:
-		typedStmtSet = printStmts;
-		break;
-	case WHILE:
-		typedStmtSet = whileStmts;
-		break;
-	case IF:
-		typedStmtSet = ifStmts;
-		break;
-	case ASSIGN:
-		typedStmtSet = assignStmts;
-		break;
-	}
+	unordered_set<int> typedStmtSet = getTypedStmtSet(stmtType), resultSet;
 	queue<int> linesQueue;
 	for (auto &elem : prevMap[firstLine]) {
 		linesQueue.push(elem);
@@ -930,32 +1017,92 @@ unordered_set<int> PKB::getPreviousTOf(int firstLine, Type stmtType) {
 	return resultSet;
 }
 
-unordered_map<int, unordered_set<int>> PKB::getPreviousNextTPairs(Type firstStmtType, Type secondStmtType) {
-	unordered_map<int, unordered_set<int>> resultMap;
-	unordered_set<int> typedStmtSet;
-	switch (firstStmtType) {
-	case STATEMENT:
-		typedStmtSet = allStmts;
-		break;
-	case READ:
-		typedStmtSet = readStmts;
-		break;
-	case PRINT:
-		typedStmtSet = printStmts;
-		break;
-	case WHILE:
-		typedStmtSet = whileStmts;
-		break;
-	case IF:
-		typedStmtSet = ifStmts;
-		break;
-	case ASSIGN:
-		typedStmtSet = assignStmts;
-		break;
+unordered_set<int> PKB::getNextOf(int prevLineNum, Type nextType) {
+	unordered_set<int> typedStmtSet = getTypedStmtSet(nextType), resultSet;
+
+	if (nextMap.count(prevLineNum)) {
+		for (const auto &elem : prevMap[prevLineNum]) {
+			if (typedStmtSet.count(elem)) {
+				resultSet.insert(elem);
+			}
+		}
 	}
-	for (auto &elem : typedStmtSet) {
-		unordered_set<int> resultSet = getNextTOf(elem, secondStmtType);
-		resultMap[elem] = resultSet;
+
+	return resultSet;
+}
+
+unordered_set<int> PKB::getNextTOf(int firstLine, Type stmtType) {
+	unordered_set<int> visitedLines;
+	unordered_set<int> typedStmtSet = getTypedStmtSet(stmtType), resultSet;
+	queue<int> linesQueue;
+	for (auto &elem : nextMap[firstLine]) {
+		linesQueue.push(elem);
 	}
-	return resultMap;
+	while (linesQueue.size() > 0) {
+		int currLine = linesQueue.front();
+		linesQueue.pop();
+		if (visitedLines.count(currLine) <= 0) {
+			visitedLines.insert(currLine);
+			for (auto &elem : nextMap[currLine]) {
+				linesQueue.push(elem);
+			}
+		}
+	}
+	for (auto &elem : visitedLines) {
+		if (typedStmtSet.count(elem) > 0) {
+			resultSet.insert(elem);
+		}
+	}
+	return resultSet;
+}
+
+unordered_map<int, unordered_set<string>> PKB::getIfControlVarPair() {
+	return ifControlStmtMap;
+}
+
+unordered_set<int> PKB::getIfWithControlVar() {
+	return ifControlStmtSet;
+}
+
+unordered_set<int> PKB::getIfWithControlVar(string controlVar) {
+	unordered_set<int> emptySet;
+	if (ifControlVarMap.count(controlVar))
+		return ifControlVarMap[controlVar];
+	return emptySet;
+}
+
+unordered_map<int, unordered_set<string>> PKB::getWhileControlVarPair() {
+	return whileControlStmtMap;
+}
+
+unordered_set<int> PKB::getWhileWithControlVar() {
+	return whileControlStmtSet;
+}
+
+unordered_set<int> PKB::getWhileWithControlVar(string controlVar) {
+	unordered_set<int> emptySet;
+	if (whileControlVarMap.count(controlVar))
+		return whileControlVarMap[controlVar];
+	return emptySet;
+}
+
+unordered_set<int> PKB::getCallStmtsWithProc(string procName) {
+	unordered_set<int> emptySet;
+	if (calledStmtMap.count(procName))
+		return calledStmtMap[procName];
+	return emptySet;
+}
+
+unordered_set<int> PKB::getPrintStmtsWithVar(string varName) {
+	unordered_set<int> emptySet;
+	if (printStmtMap.count(varName))
+		return printStmtMap[varName];
+	return emptySet;
+}
+
+unordered_set<int> PKB::getReadStmtsWithVar(string varName) {
+	unordered_set<int> emptySet;
+	if (readStmtMap.count(varName))
+		return readStmtMap[varName];
+	return emptySet;
 }

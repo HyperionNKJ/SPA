@@ -19,6 +19,7 @@
 #include "QueryPreprocessorSelectParser.h"
 #include "UsesP.h"
 #include "UsesS.h"
+#include "With.h"
 
 constexpr auto SPACE = ' ';
 constexpr auto COMMA = ',';
@@ -38,8 +39,8 @@ constexpr char REL_REF[] = "^(Modifies|Uses|Calls|Calls\\*|Parent|Parent\\*|Foll
 const regex QueryPreprocessorSelectParser::REL_REF_REGEX(REL_REF);
 
 // Initializes a newly created QueryPreprocessorSelectParser.
-QueryPreprocessorSelectParser::QueryPreprocessorSelectParser(const Statement& statement, ProcessedQuery& query)
-				: STATEMENT(statement.VALUE),
+QueryPreprocessorSelectParser::QueryPreprocessorSelectParser(const string& statement, ProcessedQuery& query)
+				: STATEMENT(statement),
 				query(query) {
 }
 
@@ -226,11 +227,13 @@ bool QueryPreprocessorSelectParser::parseSuchThatCl(std::string& suchThatCl) {
 		FollowsT suchThatClause(paramOne, paramTwo);
 		query.addClause(&suchThatClause);
 	} else if (rel == "Modifies") {
-		ModifiesP suchThatClause(paramOne, paramTwo);
-		query.addClause(&suchThatClause);
-	} else if (rel == "Modifies") {
-		ModifiesS suchThatClause(paramOne, paramTwo);
-		query.addClause(&suchThatClause);
+		if (paramOne.getType() == Type::PROCEDURE || regex_match(paramOne.getValue(), IDENT_REGEX)) {
+			ModifiesP suchThatClause(paramOne, paramTwo);
+			query.addClause(&suchThatClause);
+		} else {
+			ModifiesS suchThatClause(paramOne, paramTwo);
+			query.addClause(&suchThatClause);
+		}
 	} else if (rel == "Next") {
 		Next suchThatClause(paramOne, paramTwo);
 		query.addClause(&suchThatClause);
@@ -241,11 +244,13 @@ bool QueryPreprocessorSelectParser::parseSuchThatCl(std::string& suchThatCl) {
 		Parent suchThatClause(paramOne, paramTwo);
 		query.addClause(&suchThatClause);
 	} else if (rel == "Uses") {
-		UsesP suchThatClause(paramOne, paramTwo);
-		query.addClause(&suchThatClause);
-	} else if (rel == "Uses") {
-		UsesS suchThatClause(paramOne, paramTwo);
-		query.addClause(&suchThatClause);
+		if (paramOne.getType() == Type::PROCEDURE || regex_match(paramOne.getValue(), IDENT_REGEX)) {
+			UsesP suchThatClause(paramOne, paramTwo);
+			query.addClause(&suchThatClause);
+		} else {
+			UsesS suchThatClause(paramOne, paramTwo);
+			query.addClause(&suchThatClause);
+		}
 	}
 
 	return true;
@@ -283,7 +288,12 @@ bool QueryPreprocessorSelectParser::parsePatternCl(std::string& patternCl) {
 	if (designEntity == Type::ASSIGN && parameters.size() == 2) {
 		// assign pattern
 		DesignEntity paramOne = parseParameter(parameters[0]);
-		DesignEntity paramTwo = parseParameter(parameters[1]);
+		DesignEntity paramTwo = parseExpresion(parameters[1]);
+
+		if (paramOne.getType() == Type::INVALID || paramTwo.getType() == Type::INVALID) {
+			return false;
+		}
+
 		PatternAssign pattern(synonym, paramOne, paramTwo);
 		query.addClause(&pattern);
 	} else if (designEntity == Type::WHILE 
@@ -317,35 +327,28 @@ bool QueryPreprocessorSelectParser::parseWithCl(std::string& withCl) {
 	std::string lhs = withCl.substr(0, lhsSize);
 	std::string rhs = withCl.substr(lhsSize + 1);
 
+	DesignEntity paramOne;
+	DesignEntity paramTwo;
+
 	size_t lhsSynonymSize = lhs.find('.');
-	std::string lhsSynonym;
-	std::string lhsAttrRef;
-
-	if (lhsSynonymSize != std::string::npos) {
-		std::string synonymString = lhs.substr(0, lhsSynonymSize);
-		DesignEntity synonym = parseParameter(synonymString);
-		unordered_map<std::string, Type>::const_iterator element = query.declarations.find(synonymString);
-		if (element == query.declarations.end()) {
-			return false;
-		}
-
-		lhsAttrRef = lhs.substr(lhsSynonymSize + 1);
+	if (lhsSynonymSize == std::string::npos) {
+		// prog_line, constant, statement number
 	} else {
-		lhsSynonym = lhs;
-		lhsAttrRef = "";
+		paramOne = parseAttrRef(lhs);
 	}
 
-	size_t rhsSynonymSize = rhs.find(CALL_OPERATOR);
-	std::string rhsSynonym;
-	std::string rhsAttrRef;
-
-	if (rhsSynonymSize != std::string::npos) {
-		rhsSynonym = rhs.substr(0, rhsSynonymSize);
-		rhsAttrRef = rhs.substr(rhsSynonymSize + 1);
-	} else {
-		rhsSynonym = rhs;
-		rhsAttrRef = "";
+	size_t rhsSynonymSize = rhs.find('.');
+	if (rhsSynonymSize == std::string::npos) {
+		// prog_line, constant, statement number
 	}
+	else {
+		paramTwo = parseAttrRef(lhs);
+	}
+
+	DesignEntity placeholder("", Type::INVALID);
+
+	With withClause(paramOne, paramTwo);
+	query.addClause(&withClause);
 }
 
 // parse element
@@ -406,8 +409,65 @@ bool QueryPreprocessorSelectParser::parseElem(std::string& elem) {
 	}
 }
 
-bool QueryPreprocessorSelectParser::isValidSynonymAttrRefPair(Type de,
-		AttrRef attrRef) {
+DesignEntity QueryPreprocessorSelectParser::parseAttrRef(std::string elem) {
+	size_t synonymSize = elem.find(CALL_OPERATOR);
+	std::string synonym = elem.substr(0, synonymSize);
+	std::string attrRefString = elem.substr(synonymSize + 1);
+
+	// synonym does not exist in declare clause
+	std::unordered_map<std::string, Type>::const_iterator result;
+	result = query.declarations.find(synonym);
+	if (result != query.declarations.end()) {
+		return DesignEntity("", Type::INVALID);
+	}
+
+	Type designEntity = result->second;
+
+	// attrRef is invalid
+	if (attrRefString != "procName"
+		&& attrRefString != "varName"
+		&& attrRefString != "value"
+		&& attrRefString != "stmt#") {
+		return DesignEntity("", Type::INVALID);
+	}
+
+	AttrRef attrRef = QueryPreprocessorHelper::getAttrRef(attrRefString);
+
+	if (!isValidSynonymAttrRefPair(designEntity, attrRef)) {
+		return DesignEntity("", Type::INVALID);
+	}
+
+	return DesignEntity(synonym, designEntity, attrRef);
+}
+
+DesignEntity QueryPreprocessorSelectParser::parseExpresion(std::string& expression) {
+	std::string test = "^[a-zA-z0-9()*\\/%+- ]+$";
+	regex testtest(test);
+
+	if (expression[0] == '"' && expression.back() == '"') {
+		expression = expression.substr(1, expression.size() - 2);
+
+		//convert to postfix
+
+		if (regex_match(expression, testtest)) {
+			return DesignEntity(expression, Type::INVALID);
+		}
+
+		return DesignEntity(expression, Type::PATTERN_EXACT);
+	} else if (expression[0] == '_' && expression[1] == '"' && expression.find("\"_") == expression.size() - 2) {
+		expression = expression.substr(2, expression.size() - 3);
+
+		//convert to postfix
+
+		if (regex_match(expression, testtest)) {
+			return DesignEntity(expression, Type::INVALID);
+		}
+
+		return DesignEntity(expression, Type::PATTERN_SUB);
+	}
+}
+
+bool QueryPreprocessorSelectParser::isValidSynonymAttrRefPair(Type de, AttrRef attrRef) {
 	if (attrRef == AttrRef::PROC_NAME) {
 		if (de != Type::PROCEDURE && de != Type::CALL) {
 			return false;
@@ -440,8 +500,6 @@ DesignEntity QueryPreprocessorSelectParser::parseParameter(std::string& paramete
 		return DesignEntity(parameter, Type::FIXED);
 	} else if (parameter.front() == '"' && parameter.back() == '"') {
 		// constant
-
-		// remove quotations
 		parameter.erase(0);
 		parameter.erase(parameter.size() - 1);
 
@@ -454,16 +512,6 @@ DesignEntity QueryPreprocessorSelectParser::parseParameter(std::string& paramete
 			&& query.declarations.find(parameter) != query.declarations.end()) {
 		Type designEntity = query.declarations.find(parameter)->second;
 		return DesignEntity(parameter, designEntity);
-	} else if (parameter.find("_\"") == 0 
-			&& parameter.find("\"_") == parameter.size() - 2) {
-		parameter.erase(0, 2);
-		parameter.erase(parameter.size() - 2, 2);
-
-		if (regex_match(parameter, IDENT_REGEX)) {
-			return DesignEntity(parameter, Type::PATTERN_SUB);
-		}
-
-		return DesignEntity("", Type::INVALID);
 	}
 
 	return DesignEntity("", Type::INVALID);
