@@ -163,4 +163,6 @@ DesignEntity QueryPreprocessorPatternParser::parseExpression(std::string& expres
 
 		return DesignEntity(expression, Type::PATTERN_EXACT);
 	}
+
+	return DesignEntity(expression, Type::INVALID);
 }

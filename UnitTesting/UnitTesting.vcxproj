@@ -164,6 +164,7 @@
   <ItemGroup>
     <ClCompile Include="TestParser.cpp" />
     <ClCompile Include="TestPKB.cpp" />
+    <ClCompile Include="TestQueryPreprocessorFormatter.cpp" />
     <ClCompile Include="TestResult.cpp" />
     <ClCompile Include="TestResultProjector.cpp" />
     <ClCompile Include="stdafx.cpp">

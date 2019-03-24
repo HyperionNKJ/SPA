@@ -42,9 +42,6 @@
     <ClCompile Include="..\source\QueryEvaluator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\QueryParser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\QueryPreprocessor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -54,13 +51,7 @@
     <ClCompile Include="..\source\QueryProcessor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\QueryTokenizer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\ResultProjector.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\Statement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\source\ModifiesS.cpp">
@@ -132,6 +123,9 @@
     <ClCompile Include="..\source\QueryPreprocessorTokenizer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\QueryPreprocessorPatternParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\DesignEntity.h">
@@ -174,12 +168,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\ResultProjector.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\Statement.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\StatementType.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\Type.h">
@@ -258,6 +246,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\QueryPreprocessorTokenizer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\QueryPreprocessorPatternParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

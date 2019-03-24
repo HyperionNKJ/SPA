@@ -7,8 +7,8 @@ constexpr auto SPACE = ' ';
 constexpr auto COMMA = ',';
 
 // Initializes a newly created QueryPreprocessorDeclareParser.
-QueryPreprocessorDeclareParser::QueryPreprocessorDeclareParser(const std::string& statement, ProcessedQuery& query)
-		: STATEMENT(statement), query(query){
+QueryPreprocessorDeclareParser::QueryPreprocessorDeclareParser(const std::string& statement, 
+		ProcessedQuery& query): STATEMENT(statement), query(query){
 
 }
 

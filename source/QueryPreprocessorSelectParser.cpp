@@ -163,6 +163,8 @@ bool QueryPreprocessorSelectParser::parseResultCl(std::string& resultCl) {
 			return false;
 		}
 	}
+
+	return true;
 }
 
 // Parse such that clause.
@@ -286,6 +288,8 @@ bool QueryPreprocessorSelectParser::parseWithCl(std::string& withCl) {
 
 	With withClause(paramOne, paramTwo);
 	query.addClause(&withClause);
+
+	return true;
 }
 
 // parse element
@@ -344,6 +348,8 @@ bool QueryPreprocessorSelectParser::parseElem(std::string& elem) {
 		DesignEntity element(synonym, designEntity, attrRef);
 		query.addResultClElement(element);
 	}
+
+	return true;
 }
 
 bool QueryPreprocessorSelectParser::isValidSynonymAttrRefPair(Type de, AttrRef attrRef) {

@@ -4,7 +4,7 @@
 #include "QueryPreprocessorTokenizer.h"
 #include "QueryPreprocessor.h"
 
-QueryPreprocessor::QueryPreprocessor(std::string& query) : query(query) {
+QueryPreprocessor::QueryPreprocessor(std::string& query): query(query) {
 
 }
 
