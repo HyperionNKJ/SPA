@@ -101,6 +101,7 @@ bool PKB::insertCPRStmtType(int stmtNum, Type type, string name) {
 	unordered_set<string> typedNameSet;
 	unordered_set<int> typedStmtSet;
 	unordered_map<string, int> typedTable;
+	unordered_map<string, unordered_set<int>> typedByNameMap;
 	vector<string> typedVector; 
 
 	switch(type) {
@@ -109,18 +110,21 @@ bool PKB::insertCPRStmtType(int stmtNum, Type type, string name) {
 			typedStmtSet = callStmts;
 			typedTable = callTableByName;
 			typedVector = callTableByIdx;
+			typedByNameMap = calledStmtMap;
 			break;
 		case PRINT:
 			typedNameSet = printSet;
 			typedStmtSet = printStmts;
 			typedTable = printTableByName;
 			typedVector = printTableByIdx;
+			typedByNameMap = printStmtMap;
 			break;
 		case READ:
 			typedNameSet = readSet;
 			typedStmtSet = readStmts;
 			typedTable = readTableByName;
 			typedVector = readTableByIdx;
+			typedByNameMap = readStmtMap;
 			break;
 		default:
 			return false;
@@ -133,6 +137,7 @@ bool PKB::insertCPRStmtType(int stmtNum, Type type, string name) {
 		typedNameSet.insert(name);
 		typedVector.push_back(name);
 		typedTable.insert({name, typedVector.size() - 1});
+		typedByNameMap[name].insert(stmtNum);
 		return true;
 	}
 	return false;
@@ -1078,5 +1083,26 @@ unordered_set<int> PKB::getWhileWithControlVar(string controlVar) {
 	unordered_set<int> emptySet;
 	if (whileControlVarMap.count(controlVar))
 		return whileControlVarMap[controlVar];
+	return emptySet;
+}
+
+unordered_set<int> PKB::getCallStmtsWithProc(string procName) {
+	unordered_set<int> emptySet;
+	if (calledStmtMap.count(procName))
+		return calledStmtMap[procName];
+	return emptySet;
+}
+
+unordered_set<int> PKB::getPrintStmtsWithVar(string varName) {
+	unordered_set<int> emptySet;
+	if (printStmtMap.count(varName))
+		return printStmtMap[varName];
+	return emptySet;
+}
+
+unordered_set<int> PKB::getReadStmtsWithVar(string varName) {
+	unordered_set<int> emptySet;
+	if (readStmtMap.count(varName))
+		return readStmtMap[varName];
 	return emptySet;
 }

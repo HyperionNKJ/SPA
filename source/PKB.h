@@ -20,7 +20,7 @@ private:
 	unordered_set<int> allStmts, readStmts, printStmts, whileStmts, ifStmts, assignStmts, constSet, getTypedStmtSet(Type type), callStmts, ifControlStmtSet, whileControlStmtSet;
 	unordered_map<int, unordered_set<int>> leaderTMap, followerTMap, parentMap, parentTMap, childrenTMap, nextMap, prevMap;
 	unordered_map<int, int> leaderMap, followerMap, childrenMap;
-	unordered_map<string, unordered_set<int>> modifiesByVarMap, usesByVarMap, patternMap, fullPatternMap, ifControlVarMap, whileControlVarMap;
+	unordered_map<string, unordered_set<int>> calledStmtMap, printStmtMap, readStmtMap, modifiesByVarMap, usesByVarMap, patternMap, fullPatternMap, ifControlVarMap, whileControlVarMap;
 	unordered_map<int, unordered_set<string>> modifiesByStmtNumMap, usesByStmtNumMap, ifControlStmtMap, whileControlStmtMap;
 	unordered_map<string, unordered_set<string>> modifiesByProcMap, varModifiedByProcMap, usesByProcMap, varUsedByProcMap, callMap, calledByMap, callsTMap, calledByTMap;
 
@@ -192,4 +192,8 @@ public:
 	unordered_map<int, unordered_set<string>> getWhileControlVarPair();
 	unordered_set<int> getWhileWithControlVar();
 	unordered_set<int> getWhileWithControlVar(string controlVar);
+
+	unordered_set<int> getCallStmtsWithProc(string procName);
+	unordered_set<int> getPrintStmtsWithVar(string varName);
+	unordered_set<int> getReadStmtsWithVar(string varName);
 };
