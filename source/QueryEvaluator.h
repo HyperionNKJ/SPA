@@ -5,8 +5,10 @@
 #include "ProcessedQuery.h"
 #include "ResultProjector.h"
 
+using namespace std;
+
 struct CompareBySize {
-	bool operator()(const std::unordered_set<string>& clause1, const std::unordered_set<string>& clause2) const {
+	bool operator()(const unordered_set<string>& clause1, const unordered_set<string>& clause2) const {
 		return clause1.size() > clause2.size();
 	}
 };
@@ -15,13 +17,13 @@ class QueryEvaluator {
 private:
 	void findReducedDomain(Clause*, ResultProjector*);
 
-	std::vector<Clause*> optimizationSort(const std::unordered_set<Clause*>&);
-	void groupBasedOnConnectedSyn(const std::unordered_set<Clause*>&, std::map<std::unordered_set<string>, std::vector<Clause*>, CompareBySize>&, std::unordered_set<Clause*>&);
-	void sortBasedOnNumOfSyn(std::map<std::unordered_set<string>, std::vector<Clause*>, CompareBySize>&);
-	std::vector<Clause*> combineClauseGroups(std::unordered_set<Clause*>&, std::map<std::unordered_set<string>, std::vector<Clause*>, CompareBySize>&);
-	bool hasCommonSynonyms(const std::unordered_set<string>&, const std::unordered_set<string>&);
-	void addIntoGroup(std::map<std::unordered_set<string>, std::vector<Clause*>, CompareBySize>&, std::map<std::unordered_set<string>, std::vector<Clause*>, CompareBySize>::iterator, std::unordered_set<string>, Clause*);
+	vector<Clause*> optimizationSort(const unordered_set<Clause*>&);
+	void groupBasedOnConnectedSyn(const unordered_set<Clause*>&, map<unordered_set<string>, vector<Clause*>, CompareBySize>&, unordered_set<Clause*>&);
+	void sortBasedOnNumOfSyn(map<unordered_set<string>, vector<Clause*>, CompareBySize>&);
+	vector<Clause*> combineClauseGroups(const unordered_set<Clause*>&, const map<unordered_set<string>,  vector<Clause*>, CompareBySize>&);
+	bool hasCommonSynonyms(const unordered_set<string>&, const unordered_set<string>&);
+	void addIntoGroup(map<unordered_set<string>, vector<Clause*>, CompareBySize>&, map<unordered_set<string>, vector<Clause*>, CompareBySize>::iterator&, unordered_set<string>&, Clause*);
 
 public:
-	std::list<std::string> evaluate(ProcessedQuery&, const PKB&);
+	list<string> evaluate(ProcessedQuery&, const PKB&);
 };
