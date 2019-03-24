@@ -1,5 +1,6 @@
 #pragma once
 #include "Clause.h"
+#include <map>
 
 enum RefIdentity {
 	STRING, INTEGER, ATTR_REF_STRING, ATTR_REF_INT, CONSTANT_VALUE, SYNONYM, INVALID_REF
@@ -9,7 +10,7 @@ class With : public Clause {
 private:
 	RefIdentity refOneIdentity;
 	RefIdentity refTwoIdentity;
-	unordered_map<pair<Type, AttrRef>, RefIdentity> refIdentityTable =
+	map<pair<Type, AttrRef>, RefIdentity> refIdentityTable =
 	{
 		{make_pair(WITH_STRING, UNASSIGNED), STRING},
 		{make_pair(WITH_INTEGER, UNASSIGNED), INTEGER},

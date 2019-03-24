@@ -11,9 +11,11 @@ std::list<std::string> QueryEvaluator::evaluate(ProcessedQuery& processedQuery, 
 
 	std::unordered_set<Clause*> withClauses = processedQuery.withClauses;
 	std::unordered_set<Clause*> suchThatPatternClauses = processedQuery.clauses;
-	std::vector<Clause*> sortedClauses = optimizationSort(suchThatPatternClauses); 
+	// std::vector<Clause*> sortedClauses = optimizationSort(suchThatPatternClauses); 
 	std::vector<Clause*> combinedClauses = { withClauses.begin(), withClauses.end() };
-	combinedClauses.insert(combinedClauses.end(), sortedClauses.begin(), sortedClauses.end());
+
+	combinedClauses.insert(combinedClauses.end(), suchThatPatternClauses.begin(), suchThatPatternClauses.end() );
+	//combinedClauses.insert(combinedClauses.end(), sortedClauses.begin(), sortedClauses.end());
 
 	for (auto clause : combinedClauses) {
 		if (clause->getClauseType() == NEXT_T) {
@@ -52,6 +54,14 @@ void QueryEvaluator::findReducedDomain(Clause* clause, ResultProjector* resultPr
 	}
 	clause->setReducedDomain(reducedDomain);
 }
+
+/*
+// to test
+struct CompareBySize {
+	bool operator()(const std::unordered_set<Clause*>& clause1, const std::unordered_set<Clause*>& clause2) const {
+		return clause1.size() > clause2.size();
+	}
+};
 
 // Function that encapsulates all optimization logic
 std::vector<Clause*> QueryEvaluator::optimizationSort(const std::unordered_set<Clause*>& suchThatPatternClauses) {
@@ -114,3 +124,4 @@ bool QueryEvaluator::hasCommonSynonyms(const std::unordered_set<string>& synonym
 	}
 	return false;
 }
+*/
