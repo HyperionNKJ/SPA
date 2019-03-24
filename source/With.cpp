@@ -14,7 +14,7 @@ RefIdentity With::determineRefIdentity(DesignEntity& ref) {
 		refIdentity = refIdentityTable.at(make_pair(type, attrRef));
 	}
 	catch (out_of_range e) { // case where ref is not allowed in with clause, for example const.varName (type = CONSTANT, attrRef = VAR_NAME)
-		refIdentity = INVALID;
+		refIdentity = INVALID_REF;
 	}
 	return refIdentity;
 }
@@ -23,7 +23,7 @@ Result With::evaluate(const PKB& pkb) {
 	this->pkb = pkb;
 	Result* result;
 
-	if (refOneIdentity == INVALID || refTwoIdentity == INVALID) {
+	if (refOneIdentity == INVALID_REF || refTwoIdentity == INVALID_REF) {
 		result = new Result();
 		result->setPassed(false);
 	}
@@ -146,7 +146,7 @@ Result* With::evaulateIntInt(const string& numOne, const string& numTwo) {
 // e.g. 12 = n
 Result* With::evaulateIntSyn(const string& num, const string& progLineSyn) {
 	Result* result = new Result();
-	int progLineNum = stoi(num);
+	unsigned int progLineNum = stoi(num);
 	if (pkb.getAllStmts().size() >= progLineNum) {
 		result->setPassed(true);
 		result->setAnswer(progLineSyn, progLineNum);

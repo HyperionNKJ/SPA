@@ -87,10 +87,14 @@ void QueryEvaluator::addIntoGroup(std::map<std::unordered_set<string>, std::vect
 	connectedClauses.insert({ synonymGroup, clauseGroup });
 }
 
+bool compareByNumOfSyn(Clause* clause1, Clause* clause2) {
+	return clause1->getSynonyms().size() < clause2->getSynonyms().size();
+}
+
 void QueryEvaluator::sortBasedOnNumOfSyn(std::map<std::unordered_set<string>, std::vector<Clause*>, CompareBySize>& unsortedClauses) {
 	for (const auto& synClausePair : unsortedClauses) {
 		std::vector<Clause*> clauses = synClausePair.second;
-		sort(clauses.begin(), clauses.end(), compareByNumOfSyn);
+		std::sort(clauses.begin(), clauses.end(), compareByNumOfSyn);
 	}
 }
 

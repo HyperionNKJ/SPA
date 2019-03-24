@@ -25,7 +25,8 @@ unordered_set<string> Clause::getSynonyms() {
 }
 
 bool Clause::isSynonym(Type& type) {
-	return type == (STATEMENT || PROGLINE || READ || PRINT || CALL || WHILE || IF || ASSIGN || VARIABLE || CONSTANT || PROCEDURE);
+	return (type == STATEMENT || type == PROGLINE || type == READ || type == PRINT || type == CALL || type == WHILE || type == IF 
+		|| type == ASSIGN || type == VARIABLE || type == CONSTANT || type == PROCEDURE);
 }
 
 void Clause::setReducedDomain(const unordered_map<string, unordered_set<int>>& reducedDomain) {
