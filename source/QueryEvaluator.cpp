@@ -11,11 +11,9 @@ std::list<std::string> QueryEvaluator::evaluate(ProcessedQuery& processedQuery, 
 
 	std::unordered_set<Clause*> withClauses = processedQuery.withClauses;
 	std::unordered_set<Clause*> suchThatPatternClauses = processedQuery.clauses;
-	// std::vector<Clause*> sortedClauses = optimizationSort(suchThatPatternClauses); 
+	std::vector<Clause*> sortedClauses = optimizationSort(suchThatPatternClauses); 
 	std::vector<Clause*> combinedClauses = { withClauses.begin(), withClauses.end() };
-
-	combinedClauses.insert(combinedClauses.end(), suchThatPatternClauses.begin(), suchThatPatternClauses.end() );
-	//combinedClauses.insert(combinedClauses.end(), sortedClauses.begin(), sortedClauses.end());
+	combinedClauses.insert(combinedClauses.end(), sortedClauses.begin(), sortedClauses.end());
 
 	for (auto clause : combinedClauses) {
 		if (clause->getClauseType() == NEXT_T) {
@@ -55,26 +53,25 @@ void QueryEvaluator::findReducedDomain(Clause* clause, ResultProjector* resultPr
 	clause->setReducedDomain(reducedDomain);
 }
 
-/*
-// to test
-struct CompareBySize {
-	bool operator()(const std::unordered_set<Clause*>& clause1, const std::unordered_set<Clause*>& clause2) const {
-		return clause1.size() > clause2.size();
-	}
-};
+
 
 // Function that encapsulates all optimization logic
 std::vector<Clause*> QueryEvaluator::optimizationSort(const std::unordered_set<Clause*>& suchThatPatternClauses) {
 	std::map<std::unordered_set<string>, std::vector<Clause*>, CompareBySize> intermediateClauses; // key = common synonyms, value = clauses with those synonyms
+	std::unordered_set<Clause*> noSynClauses; 
 
-	groupBasedOnConnectedSyn(suchThatPatternClauses, intermediateClauses); // group clauses base on common synonyms
+	groupBasedOnConnectedSyn(suchThatPatternClauses, intermediateClauses, noSynClauses); // group clauses base on common synonyms
 	sortBasedOnNumOfSyn(intermediateClauses); // sort clauses within each group
-	return combineClauseGroups(intermediateClauses);
+	return combineClauseGroups(noSynClauses, intermediateClauses);
 }
 
-void QueryEvaluator::groupBasedOnConnectedSyn(const std::unordered_set<Clause*>& unorderedClauses, std::map<std::unordered_set<string>, std::vector<Clause*>, CompareBySize>& connectedClauses) {
+void QueryEvaluator::groupBasedOnConnectedSyn(const std::unordered_set<Clause*>& unorderedClauses, std::map<std::unordered_set<string>, std::vector<Clause*>, CompareBySize>& connectedClauses, std::unordered_set<Clause*>& noSynClauses) {
 	for (const auto& clause : unorderedClauses) {
 		std::unordered_set<string> synonyms = clause->getSynonyms();
+		if (synonyms.empty()) {
+			noSynClauses.insert(clause);
+			continue;
+		}
 		bool addedIntoGroup = false;
 		for (auto& itr = connectedClauses.begin(); itr != connectedClauses.end(); ++itr) {
 			if (hasCommonSynonyms(synonyms, itr->first)) {
@@ -108,8 +105,10 @@ void QueryEvaluator::sortBasedOnNumOfSyn(std::map<std::unordered_set<string>, st
 	}
 }
 
-std::vector<Clause*> QueryEvaluator::combineClauseGroups(std::map<std::unordered_set<string>, std::vector<Clause*>, CompareBySize>& partitionedClauses) {
+std::vector<Clause*> QueryEvaluator::combineClauseGroups(std::unordered_set<Clause*>& noSynClauses, std::map<std::unordered_set<string>, std::vector<Clause*>, CompareBySize>& partitionedClauses) {
 	std::vector<Clause*> combinedClause;
+	combinedClause.insert(combinedClause.begin(), noSynClauses.begin(), noSynClauses.end()); // add clauses without synonym first
+
 	for (const auto& synClausePair : partitionedClauses) {
 		combinedClause.insert(combinedClause.end(), synClausePair.second.begin(), synClausePair.second.end());
 	}
@@ -124,4 +123,3 @@ bool QueryEvaluator::hasCommonSynonyms(const std::unordered_set<string>& synonym
 	}
 	return false;
 }
-*/
