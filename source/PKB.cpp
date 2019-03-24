@@ -138,6 +138,26 @@ bool PKB::insertCPRStmtType(int stmtNum, Type type, string name) {
 	return false;
 }
 
+bool PKB::insertPattern(string pattern, int stmtNum) {
+	return patternMap[pattern].insert(stmtNum).second;
+}
+
+bool PKB::insertFullPattern(string fullPattern, int stmtNum) {
+	return fullPatternMap[fullPattern].insert(stmtNum).second;
+}
+
+bool PKB::insertIfControlVar(int ifStmtNum, string varName) {
+	ifControlStmtSet.insert(ifStmtNum);
+	ifControlVarMap[varName].insert(ifStmtNum);
+	return ifControlStmtMap[ifStmtNum].insert(varName).second;
+}
+
+bool PKB::insertWhileControlVar(int whileStmtNum, string varName) {
+	whileControlStmtSet.insert(whileStmtNum);
+	whileControlVarMap[varName].insert(whileStmtNum);
+	return whileControlStmtMap[whileStmtNum].insert(varName).second;
+}
+
 bool PKB::setFollows(int leader, int follower) {
 	return leaderMap.insert({leader, follower}).second;
 }
@@ -190,14 +210,6 @@ bool PKB::setUses(string procName, string varName) {
 	usesProcSet.insert(procName);
 	varUsedByProcMap[varName].insert(procName);
 	return usesByProcMap[procName].insert(varName).second;
-}
-
-bool PKB::insertPattern(string pattern, int stmtNum) {
-	return patternMap[pattern].insert(stmtNum).second;
-}
-
-bool PKB::insertFullPattern(string fullPattern, int stmtNum) {
-	return fullPatternMap[fullPattern].insert(stmtNum).second;
 }
 
 bool PKB::setCalls(string proc1, string proc2) {
@@ -1037,4 +1049,34 @@ unordered_set<int> PKB::getNextTOf(int firstLine, Type stmtType) {
 		}
 	}
 	return resultSet;
+}
+
+unordered_map<int, unordered_set<string>> PKB::getIfControlVarPair() {
+	return ifControlStmtMap;
+}
+
+unordered_set<int> PKB::getIfWithControlVar() {
+	return ifControlStmtSet;
+}
+
+unordered_set<int> PKB::getIfWithControlVar(string controlVar) {
+	unordered_set<int> emptySet;
+	if (ifControlVarMap.count(controlVar))
+		return ifControlVarMap[controlVar];
+	return emptySet;
+}
+
+unordered_map<int, unordered_set<string>> PKB::getWhileControlVarPair() {
+	return whileControlStmtMap;
+}
+
+unordered_set<int> PKB::getWhileWithControlVar() {
+	return whileControlStmtSet;
+}
+
+unordered_set<int> PKB::getWhileWithControlVar(string controlVar) {
+	unordered_set<int> emptySet;
+	if (whileControlVarMap.count(controlVar))
+		return whileControlVarMap[controlVar];
+	return emptySet;
 }
