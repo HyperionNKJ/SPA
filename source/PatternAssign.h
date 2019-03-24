@@ -18,5 +18,6 @@ private:
 public:
 	// In order of subject, left arg, right arg of assign pattern clause. Right argument must be in post-fix notation?
 	PatternAssign(const DesignEntity&, const DesignEntity&, const DesignEntity&); 
+	unordered_set<string> getSynonyms() override; // overriden method from base class to include this->subject as synonym
 	Result evaluate(const PKB&) override;
 };

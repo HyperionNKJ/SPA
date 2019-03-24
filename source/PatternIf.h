@@ -12,5 +12,6 @@ private:
 public:
 	// first arg represents the subject of clause (must be IF type), second arg represents control variable (left arg)
 	PatternIf(const DesignEntity&, const DesignEntity&);
+	unordered_set<string> getSynonyms() override; // overriden method from base class to include this->subject as synonym
 	Result evaluate(const PKB&) override;
 };

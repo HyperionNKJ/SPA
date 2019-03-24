@@ -4,6 +4,15 @@ PatternAssign::PatternAssign(const DesignEntity& subject, const DesignEntity& pa
 	this->subject = subject;
 }
 
+unordered_set<string> PatternAssign::getSynonyms() {
+	unordered_set<string> synonyms = Clause::getSynonyms();
+	Type subjectType = subject.getType();
+	if (isSynonym(subjectType)) {
+		synonyms.insert(subject.getValue());
+	}
+	return synonyms;
+}
+
 Result PatternAssign::evaluate(const PKB& pkb) {
 	this->pkb = pkb;
 

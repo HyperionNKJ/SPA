@@ -4,6 +4,15 @@ PatternIf::PatternIf(const DesignEntity& subject, const DesignEntity& controlVar
 	this->subject = subject;
 }
 
+unordered_set<string> PatternIf::getSynonyms() {
+	unordered_set<string> synonyms = Clause::getSynonyms();
+	Type subjectType = subject.getType();
+	if (isSynonym(subjectType)) {
+		synonyms.insert(subject.getValue());
+	}
+	return synonyms;
+}
+
 Result PatternIf::evaluate(const PKB& pkb) {
 	this->pkb = pkb;
 
