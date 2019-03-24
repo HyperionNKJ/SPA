@@ -39,8 +39,8 @@ constexpr char REL_REF[] = "^(Modifies|Uses|Calls|Calls\\*|Parent|Parent\\*|Foll
 const regex QueryPreprocessorSelectParser::REL_REF_REGEX(REL_REF);
 
 // Initializes a newly created QueryPreprocessorSelectParser.
-QueryPreprocessorSelectParser::QueryPreprocessorSelectParser(const Statement& statement, ProcessedQuery& query)
-				: STATEMENT(statement.VALUE),
+QueryPreprocessorSelectParser::QueryPreprocessorSelectParser(const string& statement, ProcessedQuery& query)
+				: STATEMENT(statement),
 				query(query) {
 }
 

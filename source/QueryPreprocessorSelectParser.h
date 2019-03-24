@@ -12,7 +12,7 @@ public:
 	static const std::regex INT_REGEX;
 	static const std::regex REL_REF_REGEX;
 
-	QueryPreprocessorSelectParser(const Statement& statement, ProcessedQuery& processedQuery);
+	QueryPreprocessorSelectParser(const std::string& statement, ProcessedQuery& processedQuery);
 
 	bool parse();
 private:
