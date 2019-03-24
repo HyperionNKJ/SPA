@@ -4,6 +4,15 @@ PatternWhile::PatternWhile(const DesignEntity& subject, const DesignEntity& cont
 	this->subject = subject;
 }
 
+unordered_set<string> PatternWhile::getSynonyms() {
+	unordered_set<string> synonyms = Clause::getSynonyms();
+	Type subjectType = subject.getType();
+	if (isSynonym(subjectType)) {
+		synonyms.insert(subject.getValue());
+	}
+	return synonyms;
+}
+
 Result PatternWhile::evaluate(const PKB& pkb) {
 	this->pkb = pkb;
 

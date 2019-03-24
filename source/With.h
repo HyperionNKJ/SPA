@@ -2,7 +2,7 @@
 #include "Clause.h"
 
 enum RefIdentity {
-	STRING, INTEGER, ATTR_REF_STRING, ATTR_REF_INT, CONSTANT_VALUE, SYNONYM, INVALID
+	STRING, INTEGER, ATTR_REF_STRING, ATTR_REF_INT, CONSTANT_VALUE, SYNONYM, INVALID_REF
 };
 
 class With : public Clause {
@@ -53,8 +53,6 @@ private:
 	Result* evaulateAttrRefIntSyn(const string&, const Type&, const string&);  // e.g. w.stmt# = n
 	Result* evaulateAttrRefIntConstVal(const string&, const Type&, const string&); // e.g. a.stmt# = c.value
 	Result* evaulateAttrRefIntAttrRefInt(const string&, const Type&, const string&, const Type&); // e.g. s.stmt# = w.stmt#
-
-
 	Result* evaulateAttrRefStrAttrRefStr(const string&, const Type&, const string&, const Type&); // e.g. v.varName = p.procName
 	
 public:

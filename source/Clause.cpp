@@ -11,16 +11,22 @@ ClauseType Clause::getClauseType() {
 }
 
 unordered_set<string> Clause::getSynonyms() {
+	unordered_set<string> synonyms;
 	Type paraOneType = paraOne.getType();
 	Type paraTwoType = paraTwo.getType();
-	unordered_set<string> synonyms;
-	if (paraOneType != UNDERSCORE && paraOneType != FIXED) {
+
+	if (isSynonym(paraOneType)) {
 		synonyms.insert(paraOne.getValue());
 	}
-	if (paraTwoType != UNDERSCORE && paraTwoType != FIXED) {
+	if (isSynonym(paraTwoType)) {
 		synonyms.insert(paraTwo.getValue());
 	}
 	return synonyms; // may return 0, 1, or 2 synonyms in a set
+}
+
+bool Clause::isSynonym(Type& type) {
+	return (type == STATEMENT || type == PROGLINE || type == READ || type == PRINT || type == CALL || type == WHILE || type == IF 
+		|| type == ASSIGN || type == VARIABLE || type == CONSTANT || type == PROCEDURE);
 }
 
 void Clause::setReducedDomain(const unordered_map<string, unordered_set<int>>& reducedDomain) {

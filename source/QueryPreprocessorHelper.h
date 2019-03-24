@@ -16,4 +16,5 @@ public:
 	static Type getType(const std::string& typeString);
 	static AttrRef getAttrRef(const std::string& attrRefString);
 	static bool isReservedWord(const std::string& target);
+	static std::string getPostFix(const std::string& infix);
 };

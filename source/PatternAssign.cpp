@@ -4,6 +4,15 @@ PatternAssign::PatternAssign(const DesignEntity& subject, const DesignEntity& pa
 	this->subject = subject;
 }
 
+unordered_set<string> PatternAssign::getSynonyms() {
+	unordered_set<string> synonyms = Clause::getSynonyms();
+	Type subjectType = subject.getType();
+	if (isSynonym(subjectType)) {
+		synonyms.insert(subject.getValue());
+	}
+	return synonyms;
+}
+
 Result PatternAssign::evaluate(const PKB& pkb) {
 	this->pkb = pkb;
 
@@ -76,7 +85,7 @@ Result PatternAssign::evaluate(const PKB& pkb) {
 // case a(v, "x+y+10")
 Result* PatternAssign::evaluateVariableExact(const string& variableSynonym, const string& exactString, const string& assignSynonym) {
 	Result* result = new Result();
-	unordered_set<int> assignStmtsWithExactMatch = pkb.getAssignStmtWithExactMatch(exactString); 
+	unordered_set<int> assignStmtsWithExactMatch = pkb.getAssignStmtsWithExactMatch(exactString);
 	unordered_map<int, string> answer;
 
 	for (auto a : assignStmtsWithExactMatch) {
@@ -97,7 +106,7 @@ Result* PatternAssign::evaluateVariableExact(const string& variableSynonym, cons
 // case a(v, _"x+y+10"_)
 Result* PatternAssign::evaluateVariableSub(const string& variableSynonym, const string& subString, const string& assignSynonym) {
 	Result* result = new Result();
-	unordered_set<int> assignStmtsWithSubMatch = pkb.getAssignStmtWithSubMatch(subString);
+	unordered_set<int> assignStmtsWithSubMatch = pkb.getAssignStmtsWithSubMatch(subString);
 	unordered_map<int, string> answer;
 
 	for (auto a : assignStmtsWithSubMatch) {
@@ -132,7 +141,7 @@ Result* PatternAssign::evaluateVariableUnderscore(const string& variableSynonym,
 // case a(_, "count")
 Result* PatternAssign::evaluateUnderscoreExact(const string& exactString, const string& assignSynonym) {
 	Result* result = new Result();
-	unordered_set<int> answer = pkb.getAssignStmtWithExactMatch(exactString);
+	unordered_set<int> answer = pkb.getAssignStmtsWithExactMatch(exactString);
 
 	if (!answer.empty()) {
 		result->setPassed(true);
@@ -147,7 +156,7 @@ Result* PatternAssign::evaluateUnderscoreExact(const string& exactString, const 
 // case a(_, _"count+10"_)
 Result* PatternAssign::evaluateUnderscoreSub(const string& subString, const string& assignSynonym) {
 	Result* result = new Result();
-	unordered_set<int> answer = pkb.getAssignStmtWithSubMatch(subString);
+	unordered_set<int> answer = pkb.getAssignStmtsWithSubMatch(subString);
 
 	if (!answer.empty()) {
 		result->setPassed(true);
@@ -178,7 +187,7 @@ Result* PatternAssign::evaluateFixedExact(const string& varName, const string& e
 	Result* result = new Result();
 	unordered_set<int> answer;
 
-	unordered_set<int> assignStmtsWithExactMatch = pkb.getAssignStmtWithExactMatch(exactString);
+	unordered_set<int> assignStmtsWithExactMatch = pkb.getAssignStmtsWithExactMatch(exactString);
 	for (auto a : assignStmtsWithExactMatch) {
 		if (pkb.isModifies(a, varName)) {
 			answer.insert(a);
@@ -200,7 +209,7 @@ Result* PatternAssign::evaluateFixedSub(const string& varName, const string& sub
 	Result* result = new Result();
 	unordered_set<int> answer;
 
-	unordered_set<int> assignStmtsWithSubMatch = pkb.getAssignStmtWithSubMatch(subString);
+	unordered_set<int> assignStmtsWithSubMatch = pkb.getAssignStmtsWithSubMatch(subString);
 	for (auto a : assignStmtsWithSubMatch) {
 		if (pkb.isModifies(a, varName)) {
 			answer.insert(a);
