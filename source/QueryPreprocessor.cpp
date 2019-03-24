@@ -1,22 +1,30 @@
 #include <string>
-#include "QueryParser.h"
-#include "QueryTokenizer.h"
+#include "QueryPreprocessorFormatter.h"
+#include "QueryPreprocessorParser.h"
+#include "QueryPreprocessorTokenizer.h"
 #include "QueryPreprocessor.h"
 
-QueryPreprocessor::QueryPreprocessor(const std::string& query) : QUERY(query) {
+QueryPreprocessor::QueryPreprocessor(std::string& query) : query(query) {
 
 }
 
 bool QueryPreprocessor::parse() {
-	QueryTokenizer tokenizer = QueryTokenizer(QUERY);
+	QueryPreprocessorFormatter formatter = QueryPreprocessorFormatter(query);
+	query = formatter.getFormattedQuery();
+
+	// invalid when:
+	// 1. there exist a statement that is not a select or delcare statement
+	// 2. select statement is not the last statement in the query
+	QueryPreprocessorTokenizer tokenizer = QueryPreprocessorTokenizer(query);  
 	bool status = tokenizer.tokenize();
 
 	if (!status) {
 		return false;
 	}
 
-	std::vector<Statement> statements = tokenizer.getStatements();
-	QueryParser parser = QueryParser(statements);
+	std::vector<std::string> statements = tokenizer.getStatements();
+
+	QueryPreprocessorParser parser = QueryPreprocessorParser(statements);
 	status = parser.parse();
 
 	if (!status) {

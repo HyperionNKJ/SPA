@@ -1,6 +1,6 @@
 #include "QueryProcessor.h"
 
-std::list<std::string> QueryProcessor::evaluate(const std::string& query, const PKB& pkb) {
+std::list<std::string> QueryProcessor::evaluate(std::string& query, const PKB& pkb) {
 	QueryPreprocessor queryPreprocessor = QueryPreprocessor(query);
 	QueryEvaluator queryEvaluator = QueryEvaluator();
 	std::list<std::string> results; //initially empty
