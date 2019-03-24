@@ -144,6 +144,7 @@ DesignEntity QueryPreprocessorPatternParser::parseExpression(std::string& expres
 		expression = expression.substr(2, expression.size() - 3);
 
 		//convert to postfix
+		expression = QueryPreprocessorHelper::getPostFix(expression);
 
 		if (regex_match(expression, EXPRESSION_REGEX)) {
 			return DesignEntity(expression, Type::INVALID);
@@ -154,6 +155,7 @@ DesignEntity QueryPreprocessorPatternParser::parseExpression(std::string& expres
 		expression = expression.substr(1, expression.size() - 2);
 
 		//convert to postfix
+		expression = QueryPreprocessorHelper::getPostFix(expression);
 
 		if (regex_match(expression, EXPRESSION_REGEX)) {
 			return DesignEntity(expression, Type::INVALID);
