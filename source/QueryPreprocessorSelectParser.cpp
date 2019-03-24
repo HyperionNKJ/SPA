@@ -227,7 +227,7 @@ bool QueryPreprocessorSelectParser::parseSuchThatCl(std::string& suchThatCl) {
 		FollowsT suchThatClause(paramOne, paramTwo);
 		query.addClause(&suchThatClause);
 	} else if (rel == "Modifies") {
-		if (paramOne.getType == Type::PROCEDURE || regex_match(paramOne.getValue(), IDENT_REGEX)) {
+		if (paramOne.getType() == Type::PROCEDURE || regex_match(paramOne.getValue(), IDENT_REGEX)) {
 			ModifiesP suchThatClause(paramOne, paramTwo);
 			query.addClause(&suchThatClause);
 		} else {
@@ -244,7 +244,7 @@ bool QueryPreprocessorSelectParser::parseSuchThatCl(std::string& suchThatCl) {
 		Parent suchThatClause(paramOne, paramTwo);
 		query.addClause(&suchThatClause);
 	} else if (rel == "Uses") {
-		if (paramOne.getType == Type::PROCEDURE || regex_match(paramOne.getValue(), IDENT_REGEX)) {
+		if (paramOne.getType() == Type::PROCEDURE || regex_match(paramOne.getValue(), IDENT_REGEX)) {
 			UsesP suchThatClause(paramOne, paramTwo);
 			query.addClause(&suchThatClause);
 		} else {
@@ -290,7 +290,7 @@ bool QueryPreprocessorSelectParser::parsePatternCl(std::string& patternCl) {
 		DesignEntity paramOne = parseParameter(parameters[0]);
 		DesignEntity paramTwo = parseExpresion(parameters[1]);
 
-		if (paramOne.getType == Type::INVALID || paramTwo.getType == Type::INVALID) {
+		if (paramOne.getType() == Type::INVALID || paramTwo.getType() == Type::INVALID) {
 			return false;
 		}
 
