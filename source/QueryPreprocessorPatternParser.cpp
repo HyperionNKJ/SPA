@@ -30,8 +30,8 @@ QueryPreprocessorPatternParser::QueryPreprocessorPatternParser(string& clause,
 	
 }
 
-// Parses the pattern clause. Returns true if parsing is successful and false 
-// if unsucessful.
+// Parses the pattern clause.
+// Returns true if parsing is successful and false if unsucessful.
 bool QueryPreprocessorPatternParser::parse() {
 	size_t synonymSize = clause.find(BRACKET_OPEN);
 	size_t closeBracketPos = clause.find(BRACKET_CLOSE);
@@ -47,7 +47,7 @@ bool QueryPreprocessorPatternParser::parse() {
 		return false;
 	}
 
-	// extract synonym
+	// extract synonym and its design entity
 	// synonym must have already exist in declarations
 	std::string synonymString = clause.substr(0, synonymSize);
 	std::unordered_map<std::string, Type>::const_iterator element;
@@ -58,7 +58,7 @@ bool QueryPreprocessorPatternParser::parse() {
 	Type designEntity = element->second;
 	DesignEntity synonym(synonymString, designEntity);
 
-	// erase synonym and the brackets
+	// remove synonym and the brackets
 	clause = clause.substr(synonymSize + 1, closeBracketPos - synonymSize - 1);
 
 	// parse pattern parameters
@@ -74,8 +74,9 @@ bool QueryPreprocessorPatternParser::parse() {
 		// assign pattern
 		DesignEntity paramOne = parseEntRef(paramOneString);
 		DesignEntity paramTwo = parseExpression(paramTwoString);
-
-		if (paramOne.getType() == Type::INVALID || paramTwo.getType() == Type::INVALID) {
+		
+		if (paramOne.getType() == Type::INVALID 
+				|| paramTwo.getType() == Type::INVALID) {
 			return false;
 		}
 
@@ -109,6 +110,7 @@ bool QueryPreprocessorPatternParser::parse() {
 }
 
 // Parse entRef parameters of pattern clauses.
+// Allowable values are underscore, variable name, and variable synonym.
 // Returns DesignEntity of Type::INVALID if parameter cannot be parsed.
 DesignEntity QueryPreprocessorPatternParser::parseEntRef(std::string& entRef) {
 	if (entRef == "_") {
@@ -119,16 +121,16 @@ DesignEntity QueryPreprocessorPatternParser::parseEntRef(std::string& entRef) {
 		entRef.erase(0);
 		entRef.erase(entRef.size() - 1);
 
-		if (!regex_match(entRef, IDENT_REGEX)) {
-			return DesignEntity(EMPTY, Type::INVALID);
+		if (regex_match(entRef, IDENT_REGEX)) {
+			return DesignEntity(entRef, Type::FIXED);
 		}
-
-		return DesignEntity(entRef, Type::FIXED);
 	} else if (query.declarations.find(entRef) != query.declarations.end()) {
 		// synonyms
 		Type designEntity = query.declarations.find(entRef)->second;
 
-		return DesignEntity(entRef, designEntity);
+		if (designEntity == Type::VARIABLE) {
+			return DesignEntity(entRef, Type::VARIABLE);
+		}
 	}
 
 	return DesignEntity(EMPTY, Type::INVALID);
@@ -141,27 +143,21 @@ DesignEntity QueryPreprocessorPatternParser::parseExpression(std::string& expres
 			&& expression.back() == '_'
 			&& expression[1] == QUOTE
 			&& expression[expression.size() - 2] == QUOTE) {
+		// sub match
 		expression = expression.substr(2, expression.size() - 3);
-
-		//convert to postfix
 		expression = QueryPreprocessorHelper::getPostFix(expression);
 
 		if (regex_match(expression, EXPRESSION_REGEX)) {
-			return DesignEntity(expression, Type::INVALID);
+			return DesignEntity(expression, Type::PATTERN_SUB);
 		}
-
-		return DesignEntity(expression, Type::PATTERN_SUB);
 	} else if (expression.front() == QUOTE && expression.back() == QUOTE) {
+		// exact match
 		expression = expression.substr(1, expression.size() - 2);
-
-		//convert to postfix
 		expression = QueryPreprocessorHelper::getPostFix(expression);
 
 		if (regex_match(expression, EXPRESSION_REGEX)) {
-			return DesignEntity(expression, Type::INVALID);
+			return DesignEntity(expression, Type::PATTERN_EXACT);
 		}
-
-		return DesignEntity(expression, Type::PATTERN_EXACT);
 	}
 
 	return DesignEntity(expression, Type::INVALID);
