@@ -1,12 +1,24 @@
 #include <regex>
 #include <unordered_set>
+#include "Calls.h"
+#include "CallsT.h"
 #include "DesignEntity.h"
+#include "Follows.h"
+#include "FollowsT.h"
+#include "ModifiesP.h"
+#include "ModifiesS.h"
+#include "Next.h"
+#include "NextT.h"
+#include "Parent.h"
+#include "ParentT.h"
 #include "PatternAssign.h"
 #include "PatternIf.h"
 #include "PatternWhile.h"
 #include "QueryPreprocessorHelper.h"
 #include "QueryPreprocessorDeclareParser.h"
 #include "QueryPreprocessorSelectParser.h"
+#include "UsesP.h"
+#include "UsesS.h"
 
 constexpr auto SPACE = ' ';
 constexpr auto COMMA = ',';
@@ -188,14 +200,52 @@ bool QueryPreprocessorSelectParser::parseSuchThatCl(std::string& suchThatCl) {
 		return false;
 	}
 
+	DesignEntity paramOne;
+	DesignEntity paramTwo;
+
 	if (!regex_match(parameters[0], IDENT_REGEX)) {
-		DesignEntity paramOne = parseParameter(parameters[0]);
+		paramOne = parseParameter(parameters[0]);
 		return false;
 	}
 
 	if (!regex_match(parameters[1], IDENT_REGEX)) {
-		DesignEntity paramTwo = parseParameter(parameters[1]);
+		paramTwo = parseParameter(parameters[1]);
 		return false;
+	}
+
+	if (rel == "Calls") {
+		Calls suchThatClause(paramOne, paramTwo);
+		query.addClause(&suchThatClause);
+	} else if (rel == "Calls*") {
+		CallsT suchThatClause(paramOne, paramTwo);
+		query.addClause(&suchThatClause);
+	} else if (rel == "Follows") {
+		Follows suchThatClause(paramOne, paramTwo);
+		query.addClause(&suchThatClause);
+	} else if (rel == "Follows*") {
+		FollowsT suchThatClause(paramOne, paramTwo);
+		query.addClause(&suchThatClause);
+	} else if (rel == "Modifies") {
+		ModifiesP suchThatClause(paramOne, paramTwo);
+		query.addClause(&suchThatClause);
+	} else if (rel == "Modifies") {
+		ModifiesS suchThatClause(paramOne, paramTwo);
+		query.addClause(&suchThatClause);
+	} else if (rel == "Next") {
+		Next suchThatClause(paramOne, paramTwo);
+		query.addClause(&suchThatClause);
+	} else if (rel == "Next*") {
+		NextT suchThatClause(paramOne, paramTwo);
+		query.addClause(&suchThatClause);
+	} else if (rel == "Parent") {
+		Parent suchThatClause(paramOne, paramTwo);
+		query.addClause(&suchThatClause);
+	} else if (rel == "Uses") {
+		UsesP suchThatClause(paramOne, paramTwo);
+		query.addClause(&suchThatClause);
+	} else if (rel == "Uses") {
+		UsesS suchThatClause(paramOne, paramTwo);
+		query.addClause(&suchThatClause);
 	}
 
 	return true;
