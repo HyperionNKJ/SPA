@@ -16,6 +16,8 @@ public:
 
 	bool parse();
 private:
+	enum ClauseType { RESULT, SUCH_THAT, PATTERN, WITH };
+
 	const std::string STATEMENT;
 
 	std::vector<DesignEntity> resultClElemList;

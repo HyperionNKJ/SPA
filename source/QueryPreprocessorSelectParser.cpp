@@ -67,20 +67,20 @@ bool QueryPreprocessorSelectParser::parse() {
 	}
 
 	// extract such that, pattern, with clauses
-	bool isSuchThat = false;
+	ClauseType clauseType = ClauseType::RESULT;
 	while (selectCl.size() > 0) {
 		std::string type;
 		size_t typeSize;
 
 		if (selectCl.find("such that ") == 0) {
 			type = "such that";
-			isSuchThat = true;
+			clauseType = ClauseType::SUCH_THAT;
 		} else if (selectCl.find("pattern ") == 0) {
 			type = "pattern";
-			isSuchThat = false;
+			clauseType = ClauseType::PATTERN;
 		} else if (selectCl.find("with ") == 0) {
 			type = "with";
-			isSuchThat = false;
+			clauseType = ClauseType::WITH;
 		} else if (selectCl.find("and ") == 0) {
 			type = "and";
 		} else {
@@ -116,12 +116,12 @@ bool QueryPreprocessorSelectParser::parse() {
 
 			// If rel is found in declarations, the clause is a pattern clause
 			std::string rel = clause.substr(0, relSize);
-			if (query.declarations.find(rel) == query.declarations.end() && isSuchThat) {
-				parseWithCl(clause);
-			} else if (!isSuchThat) {
+			if (query.declarations.find(rel) != query.declarations.end() && clauseType == ClauseType::SUCH_THAT) {
 				parsePatternCl(clause);
-			} else {
-				return false;
+			} else if (clause.find('=') != std::string::npos && clauseType == ClauseType::WITH) {
+				parseWithCl(clause);
+			} else if (clauseType == ClauseType::SUCH_THAT) {
+				parseSuchThatCl(clause);
 			}
 		}
 
@@ -460,7 +460,7 @@ DesignEntity QueryPreprocessorSelectParser::parseParameter(std::string& paramete
 		parameter.erase(parameter.size() - 2, 2);
 
 		if (regex_match(parameter, IDENT_REGEX)) {
-			return DesignEntity(parameter, Type::FIXED);
+			return DesignEntity(parameter, Type::PATTERN_SUB);
 		}
 
 		return DesignEntity("", Type::INVALID);
