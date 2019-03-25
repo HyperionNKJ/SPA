@@ -23,8 +23,8 @@ std::list<std::string> QueryEvaluator::evaluate(ProcessedQuery& processedQuery, 
 		}
 
 		Result clauseResult = clause->evaluate(pkb);
-		int numOfSyn = clauseResult.getNumOfSyn();
-		if (clauseResult.hasPassed() && numOfSyn != 0) { // if clause has synonym/s, send to ResultProjector to merge.
+		int numOfSyn = clauseResult.getNumOfSyn(); // num of synonyms in clauseResult is zero if clause is false
+		if (clauseResult.hasPassed() && numOfSyn != 0) { // if clauseResult has synonym/s, send to ResultProjector to merge.
 			bool hasResultSoFar;
 			vector<string> synonyms = clauseResult.getSynonyms();
 			if (numOfSyn == 1) {
