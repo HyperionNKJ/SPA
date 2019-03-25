@@ -336,7 +336,7 @@ int Parser::handleAssignment(string assignmentLine) {
 	vector<string> rhsSubstring = vector<string>();
 	string currentSubstr, fullExpr = "";
 	int tokenCount, opCount;
-	for (unsigned int i = 0; i < postfixRHS.size() - 1; i++) {
+	for (unsigned int i = 0; i < postfixRHS.size(); i++) {
 		currentSubstr = "";
 		tokenCount = opCount = 0;
 		for (unsigned int j = i; j < postfixRHS.size(); j++) {
@@ -348,7 +348,7 @@ int Parser::handleAssignment(string assignmentLine) {
 				opCount++;
 			}
 			//Add expression if it is a single variable/constant, or 
-			if ((currentSubstr.length() > 2 && tokenCount - 1 == opCount) || (currentSubstr.length() == 1 && tokenCount == 1)) {
+			if (tokenCount - 1 == opCount) {
 				rhsSubstring.push_back(rightTrim(currentSubstr, " "));
 			}
 			else if (opCount >= tokenCount) {
@@ -365,6 +365,7 @@ int Parser::handleAssignment(string assignmentLine) {
 	for (unsigned int i = 0; i < rhsSubstring.size(); i++) {
 		pkb->insertPattern(rhsSubstring[i], statementNumber);
 	}
+	pkb->insertFullPattern(rightTrim(fullExpr, " "), statementNumber);
 
 	//set lhs var
 	pkb->insertVar(lhsVar);
@@ -769,7 +770,6 @@ int Parser::handleCall(string callLine) {
 }
 
 bool Parser::setNext(int stmtNum, Container closingType) {
-	cout << stmtNum << endl;
 	//first statement in a procedure cannot possibly be 2nd argument in next
 	//set boolean and return
 	if (firstInProc) {
