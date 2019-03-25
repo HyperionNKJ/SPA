@@ -239,7 +239,13 @@ bool QueryPreprocessorSelectParser::parseSuchThatCl(std::string& suchThatCl) {
 		}
 	} else if (rel == "Modifies") {
 		clauseString = "Modifies" + clauseString;
-		if (paramOne.getType() == Type::PROCEDURE || regex_match(paramOne.getValue(), IDENT_REGEX)) {
+		if (paramOne.getType() == Type::PROCEDURE) {
+			if (query.clausesString.find(clauseString) == query.clausesString.end()) {
+				ModifiesP* suchThatClause = new ModifiesP(paramOne, paramTwo);
+				query.addClause(suchThatClause);
+				query.clausesString.insert(clauseString);
+			}
+		} else if (paramOne.getType() == Type::FIXED && regex_match(paramOne.getValue(), IDENT_REGEX)) {
 			if (query.clausesString.find(clauseString) == query.clausesString.end()) {
 				ModifiesP* suchThatClause = new ModifiesP(paramOne, paramTwo);
 				query.addClause(suchThatClause);
@@ -274,7 +280,13 @@ bool QueryPreprocessorSelectParser::parseSuchThatCl(std::string& suchThatCl) {
 		}
 	} else if (rel == "Uses") {
 		clauseString = "Uses" + clauseString;
-		if (paramOne.getType() == Type::PROCEDURE || regex_match(paramOne.getValue(), IDENT_REGEX)) {
+		if (paramOne.getType() == Type::PROCEDURE) {
+			if (query.clausesString.find(clauseString) == query.clausesString.end()) {
+				UsesP* suchThatClause = new UsesP(paramOne, paramTwo);
+				query.addClause(suchThatClause);
+				query.clausesString.insert(clauseString);
+			}
+		} else if (paramOne.getType() == Type::FIXED && regex_match(paramOne.getValue(), IDENT_REGEX)) {
 			if (query.clausesString.find(clauseString) == query.clausesString.end()) {
 				UsesP* suchThatClause = new UsesP(paramOne, paramTwo);
 				query.addClause(suchThatClause);
