@@ -13,6 +13,9 @@ public:
 	std::unordered_set<Clause*> clauses;
 	std::unordered_set<Clause*> withClauses;
 
+	std::unordered_set<std::string> clausesString;
+	std::unordered_set<std::string> withClausesString;
+
 	ProcessedQuery();
 
 	bool insertDeclaration(const std::string& synonym,

@@ -80,8 +80,14 @@ bool QueryPreprocessorPatternParser::parse() {
 			return false;
 		}
 
-		PatternAssign* pattern = new PatternAssign(synonym, paramOne, paramTwo);
-		query.addClause(pattern);
+		std::string designEntityOne = QueryPreprocessorHelper::TYPE_TO_STRING.find(paramOne.getType())->second;
+		std::string designEntityTwo = QueryPreprocessorHelper::TYPE_TO_STRING.find(paramTwo.getType())->second;
+		std::string clauseString = "assign" + paramOne.getValue() + designEntityOne + paramTwo.getValue() + designEntityTwo;
+		if (query.clausesString.find(clauseString) == query.clausesString.end()) {
+			PatternAssign* pattern = new PatternAssign(synonym, paramOne, paramTwo);
+			query.addClause(pattern);
+			query.clausesString.insert(clauseString);
+		}
 	} else if (designEntity == Type::WHILE && paramTwoString == "_") {
 		// while pattern
 		DesignEntity paramOne = parseEntRef(paramOneString);
@@ -90,8 +96,13 @@ bool QueryPreprocessorPatternParser::parse() {
 			return false;
 		}
 
-		PatternWhile* pattern = new PatternWhile(synonym, paramOne);
-		query.addClause(pattern);
+		std::string designEntityOne = QueryPreprocessorHelper::TYPE_TO_STRING.find(paramOne.getType())->second;
+		std::string clauseString = "while" + paramOne.getValue() + designEntityOne;
+		if (query.clausesString.find(clauseString) == query.clausesString.end()) {
+			PatternWhile* pattern = new PatternWhile(synonym, paramOne);
+			query.addClause(pattern);
+			query.clausesString.insert(clauseString);
+		}
 	} else if (designEntity == Type::IF && paramTwoString == "_,_") {
 		// if pattern
 		DesignEntity paramOne = parseEntRef(paramOneString);
@@ -100,8 +111,13 @@ bool QueryPreprocessorPatternParser::parse() {
 			return false;
 		}
 
-		PatternIf* pattern = new PatternIf(synonym, paramOne);
-		query.addClause(pattern);
+		std::string designEntityOne = QueryPreprocessorHelper::TYPE_TO_STRING.find(paramOne.getType())->second;
+		std::string clauseString = "if" + paramOne.getValue() + designEntityOne;
+		if (query.clausesString.find(clauseString) == query.clausesString.end()) {
+			PatternIf* pattern = new PatternIf(synonym, paramOne);
+			query.addClause(pattern);
+			query.clausesString.insert(clauseString);
+		}
 	} else {
 		return false;
 	}

@@ -27,6 +27,21 @@ const std::unordered_map<std::string, Type> QueryPreprocessorHelper::STRING_TO_T
 	{"while", Type::WHILE}
 };
 
+const std::unordered_map<Type, std::string> QueryPreprocessorHelper::TYPE_TO_STRING = {
+	{Type::ASSIGN, "assign"},
+	{Type::CALL, "call"},
+	{Type::CONSTANT, "constant"},
+	{Type::FIXED, "fixed"},
+	{Type::IF, "if"},
+	{Type::PRINT, "print"},
+	{Type::PROCEDURE, "procedure"},
+	{Type::PROGLINE, "prog_line"},
+	{Type::READ, "read"},
+	{Type::STATEMENT, "stmt"},
+	{Type::VARIABLE, "variable"},
+	{Type::WHILE, "while"}
+};
+
 const std::unordered_map<std::string, AttrRef> QueryPreprocessorHelper::STRING_TO_ATTR_REF = {
 	{"procName", AttrRef::PROC_NAME},
 	{"varName", AttrRef::VAR_NAME},

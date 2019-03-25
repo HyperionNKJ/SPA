@@ -9,6 +9,7 @@ class QueryPreprocessorHelper {
 public:
 	static const std::unordered_map<std::string, Type> STRING_TO_TYPE;
 	static const std::unordered_map<std::string, AttrRef> STRING_TO_ATTR_REF;
+	static const std::unordered_map<Type, std::string> TYPE_TO_STRING;
 	static const std::unordered_set<std::string> RESERVED_WORD;
 
 	QueryPreprocessorHelper();
