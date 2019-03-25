@@ -99,8 +99,6 @@ bool QueryPreprocessorSelectParser::parse() {
 			selectCl.erase(0, clauseEndPos + 1);
 		}
 
-		
-
 		bool status;
 		if (type == "such that") {
 			status = parseSuchThatCl(clause);
@@ -204,50 +202,90 @@ bool QueryPreprocessorSelectParser::parseSuchThatCl(std::string& suchThatCl) {
 		return false;
 	}
 
-	size_t paramOneSize = suchThatCl.find(COMMA);
-	if (paramOneSize == std::string::npos) {
-		return false;
-	}
-
 	DesignEntity paramOne = parseParameter(parameters[0]);
 	DesignEntity paramTwo = parseParameter(parameters[1]);
 
+	std::string designEntityOne = QueryPreprocessorHelper::TYPE_TO_STRING.find(paramOne.getType())->second;
+	std::string designEntityTwo = QueryPreprocessorHelper::TYPE_TO_STRING.find(paramTwo.getType())->second;
+	std::string clauseString = paramOne.getValue() + designEntityOne + paramTwo.getValue() + designEntityTwo;
+
 	if (rel == "Calls") {
-		Calls* suchThatClause = new Calls(paramOne, paramTwo);
-		query.addClause(suchThatClause);
+		clauseString = "Calls" + clauseString;
+		if (query.clausesString.find(clauseString) == query.clausesString.end()) {
+			Calls* suchThatClause = new Calls(paramOne, paramTwo);
+			query.addClause(suchThatClause);
+			query.clausesString.insert(clauseString);
+		}
 	} else if (rel == "Calls*") {
-		CallsT* suchThatClause = new CallsT(paramOne, paramTwo);
-		query.addClause(suchThatClause);
+		clauseString = "Calls*" + clauseString;
+		if (query.clausesString.find(clauseString) == query.clausesString.end()) {
+			CallsT* suchThatClause = new CallsT(paramOne, paramTwo);
+			query.addClause(suchThatClause);
+			query.clausesString.insert(clauseString);
+		}
 	} else if (rel == "Follows") {
-		Follows* suchThatClause = new Follows(paramOne, paramTwo);
-		query.addClause(suchThatClause);
+		clauseString = "Follows" + clauseString;
+		if (query.clausesString.find(clauseString) == query.clausesString.end()) {
+			Follows* suchThatClause = new Follows(paramOne, paramTwo);
+			query.addClause(suchThatClause);
+			query.clausesString.insert(clauseString);
+		}
 	} else if (rel == "Follows*") {
-		FollowsT* suchThatClause = new FollowsT(paramOne, paramTwo);
-		query.addClause(suchThatClause);
+		clauseString = "Follows*" + clauseString;
+		if (query.clausesString.find(clauseString) == query.clausesString.end()) {
+			FollowsT* suchThatClause = new FollowsT(paramOne, paramTwo);
+			query.addClause(suchThatClause);
+			query.clausesString.insert(clauseString);
+		}
 	} else if (rel == "Modifies") {
+		clauseString = "Modifies" + clauseString;
 		if (paramOne.getType() == Type::PROCEDURE || regex_match(paramOne.getValue(), IDENT_REGEX)) {
-			ModifiesP* suchThatClause = new ModifiesP(paramOne, paramTwo);
-			query.addClause(suchThatClause);
+			if (query.clausesString.find(clauseString) == query.clausesString.end()) {
+				ModifiesP* suchThatClause = new ModifiesP(paramOne, paramTwo);
+				query.addClause(suchThatClause);
+				query.clausesString.insert(clauseString);
+			}
 		} else {
-			ModifiesS* suchThatClause = new ModifiesS(paramOne, paramTwo);
-			query.addClause(suchThatClause);
+			if (query.clausesString.find(clauseString) == query.clausesString.end()) {
+				ModifiesS* suchThatClause = new ModifiesS(paramOne, paramTwo);
+				query.addClause(suchThatClause);
+				query.clausesString.insert(clauseString);
+			}
 		}
 	} else if (rel == "Next") {
-		Next* suchThatClause = new Next(paramOne, paramTwo);
-		query.addClause(suchThatClause);
+		clauseString = "Next" + clauseString;
+		if (query.clausesString.find(clauseString) == query.clausesString.end()) {
+			Next* suchThatClause = new Next(paramOne, paramTwo);
+			query.addClause(suchThatClause);
+			query.clausesString.insert(clauseString);
+		}
 	} else if (rel == "Next*") {
-		NextT* suchThatClause = new NextT(paramOne, paramTwo);
-		query.addClause(suchThatClause);
+		clauseString = "Next*" + clauseString;
+		if (query.clausesString.find(clauseString) == query.clausesString.end()) {
+			NextT* suchThatClause = new NextT(paramOne, paramTwo);
+			query.addClause(suchThatClause);
+			query.clausesString.insert(clauseString);
+		}
 	} else if (rel == "Parent") {
-		Parent* suchThatClause = new Parent(paramOne, paramTwo);
-		query.addClause(suchThatClause);
+		clauseString = "Parent" + clauseString;
+		if (query.clausesString.find(clauseString) == query.clausesString.end()) {
+			Parent* suchThatClause = new Parent(paramOne, paramTwo);
+			query.addClause(suchThatClause);
+		}
 	} else if (rel == "Uses") {
+		clauseString = "Uses" + clauseString;
 		if (paramOne.getType() == Type::PROCEDURE || regex_match(paramOne.getValue(), IDENT_REGEX)) {
-			UsesP* suchThatClause = new UsesP(paramOne, paramTwo);
-			query.addClause(suchThatClause);
+			if (query.clausesString.find(clauseString) == query.clausesString.end()) {
+				UsesP* suchThatClause = new UsesP(paramOne, paramTwo);
+				query.addClause(suchThatClause);
+				query.clausesString.insert(clauseString);
+			}
 		} else {
-			UsesS* suchThatClause = new UsesS(paramOne, paramTwo);
-			query.addClause(suchThatClause);
+			if (query.clausesString.find(clauseString) == query.clausesString.end()) {
+				UsesS* suchThatClause = new UsesS(paramOne, paramTwo);
+				query.addClause(suchThatClause);
+				query.clausesString.insert(clauseString);
+			}
 		}
 	}
 
@@ -272,22 +310,20 @@ bool QueryPreprocessorSelectParser::parseWithCl(std::string& withCl) {
 			// statement number
 			paramOne = DesignEntity(lhs, Type::FIXED);
 		} else if (lhs.front() == '"' && lhs.back() == '"') {
-			// constant
 			lhs = lhs.substr(0, lhs.size() - 2);
-			
 			if (regex_match(lhs, IDENT_REGEX)) {
+				// constant
 				paramOne = DesignEntity(lhs, Type::FIXED);
 			} else {
+				// invalid
 				paramOne = DesignEntity("", Type::INVALID);
 			}
 		} else {
-			std::unordered_map<std::string, Type>::const_iterator element;
-			element = query.declarations.find(lhs);
-
-			if (element != query.declarations.end()) {
+			if (query.declarations.find(lhs)->second == Type::PROGLINE) {
 				// synonym
-				paramOne = DesignEntity(lhs, element->second);
+				paramOne = DesignEntity(lhs, Type::PROGLINE);
 			} else {
+				// invalid
 				paramOne = DesignEntity("", Type::INVALID);
 			}
 		}
@@ -432,8 +468,7 @@ DesignEntity QueryPreprocessorSelectParser::parseParameter(std::string& paramete
 		return DesignEntity(parameter, Type::FIXED);
 	} else if (parameter.front() == '"' && parameter.back() == '"') {
 		// constant
-		parameter.erase(0);
-		parameter.erase(parameter.size() - 1);
+		parameter = parameter.substr(1, parameter.size() - 2);
 
 		if (regex_match(parameter, IDENT_REGEX)) {
 			return DesignEntity(parameter, Type::FIXED);
