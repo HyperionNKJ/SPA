@@ -722,11 +722,10 @@ int Parser::handleCloseBracket(string closeBracket) {
 				errorMessage = "Unexpected error when parsing end of container statement. Follow stack is empty. At line " + statementNumber;
 				return -1;
 			}
+			setNext(statementNumber, containerTracker.back());
 			parentVector.pop_back();
 			currentFollowVector = allFollowStack.back();
 			allFollowStack.pop_back();
-			//track consecutive closed if/else statements
-			setNext(statementNumber, containerTracker.back());
 		}
 		else if (containerTracker.back() == IFC) {
 			expectElse = true;
@@ -770,6 +769,7 @@ int Parser::handleCall(string callLine) {
 }
 
 bool Parser::setNext(int stmtNum, Container closingType) {
+	cout << stmtNum << endl;
 	//first statement in a procedure cannot possibly be 2nd argument in next
 	//set boolean and return
 	if (firstInProc) {
@@ -780,7 +780,6 @@ bool Parser::setNext(int stmtNum, Container closingType) {
 	//for case of first line in else
 	if (firstInElse) {
 		firstInElse = false;
-		cout << parentVector.back() << " " << statementNumber << "first line in else " << endl;
 		pkb->setNext(parentVector.back(), stmtNum);
 		pkb->setPrevious(parentVector.back(), stmtNum);
 		lastStmtInFlow = stmtNum;
@@ -791,10 +790,6 @@ bool Parser::setNext(int stmtNum, Container closingType) {
 		int lastWhile = parentVector.back();
 		if (closedIfCount > 0) {
 			while (closedIfCount > 0) {
-				cout << lastInIfTracker.back() << " " << lastWhile << "closed while with if involved" << endl;
-				cout << lastInElseTracker.back() << " " << lastWhile << endl;
-				cout << lastWhile << " " << statementNumber << endl;
-				
 				pkb->setNext(lastInIfTracker.back(), lastWhile);
 				pkb->setPrevious(lastInIfTracker.back(), lastWhile);
 				pkb->setNext(lastInElseTracker.back(), lastWhile);
@@ -806,8 +801,6 @@ bool Parser::setNext(int stmtNum, Container closingType) {
 			}
 		}
 		else {
-			cout << lastWhile << " " << statementNumber << " end of while with no if involved" << endl;
-			cout << statementNumber - 1 << " " << lastWhile << endl;
 			pkb->setNext(lastStmtInFlow, lastWhile);
 			pkb->setPrevious(lastStmtInFlow, lastWhile);
 		}
@@ -823,8 +816,6 @@ bool Parser::setNext(int stmtNum, Container closingType) {
 	//for case of not first line in else, neither is it closing bracket.
 	if (closedIfCount > 0) {
 		while (closedIfCount > 0) {
-			cout << lastInIfTracker.back() << " " << statementNumber << "closed if no container " << endl;
-			cout << lastInElseTracker.back() << " " << statementNumber << endl;
 			
 			pkb->setNext(lastInIfTracker.back(), stmtNum);
 			pkb->setPrevious(lastInIfTracker.back(), stmtNum);
@@ -838,7 +829,6 @@ bool Parser::setNext(int stmtNum, Container closingType) {
 		lastStmtInFlow = stmtNum;
 	}
 	else {
-		cout << statementNumber - 1 << " " << statementNumber << "first nothing involved" << endl;
 		pkb->setNext(lastStmtInFlow, stmtNum);
 		pkb->setPrevious(lastStmtInFlow, stmtNum);
 		lastStmtInFlow = stmtNum;
