@@ -40,7 +40,9 @@ const std::unordered_map<Type, std::string> QueryPreprocessorHelper::TYPE_TO_STR
 	{Type::STATEMENT, "stmt"},
 	{Type::UNDERSCORE, "underscore"},
 	{Type::VARIABLE, "variable"},
-	{Type::WHILE, "while"}
+	{Type::WHILE, "while"},
+	{Type::PATTERN_EXACT, "patternexact"},
+	{Type::PATTERN_SUB, "patternsub"}
 };
 
 const std::unordered_map<std::string, AttrRef> QueryPreprocessorHelper::STRING_TO_ATTR_REF = {
