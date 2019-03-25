@@ -1,5 +1,5 @@
 1 - Select all procedure that calls Q
-prcedure p;
+procedure p;
 Select p such that Calls (p, "Q")
 P
 5000
