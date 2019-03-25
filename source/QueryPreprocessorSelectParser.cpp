@@ -119,14 +119,16 @@ bool QueryPreprocessorSelectParser::parse() {
 
 			// If rel is found in declarations, the clause is a pattern clause
 			std::string rel = clause.substr(0, relSize);
-			if (query.declarations.find(rel) != query.declarations.end() && clauseType == ClauseType::SUCH_THAT) {
+			if (query.declarations.find(rel) != query.declarations.end() && clauseType == ClauseType::PATTERN) {
 				QueryPreprocessorPatternParser parsePatternCl(clause, query);
-				query = parsePatternCl.query;
 				status = parsePatternCl.parse();
+				query = parsePatternCl.query;
 			} else if (clause.find('=') != std::string::npos && clauseType == ClauseType::WITH) {
-				parseWithCl(clause);
+				status = parseWithCl(clause);
 			} else if (clauseType == ClauseType::SUCH_THAT) {
-				parseSuchThatCl(clause);
+				status = parseSuchThatCl(clause);
+			} else {
+				return false;
 			}
 		}
 
@@ -266,6 +268,30 @@ bool QueryPreprocessorSelectParser::parseWithCl(std::string& withCl) {
 
 	size_t lhsSynonymSize = lhs.find('.');
 	if (lhsSynonymSize == std::string::npos) {
+		if (regex_match(lhs, INT_REGEX)) {
+			// statement number
+			paramOne = DesignEntity(lhs, Type::FIXED);
+		} else if (lhs.front() == '"' && lhs.back() == '"') {
+			// constant
+			lhs = lhs.substr(0, lhs.size() - 2);
+			
+			if (regex_match(lhs, IDENT_REGEX)) {
+				paramOne = DesignEntity(lhs, Type::FIXED);
+			} else {
+				paramOne = DesignEntity("", Type::INVALID);
+			}
+		} else {
+			std::unordered_map<std::string, Type>::const_iterator element;
+			element = query.declarations.find(lhs);
+
+			if (element != query.declarations.end()) {
+				// synonym
+				paramOne = DesignEntity(lhs, element->second);
+			} else {
+				paramOne = DesignEntity("", Type::INVALID);
+			}
+		}
+
 		// prog_line, constant, statement number
 	} else {
 		paramOne = parseAttrRef(lhs);
@@ -274,15 +300,41 @@ bool QueryPreprocessorSelectParser::parseWithCl(std::string& withCl) {
 	size_t rhsSynonymSize = rhs.find('.');
 	if (rhsSynonymSize == std::string::npos) {
 		// prog_line, constant, statement number
-	}
-	else {
+		if (regex_match(rhs, INT_REGEX)) {
+			// statement number
+			paramTwo = DesignEntity(rhs, Type::FIXED);
+		}
+		else if (rhs.front() == '"' && rhs.back() == '"') {
+			// constant
+			rhs = rhs.substr(1, rhs.size() - 2);
+
+			if (regex_match(rhs, IDENT_REGEX)) {
+				paramTwo = DesignEntity(rhs, Type::FIXED);
+			}
+			else {
+				paramTwo = DesignEntity("", Type::INVALID);
+			}
+		}
+		else {
+			std::unordered_map<std::string, Type>::const_iterator element;
+			element = query.declarations.find(lhs);
+
+			if (element != query.declarations.end()) {
+				// synonym
+				paramTwo = DesignEntity(lhs, element->second);
+			}
+			else {
+				paramTwo = DesignEntity("", Type::INVALID);
+			}
+		}
+	} else {
 		paramTwo = parseAttrRef(lhs);
 	}
 
 	DesignEntity placeholder("", Type::INVALID);
 
-	With withClause(paramOne, paramTwo);
-	query.addClause(&withClause);
+	With* withClause = new With(paramOne, paramTwo);
+	query.addWithClause(withClause);
 
 	return true;
 }
@@ -402,10 +454,10 @@ DesignEntity QueryPreprocessorSelectParser::parseAttrRef(std::string elem) {
 	std::string synonym = elem.substr(0, synonymSize);
 	std::string attrRefString = elem.substr(synonymSize + 1);
 
-	// synonym does not exist in declare clause
+	// synonym must exist in declare clause
 	std::unordered_map<std::string, Type>::const_iterator result;
 	result = query.declarations.find(synonym);
-	if (result != query.declarations.end()) {
+	if (result == query.declarations.end()) {
 		return DesignEntity("", Type::INVALID);
 	}
 
