@@ -38,6 +38,7 @@ const std::unordered_map<Type, std::string> QueryPreprocessorHelper::TYPE_TO_STR
 	{Type::PROGLINE, "prog_line"},
 	{Type::READ, "read"},
 	{Type::STATEMENT, "stmt"},
+	{Type::UNDERSCORE, "underscore"},
 	{Type::VARIABLE, "variable"},
 	{Type::WHILE, "while"}
 };
