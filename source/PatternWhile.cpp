@@ -1,16 +1,11 @@
 #include "PatternWhile.h"
 
-PatternWhile::PatternWhile(const DesignEntity& subject, const DesignEntity& controlVar) : Clause(controlVar, DesignEntity("_", Type::UNDERSCORE), ClauseType::PATTERN_WHILE) {
-	this->subject = subject;
-}
-
-unordered_set<string> PatternWhile::getSynonyms() {
-	unordered_set<string> synonyms = Clause::getSynonyms();
-	Type subjectType = subject.getType();
-	if (isSynonym(subjectType)) {
-		synonyms.insert(subject.getValue());
-	}
-	return synonyms;
+PatternWhile::PatternWhile(const DesignEntity& patternSubject, const DesignEntity& controlVar) {
+	paraOne = controlVar;
+	paraTwo = DesignEntity("_", Type::UNDERSCORE);
+	subject = patternSubject;
+	type = ClauseType::PATTERN_WHILE;
+	setSynonyms();
 }
 
 Result PatternWhile::evaluate(const PKB& pkb) {

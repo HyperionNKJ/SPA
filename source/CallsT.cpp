@@ -1,6 +1,11 @@
 #include "CallsT.h"
 
-CallsT::CallsT(const DesignEntity& paraOne, const DesignEntity& paraTwo) : Clause(paraOne, paraTwo, ClauseType::CALLS_T) {}
+CallsT::CallsT(const DesignEntity& firstPara, const DesignEntity& secondPara) {
+	paraOne = firstPara;
+	paraTwo = secondPara;
+	type = ClauseType::CALLS_T;
+	setSynonyms();
+}
 
 Result CallsT::evaluate(const PKB& pkb) {
 	this->pkb = pkb;

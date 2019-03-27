@@ -11,6 +11,8 @@ list<string> QueryEvaluator::evaluate(ProcessedQuery& processedQuery, const PKB&
 
 	unordered_set<Clause*> withClauses = processedQuery.withClauses;
 	unordered_set<Clause*> suchThatPatternClauses = processedQuery.clauses;
+	unordered_set<Clause*> booleanClauses = extractBooleanClauses(suchThatPatternClauses);
+
 	vector<Clause*> sortedClauses = optimizationSort(suchThatPatternClauses); 
 	vector<Clause*> combinedClauses = { withClauses.begin(), withClauses.end() };
 	combinedClauses.insert(combinedClauses.end(), sortedClauses.begin(), sortedClauses.end());
@@ -54,6 +56,12 @@ void QueryEvaluator::findReducedDomain(Clause* clause, ResultProjector* resultPr
 }
 
 
+
+unordered_set<Clause*> QueryEvaluator::extractBooleanClauses(const unordered_set<Clause*>& suchThatPatternClauses) {
+	for (const auto& clause : suchThatPatternClauses) {
+
+	}
+}
 
 // Function that encapsulates all optimization logic
 vector<Clause*> QueryEvaluator::optimizationSort(const unordered_set<Clause*>& suchThatPatternClauses) {

@@ -18,19 +18,22 @@ protected:
 	ClauseType type;
 	DesignEntity paraOne;
 	DesignEntity paraTwo;
+	DesignEntity subject; // only for pattern clauses
+	unordered_set<string> synonyms; // can have 0, 1 or 2 synonyms
 	PKB pkb;
 
 	// reduced domain values that synonym/s (if exist) can take, based on the intermediate table. Only used by computionally expensive clause: Next*
 	unordered_map<string, unordered_set<int>> reducedDomain; 
 
-	Clause(const DesignEntity&, const DesignEntity&, const ClauseType&);
 	bool Clause::isSynonym(Type&);
+	void setSynonyms();
 
 public:
 	ClauseType getClauseType();
 	void setParaOne(const DesignEntity&);
 	void setParaTwo(const DesignEntity&);
-	virtual unordered_set<string> getSynonyms(); // may return 0, 1 or 2 synonyms
+	unordered_set<string> getSynonyms();
+	int getNumOfSynonyms();
 	void setReducedDomain(const unordered_map<string, unordered_set<int>>&);
 	virtual Result evaluate(const PKB&) = 0;
 };

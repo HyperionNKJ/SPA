@@ -1,6 +1,11 @@
 #include "Calls.h"
 
-Calls::Calls(const DesignEntity& paraOne, const DesignEntity& paraTwo) : Clause(paraOne, paraTwo, ClauseType::CALLS) {}
+Calls::Calls(const DesignEntity& firstPara, const DesignEntity& secondPara) {
+	paraOne = firstPara;
+	paraTwo = secondPara;
+	type = ClauseType::CALLS;
+	setSynonyms();
+}
 
 Result Calls::evaluate(const PKB& pkb) {
 	this->pkb = pkb;

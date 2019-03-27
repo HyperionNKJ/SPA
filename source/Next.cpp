@@ -1,6 +1,11 @@
 #include "Next.h"
 
-Next::Next(const DesignEntity& paraOne, const DesignEntity& paraTwo) : Clause(paraOne, paraTwo, ClauseType::NEXT) {}
+Next::Next(const DesignEntity& firstPara, const DesignEntity& secondPara) {
+	paraOne = firstPara;
+	paraTwo = secondPara;
+	type = ClauseType::NEXT;
+	setSynonyms();
+}
 
 /**
  * Definitions:
