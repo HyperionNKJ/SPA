@@ -16,7 +16,7 @@ private:
 	std::vector<std::string> statements;
 
 	void split();
-	bool tag();
+	bool validateStatement();
 
 	static bool isDeclareStatement(const std::string& statement);
 	static bool isSelectStatement(const std::string& statement);

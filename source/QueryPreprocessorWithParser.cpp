@@ -5,69 +5,91 @@
 
 constexpr auto EQUAL = '=';
 
+// Initializes a newly created QueryPreprocessorWithParser.
 QueryPreprocessorWithParser::QueryPreprocessorWithParser(std::string& withCl, ProcessedQuery& query)
 	: WITH_CL(withCl), query(query) {
 }
 
+// Parses the with clause.
+// Returns true if parsing is successful and false if unsucessful.
 bool QueryPreprocessorWithParser::parse() {
+	// with clauses must have "="
 	size_t lhsSize = WITH_CL.find(EQUAL);
 	if (lhsSize == std::string::npos) {
 		return false;
 	}
 
+	// extract the lhs and rhs of with clause
 	std::string lhs = WITH_CL.substr(0, lhsSize);
 	std::string rhs = WITH_CL.substr(lhsSize + 1);
+	DesignEntity paramOne = parseWithParam(lhs);
+	DesignEntity paramTwo = parseWithParam(rhs);
 
-	DesignEntity paramOne = QueryPreprocessorHelper::getParam(lhs, query);
-	DesignEntity paramTwo = QueryPreprocessorHelper::getParam(rhs, query);
-
-	Type designEntityOne = paramOne.getType();
-	Type designEntityTwo = paramTwo.getType();
-
-	if (designEntityOne == Type::INVALID || designEntityOne == Type::UNDERSCORE) {
+	if (paramOne.getType() == Type::INVALID || paramTwo.getType() == Type::INVALID) {
 		return false;
 	}
 
-	if (designEntityTwo == Type::INVALID || designEntityTwo == Type::UNDERSCORE) {
-		return false;
-	}
-
-	if (designEntityOne == Type::FIXED) {
-		std::string& val = paramOne.getValue();
-		if (QueryPreprocessorHelper::isInt(val)) {
-			paramOne.setType(Type::WITH_INTEGER);
-		}
-		else {
-			paramOne.setType(Type::WITH_STRING);
-		}
-	}
-
-	if (designEntityTwo == Type::FIXED) {
-		std::string& val = paramTwo.getValue();
-		if (QueryPreprocessorHelper::isInt(val)) {
-			paramTwo.setType(Type::WITH_INTEGER);
-		}
-		else {
-			paramTwo.setType(Type::WITH_STRING);
-		}
-	}
-
-	if (paramOne.getAttrRef() == AttrRef::UNASSIGNED
-		&& designEntityOne != Type::WITH_INTEGER
-		&& designEntityOne != Type::WITH_STRING
-		&& designEntityOne != Type::PROGLINE) {
-		return false;
-	}
-
-	if (paramTwo.getAttrRef() == AttrRef::UNASSIGNED
-		&& designEntityTwo != Type::WITH_INTEGER
-		&& designEntityTwo != Type::WITH_STRING
-		&& designEntityTwo != Type::PROGLINE) {
+	// LHS AttrRef type must be the same as RHS AttrRef type
+	bool status = isValidAttrRefComparator(paramOne, paramTwo);
+	if (!status) {
 		return false;
 	}
 
 	With* withClause = new With(paramOne, paramTwo);
 	query.addWithClause(withClause);
+
+	return true;
+}
+
+DesignEntity QueryPreprocessorWithParser::parseWithParam(std::string& paramString) {
+	DesignEntity param = QueryPreprocessorHelper::getParam(paramString, query);
+
+	if (param.getType() == Type::UNDERSCORE) {
+		return DesignEntity("", Type::INVALID);
+	}
+
+	if (param.getType() == Type::FIXED) {
+		std::string& val = param.getValue();
+		if (QueryPreprocessorHelper::isInt(val)) {
+			param.setType(Type::WITH_INTEGER);
+		}
+		else {
+			param.setType(Type::WITH_STRING);
+		}
+	}
+
+	if (param.getAttrRef() == AttrRef::UNASSIGNED
+		&& param.getType() != Type::WITH_INTEGER
+		&& param.getType() != Type::WITH_STRING
+		&& param.getType() != Type::PROGLINE) {
+		return DesignEntity("", Type::INVALID);
+	}
+
+	return param;
+}
+
+bool QueryPreprocessorWithParser::isValidAttrRefComparator(DesignEntity& paramOne, DesignEntity& paramTwo) {
+	AttrRef attrRefOne = paramOne.getAttrRef();
+	AttrRef attrRefTwo = paramTwo.getAttrRef();
+
+	bool isNameAttrRefOne = false;
+	bool isNameAttrRefTwo = false;
+
+	if (attrRefOne == AttrRef::PROC_NAME 
+		|| attrRefOne == AttrRef::VAR_NAME 
+		|| paramOne.getType() == Type::WITH_STRING) {
+		isNameAttrRefOne = true;
+	}
+
+	if (attrRefTwo == AttrRef::PROC_NAME 
+		|| attrRefTwo == AttrRef::VAR_NAME 
+		|| paramTwo.getType() == Type::WITH_STRING) {
+		isNameAttrRefTwo = true;
+	}
+
+	if (isNameAttrRefOne != isNameAttrRefTwo) {
+		return false;
+	}
 
 	return true;
 }

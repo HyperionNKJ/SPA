@@ -2,6 +2,7 @@
 
 #include <unordered_map>
 #include <unordered_set>
+#include "ProcessedQuery.h"
 #include "AttrRef.h"
 #include "Type.h"
 

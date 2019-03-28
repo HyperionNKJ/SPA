@@ -1,29 +1,25 @@
 #include <regex>
 #include <sstream>
 #include <string>
-#include "QueryPreprocessorHelper.h"
 #include "QueryPreprocessorTokenizer.h"
 
 constexpr auto DELIMITER = ';';
-constexpr auto SPACE = ' ';
 
+// Regular Expressions
 constexpr char DECLARE_STMT[] = "^(stmt|read|print|call|while|if|assign|variable|constant|prog_line|procedure) [a-zA-z][a-zA-Z0-9,]*$";
-
 const std::regex QueryPreprocessorTokenizer::DECLARE_REGEX_STMT(DECLARE_STMT);
 
 // Initializes a newly created QueryPreprocessorFormatterTokenizer.
 QueryPreprocessorTokenizer::QueryPreprocessorTokenizer(const std::string& query)
-		: query(query) {
-
+	: query(query) {
 }
 
-/* 
-Tokenises the query into statements. Returns false if first to last statement
-is not a declarative statement or if the last statement is a Select statement.
-*/
+// Tokenises the query into statements.
+// Returns false if first to last statement is not a declarative statement or 
+// if the last statement is a Select statement.
 bool QueryPreprocessorTokenizer::tokenize() {
 	split();
-	return tag();
+	return validateStatement();
 }
 
 // Return a vector of statements.
@@ -41,19 +37,21 @@ void QueryPreprocessorTokenizer::split() {
 	}
 }
 
-// Tags statement.
-bool QueryPreprocessorTokenizer::tag() {
+// Validate that the statements are in the correct order.
+// First to second last statement must be Declarative statements.
+// Last statement must be a Select statement.
+bool QueryPreprocessorTokenizer::validateStatement() {
+	// loop through the first to second last statement and check that they are
+	// all declarative statements
 	size_t numberOfStatements = statements.size();
 	for (size_t index = 0; index < numberOfStatements - 1; index++) {
-		std::string& statement = statements[index];
-		if (!isDeclareStatement(statement)) {
+		if (!isDeclareStatement(statements[index])) {
 			return false;
 		}
 	}
 
-	std::string& lastStatement = statements[numberOfStatements - 1];
-
-	if (!isSelectStatement(lastStatement)) {
+	// last statement must be a declarative statement
+	if (!isSelectStatement(statements.back())) {
 		return false;
 	}
 
@@ -67,5 +65,5 @@ bool QueryPreprocessorTokenizer::isDeclareStatement(const std::string& statement
 
 // Check if statement is a select statement.
 bool QueryPreprocessorTokenizer::isSelectStatement(const std::string& statement) {
-	return !statement.rfind("Select", 0, 6);
+	return statement.find("Select ", 0, 7) != std::string::npos;
 }

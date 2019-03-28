@@ -10,13 +10,11 @@ public:
 
 	bool parse();
 private:
-	static const std::regex IDENT_REGEX;
-	static const std::regex INT_REGEX;
-	static const std::regex REL_REF_REGEX;
 	static const std::regex EXPRESSION_REGEX;
 
-	std::string clause;
+	const std::string CLAUSE;
 
 	DesignEntity parseEntRef(std::string& parameter);
-	DesignEntity parseExpression(std::string& expression);
+
+	static DesignEntity parseExpression(std::string& expression);
 };

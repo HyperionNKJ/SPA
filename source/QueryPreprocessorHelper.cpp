@@ -208,7 +208,7 @@ DesignEntity QueryPreprocessorHelper::getParam(std::string& param,
 			// param is a underscore
 			return DesignEntity(param, Type::UNDERSCORE);
 		}
-		else if (QueryPreprocessorHelper::isInt(param)) {
+		else if (isInt(param)) {
 			// param is a statement number
 			return DesignEntity(param, Type::FIXED);
 		}
@@ -216,36 +216,31 @@ DesignEntity QueryPreprocessorHelper::getParam(std::string& param,
 			// param is a variable
 
 			// remove front and back quotes
-			param = param.substr(1, param.size() - 2);
-
 			// validate that param is a variable
-			if (QueryPreprocessorHelper::isVar(param)) {
+			param = param.substr(1, param.size() - 2);
+			if (isVar(param)) {
 				return DesignEntity(param, Type::FIXED);
 			}
 			else {
 				return DesignEntity("", Type::INVALID);
 			}
 		}
-		else {
+		else if (query.hasSynonym(param)){
 			// param is a synonym
-			if (query.getDesignEntity(param)) {
-				// synonym
-				return DesignEntity(param, Type::PROGLINE);
-			}
-			else {
-				// invalid
-				return DesignEntity("", Type::INVALID);
-			}
+			return DesignEntity(param, query.getDesignEntity(param));
 		}
+
+		// invalid
+		return DesignEntity("", Type::INVALID);
 	}
 	else {
 		// param with attrRef
 		std::string synonym = param.substr(0, synonymSize);
-		std::string attrRef = param.substr(synonymSize + 1, param.size() - synonymSize - 1);
+		std::string attrRef = param.substr(synonymSize + 1);
 
-		if (query.hasSynonym(param)) {
+		if (query.hasSynonym(synonym)) {
 			// param is a synonym
-			Type designEntity = query.getDesignEntity(param);
+			Type designEntity = query.getDesignEntity(synonym);
 
 			if (designEntity == Type::CONSTANT && attrRef == "value") {
 				return DesignEntity(synonym, Type::CONSTANT, AttrRef::VALUE);
@@ -273,9 +268,10 @@ DesignEntity QueryPreprocessorHelper::getParam(std::string& param,
 					|| designEntity == Type::WHILE)) {
 				return DesignEntity(synonym, designEntity, AttrRef::STMT_NUM);
 			}
-			else {
-				return DesignEntity("", Type::INVALID);
-			}
+
+			return DesignEntity("", Type::INVALID);
 		}
+
+		return DesignEntity("", Type::INVALID);
 	}
 }

@@ -7,8 +7,6 @@
 
 class QueryPreprocessorSelectParser {
 public:
-	static const std::regex IDENT_REGEX;
-	static const std::regex INT_REGEX;
 	static const std::regex REL_REF_REGEX;
 
 	ProcessedQuery query;
@@ -21,14 +19,7 @@ private:
 
 	const std::string STATEMENT;
 
-	bool parseResultCl(std::string& resultCl);
 	bool parseSuchThatCl(std::string& suchThatCl);
-	bool parseWithCl(std::string& withCl);
-
-	bool parseElem(std::string& elem);
 
 	DesignEntity parseParameter(std::string& parameter);
-	DesignEntity parseAttrRef(std::string elem);
-
-	static bool isValidSynonymAttrRefPair(Type de, AttrRef attrRef);
 };

@@ -11,4 +11,7 @@ public:
 	bool parse();
 private:
 	const std::string WITH_CL;
+
+	DesignEntity parseWithParam(std::string& param);
+	bool isValidAttrRefComparator(DesignEntity& paramOne, DesignEntity& paramTwo);
 };
