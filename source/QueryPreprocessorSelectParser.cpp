@@ -15,9 +15,9 @@
 #include "QueryPreprocessorDeclareParser.h"
 #include "QueryPreprocessorPatternParser.h"
 #include "QueryPreprocessorSelectParser.h"
+#include "QueryPreprocessorWithParser.h"
 #include "UsesP.h"
 #include "UsesS.h"
-#include "With.h"
 
 constexpr auto SPACE = ' ';
 constexpr auto COMMA = ',';
@@ -122,7 +122,9 @@ bool QueryPreprocessorSelectParser::parse() {
 				status = parsePatternCl.parse();
 				query = parsePatternCl.query;
 			} else if (clause.find('=') != std::string::npos && clauseType == ClauseType::WITH) {
-				status = parseWithCl(clause);
+				QueryPreprocessorWithParser parseWithCl(clause, query);
+				status = parseWithCl.parse();
+				query = parseWithCl.query;
 			} else if (clauseType == ClauseType::SUCH_THAT) {
 				status = parseSuchThatCl(clause);
 			} else {
@@ -304,88 +306,7 @@ bool QueryPreprocessorSelectParser::parseSuchThatCl(std::string& suchThatCl) {
 	return true;
 }
 
-bool QueryPreprocessorSelectParser::parseWithCl(std::string& withCl) {
-	size_t lhsSize = withCl.find('=');
-	if (lhsSize == std::string::npos) {
-		return false;
-	}
 
-	std::string lhs = withCl.substr(0, lhsSize);
-	std::string rhs = withCl.substr(lhsSize + 1);
-
-	DesignEntity paramOne;
-	DesignEntity paramTwo;
-
-	size_t lhsSynonymSize = lhs.find('.');
-	if (lhsSynonymSize == std::string::npos) {
-		if (regex_match(lhs, INT_REGEX)) {
-			// statement number
-			paramOne = DesignEntity(lhs, Type::FIXED);
-		} else if (lhs.front() == '"' && lhs.back() == '"') {
-			lhs = lhs.substr(0, lhs.size() - 2);
-			if (regex_match(lhs, IDENT_REGEX)) {
-				// constant
-				paramOne = DesignEntity(lhs, Type::FIXED);
-			} else {
-				// invalid
-				paramOne = DesignEntity("", Type::INVALID);
-			}
-		} else {
-			if (query.declarations.find(lhs)->second == Type::PROGLINE) {
-				// synonym
-				paramOne = DesignEntity(lhs, Type::PROGLINE);
-			} else {
-				// invalid
-				paramOne = DesignEntity("", Type::INVALID);
-			}
-		}
-
-		// prog_line, constant, statement number
-	} else {
-		paramOne = parseAttrRef(lhs);
-	}
-
-	size_t rhsSynonymSize = rhs.find('.');
-	if (rhsSynonymSize == std::string::npos) {
-		// prog_line, constant, statement number
-		if (regex_match(rhs, INT_REGEX)) {
-			// statement number
-			paramTwo = DesignEntity(rhs, Type::FIXED);
-		}
-		else if (rhs.front() == '"' && rhs.back() == '"') {
-			// constant
-			rhs = rhs.substr(1, rhs.size() - 2);
-
-			if (regex_match(rhs, IDENT_REGEX)) {
-				paramTwo = DesignEntity(rhs, Type::FIXED);
-			}
-			else {
-				paramTwo = DesignEntity("", Type::INVALID);
-			}
-		}
-		else {
-			std::unordered_map<std::string, Type>::const_iterator element;
-			element = query.declarations.find(lhs);
-
-			if (element != query.declarations.end()) {
-				// synonym
-				paramTwo = DesignEntity(lhs, element->second);
-			}
-			else {
-				paramTwo = DesignEntity("", Type::INVALID);
-			}
-		}
-	} else {
-		paramTwo = parseAttrRef(lhs);
-	}
-
-	DesignEntity placeholder("", Type::INVALID);
-
-	With* withClause = new With(paramOne, paramTwo);
-	query.addWithClause(withClause);
-
-	return true;
-}
 
 // parse element
 bool QueryPreprocessorSelectParser::parseElem(std::string& elem) {

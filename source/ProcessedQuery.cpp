@@ -27,3 +27,11 @@ void ProcessedQuery::addClause(Clause* clause) {
 void ProcessedQuery::addWithClause(Clause* withClause) {
 	withClauses.insert(withClause);
 }
+
+bool ProcessedQuery::hasSynonym(std::string& synonym) {
+	return declarations.find(synonym) != declarations.end();
+}
+
+Type ProcessedQuery::getDesignEntity(std::string& synonym) {
+	return declarations.find(synonym)->second;
+}

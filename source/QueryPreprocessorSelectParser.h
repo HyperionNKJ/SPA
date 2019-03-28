@@ -13,7 +13,7 @@ public:
 
 	ProcessedQuery query;
 
-	QueryPreprocessorSelectParser(const std::string& statement, ProcessedQuery& processedQuery);
+	QueryPreprocessorSelectParser(const std::string& statement, ProcessedQuery& query);
 
 	bool parse();
 private:

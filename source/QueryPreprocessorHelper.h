@@ -18,4 +18,7 @@ public:
 	static AttrRef getAttrRef(const std::string& attrRefString);
 	static bool isReservedWord(const std::string& target);
 	static std::string getPostFix(const std::string& infix);
+	static bool isInt(const std::string& target);
+	static bool isVar(const std::string& target);
+	static DesignEntity getParam(std::string& param, ProcessedQuery& query);
 };

@@ -24,4 +24,7 @@ public:
 	void addResultClElement(const DesignEntity& element);
 	void addClause(Clause* clause);
 	void addWithClause(Clause* withClause);
+
+	bool hasSynonym(std::string& synonym);
+	Type getDesignEntity(std::string& synonym);
 };

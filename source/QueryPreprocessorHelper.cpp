@@ -5,6 +5,8 @@
 #include <unordered_set>
 #include <vector>
 #include "AttrRef.h"
+#include "DesignEntity.h"
+#include "ProcessedQuery.h"
 #include "Type.h"
 #include "QueryPreprocessorHelper.h"
 
@@ -170,4 +172,110 @@ std::string QueryPreprocessorHelper::getPostFix(const std::string& infix) {
 	}
 
 	return postFix.substr(0, postFix.size() - 1);
+}
+
+bool QueryPreprocessorHelper::isInt(const std::string& target) {
+	return target.find_first_not_of("0123456789") == std::string::npos;
+}
+
+bool QueryPreprocessorHelper::isVar(const std::string& target) {
+	char firstChar = target.front();
+	firstChar = tolower(firstChar);
+	bool isValidFirstChar = firstChar > 96 && firstChar < 123;
+
+	if (!isValidFirstChar) {
+		return false;
+	}
+
+	for (size_t index = 1; index < target.size(); index++) {
+		if (target[index] < 48
+			|| (target[index] > 57 && target[index] < 65)
+			|| (target[index] > 90 && target[index] < 96)
+			|| target[index] > 122) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+DesignEntity QueryPreprocessorHelper::getParam(std::string& param, 
+		ProcessedQuery& query) {
+	size_t synonymSize = param.find('.');
+	if (synonymSize == std::string::npos) {
+		// param without attrRef
+		if (param == "_") {
+			// param is a underscore
+			return DesignEntity(param, Type::UNDERSCORE);
+		}
+		else if (QueryPreprocessorHelper::isInt(param)) {
+			// param is a statement number
+			return DesignEntity(param, Type::FIXED);
+		}
+		else if (param.front() == '"' && param.back() == '"') {
+			// param is a variable
+
+			// remove front and back quotes
+			param = param.substr(1, param.size() - 2);
+
+			// validate that param is a variable
+			if (QueryPreprocessorHelper::isVar(param)) {
+				return DesignEntity(param, Type::FIXED);
+			}
+			else {
+				return DesignEntity("", Type::INVALID);
+			}
+		}
+		else {
+			// param is a synonym
+			if (query.getDesignEntity(param)) {
+				// synonym
+				return DesignEntity(param, Type::PROGLINE);
+			}
+			else {
+				// invalid
+				return DesignEntity("", Type::INVALID);
+			}
+		}
+	}
+	else {
+		// param with attrRef
+		std::string synonym = param.substr(0, synonymSize);
+		std::string attrRef = param.substr(synonymSize + 1, param.size() - synonymSize - 1);
+
+		if (query.hasSynonym(param)) {
+			// param is a synonym
+			Type designEntity = query.getDesignEntity(param);
+
+			if (designEntity == Type::CONSTANT && attrRef == "value") {
+				return DesignEntity(synonym, Type::CONSTANT, AttrRef::VALUE);
+			}
+			else if (attrRef == "procName"
+				&& (designEntity == Type::CALL
+					|| designEntity == Type::PROCEDURE)) {
+				// valid: call.procName, procedure.procName
+				return DesignEntity(synonym, designEntity, AttrRef::PROC_NAME);
+			}
+			else if (attrRef == "varName"
+				&& (designEntity == Type::PRINT
+					|| designEntity == Type::READ
+					|| designEntity == Type::VARIABLE)) {
+				// valid: print.varName, read.varName, variable.varName
+				return DesignEntity(synonym, designEntity, AttrRef::VAR_NAME);
+			}
+			else if (attrRef == "stmt#"
+				&& (designEntity == Type::ASSIGN
+					|| designEntity == Type::CALL
+					|| designEntity == Type::IF
+					|| designEntity == Type::PRINT
+					|| designEntity == Type::READ
+					|| designEntity == Type::STATEMENT
+					|| designEntity == Type::WHILE)) {
+				return DesignEntity(synonym, designEntity, AttrRef::STMT_NUM);
+			}
+			else {
+				return DesignEntity("", Type::INVALID);
+			}
+		}
+	}
 }

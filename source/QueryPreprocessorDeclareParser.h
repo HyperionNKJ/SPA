@@ -8,7 +8,7 @@ class QueryPreprocessorDeclareParser {
 public:
 	ProcessedQuery query;
 
-	QueryPreprocessorDeclareParser(const std::string& statement, ProcessedQuery& declarations);
+	QueryPreprocessorDeclareParser(const std::string& statement, ProcessedQuery& query);
 
 	bool parse();
 private:
