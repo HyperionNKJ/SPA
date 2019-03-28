@@ -41,6 +41,7 @@ bool QueryPreprocessorWithParser::parse() {
 	return true;
 }
 
+// Parses the individual parameters in with clause.
 DesignEntity QueryPreprocessorWithParser::parseWithParam(std::string& paramString) {
 	DesignEntity param = QueryPreprocessorHelper::getParam(paramString, query);
 
@@ -68,6 +69,8 @@ DesignEntity QueryPreprocessorWithParser::parseWithParam(std::string& paramStrin
 	return param;
 }
 
+// Validates that the comparation of two parameters is legal.
+// Returns true if comparing the left and right hand side of the assignment is allowed.
 bool QueryPreprocessorWithParser::isValidAttrRefComparator(DesignEntity& paramOne, DesignEntity& paramTwo) {
 	AttrRef attrRefOne = paramOne.getAttrRef();
 	AttrRef attrRefTwo = paramTwo.getAttrRef();
