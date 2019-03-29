@@ -7,23 +7,19 @@
 
 using namespace std;
 
-struct CompareBySize {
-	bool operator()(const unordered_set<string>& clause1, const unordered_set<string>& clause2) const {
-		return clause1.size() > clause2.size();
-	}
-};
-
 class QueryEvaluator {
 private:
 	void findReducedDomain(Clause*, ResultProjector*);
+	vector<Clause*> optimizationSort(vector<Clause*>&);
 
-	vector<Clause*> optimizationSort(const unordered_set<Clause*>&);
-	void groupBasedOnConnectedSyn(const unordered_set<Clause*>&, map<unordered_set<string>, vector<Clause*>, CompareBySize>&, unordered_set<Clause*>&);
-	void sortBasedOnNumOfSyn(map<unordered_set<string>, vector<Clause*>, CompareBySize>&);
-	vector<Clause*> combineClauseGroups(const unordered_set<Clause*>&, const map<unordered_set<string>,  vector<Clause*>, CompareBySize>&);
+
+
+
 	bool hasCommonSynonyms(const unordered_set<string>&, const unordered_set<string>&);
-	void addIntoGroup(map<unordered_set<string>, vector<Clause*>, CompareBySize>&, map<unordered_set<string>, vector<Clause*>, CompareBySize>::iterator&, unordered_set<string>&, Clause*);
 
+	// void sortBasedOnNumOfSyn(map<unordered_set<string>, vector<Clause*>, CompareBySize>&);
+	// vector<Clause*> combineClauseGroups(const unordered_set<Clause*>&, const map<unordered_set<string>,  vector<Clause*>, CompareBySize>&);
 public:
-	list<string> evaluate(ProcessedQuery&, const PKB&);
+	void groupBasedOnConnectedSyn(vector<Clause*>&, vector<pair<unordered_set<string>, vector<Clause*>>>&);
+	//list<string> evaluate(ProcessedQuery&, const PKB&);
 };

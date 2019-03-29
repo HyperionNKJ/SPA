@@ -12,6 +12,6 @@ std::list<std::string> QueryProcessor::evaluate(std::string& query, const PKB& p
 
 	ProcessedQuery processedQuery = queryPreprocessor.getProcessedQuery();
 
-	results = queryEvaluator.evaluate(processedQuery, pkb);
+	//results = queryEvaluator.evaluate(processedQuery, pkb);
 	return results;
 }
