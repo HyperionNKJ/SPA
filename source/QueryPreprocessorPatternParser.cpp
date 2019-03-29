@@ -69,11 +69,8 @@ bool QueryPreprocessorPatternParser::parse() {
 			return false;
 		}
 
-		if (query.clausesString.find(CLAUSE) == query.clausesString.end()) {
-			PatternAssign* pattern = new PatternAssign(target, paramOne, paramTwo);
-			query.addClause(pattern);
-			query.clausesString.insert(CLAUSE);
-		}
+		PatternAssign* pattern = new PatternAssign(target, paramOne, paramTwo);
+		query.addClause(pattern, CLAUSE);
 	}
 	else if (designEntity == Type::WHILE && paramTwoString == "_") {
 		// while pattern
@@ -83,11 +80,8 @@ bool QueryPreprocessorPatternParser::parse() {
 			return false;
 		}
 
-		if (query.clausesString.find(CLAUSE) == query.clausesString.end()) {
-			PatternWhile* pattern = new PatternWhile(target, paramOne);
-			query.addClause(pattern);
-			query.clausesString.insert(CLAUSE);
-		}
+		PatternWhile* pattern = new PatternWhile(target, paramOne);
+		query.addClause(pattern, CLAUSE);
 	}
 	else if (designEntity == Type::IF && paramTwoString == "_,_") {
 		// if pattern
@@ -97,11 +91,8 @@ bool QueryPreprocessorPatternParser::parse() {
 			return false;
 		}
 
-		if (query.clausesString.find(CLAUSE) == query.clausesString.end()) {
-			PatternIf* pattern = new PatternIf(target, paramOne);
-			query.addClause(pattern);
-			query.clausesString.insert(CLAUSE);
-		}
+		PatternIf* pattern = new PatternIf(target, paramOne);
+		query.addClause(pattern, CLAUSE);
 	}
 	else {
 		return false;
@@ -117,10 +108,10 @@ DesignEntity QueryPreprocessorPatternParser::parseEntRef(std::string& entRef) {
 	DesignEntity param = QueryPreprocessorHelper::getParam(entRef, query);
 
 	Type designEntityOne = param.getType();
+
 	if (designEntityOne != Type::UNDERSCORE
 		&& designEntityOne != VARIABLE
-		&& !(designEntityOne == Type::FIXED
-			&& QueryPreprocessorHelper::isVar(entRef))) {
+		&& !(designEntityOne == Type::FIXED && QueryPreprocessorHelper::isVar(entRef))) {
 		return DesignEntity(EMPTY, Type::INVALID);
 	}
 

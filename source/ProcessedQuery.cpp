@@ -12,6 +12,11 @@ ProcessedQuery::ProcessedQuery() {
 
 bool ProcessedQuery::insertDeclaration(const std::string& synonym,
 	const Type& type) {
+	// same synonym cannot be declared twice
+	if (hasSynonym(synonym)) {
+		return false;
+	}
+
 	declarations.insert({ synonym, type });
 	return true;
 }
@@ -20,15 +25,18 @@ void ProcessedQuery::addResultClElement(const DesignEntity& element) {
 	resultClElemList.push_back(element);
 }
 
-void ProcessedQuery::addClause(Clause* clause) {
-	clauses.insert(clause);
+void ProcessedQuery::addClause(Clause* clause, const std::string& clauseString) {
+	if (clausesString.find(clauseString) != clausesString.end()) {
+		clauses.insert(clause);
+		clausesString.insert(clauseString);
+	}
 }
 
 void ProcessedQuery::addWithClause(Clause* withClause) {
 	withClauses.insert(withClause);
 }
 
-bool ProcessedQuery::hasSynonym(std::string& synonym) {
+bool ProcessedQuery::hasSynonym(const std::string& synonym) {
 	return declarations.find(synonym) != declarations.end();
 }
 

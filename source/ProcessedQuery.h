@@ -10,6 +10,13 @@ public:
 	std::unordered_map<std::string, Type> declarations;
 	std::vector<DesignEntity> resultClElemList;
 
+	std::vector<Clause*> affectsClauses;
+	std::vector<Clause*> affectsTClauses;
+	std::vector<Clause*> booleanClauses;
+	std::vector<Clause*> nextTClauses;
+	std::vector<Clause*> otherClauses;
+	std::vector<Clause*> withCLauses;
+
 	std::unordered_set<Clause*> clauses;
 	std::unordered_set<Clause*> withClauses;
 
@@ -22,9 +29,9 @@ public:
 		const Type& designEntityType);
 
 	void addResultClElement(const DesignEntity& element);
-	void addClause(Clause* clause);
+	void addClause(Clause* clause, const std::string& clauseString);
 	void addWithClause(Clause* withClause);
 
-	bool hasSynonym(std::string& synonym);
+	bool hasSynonym(const std::string& synonym);
 	Type getDesignEntity(std::string& synonym);
 };

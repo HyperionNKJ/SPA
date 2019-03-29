@@ -1,35 +1,32 @@
-#include <regex>
-#include "DesignEntity.h"
 #include "QueryPreprocessorHelper.h"
 #include "QueryPreprocessorDeclareParser.h"
 
 constexpr auto SPACE = ' ';
-constexpr auto COMMA = ',';
+constexpr auto DELIMITER = ',';
 
 // Initializes a newly created QueryPreprocessorDeclareParser.
 QueryPreprocessorDeclareParser::QueryPreprocessorDeclareParser(const std::string& statement, ProcessedQuery& query)
 	: STATEMENT(statement), query(query) {
 }
 
-// Parse synonyms in declarative statement and add them to declarations.
+// Parses synonyms in declarative statement and adds them to declarations.
+// Returns true if all the synonyms in the declarative statement can be added into declarations.
+// False if there exist a synonym that cannot be added into declarations.
 bool QueryPreprocessorDeclareParser::parse() {
-	size_t synonymIndex = STATEMENT.find_first_of(SPACE) + 1;
-
-	// get design entity of this declaration statement
-	std::string designEntityString = STATEMENT.substr(0, synonymIndex - 1);
+	// extract design entity of this declaration statement
+	size_t designEntitySize = STATEMENT.find_first_of(SPACE);
+	std::string designEntityString = STATEMENT.substr(0, designEntitySize);
 	Type designEntity = QueryPreprocessorHelper::getType(designEntityString);
 
-	// get synonyms of this declaration statement
-	std::string synonymsString = STATEMENT.substr(synonymIndex);
-	std::vector<std::string> synonyms = QueryPreprocessorHelper::split(synonymsString, COMMA);
+	// extract the synonyms of this declaration statement
+	std::string synonymsString = STATEMENT.substr(designEntitySize + 1);
+	std::vector<std::string> synonyms = QueryPreprocessorHelper::split(synonymsString, DELIMITER);
 	for (std::string& synonym : synonyms) {
-		// check if synonym already exist
-		if (query.declarations.find(synonym) != query.declarations.end()) {
+		// insert synonym into declarations
+		bool status = query.insertDeclaration(synonym, designEntity);
+		if (!status) {
 			return false;
 		}
-
-		// insert synonym into declarations map
-		query.declarations.insert({ synonym, designEntity });
 	}
 
 	return true;

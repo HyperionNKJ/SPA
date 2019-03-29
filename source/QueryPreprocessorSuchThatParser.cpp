@@ -56,66 +56,60 @@ bool QueryPreprocessorSuchThatParser::parse() {
 	DesignEntity paramOne = QueryPreprocessorHelper::getParam(parametersList[0], query);
 	DesignEntity paramTwo = QueryPreprocessorHelper::getParam(parametersList[1], query);
 
-	if (query.clausesString.find(CLAUSE) != query.clausesString.end()) {
-		return true;
-	}
-
-	query.clausesString.insert(CLAUSE);
-
 	if (rel == "Calls") {
 		Calls* suchThatClause = new Calls(paramOne, paramTwo);
-		query.addClause(suchThatClause);
+		query.addClause(suchThatClause, CLAUSE);
 	}
 	else if (rel == "Calls*") {
 		CallsT* suchThatClause = new CallsT(paramOne, paramTwo);
-		query.addClause(suchThatClause);
+		query.addClause(suchThatClause, CLAUSE);
 	}
 	else if (rel == "Follows") {
 		Follows* suchThatClause = new Follows(paramOne, paramTwo);
-		query.addClause(suchThatClause);
+		query.addClause(suchThatClause, CLAUSE);
 	}
 	else if (rel == "Follows*") {
 		FollowsT* suchThatClause = new FollowsT(paramOne, paramTwo);
-		query.addClause(suchThatClause);
+		query.addClause(suchThatClause, CLAUSE);
 	}
 	else if (rel == "Modifies") {
 		if (paramOne.getType() == Type::PROCEDURE) {
 			ModifiesP* suchThatClause = new ModifiesP(paramOne, paramTwo);
-			query.addClause(suchThatClause);
+			query.addClause(suchThatClause, CLAUSE);
 		}
 		else if (paramOne.getType() == Type::FIXED && QueryPreprocessorHelper::isVar(paramOne.getValue())) {
 			ModifiesP* suchThatClause = new ModifiesP(paramOne, paramTwo);
-			query.addClause(suchThatClause);
+			query.addClause(suchThatClause, CLAUSE);
 		}
 		else {
 			ModifiesS* suchThatClause = new ModifiesS(paramOne, paramTwo);
-			query.addClause(suchThatClause);
+			query.addClause(suchThatClause, CLAUSE);
 		}
 	}
 	else if (rel == "Next") {
 		Next* suchThatClause = new Next(paramOne, paramTwo);
-		query.addClause(suchThatClause);
+		query.addClause(suchThatClause, CLAUSE);
 	}
 	else if (rel == "Next*") {
 		NextT* suchThatClause = new NextT(paramOne, paramTwo);
-		query.addClause(suchThatClause);
+		query.addClause(suchThatClause, CLAUSE);
 	}
 	else if (rel == "Parent") {
 		Parent* suchThatClause = new Parent(paramOne, paramTwo);
-		query.addClause(suchThatClause);
+		query.addClause(suchThatClause, CLAUSE);
 	}
 	else if (rel == "Uses") {
 		if (paramOne.getType() == Type::PROCEDURE) {
 			UsesP* suchThatClause = new UsesP(paramOne, paramTwo);
-			query.addClause(suchThatClause);
+			query.addClause(suchThatClause, CLAUSE);
 		}
 		else if (paramOne.getType() == Type::FIXED && QueryPreprocessorHelper::isVar(paramOne.getValue())) {
 			UsesP* suchThatClause = new UsesP(paramOne, paramTwo);
-			query.addClause(suchThatClause);
+			query.addClause(suchThatClause, CLAUSE);
 		}
 		else {
 			UsesS* suchThatClause = new UsesS(paramOne, paramTwo);
-			query.addClause(suchThatClause);
+			query.addClause(suchThatClause, CLAUSE);
 		}
 	}
 

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <regex>
 #include <unordered_set>
 #include "ProcessedQuery.h"
 #include "Type.h"

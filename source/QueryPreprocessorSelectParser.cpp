@@ -22,24 +22,26 @@ bool QueryPreprocessorSelectParser::parse() {
 	// extract result clause
 	size_t resultClSize = selectCl.find_first_of(SPACE);
 	if (resultClSize == std::string::npos) {
-		// case 0: there is only a result clause
-		QueryPreprocessorResultParser parseResultCl(selectCl, query);
-		bool status = parseResultCl.parse();
-		query = parseResultCl.query;
-		return status;
+		resultClSize = selectCl.size();
 	}
 
-	// case 1: there are other clauses
 	std::string resultCl = selectCl.substr(0, resultClSize);
 	selectCl.erase(0, resultClSize + 1);
-
+	
 	QueryPreprocessorResultParser parseResultCl(resultCl, query);
 	bool status = parseResultCl.parse();
 	query = parseResultCl.query;
 
+	if (selectCl.size() == 0 && status) {
+		// case 0: there is only a result clause
+		return true;
+	}
+	
 	if (!status) {
 		return false;
 	}
+
+	// case 1: there exist other clauses
 
 	// extract such that, pattern, with clauses
 	ClauseType clauseType = ClauseType::RESULT;
