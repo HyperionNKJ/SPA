@@ -16,17 +16,17 @@ QueryPreprocessorResultParser::QueryPreprocessorResultParser(const string& claus
 	: CLAUSE(clause), query(query) {
 }
 
-// Parses the pattern clause.
+// Parses the result clause.
 // Returns true if parsing is successful and false if unsucessful.
 bool QueryPreprocessorResultParser::parse() {
 	// case 0: result clause is a boolean
 	if (CLAUSE == "BOOLEAN") {
 		DesignEntity element(EMPTY, Type::BOOLEAN);
 		query.addResultClElement(element);
-		
+
 		return true;
 	}
-	
+
 	// case 1: result clause is a tuple of element
 	if (CLAUSE.front() == TUPLE_BRACKET_L && CLAUSE.back() == TUPLE_BRACKET_R) {
 		// tokenize result clause into elements

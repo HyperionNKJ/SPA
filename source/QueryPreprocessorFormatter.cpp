@@ -3,14 +3,17 @@
 #include "QueryPreprocessorFormatter.h"
 
 constexpr char WHITESPACE[] = " \t\f\v\n\r";
+constexpr char SPACE[] = " ";
+constexpr char FIRST_CAPTURE_GROUP[] = "$1";
 
+// Regular Expressions.
 const std::regex QueryPreprocessorFormatter::EXTRA_WHITESPACE("\\s+");
 const std::regex QueryPreprocessorFormatter::LEADING_SPACE(" ([()>=,_;\"])");
 const std::regex QueryPreprocessorFormatter::TRAILING_SPACE("([(<=,_;\"]) ");
 
 // Initializes a newly created QueryPreprocessorFormatter.
 QueryPreprocessorFormatter::QueryPreprocessorFormatter(std::string& query)
-		: query(query) {
+	: query(query) {
 	trim();
 	removeExtraWhitespace();
 }
@@ -24,9 +27,9 @@ void QueryPreprocessorFormatter::trim() {
 
 // Removes redundant whitespace of the query.
 void QueryPreprocessorFormatter::removeExtraWhitespace() {
-	query = std::regex_replace(query, EXTRA_WHITESPACE, " ");
-	query = std::regex_replace(query, LEADING_SPACE, "$1");
-	query = std::regex_replace(query, TRAILING_SPACE, "$1");
+	query = std::regex_replace(query, EXTRA_WHITESPACE, SPACE);
+	query = std::regex_replace(query, LEADING_SPACE, FIRST_CAPTURE_GROUP);
+	query = std::regex_replace(query, TRAILING_SPACE, FIRST_CAPTURE_GROUP);
 }
 
 // Returns the formatted query.

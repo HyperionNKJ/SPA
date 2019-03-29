@@ -54,12 +54,6 @@ const std::unordered_map<std::string, AttrRef> QueryPreprocessorHelper::STRING_T
 	{"stmt#", AttrRef::STMT_NUM}
 };
 
-const std::unordered_set<std::string> QueryPreprocessorHelper::RESERVED_WORD = {
-	"assign", "Affects", "call", "Calls", "constant", "Follows", "if", "Modifies",
-	"Next", "Parent", "pattern", "print", "procedure", "read", "Select", "stmt",
-	"Uses", "variable", "while", "with"
-};
-
 QueryPreprocessorHelper::QueryPreprocessorHelper() {
 
 }
@@ -82,10 +76,6 @@ Type QueryPreprocessorHelper::getType(const std::string& typeString) {
 
 AttrRef QueryPreprocessorHelper::getAttrRef(const std::string& attrRefString) {
 	return STRING_TO_ATTR_REF.find(attrRefString)->second;
-}
-
-bool QueryPreprocessorHelper::isReservedWord(const std::string& target) {
-	return RESERVED_WORD.find(target) != RESERVED_WORD.end();
 }
 
 bool isValidVarName(const std::string& line) {
@@ -199,8 +189,8 @@ bool QueryPreprocessorHelper::isVar(const std::string& target) {
 	return true;
 }
 
-DesignEntity QueryPreprocessorHelper::getParam(std::string& param, 
-		ProcessedQuery& query) {
+DesignEntity QueryPreprocessorHelper::getParam(std::string& param,
+	ProcessedQuery& query) {
 	size_t synonymSize = param.find('.');
 	if (synonymSize == std::string::npos) {
 		// param without attrRef
@@ -225,7 +215,7 @@ DesignEntity QueryPreprocessorHelper::getParam(std::string& param,
 				return DesignEntity("", Type::INVALID);
 			}
 		}
-		else if (query.hasSynonym(param)){
+		else if (query.hasSynonym(param)) {
 			// param is a synonym
 			return DesignEntity(param, query.getDesignEntity(param));
 		}

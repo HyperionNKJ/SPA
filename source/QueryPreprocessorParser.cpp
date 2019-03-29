@@ -9,7 +9,7 @@
 
 // Initializes a newly created QueryPreprocessorParser.
 QueryPreprocessorParser::QueryPreprocessorParser(const std::vector<std::string>& statements)
-		: STATEMENTS(statements) {
+	: STATEMENTS(statements) {
 	query = ProcessedQuery();
 }
 

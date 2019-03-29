@@ -18,8 +18,4 @@ private:
 	enum ClauseType { RESULT, SUCH_THAT, PATTERN, WITH };
 
 	const std::string STATEMENT;
-
-	bool parseSuchThatCl(std::string& suchThatCl);
-
-	DesignEntity parseParameter(std::string& parameter);
 };

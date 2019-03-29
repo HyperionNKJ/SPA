@@ -4,7 +4,7 @@
 #include "QueryPreprocessorTokenizer.h"
 #include "QueryPreprocessor.h"
 
-QueryPreprocessor::QueryPreprocessor(std::string& query): query(query) {
+QueryPreprocessor::QueryPreprocessor(std::string& query) : query(query) {
 
 }
 
@@ -15,7 +15,7 @@ bool QueryPreprocessor::parse() {
 	// invalid when:
 	// 1. there exist a statement that is not a select or delcare statement
 	// 2. select statement is not the last statement in the query
-	QueryPreprocessorTokenizer tokenizer = QueryPreprocessorTokenizer(query);  
+	QueryPreprocessorTokenizer tokenizer = QueryPreprocessorTokenizer(query);
 	bool status = tokenizer.tokenize();
 
 	if (!status) {

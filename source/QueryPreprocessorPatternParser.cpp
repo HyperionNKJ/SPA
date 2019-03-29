@@ -17,8 +17,8 @@ constexpr char EXPRESSION[] = "^[a-zA-z0-9()*/%+\\- ]+$";
 const regex QueryPreprocessorPatternParser::EXPRESSION_REGEX(EXPRESSION);
 
 // Initializes a newly created QueryPreprocessorPatternParser.
-QueryPreprocessorPatternParser::QueryPreprocessorPatternParser(string& clause, 
-	ProcessedQuery& query): CLAUSE(clause), query(query) {
+QueryPreprocessorPatternParser::QueryPreprocessorPatternParser(string& clause,
+	ProcessedQuery& query) : CLAUSE(clause), query(query) {
 }
 
 // Parses the pattern clause.
@@ -64,7 +64,7 @@ bool QueryPreprocessorPatternParser::parse() {
 		// assign pattern
 		DesignEntity paramOne = parseEntRef(paramOneString);
 		DesignEntity paramTwo = parseExpression(paramTwoString);
-		
+
 		if (paramOne.getType() == Type::INVALID || paramTwo.getType() == Type::INVALID) {
 			return false;
 		}
@@ -74,7 +74,8 @@ bool QueryPreprocessorPatternParser::parse() {
 			query.addClause(pattern);
 			query.clausesString.insert(CLAUSE);
 		}
-	} else if (designEntity == Type::WHILE && paramTwoString == "_") {
+	}
+	else if (designEntity == Type::WHILE && paramTwoString == "_") {
 		// while pattern
 		DesignEntity paramOne = parseEntRef(paramOneString);
 
@@ -87,7 +88,8 @@ bool QueryPreprocessorPatternParser::parse() {
 			query.addClause(pattern);
 			query.clausesString.insert(CLAUSE);
 		}
-	} else if (designEntity == Type::IF && paramTwoString == "_,_") {
+	}
+	else if (designEntity == Type::IF && paramTwoString == "_,_") {
 		// if pattern
 		DesignEntity paramOne = parseEntRef(paramOneString);
 
@@ -100,7 +102,8 @@ bool QueryPreprocessorPatternParser::parse() {
 			query.addClause(pattern);
 			query.clausesString.insert(CLAUSE);
 		}
-	} else {
+	}
+	else {
 		return false;
 	}
 
@@ -130,10 +133,11 @@ DesignEntity QueryPreprocessorPatternParser::parseExpression(std::string& expres
 	if (expression == "_") {
 		// underscore
 		return DesignEntity(EMPTY, Type::UNDERSCORE);
-	} else if (expression.front() == UNDERSCOR
-			&& expression.back() == UNDERSCOR
-			&& expression[1] == QUOTE
-			&& expression[expression.size() - 2] == QUOTE) {
+	}
+	else if (expression.front() == UNDERSCOR
+		&& expression.back() == UNDERSCOR
+		&& expression[1] == QUOTE
+		&& expression[expression.size() - 2] == QUOTE) {
 		// sub match
 		expression = expression.substr(2, expression.size() - 4);
 		expression = QueryPreprocessorHelper::getPostFix(expression);
@@ -141,7 +145,8 @@ DesignEntity QueryPreprocessorPatternParser::parseExpression(std::string& expres
 		if (regex_match(expression, EXPRESSION_REGEX)) {
 			return DesignEntity(expression, Type::PATTERN_SUB);
 		}
-	} else if (expression.front() == QUOTE && expression.back() == QUOTE) {
+	}
+	else if (expression.front() == QUOTE && expression.back() == QUOTE) {
 		// exact match
 		expression = expression.substr(1, expression.size() - 2);
 		expression = QueryPreprocessorHelper::getPostFix(expression);

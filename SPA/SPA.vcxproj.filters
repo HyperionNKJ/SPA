@@ -132,6 +132,9 @@
     <ClCompile Include="..\source\QueryPreprocessorResultParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\QueryPreprocessorSuchThatParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\DesignEntity.h">
@@ -261,6 +264,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\QueryPreprocessorResultParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\QueryPreprocessorSuchThatParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

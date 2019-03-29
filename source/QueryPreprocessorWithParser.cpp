@@ -78,14 +78,14 @@ bool QueryPreprocessorWithParser::isValidAttrRefComparator(DesignEntity& paramOn
 	bool isNameAttrRefOne = false;
 	bool isNameAttrRefTwo = false;
 
-	if (attrRefOne == AttrRef::PROC_NAME 
-		|| attrRefOne == AttrRef::VAR_NAME 
+	if (attrRefOne == AttrRef::PROC_NAME
+		|| attrRefOne == AttrRef::VAR_NAME
 		|| paramOne.getType() == Type::WITH_STRING) {
 		isNameAttrRefOne = true;
 	}
 
-	if (attrRefTwo == AttrRef::PROC_NAME 
-		|| attrRefTwo == AttrRef::VAR_NAME 
+	if (attrRefTwo == AttrRef::PROC_NAME
+		|| attrRefTwo == AttrRef::VAR_NAME
 		|| paramTwo.getType() == Type::WITH_STRING) {
 		isNameAttrRefTwo = true;
 	}

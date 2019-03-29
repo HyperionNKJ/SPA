@@ -7,9 +7,8 @@ constexpr auto SPACE = ' ';
 constexpr auto COMMA = ',';
 
 // Initializes a newly created QueryPreprocessorDeclareParser.
-QueryPreprocessorDeclareParser::QueryPreprocessorDeclareParser(const std::string& statement, 
-		ProcessedQuery& query): STATEMENT(statement), query(query){
-
+QueryPreprocessorDeclareParser::QueryPreprocessorDeclareParser(const std::string& statement, ProcessedQuery& query)
+	: STATEMENT(statement), query(query) {
 }
 
 // Parse synonyms in declarative statement and add them to declarations.
@@ -24,12 +23,6 @@ bool QueryPreprocessorDeclareParser::parse() {
 	std::string synonymsString = STATEMENT.substr(synonymIndex);
 	std::vector<std::string> synonyms = QueryPreprocessorHelper::split(synonymsString, COMMA);
 	for (std::string& synonym : synonyms) {
-		// check if synonym is a reserved word
-		bool isReservedKeyword = QueryPreprocessorHelper::isReservedWord(synonym);
-		if (isReservedKeyword) {
-			return false;
-		}
-
 		// check if synonym already exist
 		if (query.declarations.find(synonym) != query.declarations.end()) {
 			return false;
