@@ -25,20 +25,38 @@ list<string> QueryEvaluator::evaluate(ProcessedQuery& processedQuery, const PKB&
 	combinedClauses.insert(combinedClauses.end(), sortedNextTClauses.begin(), sortedNextTClauses.end());
 
 	for (auto clause : combinedClauses) {
-		if (clause->getClauseType() == NEXT_T) {
-			findReducedDomain(clause, &resultProjector); // reduce domain based on resultProjector's intermediate table
+		ClauseType clauseType = clause->getClauseType();
+
+		// if clause type is Next* / Affects / Affects*, we employ the logic of domain reduction OR caching to optimize evaluation
+		bool reducedDomainExists = false;
+		bool cacheResultExists = false;
+		bool clauseIsExpensive = clauseType == NEXT_T || clauseType == AFFECTS || clauseType == AFFECTS_T;
+		if (clauseIsExpensive && clause->getNumOfSynonyms() != 0) {
+			reducedDomainExists = findReducedDomain(clause, &resultProjector); // reduce domain based on resultProjector's intermediate table
+			// if reducedDomain exists, clause will use reduced domain to evaluate.
+			if (!reducedDomainExists && (cacheResultExists = resultProjector.cacheExists(clause))) {
+				resultProjector.combineCacheResults(clause); // if results were cached beforehand, simply re-use the results.
+				continue; // skip re-evaluation
+			}
 		}
 
 		Result clauseResult = clause->evaluate(pkb);
-		int numOfSyn = clauseResult.getNumOfSyn(); // num of synonyms in clauseResult is zero if clause is false
+		int numOfSyn = clauseResult.getNumOfSyn(); // num of synonyms in clauseResult is zero if clause is false or if boolean clause
 		if (clauseResult.hasPassed() && numOfSyn != 0) { // if clauseResult has synonym/s, send to ResultProjector to merge.
 			bool hasResultSoFar;
 			vector<string> synonyms = clauseResult.getSynonyms();
+			bool shouldStoreInCache = !reducedDomainExists && !cacheResultExists && clauseIsExpensive; // Cannot store in cache if result was evaluated using reduced domain!
 			if (numOfSyn == 1) {
 				hasResultSoFar = resultProjector.combineResults(clauseResult.getOneSynAnswer(), synonyms);
+				if (shouldStoreInCache) {
+					resultProjector.storeInCache(clause, clauseResult.getOneSynAnswer());
+				}
 			}
 			else if (numOfSyn == 2) { 
 				hasResultSoFar = resultProjector.combineResults(clauseResult.getTwoSynAnswer(), synonyms);
+				if (shouldStoreInCache) {
+					resultProjector.storeInCache(clause, clauseResult.getTwoSynAnswer());
+				}
 			}
 			if (!hasResultSoFar) {
 				return emptyResult; 
@@ -51,15 +69,19 @@ list<string> QueryEvaluator::evaluate(ProcessedQuery& processedQuery, const PKB&
 	return resultProjector.getResults(processedQuery.resultClElemList, pkb);
 }
 
-void QueryEvaluator::findReducedDomain(Clause* clause, ResultProjector* resultProjector) {
-	unordered_set<string> synonyms = clause->getSynonyms(); // 0, 1, or 2 synonyms
+// only called by NextT, Affects, and AffectsT
+bool QueryEvaluator::findReducedDomain(Clause* clause, ResultProjector* resultProjector) {
+	const unordered_set<string>& synonyms = clause->getSynonyms(); // 1 or 2 synonyms
 	unordered_map<string, unordered_set<int>> reducedDomain;
-	for (auto s : synonyms) {
+	bool hasReducedDomain = false;
+	for (const auto& s : synonyms) {
 		if (resultProjector->synonymExists(s)) {
 			reducedDomain.insert({ s, resultProjector->getPossibleValues(s) });
+			bool hasReducedDomain = true;
 		}
 	}
 	clause->setReducedDomain(reducedDomain);
+	return hasReducedDomain;
 }
 
 // Function that encapsulates optimization logic

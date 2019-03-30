@@ -9,7 +9,7 @@ using namespace std;
 
 class QueryEvaluator {
 private:
-	void findReducedDomain(Clause*, ResultProjector*);
+	bool findReducedDomain(Clause*, ResultProjector*);
 
 public:
 	vector<Clause*> optimizationSort(vector<Clause*>&);
