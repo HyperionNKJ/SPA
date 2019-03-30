@@ -266,8 +266,7 @@ Result* NextT::evaluateUnderscoreSynonym(const string& nextSynonym, const Type& 
 // case Next*(_, _)
 Result* NextT::evaluateUnderscoreUnderscore() {
 	Result* result = new Result();
-	unordered_set<int> previousLines = pkb.getPreviousLines(Type::PROGLINE);
-	result->setPassed(!previousLines.empty());
+	result->setPassed(pkb.hasNextT());
 	return result;
 }
 

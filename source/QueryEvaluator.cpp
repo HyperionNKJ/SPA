@@ -28,9 +28,9 @@ list<string> QueryEvaluator::evaluate(ProcessedQuery& processedQuery, const PKB&
 		ClauseType clauseType = clause->getClauseType();
 
 		// if clause type is Next* / Affects / Affects*, we employ the logic of domain reduction OR caching to optimize evaluation
+		bool clauseIsExpensive = clauseType == NEXT_T || clauseType == AFFECTS || clauseType == AFFECTS_T;
 		bool reducedDomainExists = false;
 		bool cacheResultExists = false;
-		bool clauseIsExpensive = clauseType == NEXT_T || clauseType == AFFECTS || clauseType == AFFECTS_T;
 		if (clauseIsExpensive && clause->getNumOfSynonyms() != 0) {
 			reducedDomainExists = findReducedDomain(clause, &resultProjector); // reduce domain based on resultProjector's intermediate table
 			// if reducedDomain exists, clause will use reduced domain to evaluate.
