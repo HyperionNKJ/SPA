@@ -1,16 +1,11 @@
 #include "PatternIf.h"
 
-PatternIf::PatternIf(const DesignEntity& subject, const DesignEntity& controlVar) : Clause(controlVar, DesignEntity("_", Type::UNDERSCORE), ClauseType::PATTERN_IF) { // third argument of PatternIf not specified
-	this->subject = subject;
-}
-
-unordered_set<string> PatternIf::getSynonyms() {
-	unordered_set<string> synonyms = Clause::getSynonyms();
-	Type subjectType = subject.getType();
-	if (isSynonym(subjectType)) {
-		synonyms.insert(subject.getValue());
-	}
-	return synonyms;
+PatternIf::PatternIf(const DesignEntity& patternSubject, const DesignEntity& controlVar) {
+	paraOne = controlVar;
+	paraTwo = DesignEntity("_", Type::UNDERSCORE);
+	subject = patternSubject;
+	type = ClauseType::PATTERN_IF;
+	setSynonyms();
 }
 
 Result PatternIf::evaluate(const PKB& pkb) {

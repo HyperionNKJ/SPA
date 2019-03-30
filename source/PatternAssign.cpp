@@ -1,16 +1,11 @@
 #include "PatternAssign.h"
 
-PatternAssign::PatternAssign(const DesignEntity& subject, const DesignEntity& paraOne, const DesignEntity& paraTwo) : Clause(paraOne, paraTwo, ClauseType::PATTERN_ASSIGN) {
-	this->subject = subject;
-}
-
-unordered_set<string> PatternAssign::getSynonyms() {
-	unordered_set<string> synonyms = Clause::getSynonyms();
-	Type subjectType = subject.getType();
-	if (isSynonym(subjectType)) {
-		synonyms.insert(subject.getValue());
-	}
-	return synonyms;
+PatternAssign::PatternAssign(const DesignEntity& patternSubject, const DesignEntity& firstPara, const DesignEntity& secondPara) {
+	paraOne = firstPara;
+	paraTwo = secondPara;
+	subject = patternSubject;
+	type = ClauseType::PATTERN_ASSIGN;
+	setSynonyms();
 }
 
 Result PatternAssign::evaluate(const PKB& pkb) {

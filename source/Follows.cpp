@@ -1,6 +1,11 @@
 #include "Follows.h"
 
-Follows::Follows(const DesignEntity& paraOne, const DesignEntity& paraTwo) : Clause(paraOne, paraTwo, ClauseType::FOLLOWS) {}
+Follows::Follows(const DesignEntity& firstPara, const DesignEntity& secondPara) {
+	paraOne = firstPara;
+	paraTwo = secondPara;
+	type = ClauseType::FOLLOWS;
+	setSynonyms();
+}
 
 Result Follows::evaluate(const PKB& pkb) {
 	this->pkb = pkb;

@@ -1,17 +1,10 @@
 #include "Clause.h"
 
-Clause::Clause(const DesignEntity& paraOne, const DesignEntity& paraTwo, const ClauseType& type) {
-	this->paraOne = paraOne;
-	this->paraTwo = paraTwo;
-	this->type = type;
-}
-
 ClauseType Clause::getClauseType() {
 	return this->type;
 }
 
-unordered_set<string> Clause::getSynonyms() {
-	unordered_set<string> synonyms;
+void Clause::setSynonyms() {
 	Type paraOneType = paraOne.getType();
 	Type paraTwoType = paraTwo.getType();
 
@@ -21,7 +14,9 @@ unordered_set<string> Clause::getSynonyms() {
 	if (isSynonym(paraTwoType)) {
 		synonyms.insert(paraTwo.getValue());
 	}
-	return synonyms; // may return 0, 1, or 2 synonyms in a set
+	if (type == ClauseType::PATTERN_ASSIGN || type == ClauseType::PATTERN_IF || type == ClauseType::PATTERN_WHILE) {
+		synonyms.insert(subject.getValue()); // subject is always a synonym
+	}
 }
 
 bool Clause::isSynonym(Type& type) {
@@ -29,10 +24,17 @@ bool Clause::isSynonym(Type& type) {
 		|| type == ASSIGN || type == VARIABLE || type == CONSTANT || type == PROCEDURE);
 }
 
+unordered_set<string> Clause::getSynonyms() {
+	return this->synonyms;
+}
+
+int Clause::getNumOfSynonyms() {
+	return this->synonyms.size();
+}
+
 void Clause::setReducedDomain(const unordered_map<string, unordered_set<int>>& reducedDomain) {
 	this->reducedDomain = reducedDomain;
 }
-
 
 void Clause::setParaOne(const DesignEntity& paraOne) {
 	this->paraOne = paraOne;

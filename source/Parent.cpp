@@ -1,6 +1,11 @@
 #include "Parent.h"
 
-Parent::Parent(const DesignEntity& paraOne, const DesignEntity& paraTwo) : Clause(paraOne, paraTwo, ClauseType::PARENT) {}
+Parent::Parent(const DesignEntity& firstPara, const DesignEntity& secondPara) {
+	paraOne = firstPara;
+	paraTwo = secondPara;
+	type = ClauseType::PARENT;
+	setSynonyms();
+}
 
 Result Parent::evaluate(const PKB& pkb) {
 	this->pkb = pkb;

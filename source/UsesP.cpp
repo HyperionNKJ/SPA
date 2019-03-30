@@ -2,7 +2,12 @@
 #include <unordered_set>
 #include <string>
 
-UsesP::UsesP(const DesignEntity& paraOne, const DesignEntity& paraTwo) : Clause(paraOne, paraTwo, ClauseType::USES_P) {}
+UsesP::UsesP(const DesignEntity& firstPara, const DesignEntity& secondPara) {
+	paraOne = firstPara;
+	paraTwo = secondPara;
+	type = USES_P;
+	setSynonyms();
+}
 
 Result UsesP::evaluate(const PKB& pkb) {
 	this->pkb = pkb;

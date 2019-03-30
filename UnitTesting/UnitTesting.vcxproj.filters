@@ -29,13 +29,13 @@
     <ClCompile Include="TestResultProjector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TestParser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="TestPKB.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TestQueryPreprocessorFormatter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TestQueryEvaluator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
