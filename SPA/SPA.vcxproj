@@ -11,6 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\source\Affects.cpp" />
+    <ClCompile Include="..\source\AffectsT.cpp" />
     <ClCompile Include="..\source\Calls.cpp" />
     <ClCompile Include="..\source\CallsT.cpp" />
     <ClCompile Include="..\source\Clause.cpp" />
@@ -51,6 +53,8 @@
     <ClCompile Include="..\source\With.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\source\Affects.h" />
+    <ClInclude Include="..\source\AffectsT.h" />
     <ClInclude Include="..\source\AttrRef.h" />
     <ClInclude Include="..\source\Calls.h" />
     <ClInclude Include="..\source\CallsT.h" />

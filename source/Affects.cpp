@@ -1,3 +1,4 @@
+/*
 #include "Affects.h"
 
 Affects::Affects(const DesignEntity& firstPara, const DesignEntity& secondPara) {
@@ -273,3 +274,4 @@ Result* Affects::evaluateUnderscoreFixed(const string& userStmtNum) {
 	result->setPassed(pkb.hasModifier(stoi(userStmtNum)));
 	return result;
 }
+*/
