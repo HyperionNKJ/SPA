@@ -12,10 +12,10 @@ public:
 private:
 	std::string query;
 
-	static const std::regex EXTRA_WHITESPACE;
 	static const std::regex LEADING_SPACE;
 	static const std::regex TRAILING_SPACE;
 
 	void trim();
 	void removeExtraWhitespace();
+	void removeSpaces(string& original);
 };

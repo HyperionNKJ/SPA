@@ -26,7 +26,7 @@ void ProcessedQuery::addResultClElement(const DesignEntity& element) {
 }
 
 void ProcessedQuery::addClause(Clause* clause, const std::string& clauseString) {
-	if (clausesString.find(clauseString) != clausesString.end()) {
+	if (clausesString.find(clauseString) == clausesString.end()) {
 		clauses.insert(clause);
 		clausesString.insert(clauseString);
 	}
