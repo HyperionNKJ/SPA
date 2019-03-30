@@ -36,6 +36,14 @@ void Clause::setReducedDomain(const unordered_map<string, unordered_set<int>>& r
 	this->reducedDomain = reducedDomain;
 }
 
+DesignEntity Clause::getParaOne() {
+	return this->paraOne;
+}
+
+DesignEntity Clause::getParaTwo() {
+	return this->paraTwo;
+}
+
 void Clause::setParaOne(const DesignEntity& paraOne) {
 	this->paraOne = paraOne;
 }
