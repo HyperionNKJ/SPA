@@ -17,7 +17,7 @@ private:
 	unordered_set<string> varSet, procSet, callSet, calledSet, printSet, readSet, modifiesProcSet, usesProcSet;
 	unordered_map<string, int> varTableByName, procTableByName, callTableByName, printTableByName, readTableByName;
 	vector<string> varTableByIdx, procTableByIdx, callTableByIdx, printTableByIdx, readTableByIdx;
-	unordered_set<int> allStmts, readStmts, printStmts, whileStmts, ifStmts, assignStmts, constSet, getTypedStmtSet(Type type), callStmts, ifControlStmtSet, whileControlStmtSet;
+	unordered_set<int> allStmts, readStmts, printStmts, whileStmts, ifStmts, assignStmts, constSet, callStmts, ifControlStmtSet, whileControlStmtSet, *getTypedStmtSet(Type type);
 	unordered_map<int, unordered_set<int>> leaderTMap, followerTMap, parentMap, parentTMap, childrenTMap, nextMap, prevMap;
 	unordered_map<int, int> leaderMap, followerMap, childrenMap;
 	unordered_map<string, unordered_set<int>> calledStmtMap, printStmtMap, readStmtMap, modifiesByVarMap, usesByVarMap, patternMap, fullPatternMap, ifControlVarMap, whileControlVarMap;

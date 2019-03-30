@@ -38,31 +38,31 @@ bool PKB::insertProc(string procName) {
 	return false;
 }
 
-unordered_set<int> PKB::getTypedStmtSet(Type type) {
-	unordered_set<int> typedStmtSet;
+unordered_set<int>* PKB::getTypedStmtSet(Type type) {
+	unordered_set<int> *typedStmtSet;
 
 	switch (type) {
 	case STATEMENT:
 	case PROGLINE:
-		typedStmtSet = allStmts;
+		typedStmtSet = &allStmts;
 		break;
 	case READ:
-		typedStmtSet = readStmts;
+		typedStmtSet = &readStmts;
 		break;
 	case PRINT:
-		typedStmtSet = printStmts;
+		typedStmtSet = &printStmts;
 		break;
 	case WHILE:
-		typedStmtSet = whileStmts;
+		typedStmtSet = &whileStmts;
 		break;
 	case IF:
-		typedStmtSet = ifStmts;
+		typedStmtSet = &ifStmts;
 		break;
 	case ASSIGN:
-		typedStmtSet = assignStmts;
+		typedStmtSet = &assignStmts;
 		break;
 	case CALL:
-		typedStmtSet = callStmts;
+		typedStmtSet = &callStmts;
 		break;
 	}
 
@@ -70,74 +70,74 @@ unordered_set<int> PKB::getTypedStmtSet(Type type) {
 }
 
 bool PKB::insertStmtType(int stmtNum, Type type) {
-	unordered_set<int> typedStmtSet;
+	unordered_set<int> *typedStmtSet;
 	switch (type) {
 	case STATEMENT:
 		return allStmts.insert(stmtNum).second;
 	case READ:
-		typedStmtSet = readStmts;
+		typedStmtSet = &readStmts;
 		break;
 	case WHILE:
-		typedStmtSet = whileStmts;
+		typedStmtSet = &whileStmts;
 		break;
 	case IF:
-		typedStmtSet = ifStmts;
+		typedStmtSet = &ifStmts;
 		break;
 	case ASSIGN:
-		typedStmtSet = assignStmts;
+		typedStmtSet = &assignStmts;
 		break;
 	case PRINT:
-		typedStmtSet = printStmts;
+		typedStmtSet = &printStmts;
 		break;
 	// wrong type
 	default:
 		return false;
 	}
-	return typedStmtSet.insert(stmtNum).second && allStmts.insert(stmtNum).second;
+	return typedStmtSet->insert(stmtNum).second && allStmts.insert(stmtNum).second;
 }
 
 bool PKB::insertCPRStmtType(int stmtNum, Type type, string name) {
 	bool isValidStmt;
-	unordered_set<string> typedNameSet;
-	unordered_set<int> typedStmtSet;
-	unordered_map<string, int> typedTable;
-	unordered_map<string, unordered_set<int>> typedByNameMap;
-	vector<string> typedVector; 
+	unordered_set<string> *typedNameSet;
+	unordered_set<int> *typedStmtSet;
+	unordered_map<string, int> *typedTable;
+	unordered_map<string, unordered_set<int>> *typedByNameMap;
+	vector<string> *typedVector; 
 
 	switch(type) {
 		case CALL:
-			typedNameSet = calledSet;
-			typedStmtSet = callStmts;
-			typedTable = callTableByName;
-			typedVector = callTableByIdx;
-			typedByNameMap = calledStmtMap;
+			typedNameSet = &calledSet;
+			typedStmtSet = &callStmts;
+			typedTable = &callTableByName;
+			typedVector = &callTableByIdx;
+			typedByNameMap = &calledStmtMap;
 			break;
 		case PRINT:
-			typedNameSet = printSet;
-			typedStmtSet = printStmts;
-			typedTable = printTableByName;
-			typedVector = printTableByIdx;
-			typedByNameMap = printStmtMap;
+			typedNameSet = &printSet;
+			typedStmtSet = &printStmts;
+			typedTable = &printTableByName;
+			typedVector = &printTableByIdx;
+			typedByNameMap = &printStmtMap;
 			break;
 		case READ:
-			typedNameSet = readSet;
-			typedStmtSet = readStmts;
-			typedTable = readTableByName;
-			typedVector = readTableByIdx;
-			typedByNameMap = readStmtMap;
+			typedNameSet = &readSet;
+			typedStmtSet = &readStmts;
+			typedTable = &readTableByName;
+			typedVector = &readTableByIdx;
+			typedByNameMap = &readStmtMap;
 			break;
 		default:
 			return false;
 	}
-	typedByNameMap[name].insert(stmtNum);
-	isValidStmt = allStmts.insert(stmtNum).second && typedStmtSet.insert(stmtNum).second;
+	typedByNameMap->operator[](name).insert(stmtNum);
+	isValidStmt = allStmts.insert(stmtNum).second && typedStmtSet->insert(stmtNum).second;
 	if (!isValidStmt)
 		return false;
 
-	if (!typedNameSet.count(name)) {
-		typedNameSet.insert(name);
-		typedVector.push_back(name);
-		typedTable.insert({name, typedVector.size() - 1});
+	if (!typedNameSet->count(name)) {
+		typedNameSet->insert(name);
+		typedVector->push_back(name);
+		typedTable->insert({name, typedVector->size() - 1});
 		return true;
 	}
 	return false;
@@ -406,10 +406,10 @@ unordered_set<string> PKB::getVarModifiedByStmt(int stmtNum) {
 }
 
 unordered_set<int> PKB::getStmtsThatModifiesVar(string varName, Type type) {
-	unordered_set<int> allModifyingStmts = modifiesByVarMap[varName], typedStmtSet = getTypedStmtSet(type), resultSet;
+	unordered_set<int> allModifyingStmts = modifiesByVarMap[varName], *typedStmtSet = getTypedStmtSet(type), resultSet;
 
 	for (const auto &elem : allModifyingStmts) {
-		if (typedStmtSet.count(elem)) {
+		if (typedStmtSet->count(elem)) {
 			resultSet.insert(elem);
 		}
 	}
@@ -418,20 +418,20 @@ unordered_set<int> PKB::getStmtsThatModifiesVar(string varName, Type type) {
 }
 
 unordered_map<int, unordered_set<string>> PKB::getModifiesStmtVarPairs(Type type) {
-	unordered_set<int> typedStmtSet = getTypedStmtSet(type);
+	unordered_set<int> *typedStmtSet = getTypedStmtSet(type);
 	unordered_map<int, unordered_set<string>> resultSet;
 
-	for (const auto &elem : typedStmtSet)
+	for (const auto &elem : *typedStmtSet)
 		resultSet.insert({elem, modifiesByStmtNumMap[elem]});
 
 	return resultSet;
 }
 
 unordered_set<int> PKB::getStmtsThatModifiesVar(Type type) {
-	unordered_set<int> typedStmtSet = getTypedStmtSet(type);
+	unordered_set<int> *typedStmtSet = getTypedStmtSet(type);
 	unordered_set<int> resultSet;
 
-	for (const auto &elem : typedStmtSet) {
+	for (const auto &elem : *typedStmtSet) {
 		if (modifiesByStmtNumMap.count(elem))
 			resultSet.insert(elem);
 	}
@@ -488,10 +488,10 @@ unordered_set<string> PKB::getVarUsedByStmt(int stmtNum) {
 }
 
 unordered_set<int> PKB::getStmtsThatUsesVar(string varName, Type type) {
-	unordered_set<int> allUsesStmts = usesByVarMap[varName], typedStmtSet = getTypedStmtSet(type), resultSet;
+	unordered_set<int> allUsesStmts = usesByVarMap[varName], *typedStmtSet = getTypedStmtSet(type), resultSet;
 
 	for (const auto &elem : allUsesStmts) {
-		if (typedStmtSet.count(elem)) {
+		if (typedStmtSet->count(elem)) {
 			resultSet.insert(elem);
 		}
 	}
@@ -500,20 +500,20 @@ unordered_set<int> PKB::getStmtsThatUsesVar(string varName, Type type) {
 }
 
 unordered_map<int, unordered_set<string>> PKB::getUsesStmtVarPairs(Type type) {
-	unordered_set<int> typedStmtSet = getTypedStmtSet(type);
+	unordered_set<int> *typedStmtSet = getTypedStmtSet(type);
 	unordered_map<int, unordered_set<string>> resultSet;
 
-	for (const auto &elem : typedStmtSet)
+	for (const auto &elem : *typedStmtSet)
 		resultSet.insert({elem, usesByStmtNumMap[elem]});
 
 	return resultSet;
 }
 
 unordered_set<int> PKB::getStmtsThatUsesVar(Type type) {
-	unordered_set<int> typedStmtSet = getTypedStmtSet(type);
+	unordered_set<int> *typedStmtSet = getTypedStmtSet(type);
 	unordered_set<int> resultSet;
 
-	for (const auto &elem : typedStmtSet) {
+	for (const auto &elem : *typedStmtSet) {
 		if (usesByStmtNumMap.count(elem))
 			resultSet.insert(elem);
 	}
@@ -574,13 +574,13 @@ bool PKB::hasParent(int stmtNum) {
 }
 
 unordered_map<int, unordered_set<int>> PKB::getParentChildrenPairs(Type parentType, Type childrenType) {
-	unordered_set<int> parentTypedStmtSet = getTypedStmtSet(parentType), childrenTypedStmtSet = getTypedStmtSet(childrenType);
+	unordered_set<int> *parentTypedStmtSet = getTypedStmtSet(parentType), *childrenTypedStmtSet = getTypedStmtSet(childrenType);
 	unordered_map<int, unordered_set<int>> resultMap;
 
-	for (const auto &elem : parentTypedStmtSet) {
+	for (const auto &elem : *parentTypedStmtSet) {
 		if (parentMap.count(elem)) {
 			for (const auto &elem2 : parentMap[elem]) {
-				if (childrenTypedStmtSet.count(elem2)) {
+				if (childrenTypedStmtSet->count(elem2)) {
 					resultMap[elem].insert(elem2);
 				}
 			}
@@ -591,13 +591,13 @@ unordered_map<int, unordered_set<int>> PKB::getParentChildrenPairs(Type parentTy
 }
 
 unordered_map<int, unordered_set<int>> PKB::getParentChildrenTPairs(Type parentType, Type childrenType) {
-	unordered_set<int> parentTypedStmtSet = getTypedStmtSet(parentType), childrenTypedStmtSet = getTypedStmtSet(childrenType);
+	unordered_set<int> *parentTypedStmtSet = getTypedStmtSet(parentType), *childrenTypedStmtSet = getTypedStmtSet(childrenType);
 	unordered_map<int, unordered_set<int>> resultMap;
 
-	for (const auto &elem : parentTypedStmtSet) {
+	for (const auto &elem : *parentTypedStmtSet) {
 		if (parentTMap.count(elem)) {
 			for (const auto &elem2 : parentTMap[elem]) {
-				if (childrenTypedStmtSet.count(elem2)) {
+				if (childrenTypedStmtSet->count(elem2)) {
 					resultMap[elem].insert(elem2);
 				}
 			}
@@ -608,10 +608,10 @@ unordered_map<int, unordered_set<int>> PKB::getParentChildrenTPairs(Type parentT
 }
 
 unordered_set<int> PKB::getParentStmts(Type parentType) {
-	unordered_set<int> typedStmtSet = getTypedStmtSet(parentType), resultSet;
+	unordered_set<int> *typedStmtSet = getTypedStmtSet(parentType), resultSet;
 
 	for (const auto &elem : parentMap) {
-		if (typedStmtSet.count(elem.first)) {
+		if (typedStmtSet->count(elem.first)) {
 			resultSet.insert(elem.first);
 		}
 	}
@@ -620,10 +620,10 @@ unordered_set<int> PKB::getParentStmts(Type parentType) {
 }
 
 unordered_set<int> PKB::getChildrenStmts(Type childrenType) {
-	unordered_set<int> typedStmtSet = getTypedStmtSet(childrenType), resultSet;
+	unordered_set<int> *typedStmtSet = getTypedStmtSet(childrenType), resultSet;
 
 	for (const auto &elem : childrenMap) {
-		if (typedStmtSet.count(elem.first)) {
+		if (typedStmtSet->count(elem.first)) {
 			resultSet.insert(elem.first);
 		}
 	}
@@ -632,20 +632,20 @@ unordered_set<int> PKB::getChildrenStmts(Type childrenType) {
 }
 
 int PKB::getParentOf(int stmtNum, Type parentType) {
-	unordered_set<int> typedStmtSet = getTypedStmtSet(parentType);
+	unordered_set<int> *typedStmtSet = getTypedStmtSet(parentType);
 
-	if (childrenMap.count(stmtNum) && typedStmtSet.count(childrenMap[stmtNum])) {
+	if (childrenMap.count(stmtNum) && typedStmtSet->count(childrenMap[stmtNum])) {
 		return childrenMap[stmtNum];
 	}
 	return -1;
 }
 
 unordered_set<int> PKB::getParentTOf(int stmtNum, Type parentType) {
-	unordered_set<int> typedStmtSet = getTypedStmtSet(parentType), resultSet;
+	unordered_set<int> *typedStmtSet = getTypedStmtSet(parentType), resultSet;
 
 	if (childrenTMap.count(stmtNum)) {
 		for (const auto &elem : childrenTMap[stmtNum]) {
-			if (typedStmtSet.count(elem)) {
+			if (typedStmtSet->count(elem)) {
 				resultSet.insert(elem);
 			}
 		}
@@ -655,11 +655,11 @@ unordered_set<int> PKB::getParentTOf(int stmtNum, Type parentType) {
 }
 
 unordered_set<int> PKB::getChildrenOf(int stmtNum, Type childrenType) {
-	unordered_set<int> typedStmtSet = getTypedStmtSet(childrenType), resultSet;
+	unordered_set<int> *typedStmtSet = getTypedStmtSet(childrenType), resultSet;
 
 	if (parentMap.count(stmtNum)) {
 		for (const auto &elem : parentMap[stmtNum]) {
-			if (typedStmtSet.count(elem)) {
+			if (typedStmtSet->count(elem)) {
 				resultSet.insert(elem);
 			}
 		}
@@ -669,11 +669,11 @@ unordered_set<int> PKB::getChildrenOf(int stmtNum, Type childrenType) {
 }
 
 unordered_set<int> PKB::getChildrenTOf(int stmtNum, Type childrenType) {
-	unordered_set<int> typedStmtSet = getTypedStmtSet(childrenType), resultSet;
+	unordered_set<int> *typedStmtSet = getTypedStmtSet(childrenType), resultSet;
 
 	if (parentTMap.count(stmtNum)) {
 		for (const auto &elem : parentTMap[stmtNum]) {
-			if (typedStmtSet.count(elem)) {
+			if (typedStmtSet->count(elem)) {
 				resultSet.insert(elem);
 			}
 		}
@@ -707,11 +707,11 @@ bool PKB::hasLeader(int stmtNum) {
 }
 
 unordered_map<int, int> PKB::getLeaderFollowerPairs(Type leaderType, Type followerType) {
-	unordered_set<int> leaderTypedStmtSet = getTypedStmtSet(leaderType), followerTypedStmtSet = getTypedStmtSet(followerType);
+	unordered_set<int> *leaderTypedStmtSet = getTypedStmtSet(leaderType), *followerTypedStmtSet = getTypedStmtSet(followerType);
 	unordered_map<int, int> resultMap;
 
-	for (const auto &elem : leaderTypedStmtSet) {
-		if (leaderMap.count(elem) && followerTypedStmtSet.count(leaderMap[elem]))
+	for (const auto &elem : *leaderTypedStmtSet) {
+		if (leaderMap.count(elem) && followerTypedStmtSet->count(leaderMap[elem]))
 			resultMap.insert({elem, leaderMap[elem]});
 	}
 
@@ -719,13 +719,13 @@ unordered_map<int, int> PKB::getLeaderFollowerPairs(Type leaderType, Type follow
 }
 
 unordered_map<int, unordered_set<int>> PKB::getLeaderFollowerTPairs(Type leaderType, Type followerType) {
-	unordered_set<int> leaderTypedStmtSet = getTypedStmtSet(leaderType), followerTypedStmtSet = getTypedStmtSet(followerType);
+	unordered_set<int> *leaderTypedStmtSet = getTypedStmtSet(leaderType), *followerTypedStmtSet = getTypedStmtSet(followerType);
 	unordered_map<int, unordered_set<int>> resultMap;
 
-	for (const auto &elem : leaderTypedStmtSet) {
+	for (const auto &elem : *leaderTypedStmtSet) {
 		if (leaderTMap.count(elem)) {
 			for (const auto &elem2 : leaderTMap[elem]) {
-				if (followerTypedStmtSet.count(elem2)){
+				if (followerTypedStmtSet->count(elem2)){
 					resultMap[elem].insert(elem2);
 				}
 			}
@@ -736,10 +736,10 @@ unordered_map<int, unordered_set<int>> PKB::getLeaderFollowerTPairs(Type leaderT
 }
 
 unordered_set<int> PKB::getLeaderStmts(Type leaderType) {
-	unordered_set<int> typedStmtSet = getTypedStmtSet(leaderType), resultSet;
+	unordered_set<int> *typedStmtSet = getTypedStmtSet(leaderType), resultSet;
 
 	for (const auto &elem : leaderMap) {
-		if (typedStmtSet.count(elem.first)) {
+		if (typedStmtSet->count(elem.first)) {
 			resultSet.insert(elem.first);
 		}
 	}
@@ -748,10 +748,10 @@ unordered_set<int> PKB::getLeaderStmts(Type leaderType) {
 }
 
 unordered_set<int> PKB::getFollowerStmts(Type followerType) {
-	unordered_set<int> typedStmtSet = getTypedStmtSet(followerType), resultSet;
+	unordered_set<int> *typedStmtSet = getTypedStmtSet(followerType), resultSet;
 
 	for (const auto &elem : followerMap) {
-		if (typedStmtSet.count(elem.first)) {
+		if (typedStmtSet->count(elem.first)) {
 			resultSet.insert(elem.first);
 		}
 	}
@@ -760,20 +760,20 @@ unordered_set<int> PKB::getFollowerStmts(Type followerType) {
 }
 
 int PKB::getLeaderOf(int stmtNum, Type leaderType) {
-	unordered_set<int> typedStmtSet = getTypedStmtSet(leaderType);
+	unordered_set<int> *typedStmtSet = getTypedStmtSet(leaderType);
 
-	if (followerMap.count(stmtNum) && typedStmtSet.count(followerMap[stmtNum])) {
+	if (followerMap.count(stmtNum) && typedStmtSet->count(followerMap[stmtNum])) {
 		return followerMap[stmtNum];
 	}
 	return -1;
 }
 
 unordered_set<int> PKB::getLeaderTOf(int stmtNum, Type leaderType) {
-	unordered_set<int> typedStmtSet = getTypedStmtSet(leaderType), resultSet;
+	unordered_set<int> *typedStmtSet = getTypedStmtSet(leaderType), resultSet;
 
 	if (followerTMap.count(stmtNum)) {
 		for (const auto &elem : followerTMap[stmtNum]) {
-			if (typedStmtSet.count(elem)) {
+			if (typedStmtSet->count(elem)) {
 				resultSet.insert(elem);
 			}
 		}
@@ -783,21 +783,21 @@ unordered_set<int> PKB::getLeaderTOf(int stmtNum, Type leaderType) {
 }
 
 int PKB::getFollowerOf(int stmtNum, Type followerType) {
-	unordered_set<int> typedStmtSet = getTypedStmtSet(followerType);
+	unordered_set<int> *typedStmtSet = getTypedStmtSet(followerType);
 	int result = -1;
 
-	if (leaderMap.count(stmtNum) && typedStmtSet.count(leaderMap[stmtNum]))
+	if (leaderMap.count(stmtNum) && typedStmtSet->count(leaderMap[stmtNum]))
 		result = leaderMap[stmtNum];
 
 	return result;
 }
 
 unordered_set<int> PKB::getFollowerTOf(int stmtNum, Type followerType) {
-	unordered_set<int> typedStmtSet = getTypedStmtSet(followerType), resultSet;
+	unordered_set<int> *typedStmtSet = getTypedStmtSet(followerType), resultSet;
 
 	if (leaderTMap.count(stmtNum)) {
 		for (const auto &elem : leaderTMap[stmtNum]) {
-			if (typedStmtSet.count(elem)) {
+			if (typedStmtSet->count(elem)) {
 				resultSet.insert(elem);
 			}
 		}
@@ -927,13 +927,13 @@ bool PKB::hasPrevious(int nextLineNum) {
 }
 
 unordered_map<int, unordered_set<int>> PKB::getPreviousNextPairs(Type previousType, Type nextType) {
-	unordered_set<int> prevTypedStmtSet = getTypedStmtSet(previousType), nextTypedStmtSet = getTypedStmtSet(nextType);
+	unordered_set<int> *prevTypedStmtSet = getTypedStmtSet(previousType), *nextTypedStmtSet = getTypedStmtSet(nextType);
 	unordered_map<int, unordered_set<int>> resultMap;
 
 	for (const auto&elem: nextMap) {
-		if (prevTypedStmtSet.count(elem.first)) {
+		if (prevTypedStmtSet->count(elem.first)) {
 			for (const auto&elem2: elem.second) {
-				if (nextTypedStmtSet.count(elem2))
+				if (nextTypedStmtSet->count(elem2))
 					resultMap[elem.first].insert(elem2);
 			}
 		}
@@ -944,8 +944,8 @@ unordered_map<int, unordered_set<int>> PKB::getPreviousNextPairs(Type previousTy
 
 unordered_map<int, unordered_set<int>> PKB::getPreviousNextTPairs(Type firstStmtType, Type secondStmtType) {
 	unordered_map<int, unordered_set<int>> resultMap;
-	unordered_set<int> typedStmtSet = getTypedStmtSet(firstStmtType);
-	for (auto &elem : typedStmtSet) {
+	unordered_set<int> *typedStmtSet = getTypedStmtSet(firstStmtType);
+	for (auto &elem : *typedStmtSet) {
 		unordered_set<int> resultSet = getNextTOf(elem, secondStmtType);
 		resultMap[elem] = resultSet;
 	}
@@ -953,10 +953,10 @@ unordered_map<int, unordered_set<int>> PKB::getPreviousNextTPairs(Type firstStmt
 }
 
 unordered_set<int> PKB::getPreviousLines(Type previousType) {
-	unordered_set<int> typedStmtSet = getTypedStmtSet(previousType), resultSet;
+	unordered_set<int> *typedStmtSet = getTypedStmtSet(previousType), resultSet;
 
 	for (const auto&elem : nextMap) {
-		if (typedStmtSet.count(elem.first))
+		if (typedStmtSet->count(elem.first))
 			resultSet.insert(elem.first);
 	}
 
@@ -964,10 +964,10 @@ unordered_set<int> PKB::getPreviousLines(Type previousType) {
 }
 
 unordered_set<int> PKB::getNextLines(Type nextType) {
-	unordered_set<int> typedStmtSet = getTypedStmtSet(nextType), resultSet;
+	unordered_set<int> *typedStmtSet = getTypedStmtSet(nextType), resultSet;
 
 	for (const auto&elem : prevMap) {
-		if (typedStmtSet.count(elem.first))
+		if (typedStmtSet->count(elem.first))
 			resultSet.insert(elem.first);
 	}
 
@@ -975,11 +975,11 @@ unordered_set<int> PKB::getNextLines(Type nextType) {
 }
 
 unordered_set<int> PKB::getPreviousOf(int nextLineNum, Type previousType) {
-	unordered_set<int> typedStmtSet = getTypedStmtSet(previousType), resultSet;
+	unordered_set<int> *typedStmtSet = getTypedStmtSet(previousType), resultSet;
 
 	if (prevMap.count(nextLineNum)) {
 		for (const auto&elem : prevMap[nextLineNum]) {
-			if (typedStmtSet.count(elem)) {
+			if (typedStmtSet->count(elem)) {
 				resultSet.insert(elem);
 			}
 		}
@@ -990,7 +990,7 @@ unordered_set<int> PKB::getPreviousOf(int nextLineNum, Type previousType) {
 
 unordered_set<int> PKB::getPreviousTOf(int firstLine, Type stmtType) {
 	unordered_set<int> visitedLines;
-	unordered_set<int> typedStmtSet = getTypedStmtSet(stmtType), resultSet;
+	unordered_set<int> *typedStmtSet = getTypedStmtSet(stmtType), resultSet;
 	queue<int> linesQueue;
 	for (auto &elem : prevMap[firstLine]) {
 		linesQueue.push(elem);
@@ -1006,7 +1006,7 @@ unordered_set<int> PKB::getPreviousTOf(int firstLine, Type stmtType) {
 		}
 	}
 	for (auto &elem : visitedLines) {
-		if (typedStmtSet.count(elem) > 0) {
+		if (typedStmtSet->count(elem) > 0) {
 			resultSet.insert(elem);
 		}
 	}
@@ -1014,11 +1014,11 @@ unordered_set<int> PKB::getPreviousTOf(int firstLine, Type stmtType) {
 }
 
 unordered_set<int> PKB::getNextOf(int prevLineNum, Type nextType) {
-	unordered_set<int> typedStmtSet = getTypedStmtSet(nextType), resultSet;
+	unordered_set<int> *typedStmtSet = getTypedStmtSet(nextType), resultSet;
 
 	if (nextMap.count(prevLineNum)) {
 		for (const auto &elem : prevMap[prevLineNum]) {
-			if (typedStmtSet.count(elem)) {
+			if (typedStmtSet->count(elem)) {
 				resultSet.insert(elem);
 			}
 		}
@@ -1029,7 +1029,7 @@ unordered_set<int> PKB::getNextOf(int prevLineNum, Type nextType) {
 
 unordered_set<int> PKB::getNextTOf(int firstLine, Type stmtType) {
 	unordered_set<int> visitedLines;
-	unordered_set<int> typedStmtSet = getTypedStmtSet(stmtType), resultSet;
+	unordered_set<int> *typedStmtSet = getTypedStmtSet(stmtType), resultSet;
 	queue<int> linesQueue;
 	for (auto &elem : nextMap[firstLine]) {
 		linesQueue.push(elem);
@@ -1045,7 +1045,7 @@ unordered_set<int> PKB::getNextTOf(int firstLine, Type stmtType) {
 		}
 	}
 	for (auto &elem : visitedLines) {
-		if (typedStmtSet.count(elem) > 0) {
+		if (typedStmtSet->count(elem) > 0) {
 			resultSet.insert(elem);
 		}
 	}
