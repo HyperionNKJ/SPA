@@ -17,9 +17,9 @@ private:
 
 	bool hasCommonSynonyms(const unordered_set<string>&, const unordered_set<string>&);
 
-	// void sortBasedOnNumOfSyn(map<unordered_set<string>, vector<Clause*>, CompareBySize>&);
-	// vector<Clause*> combineClauseGroups(const unordered_set<Clause*>&, const map<unordered_set<string>,  vector<Clause*>, CompareBySize>&);
+	//void sortBasedOnNumOfSyn(map<unordered_set<string>, vector<Clause*>, CompareBySize>&);
+	//vector<Clause*> combineClauseGroups(const unordered_set<Clause*>&, const map<unordered_set<string>,  vector<Clause*>, CompareBySize>&);
 public:
 	void groupBasedOnConnectedSyn(vector<Clause*>&, vector<pair<unordered_set<string>, vector<Clause*>>>&);
-	//list<string> evaluate(ProcessedQuery&, const PKB&);
+	list<string> evaluate(ProcessedQuery&, const PKB&);
 };

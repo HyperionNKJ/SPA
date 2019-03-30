@@ -25,23 +25,13 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 namespace UnitTesting {
 	TEST_CLASS(TestQueryEvaluator) {
 		public:
-			TEST_METHOD(groupBasedOnConnectedSyn) {
-				vector<Clause*> unconnectedClauses{
-				new ModifiesS(DesignEntity("c", Type::CALL), DesignEntity("x", Type::VARIABLE)),
-				new ModifiesP(DesignEntity("x", Type::PROCEDURE), DesignEntity("y", Type::VARIABLE)),
-				new Parent(DesignEntity("w", Type::WHILE), DesignEntity("p", Type::CALL)),
-				new ParentT(DesignEntity("p", Type::IF), DesignEntity("b", Type::PRINT)),
-				new Calls(DesignEntity("p", Type::PROCEDURE), DesignEntity("a", Type::PROCEDURE)),
-				new CallsT(DesignEntity("w", Type::PROCEDURE), DesignEntity("x", Type::PROCEDURE)),
-				new Next(DesignEntity("s1", Type::PROGLINE), DesignEntity("s2", Type::READ)),
-				new NextT(DesignEntity("d", Type::ASSIGN), DesignEntity("e", Type::WHILE)),
-				new Follows(DesignEntity("f", Type::STATEMENT), DesignEntity("g", Type::READ)),
-				new FollowsT(DesignEntity("s1", Type::WHILE), DesignEntity("q", Type::IF)),
-				new UsesS(DesignEntity("s1", Type::PRINT), DesignEntity("a", Type::WHILE)) };
-				
-				vector<pair<unordered_set<std::string>, vector<Clause*>>> connectedClauses;
-				QueryEvaluator evaluator;
-				evaluator.groupBasedOnConnectedSyn(unconnectedClauses, connectedClauses);
+			Clause* getOneSynClause(string syn1, string syn2) {
+				return new ModifiesS(DesignEntity(syn1, Type::ASSIGN), DesignEntity(syn2, Type::FIXED));
+			}
+			Clause* getTwoSynClause(string syn1, string syn2) {
+				return new ModifiesS(DesignEntity(syn1, Type::ASSIGN), DesignEntity(syn2, Type::STATEMENT));
+			}
+			string getStringRepresentation(vector<pair<unordered_set<std::string>, vector<Clause*>>>& connectedClauses) {
 				string s;
 				for (auto& synClausePair : connectedClauses) {
 					s.append("\n");
@@ -52,14 +42,81 @@ namespace UnitTesting {
 					s.append("\n");
 					s.append("Clauses: ");
 					for (auto& clause : synClausePair.second) {
-						s.append(" ");
 						for (auto& arg : clause->getSynonyms()) {
 							s.append(arg);
 						}
+						s.append(" ");
 					}
 				}
-				const char *cstr = s.c_str();
-				Logger::WriteMessage(cstr);
+				// uncomment below to print directly to console
+				/*const char *cstr = s.c_str();
+				Logger::WriteMessage(cstr);*/
+				return s;
+			}
+			TEST_METHOD(groupBasedOnConnectedSyn) {
+				QueryEvaluator evaluator;
+				vector<pair<unordered_set<std::string>, vector<Clause*>>> connectedClauses; // initially empty
+
+				vector<Clause*> unconnectedClauses{
+					getOneSynClause("a","2"),
+					getTwoSynClause("d","b"),
+					getTwoSynClause("p","q"),
+					getOneSynClause("c","3"),
+					getTwoSynClause("c","e"),
+					getTwoSynClause("e","a"),
+					getOneSynClause("b","3"),
+					getTwoSynClause("f","d"),
+					getTwoSynClause("r","t"),
+					getTwoSynClause("r","q"),
+				}; 
+				
+				evaluator.groupBasedOnConnectedSyn(unconnectedClauses, connectedClauses); // connectedClause modified by reference
+				string actualGrouping = getStringRepresentation(connectedClauses);
+				string expectedGrouping = "\nSynonyms: a e c \nClauses: a ea c ce \nSynonyms: d b f \nClauses: db b fd \nSynonyms: p q r t \nClauses: pq rq rt ";
+				Assert::AreEqual(expectedGrouping, actualGrouping);
+
+				connectedClauses.clear();
+				unconnectedClauses.clear();
+
+				unconnectedClauses = {
+					getTwoSynClause("a","b"),
+					getTwoSynClause("c","d"),
+					getTwoSynClause("e","f"),
+					getTwoSynClause("g","h"),
+					getTwoSynClause("e","g"),
+					getTwoSynClause("t","w"),
+					getTwoSynClause("x","c"),
+					getTwoSynClause("p","q"),
+					getTwoSynClause("w","b"),
+					getTwoSynClause("fall","out"),
+					getTwoSynClause("out","age"),
+					getTwoSynClause("the","one"),
+					getTwoSynClause("the","fall"),
+					getTwoSynClause("get","f"),
+					getTwoSynClause("h","i"),
+					getTwoSynClause("i","w")
+				};
+
+				evaluator.groupBasedOnConnectedSyn(unconnectedClauses, connectedClauses); // connectedClause modified by reference
+				actualGrouping = getStringRepresentation(connectedClauses);
+				expectedGrouping = "\nSynonyms: i a b g w t e f h get \nClauses: ab wb tw iw ef eg gh getf hi \nSynonyms: c d x \nClauses: cd xc \nSynonyms: p q \nClauses: pq \nSynonyms: fall one out the age \nClauses: fallout outage thefall theone ";
+				Assert::AreEqual(expectedGrouping, actualGrouping);
+
+				connectedClauses.clear();
+				unconnectedClauses.clear();
+
+				unconnectedClauses = {
+					getTwoSynClause("a","b"),
+					getTwoSynClause("c","d"),
+					getTwoSynClause("e","f"),
+					getTwoSynClause("g","h"),
+					getTwoSynClause("i","j"),
+				};
+
+				evaluator.groupBasedOnConnectedSyn(unconnectedClauses, connectedClauses); // connectedClause modified by reference
+				actualGrouping = getStringRepresentation(connectedClauses);
+				expectedGrouping = "\nSynonyms: a b \nClauses: ab \nSynonyms: c d \nClauses: cd \nSynonyms: e f \nClauses: ef \nSynonyms: g h \nClauses: gh \nSynonyms: i j \nClauses: ij ";
+				Assert::AreEqual(expectedGrouping, actualGrouping);
 			}
 	};
 }
