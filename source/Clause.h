@@ -30,6 +30,8 @@ protected:
 
 public:
 	ClauseType getClauseType();
+	DesignEntity getParaOne();
+	DesignEntity getParaTwo();
 	void setParaOne(const DesignEntity&);
 	void setParaTwo(const DesignEntity&);
 	unordered_set<string> getSynonyms();
