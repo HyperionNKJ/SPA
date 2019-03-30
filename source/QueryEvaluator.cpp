@@ -9,17 +9,20 @@ list<string> QueryEvaluator::evaluate(ProcessedQuery& processedQuery, const PKB&
 	resultProjector.resetResults(); // Reset possible old query result
 	list<string> emptyResult;
 
-	vector<Clause*> booleanClauses = processedQuery.booleanClauses; // boolean clause refers to clause without synonym.
-	vector<Clause*> withClauses = processedQuery.withClauses; // all clauses below have synonyms
-	vector<Clause*> otherClauses = processedQuery.otherClauses;
-	vector<Clause*> affectsClauses = processedQuery.affectsClauses;
-	vector<Clause*> affectsTClauses = processedQuery.affectsTClauses;
-	vector<Clause*> nextTClauses = processedQuery.nextTClauses;
+	vector<Clause*>& booleanClauses = processedQuery.booleanClauses; // boolean clause refers to clause without synonym.
+	vector<Clause*>& sortedWithClauses = optimizationSort(processedQuery.withClauses); // all types of clauses below have synonyms. Hence optimization is required
+	vector<Clause*>& sortedAffectsClauses = optimizationSort(processedQuery.affectsClauses);
+	vector<Clause*>& sortedAffectsTClauses = optimizationSort(processedQuery.affectsTClauses);
+	vector<Clause*>& sortedNextTClauses = optimizationSort(processedQuery.nextTClauses);
+	vector<Clause*>& sortedOtherClauses = optimizationSort(processedQuery.otherClauses);
 
-
-	vector<Clause*> sortedClauses = optimizationSort(otherClauses);
-	vector<Clause*> combinedClauses = { withClauses.begin(), withClauses.end() };
-	combinedClauses.insert(combinedClauses.end(), sortedClauses.begin(), sortedClauses.end());
+	vector<Clause*> combinedClauses; // optimally combined with the following order
+	combinedClauses.insert(combinedClauses.end(), booleanClauses.begin(), booleanClauses.end());
+	combinedClauses.insert(combinedClauses.end(), sortedWithClauses.begin(), sortedWithClauses.end());
+	combinedClauses.insert(combinedClauses.end(), sortedOtherClauses.begin(), sortedOtherClauses.end());
+	combinedClauses.insert(combinedClauses.end(), sortedAffectsClauses.begin(), sortedAffectsClauses.end());
+	combinedClauses.insert(combinedClauses.end(), sortedAffectsTClauses.begin(), sortedAffectsTClauses.end());
+	combinedClauses.insert(combinedClauses.end(), sortedNextTClauses.begin(), sortedNextTClauses.end());
 
 	for (auto clause : combinedClauses) {
 		if (clause->getClauseType() == NEXT_T) {
@@ -59,13 +62,12 @@ void QueryEvaluator::findReducedDomain(Clause* clause, ResultProjector* resultPr
 	clause->setReducedDomain(reducedDomain);
 }
 
-
-
 // Function that encapsulates optimization logic
 vector<Clause*> QueryEvaluator::optimizationSort(vector<Clause*>& unconnectedClauses) {
 	vector<pair<unordered_set<string>, vector<Clause*>>> connectedClauses; // unordered_set<string> = common synonyms, vector<Clause*> = clauses with those synonyms
 	groupBasedOnConnectedSyn(unconnectedClauses, connectedClauses); // group clauses base on common synonyms
-
+	sortWithinEachGroup(connectedClauses); // Within each group, sort clauses such that synonym/s in one clause appears in a previous clause
+	return combineClauses(connectedClauses);
 } 
 
 void QueryEvaluator::groupBasedOnConnectedSyn(vector<Clause*>& unconnectedClauses, vector<pair<unordered_set<string>, vector<Clause*>>>& connectedClauses) {
@@ -73,22 +75,22 @@ void QueryEvaluator::groupBasedOnConnectedSyn(vector<Clause*>& unconnectedClause
 		unordered_set<string> synonyms = clause->getSynonyms();
 		bool addedIntoGroup = false;
 		for (auto& itr = connectedClauses.begin(); itr != connectedClauses.end(); ++itr) {
-			unordered_set<string>* synonymGroup = &itr->first;
-			vector<Clause*>* clauseGroup = &itr->second;
-			if (hasCommonSynonyms(synonyms, *synonymGroup)) {
-				(*synonymGroup).insert(synonyms.begin(), synonyms.end());
-				(*clauseGroup).push_back(clause);
+			unordered_set<string>& synonymGroup = itr->first;
+			vector<Clause*>& clauseGroup = itr->second;
+			if (hasCommonSynonyms(synonyms, synonymGroup)) {
+				synonymGroup.insert(synonyms.begin(), synonyms.end());
+				clauseGroup.push_back(clause);
 				addedIntoGroup = true;
 				// New added clause may connect this synonym-clause group with another subsequent synonym-clause group. 
 				vector<pair<unordered_set<string>, vector<Clause*>>>::iterator ptr = itr;
 				ptr++;
 				for (; ptr != connectedClauses.end(); ptr++) {
-					unordered_set<string>* subsequentSynGroup = &ptr->first;
-					vector<Clause*>* subsequentClauseGroup = &ptr->second;
-					if (hasCommonSynonyms(synonyms, *subsequentSynGroup)) { 
+					unordered_set<string>& subsequentSynGroup = ptr->first;
+					vector<Clause*>& subsequentClauseGroup = ptr->second;
+					if (hasCommonSynonyms(synonyms, subsequentSynGroup)) { 
 						// combine the 2 groups together
-						(*synonymGroup).insert((*subsequentSynGroup).begin(), (*subsequentSynGroup).end());
-						(*clauseGroup).insert((*clauseGroup).end(), (*subsequentClauseGroup).begin(), (*subsequentClauseGroup).end());
+						synonymGroup.insert(subsequentSynGroup.begin(), subsequentSynGroup.end());
+						clauseGroup.insert(clauseGroup.end(), subsequentClauseGroup.begin(), subsequentClauseGroup.end());
 						connectedClauses.erase(ptr);
 						break;
 					}
@@ -111,30 +113,41 @@ bool QueryEvaluator::hasCommonSynonyms(const unordered_set<string>& synonymSet1,
 	return false;
 }
 
+// Within each group, sort clauses such that synonym/s in one clause appears in any previous clause i.e. (s,a) -> (a, b) -> (s,w) -> (w,c)
+void QueryEvaluator::sortWithinEachGroup(vector<pair<unordered_set<string>, vector<Clause*>>>& connectedClauses) {
+	for (auto& synClausePair : connectedClauses) {
+		vector<Clause*>& clauseGroup = synClausePair.second;
+		if (clauseGroup.size() < 3) {
+			continue; // clause group with two or less clauses are always sorted
+		}
+		unordered_set<string> appearedBefore;
+		unordered_set<string> clauseOneSyn = clauseGroup[0]->getSynonyms();
+		unordered_set<string> clauseTwoSyn = clauseGroup[1]->getSynonyms();
+		appearedBefore.insert(clauseOneSyn.begin(), clauseOneSyn.end());
+		appearedBefore.insert(clauseTwoSyn.begin(), clauseTwoSyn.end());
 
-
-	sortBasedOnNumOfSyn(intermediateClauses); // sort clauses within each group
-	return combineClauseGroups(noSynClauses, intermediateClauses);
-
-
-
-bool compareByNumOfSyn(Clause* clause1, Clause* clause2) {
-	return clause1->getSynonyms().size() < clause2->getSynonyms().size();
-}
-
-void QueryEvaluator::sortBasedOnNumOfSyn(map<unordered_set<string>, vector<Clause*>, CompareBySize>& unsortedClauses) {
-	for (const auto& synClausePair : unsortedClauses) {
-		vector<Clause*> clauses = synClausePair.second;
-		sort(clauses.begin(), clauses.end(), compareByNumOfSyn);
+		for (unsigned int i = 2; i < clauseGroup.size(); i++) {
+			if (!hasCommonSynonyms(clauseGroup[i]->getSynonyms(), appearedBefore)) { // if synonym/s have not appeared previously,
+				for (unsigned int j = i + 1; j < clauseGroup.size(); j++) { // then iterate until we find a clause where synonym/s appeared previously
+					if (hasCommonSynonyms(clauseGroup[j]->getSynonyms(), appearedBefore)) {
+						Clause* temp = clauseGroup[j]; // and then swap
+						clauseGroup[j] = clauseGroup[i];
+						clauseGroup[i] = temp;
+						break;
+					}
+				}
+			}
+			unordered_set<string> synonyms = clauseGroup[i]->getSynonyms(); // updated if there was a swap
+			appearedBefore.insert(synonyms.begin(), synonyms.end());
+		}
 	}
 }
 
-vector<Clause*> QueryEvaluator::combineClauseGroups(const unordered_set<Clause*>& noSynClauses, const map<unordered_set<string>, vector<Clause*>, CompareBySize>& partitionedClauses) {
-	vector<Clause*> combinedClause;
-	combinedClause.insert(combinedClause.begin(), noSynClauses.begin(), noSynClauses.end()); // add clauses without synonym first
-
-	for (const auto& synClausePair : partitionedClauses) {
-		combinedClause.insert(combinedClause.end(), synClausePair.second.begin(), synClausePair.second.end());
+vector<Clause*> QueryEvaluator::combineClauses(vector<pair<unordered_set<string>, vector<Clause*>>>& connectedClauses) {
+	vector<Clause*> combinedClauses;
+	for (auto& synClausePair : connectedClauses) {
+		vector<Clause*>& clauseGroup = synClausePair.second;
+		combinedClauses.insert(combinedClauses.end(), clauseGroup.begin(), clauseGroup.end());
 	}
-	return combinedClause;
+	return combinedClauses;
 }

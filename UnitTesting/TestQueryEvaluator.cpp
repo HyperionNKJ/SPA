@@ -118,5 +118,30 @@ namespace UnitTesting {
 				expectedGrouping = "\nSynonyms: a b \nClauses: ab \nSynonyms: c d \nClauses: cd \nSynonyms: e f \nClauses: ef \nSynonyms: g h \nClauses: gh \nSynonyms: i j \nClauses: ij ";
 				Assert::AreEqual(expectedGrouping, actualGrouping);
 			}
+
+			TEST_METHOD(sortWithinEachGroup) {
+				QueryEvaluator evaluator;
+				vector<pair<unordered_set<std::string>, vector<Clause*>>> connectedClauses; // initially empty
+
+				vector<Clause*> unconnectedClauses = {
+					getTwoSynClause("x","y"),
+					getTwoSynClause("c","w"),
+					getTwoSynClause("e","f"),
+					getTwoSynClause("w","g"),
+					getTwoSynClause("f","a"),
+					getTwoSynClause("a","c"),
+					getTwoSynClause("b","d"),
+					getTwoSynClause("q","r"),
+					getTwoSynClause("s","b"),
+					getTwoSynClause("r","t"),
+					getTwoSynClause("i","d"),
+				};
+
+				evaluator.groupBasedOnConnectedSyn(unconnectedClauses, connectedClauses); // tested above. 
+				evaluator.sortWithinEachGroup(connectedClauses); 
+				string actualGrouping = getStringRepresentation(connectedClauses);
+				string expectedGrouping = "\nSynonyms: x y \nClauses: xy \nSynonyms: c w g a e f \nClauses: cw wg ac fa ef \nSynonyms: b d s i \nClauses: bd sb id \nSynonyms: q r t \nClauses: qr rt ";
+				Assert::AreEqual(expectedGrouping, actualGrouping);
+			}
 	};
 }
