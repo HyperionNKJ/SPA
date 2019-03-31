@@ -36,7 +36,7 @@ bool QueryPreprocessorWithParser::parse() {
 	}
 
 	With* withClause = new With(paramOne, paramTwo);
-	query.addWithClause(withClause);
+	query.addWithClause(withClause, WITH_CL);
 
 	return true;
 }

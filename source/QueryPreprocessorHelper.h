@@ -17,7 +17,6 @@ public:
 	static std::vector<std::string> split(const std::string& target, const char& delimiter);
 	static Type getType(const std::string& typeString);
 	static AttrRef getAttrRef(const std::string& attrRefString);
-	static bool isReservedWord(const std::string& target);
 	static std::string getPostFix(const std::string& infix);
 	static bool isInt(const std::string& target);
 	static bool isVar(const std::string& target);

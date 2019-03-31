@@ -32,8 +32,11 @@ void ProcessedQuery::addClause(Clause* clause, const std::string& clauseString) 
 	}
 }
 
-void ProcessedQuery::addWithClause(Clause* withClause) {
-	withClauses.insert(withClause);
+void ProcessedQuery::addWithClause(Clause* withClause, const std::string& clauseString) {
+	if (clausesString.find(clauseString) == clausesString.end()) {
+		withClauses.insert(withClause);
+		clausesString.insert(clauseString);
+	}
 }
 
 bool ProcessedQuery::hasSynonym(const std::string& synonym) {

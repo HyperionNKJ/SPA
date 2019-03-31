@@ -30,7 +30,7 @@ public:
 
 	void addResultClElement(const DesignEntity& element);
 	void addClause(Clause* clause, const std::string& clauseString);
-	void addWithClause(Clause* withClause);
+	void addWithClause(Clause* withClause, const std::string& clauseString);
 
 	bool hasSynonym(const std::string& synonym);
 	Type getDesignEntity(std::string& synonym);

@@ -57,22 +57,47 @@ bool QueryPreprocessorSuchThatParser::parse() {
 	DesignEntity paramTwo = QueryPreprocessorHelper::getParam(parametersList[1], query);
 
 	if (rel == "Calls") {
+		bool status = isValidCallsParam(paramOne, paramTwo);
+		if (!status) {
+			return;
+		}
+
 		Calls* suchThatClause = new Calls(paramOne, paramTwo);
 		query.addClause(suchThatClause, CLAUSE);
 	}
 	else if (rel == "Calls*") {
+		bool status = isValidCallsParam(paramOne, paramTwo);
+		if (!status) {
+			return;
+		}
+
 		CallsT* suchThatClause = new CallsT(paramOne, paramTwo);
 		query.addClause(suchThatClause, CLAUSE);
 	}
 	else if (rel == "Follows") {
+		bool status = isValidFollowsParam(paramOne, paramTwo);
+		if (!status) {
+			return;
+		}
+
 		Follows* suchThatClause = new Follows(paramOne, paramTwo);
 		query.addClause(suchThatClause, CLAUSE);
 	}
 	else if (rel == "Follows*") {
+		bool status = isValidFollowsParam(paramOne, paramTwo);
+		if (!status) {
+			return;
+		}
+
 		FollowsT* suchThatClause = new FollowsT(paramOne, paramTwo);
 		query.addClause(suchThatClause, CLAUSE);
 	}
 	else if (rel == "Modifies") {
+		bool status = isValidModifiesParam(paramOne, paramTwo);
+		if (!status) {
+			return;
+		}
+
 		if (paramOne.getType() == Type::PROCEDURE) {
 			ModifiesP* suchThatClause = new ModifiesP(paramOne, paramTwo);
 			query.addClause(suchThatClause, CLAUSE);
@@ -87,18 +112,47 @@ bool QueryPreprocessorSuchThatParser::parse() {
 		}
 	}
 	else if (rel == "Next") {
+		bool status = isValidNextParam(paramOne, paramTwo);
+		if (!status) {
+			return;
+		}
+
 		Next* suchThatClause = new Next(paramOne, paramTwo);
 		query.addClause(suchThatClause, CLAUSE);
 	}
 	else if (rel == "Next*") {
+		bool status = isValidNextParam(paramOne, paramTwo);
+		if (!status) {
+			return;
+		}
+
 		NextT* suchThatClause = new NextT(paramOne, paramTwo);
 		query.addClause(suchThatClause, CLAUSE);
 	}
 	else if (rel == "Parent") {
+		bool status = isValidParentParam(paramOne, paramTwo);
+		if (!status) {
+			return;
+		}
+
 		Parent* suchThatClause = new Parent(paramOne, paramTwo);
 		query.addClause(suchThatClause, CLAUSE);
 	}
+	else if (rel == "Parent*") {
+		bool status = isValidParentParam(paramOne, paramTwo);
+		if (!status) {
+			return;
+		}
+
+		ParentT* suchThatClause = new ParentT(paramOne, paramTwo);
+		query.addClause(suchThatClause, CLAUSE);
+	}
 	else if (rel == "Uses") {
+		bool status = isValidUsesParam(paramOne, paramTwo);
+		if (!status) {
+			return;
+		}
+
 		if (paramOne.getType() == Type::PROCEDURE) {
 			UsesP* suchThatClause = new UsesP(paramOne, paramTwo);
 			query.addClause(suchThatClause, CLAUSE);
@@ -129,4 +183,106 @@ bool QueryPreprocessorSuchThatParser::isRelRef(std::string& relRef) {
 		|| relRef == "Parent"
 		|| relRef == "Parent*"
 		|| relRef == "Uses";
+}
+
+bool QueryPreprocessorSuchThatParser::isValidCallsParam(DesignEntity& paramOne, DesignEntity& paramTwo) {
+	Type paramOneType = paramOne.getType();
+	Type paramTwoType = paramTwo.getType();
+
+	bool isValidLHS = paramOneType == paramOneType == Type::PROCEDURE
+		|| paramOneType == Type::UNDERSCORE
+		|| (paramOneType == Type::FIXED && QueryPreprocessorHelper::isVar(paramOne.getValue()));
+
+	bool isValidRHS = paramTwoType == paramOneType == Type::PROCEDURE
+		|| paramOneType == Type::UNDERSCORE
+		|| (paramOneType == Type::FIXED && QueryPreprocessorHelper::isVar(paramOne.getValue()));
+
+	return isValidRHS && isValidLHS;
+}
+
+bool QueryPreprocessorSuchThatParser::isValidFollowsParam(DesignEntity& paramOne, DesignEntity& paramTwo) {
+	Type paramOneType = paramOne.getType();
+	Type paramTwoType = paramTwo.getType();
+
+	bool isValidLHS = paramOneType == Type::ASSIGN
+		|| paramOneType == Type::CALL
+		|| paramOneType == Type::IF
+		|| paramOneType == Type::PRINT
+		|| paramOneType == Type::PROCEDURE
+		|| paramOneType == Type::PROGLINE
+		|| paramOneType == Type::READ
+		|| paramOneType == Type::STATEMENT
+		|| paramOneType == Type::WHILE
+		|| paramOneType == Type::UNDERSCORE
+		|| (paramOneType == Type::FIXED && QueryPreprocessorHelper::isInt(paramOne.getValue()));
+
+	bool isValidRHS = paramTwoType == Type::ASSIGN
+		|| paramTwoType == Type::CALL
+		|| paramTwoType == Type::IF
+		|| paramTwoType == Type::PRINT
+		|| paramTwoType == Type::PROCEDURE
+		|| paramTwoType == Type::PROGLINE
+		|| paramTwoType == Type::READ
+		|| paramTwoType == Type::STATEMENT
+		|| paramTwoType == Type::WHILE
+		|| paramTwoType == Type::UNDERSCORE
+		|| (paramTwoType == Type::FIXED && QueryPreprocessorHelper::isInt(paramTwo.getValue()));
+
+	return isValidRHS && isValidLHS;
+}
+
+bool QueryPreprocessorSuchThatParser::isValidModifiesParam(DesignEntity& paramOne, DesignEntity& paramTwo) {
+	Type paramOneType = paramOne.getType();
+	Type paramTwoType = paramTwo.getType();
+	
+	bool isValidLHS = paramOneType == Type::ASSIGN
+		|| paramOneType == Type::CALL
+		|| paramOneType == Type::IF
+		|| paramOneType == Type::PRINT
+		|| paramOneType == Type::PROCEDURE
+		|| paramOneType == Type::PROGLINE
+		|| paramOneType == Type::READ
+		|| paramOneType == Type::STATEMENT
+		|| paramOneType == Type::WHILE
+		|| paramOneType == Type::FIXED;
+
+	bool isValidRHS = paramTwoType == Type::VARIABLE
+		|| paramTwoType == Type::UNDERSCORE
+		|| (paramTwoType == Type::FIXED && QueryPreprocessorHelper::isVar(paramTwo.getValue()));
+
+	return isValidRHS && isValidLHS;
+}
+
+bool QueryPreprocessorSuchThatParser::isValidNextParam(DesignEntity& paramOne, DesignEntity& paramTwo) {
+	return (isValidFollowsParam(paramOne, paramTwo));
+}
+
+bool QueryPreprocessorSuchThatParser::isValidParentParam(DesignEntity& paramOne, DesignEntity& paramTwo) {
+	Type paramOneType = paramOne.getType();
+	Type paramTwoType = paramTwo.getType();
+
+	bool isValidLHS = paramOneType == Type::STATEMENT
+		|| paramOneType == Type::WHILE
+		|| paramOneType == Type::IF
+		|| paramOneType == Type::PROGLINE
+		|| paramOneType == Type::UNDERSCORE
+		|| (paramOneType == Type::FIXED && QueryPreprocessorHelper::isVar(paramOne.getValue()));
+
+	bool isValidRHS = paramTwoType == Type::ASSIGN
+		|| paramTwoType == Type::CALL
+		|| paramTwoType == Type::IF
+		|| paramTwoType == Type::PRINT
+		|| paramTwoType == Type::PROCEDURE
+		|| paramTwoType == Type::PROGLINE
+		|| paramTwoType == Type::READ
+		|| paramTwoType == Type::STATEMENT
+		|| paramTwoType == Type::WHILE
+		|| paramTwoType == Type::UNDERSCORE
+		|| (paramTwoType == Type::FIXED && QueryPreprocessorHelper::isInt(paramTwo.getValue()));
+
+	return isValidRHS && isValidLHS;
+}
+
+bool QueryPreprocessorSuchThatParser::isValidUsesParam(DesignEntity& paramOne, DesignEntity& paramTwo) {
+	return (isValidModifiesParam(paramOne, paramTwo));
 }

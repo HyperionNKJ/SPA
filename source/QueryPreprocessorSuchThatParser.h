@@ -14,4 +14,10 @@ private:
 	const std::string CLAUSE;
 
 	static bool isRelRef(std::string& relRef);
+	static bool isValidCallsParam(DesignEntity& paramOne, DesignEntity& paramTwo);
+	static bool isValidFollowsParam(DesignEntity& paramOne, DesignEntity& paramTwo);
+	static bool isValidParentParam(DesignEntity& paramOne, DesignEntity& paramTwo);
+	static bool isValidModifiesParam(DesignEntity& paramOne, DesignEntity& paramTwo);
+	static bool isValidNextParam(DesignEntity& paramOne, DesignEntity& paramTwo);
+	static bool isValidUsesParam(DesignEntity& paramOne, DesignEntity& paramTwo);
 };
