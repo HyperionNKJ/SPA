@@ -3,8 +3,6 @@
 
 class PatternAssign : public Clause {
 private:
-	DesignEntity subject; // subject can only be of ASSIGN synonym
-
 	Result* evaluateVariableExact(const string&, const string&, const string&); // e.g. a(v, "x+y+10")
 	Result* evaluateVariableSub(const string&, const string&, const string&); // e.g. a(v, _"x+y+10"_)
 	Result* evaluateVariableUnderscore(const string&, const string&); // e.g. a(v, _)
@@ -18,6 +16,5 @@ private:
 public:
 	// In order of subject, left arg, right arg of assign pattern clause. Right argument must be in post-fix notation?
 	PatternAssign(const DesignEntity&, const DesignEntity&, const DesignEntity&); 
-	unordered_set<string> getSynonyms() override; // overriden method from base class to include this->subject as synonym
 	Result evaluate(const PKB&) override;
 };

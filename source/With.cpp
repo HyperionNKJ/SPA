@@ -1,8 +1,12 @@
 #include "With.h"
 
-With::With(DesignEntity& refOne, DesignEntity& refTwo) : Clause(refOne, refTwo, ClauseType::WITH) {
+With::With(DesignEntity& refOne, DesignEntity& refTwo) {
 	refOneIdentity = determineRefIdentity(refOne);
 	refTwoIdentity = determineRefIdentity(refTwo);
+	paraOne = refOne;
+	paraTwo = refTwo;
+	type = ClauseType::WITH;
+	setSynonyms();
 }
 
 RefIdentity With::determineRefIdentity(DesignEntity& ref) {

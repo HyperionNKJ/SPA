@@ -2,7 +2,12 @@
 #include <unordered_set>
 #include <string>
 
-ModifiesP::ModifiesP(const DesignEntity& paraOne, const DesignEntity& paraTwo) : Clause(paraOne, paraTwo, ClauseType::MODIFIES_P) {}
+ModifiesP::ModifiesP(const DesignEntity& firstPara, const DesignEntity& secondPara) {
+	paraOne = firstPara;
+	paraTwo = secondPara;
+	type = ClauseType::MODIFIES_P;
+	setSynonyms();
+}
 
 Result ModifiesP::evaluate(const PKB& pkb) {
 	this->pkb = pkb;
