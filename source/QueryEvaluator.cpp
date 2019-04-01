@@ -70,7 +70,7 @@ list<string> QueryEvaluator::evaluate(ProcessedQuery& processedQuery, const PKB&
 			}
 		}
 		else if (!clauseResult.hasPassed()) {
-			if (processedQuery.resultClElemList[0].getType == Type::BOOLEAN) {
+			if (processedQuery.resultClElemList[0].getType() == Type::BOOLEAN) {
 				emptyResult.push_back("FALSE");
 			}
 			return emptyResult;
