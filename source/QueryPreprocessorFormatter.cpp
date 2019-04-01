@@ -29,6 +29,12 @@ void QueryPreprocessorFormatter::removeExtraWhitespace() {
 	removeSpaces(query);
 	query = std::regex_replace(query, LEADING_SPACE, FIRST_CAPTURE_GROUP);
 	query = std::regex_replace(query, TRAILING_SPACE, FIRST_CAPTURE_GROUP);
+
+	size_t hasFixRHSWithClause = query.find("\"and");
+	while (hasFixRHSWithClause != std::string::npos) {
+		query.insert(hasFixRHSWithClause + 1, SPACE);
+		hasFixRHSWithClause = query.find("\"and");
+	}
 }
 
 // Returns the formatted query.
