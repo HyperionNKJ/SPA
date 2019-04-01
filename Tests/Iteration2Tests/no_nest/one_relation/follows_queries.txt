@@ -30,8 +30,8 @@ none
 5000
 7 - Select stmt that is followed by assignment with pattern
 stmt s; assign a;
-Select s such that Follows (s, a) pattern a (_, "a-b")
-5, 7
+Select s such that Follows (s, a) pattern a (_, _"a-b"_)
+5, 7, 16
 5000
 8 - Find statemetns that indirectly follows 10
 prog_line n; stmt s;

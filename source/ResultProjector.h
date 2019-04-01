@@ -34,7 +34,7 @@ public:
 	void resetResults();
 	bool combineResults(unordered_set<int> queryResultsOneSynonym, vector<string> synonyms);
 	bool combineResults(unordered_map<int, unordered_set<int>> queryResultsTwoSynonyms, vector<string> synonyms);
-	list<string> getResults(vector<DesignEntity> selectedSynonyms, PKB pkb);
+	list<string> getResults(vector<DesignEntity> selectedSynonyms, int clauseSize, PKB pkb);
 	bool synonymExists(string synonym);
 	unordered_set<int> getPossibleValues(string synonym);
 

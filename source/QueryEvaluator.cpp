@@ -73,7 +73,7 @@ list<string> QueryEvaluator::evaluate(ProcessedQuery& processedQuery, const PKB&
 			return emptyResult;
 		}
 	}
-	return resultProjector.getResults(processedQuery.resultClElemList, pkb);
+	return resultProjector.getResults(processedQuery.resultClElemList, combinedClauses.size(), pkb);
 }
 
 // only called by NextT, Affects, and AffectsT

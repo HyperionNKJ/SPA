@@ -36,7 +36,7 @@ class Parser {
 	vector<Container> containerTracker = vector<Container>();
 	
 	//trackers for calls
-	unordered_map<string, int> procCalledByTable;
+	unordered_map<int, string> procCalledByTable;
 	
 	//trackers for next
 	bool firstInProc = false;
@@ -110,6 +110,6 @@ public:
 	vector<int> getCurrentFollowVector();
 	vector<vector<int>> getAllFollowStack();
 	string getCurrentProcedure();
-	unordered_map<string, int> getProcCalledByTable();
+	unordered_map<int, string> getProcCalledByTable();
 	string getErrorMessage();
 };
