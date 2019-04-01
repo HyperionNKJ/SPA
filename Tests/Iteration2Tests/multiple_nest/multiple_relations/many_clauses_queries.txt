@@ -13,8 +13,8 @@ assign a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15; stmt s;
 Select s such that Follows* (s, a1) such that Follows* (s, a2) such that Follows* (s, a3) and Follows* (s, a4)
 10,12,26,28,30,31,33,36,38,6,7,8,9
 30000
-4 - Optimiazation test (Should PASS)
-assign a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15; stmt s; 
+4 - Optimiazation test
+assign a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15; stmt s;
 Select s such that Follows* (s, a1) such that Follows* (s, a2) such that Follows* (s, a3) and Follows* (s, a4) with a1.stmt#=a2.stmt# with a2.stmt#=a3.stmt# with a3.stmt#=a4.stmt#
 10,12,26,28,30,31,33,36,38,6,7,8,9
-5000
+30000
