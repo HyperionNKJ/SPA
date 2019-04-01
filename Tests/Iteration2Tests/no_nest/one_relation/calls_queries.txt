@@ -11,5 +11,5 @@ P, Q
 3 - Select procedure tuples that calls another procedure
 procedure p, q;
 Select <p, q> such that Calls* (p, q)
-<main, P>, <main, Q>, <P, Q>
+main P, main Q, P Q
 5000
