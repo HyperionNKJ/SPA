@@ -1,10 +1,11 @@
 import os
 import sys
-from subprocess import check_output
+from subprocess import check_output, TimeoutExpired
 
 
 fail_cases = []
 error_cases = []
+timeout_cases = []
 
 current_path = os.getcwd()
 
@@ -20,11 +21,14 @@ for root, dirs, files in os.walk(current_path):
 						output = root2 + '\\' + file.split('.')[0] + '.xml'
 						if os.path.exists(output):
 							os.remove(output)
-						out = check_output([cmd, source, query, output]).strip().decode()
+						out = check_output([cmd, source, query, output], timeout=5).strip().decode()
 						print(out)
 
 						if 'Missing' in out or 'Additional' in out:
 							fail_cases.append(root2 + '\\' + file)
+					except TimeoutExpired as e:
+						print("TIMEOUT: " + root2 + '\\' + file)
+						timeout_cases.append(root2 + '\\' + file)
 					except Exception as e:
 						print(e)
 						error_cases.append(root2 + '\\' + file)
@@ -36,6 +40,13 @@ print('-----------------------------------------------')
 print('Failed Test Cases')
 print('-----------------------------------------------')
 for file in fail_cases:
+	print(file)
+
+print()
+print('-----------------------------------------------')
+print('Timeout Test Cases')
+print('-----------------------------------------------')
+for file in timeout_cases:
 	print(file)
 
 print()
