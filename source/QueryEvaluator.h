@@ -10,6 +10,7 @@ using namespace std;
 class QueryEvaluator {
 private:
 	bool findReducedDomain(Clause*, ResultProjector*);
+	list<string> returnNegativeResult(vector<DesignEntity>&);
 
 public:
 	vector<Clause*> optimizationSort(vector<Clause*>&);
