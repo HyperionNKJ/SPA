@@ -1,12 +1,12 @@
 1 - Select assign that is followed by assign and modifies variable
 assign a1; stmt s2;
 Select a1 such that Follows (a1, s2) and Modifies (s2, "a")
-18
+17, 9 
 5000
 2 - Select assign that is followed by assign and modifies variable
 assign a; variable v;
-Select a1 such that Modifies (a, v) such that Uses (a, v)
-5, 6, 8, 15
+Select a such that Modifies (a, v) such that Uses (a, v)
+5, 6, 8, 15 
 5000
 3 - Select procedure that uses given variable and call given procedure
 procedure p;
@@ -15,6 +15,6 @@ P
 5000
 4 - Select procedure tuples
 procedure p, q;
-Select <p, q> such that Calls (p, q) and Next* (_, _)
-none
+Select <p, q> such that Calls (p, q) and Next*(_, _)
+main p, P Q
 5000
