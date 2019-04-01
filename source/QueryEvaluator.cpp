@@ -72,7 +72,7 @@ list<string> QueryEvaluator::evaluate(ProcessedQuery& processedQuery, const PKB&
 			return returnNegativeResult(processedQuery.resultClElemList);
 		}
 	}
-	return resultProjector.getResults(processedQuery.resultClElemList, combinedClauses.size(), pkb);
+	return resultProjector.getResults(processedQuery.resultClElemList, pkb);
 }
 
 list<string> QueryEvaluator::returnNegativeResult(vector<DesignEntity>& selectClause) {
