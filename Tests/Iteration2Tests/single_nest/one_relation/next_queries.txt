@@ -1,10 +1,10 @@
 1 - Select stmt next to given stmt number
 stmt s;
-Select s such that Next (9, s)
-10, 11
+Select s such that Next* (9, s)
+10, 11, 12, 13, 14, 15
 5000
-2 - Select stmt next to any stmt
-stmt s1, s2;
-Select s1 such that Next* (s1, s2)
-5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 18, 19, 20, 21, 22, 23, 24
+2 - Select stmt next inside while loop
+stmt s;
+Select s1 such that Next (24, s)
+22
 5000

@@ -1,7 +1,6 @@
 import os
 import sys
-from subprocess import check_output
-
+from subprocess import check_output, CREATE_NO_WINDOW
 
 fail_cases = []
 error_cases = []
@@ -20,7 +19,7 @@ for root, dirs, files in os.walk(current_path):
 						output = root2 + '\\' + file.split('.')[0] + '.xml'
 						if os.path.exists(output):
 							os.remove(output)
-						out = check_output([cmd, source, query, output]).strip().decode()
+						out = check_output([cmd, source, query, output], creationflags=CREATE_NO_WINDOW).strip().decode()
 						print(out)
 
 						if 'Missing' in out or 'Additional' in out:

@@ -5,7 +5,7 @@ Select a1 such that Follows (a1, s2) and Modifies (s2, v) with v.varName = "a"
 5000
 2 - Select assign that is followed by assign and modifies variable
 assign a; variable v;
-Select a1 such that Modifies (a, v) such that Uses (a, v)
+Select a1 such that Modifies (a, v) such that Uses (a, v) pattern a (_, _)
 6, 7, 8, 12, 18, 20, 21, 30
 5000
 3 - Select procedure that uses given variable and call given procedure
