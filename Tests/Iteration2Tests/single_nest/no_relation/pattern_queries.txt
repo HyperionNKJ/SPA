@@ -31,12 +31,13 @@ Select a pattern a (_, _"x+a"_)
 7 - Select assign pattern by expression
 assign a;
 Select a pattern a (_, _"a-b"_)
-6, 7, 14, 21, 24
+6, 7, 21, 24
 5000
 8 - Select assign pattern by expression not exist
 assign a;
 Select a pattern a (_, _"b+a"_)
 none
+5000
 9 - Select assign pattern by expression not exist
 assign a;
 Select a pattern a (_, _"a*b"_)

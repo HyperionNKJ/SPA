@@ -6,17 +6,15 @@ FALSE
 2 - Find procedure with given name
 procedure p;
 Select p with p.procName = "P"
-TRUE
+P
 5000
 3 - Find variable with given name
-variable v;
-read r;
+variable v; read r;
 Select r with v.varName = "a"
 1, 2, 3, 17
 5000
 4 - Find variable with given name
-variable v;
-print pt;
+variable v; print pt;
 Select pt with v.varName = "y"
 none
 5000
@@ -33,7 +31,7 @@ none
 7 - Find constant with value
 constant c;
 Select c with c.value = 15
-none
+15
 5000
 8 - Find invalid constant with value
 constant c;
@@ -41,10 +39,9 @@ Select c with c.value = "a"
 none
 5000
 9 - Select stmt by constant value
-constant c;
-stmt s;
+constant c; stmt s;
 Select s with s.stmt#=c.value
-17
+15,16,5,7
 5000
 10 - Select boolean by assignment stmt number
 assign a;
