@@ -4,7 +4,7 @@
 #include <unordered_set>
 #include <map>
 
-// Commented out Affects, AffectsT, NextT line 269, this line 39-47, 59 & 65
+// Commented out Affects, AffectsT, this line 39-47, 59 & 65
 
 list<string> QueryEvaluator::evaluate(ProcessedQuery& processedQuery, const PKB& pkb) {
 	ResultProjector resultProjector;
@@ -70,6 +70,9 @@ list<string> QueryEvaluator::evaluate(ProcessedQuery& processedQuery, const PKB&
 			}
 		}
 		else if (!clauseResult.hasPassed()) {
+			if (processedQuery.resultClElemList[0].getType == Type::BOOLEAN) {
+				emptyResult.push_back("FALSE");
+			}
 			return emptyResult;
 		}
 	}

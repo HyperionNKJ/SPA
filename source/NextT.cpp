@@ -266,7 +266,7 @@ Result* NextT::evaluateUnderscoreSynonym(const string& nextSynonym, const Type& 
 // case Next*(_, _)
 Result* NextT::evaluateUnderscoreUnderscore() {
 	Result* result = new Result();
-//	result->setPassed(pkb.hasNextT());
+	result->setPassed(pkb.hasNextT());
 	return result;
 }
 
