@@ -266,7 +266,7 @@ bool QueryPreprocessorSuchThatParser::isValidParentParam(DesignEntity& paramOne,
 		|| paramOneType == Type::IF
 		|| paramOneType == Type::PROGLINE
 		|| paramOneType == Type::UNDERSCORE
-		|| (paramOneType == Type::FIXED && QueryPreprocessorHelper::isVar(paramOne.getValue()));
+		|| (paramOneType == Type::FIXED && QueryPreprocessorHelper::isInt(paramOne.getValue()));
 
 	bool isValidRHS = paramTwoType == Type::ASSIGN
 		|| paramTwoType == Type::CALL
