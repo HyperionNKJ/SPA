@@ -11,5 +11,5 @@ Select a such that Modifies (a, v) such that Uses (a, v) pattern a (_, _"a"_)
 3 - Select procedure that uses given variable and call given procedure
 procedure p, q;
 Select p.procName such that Uses (p, "a") and Calls (p, q) with q.procName = "Q"
-P
+P, main
 5000
