@@ -41,7 +41,7 @@ none
 9 - Select stmt by constant value
 constant c; stmt s;
 Select s with s.stmt#=c.value
-15, 16, 7. 5
+15,16,5,7
 5000
 10 - Select boolean by assignment stmt number
 assign a;
