@@ -1,17 +1,17 @@
 1 - Select stmt such that Uses (stmt, variable)
 stmt s; variable v;
 Select s such that Uses (s, v)
-5, 7, 9, 10
+4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 17, 18, 19, 20, 21
 5000
 3 - Select assign such that Uses (assign, variable)
 assign a; variable v;
 Select a such that Uses (a, v)
-5, 10
+5, 6, 8, 9, 11, 15, 17, 18, 19, 20 
 5000
 4 - Select print such that Uses (print, variable)
 print pn; variable v;
 Select pn such that Uses (pn, v)
-7, 9
+7, 12, 21
 5000
 5 - Select procedure such that uses variable
 procedure p; variable v;
@@ -36,5 +36,5 @@ main, P, Q
 8 - Select variables used by procedure with given name
 variable v;
 Select v such that Uses ("Q", v)
-x, a, b
+x, a, b, c
 5000
