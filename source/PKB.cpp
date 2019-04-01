@@ -1023,7 +1023,7 @@ unordered_set<int> PKB::getNextOf(int prevLineNum, Type nextType) {
 	unordered_set<int> *typedStmtSet = getTypedStmtSet(nextType), resultSet;
 
 	if (nextMap.count(prevLineNum)) {
-		for (const auto &elem : prevMap[prevLineNum]) {
+		for (const auto &elem : nextMap[prevLineNum]) {
 			if (typedStmtSet->count(elem)) {
 				resultSet.insert(elem);
 			}
