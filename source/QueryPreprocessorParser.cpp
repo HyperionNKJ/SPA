@@ -17,6 +17,10 @@ QueryPreprocessorParser::QueryPreprocessorParser(const std::vector<std::string>&
 bool QueryPreprocessorParser::parse() {
 	size_t numberOfDeclarativeStatements = STATEMENTS.size() - 1;
 
+	if (numberOfDeclarativeStatements == 0) {
+		return false;
+	}
+
 	for (size_t index = 0; index < numberOfDeclarativeStatements; index++) {
 		QueryPreprocessorDeclareParser declareParser(STATEMENTS[index], query);
 		bool status = declareParser.parse();
