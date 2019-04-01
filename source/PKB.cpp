@@ -926,6 +926,12 @@ bool PKB::hasPrevious(int nextLineNum) {
 	return false;
 }
 
+bool PKB::hasNextT() {
+	if (nextMap.size())
+		return true;
+	return false;
+}
+
 unordered_map<int, unordered_set<int>> PKB::getPreviousNextPairs(Type previousType, Type nextType) {
 	unordered_set<int> *prevTypedStmtSet = getTypedStmtSet(previousType), *nextTypedStmtSet = getTypedStmtSet(nextType);
 	unordered_map<int, unordered_set<int>> resultMap;
