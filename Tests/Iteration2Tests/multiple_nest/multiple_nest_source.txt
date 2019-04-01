@@ -19,18 +19,16 @@ procedure P {
 				if (b == b) then {
 					if (a < c) then {
 						if (c >= b) then {
-							a = a+1;
-						} else {}
-					} else {}
-				}
-				else { 
-					if (b < c) then {
-						x = x + 1;
-					} else {
-						a = a + 1;
-					}
-				}			
-			} else {}
+							a = a + 1;
+						} else {a = b + 1;}
+					} else {b = a + x;}
+				} else { 
+				if (b < c) then {
+					x = x + 1;
+				} else {
+					a = a + 1;
+				}}			
+			} else {c = 16;}
 		}
 	}
 	else {
