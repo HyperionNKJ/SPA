@@ -7,6 +7,7 @@
 #include <vector>
 #include <string>
 #include <stack>
+#include <utility>
 #include "PKB.h"
 #include "Type.h"
 #include "DesignExtractor.h"
@@ -41,8 +42,8 @@ class Parser {
 	//trackers for next
 	bool firstInProc = false;
 	bool firstInElse = false;
-	vector<int> lastInIfTracker = vector<int>();
-	vector<int> lastInElseTracker = vector<int>();
+	vector<pair<int, int>>  lastInIfTracker = vector<pair<int, int>>();
+	vector<pair<int, int>>  lastInElseTracker = vector<pair<int, int>>();	
 	int closedIfCount = 0;
 	int lastStmtInFlow = -1;
 

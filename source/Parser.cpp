@@ -142,7 +142,7 @@ bool Parser::checkProcedure(string procLine) {
 	string procedureRegexString = spaceRegex + "procedure" + spaceRegex + varNameRegex + spaceRegex + openCurlyRegex + spaceRegex;
 	regex procedureRegex(procedureRegexString);
 	if (!regex_match(procLine, procedureRegex)) {
-		cout << "Procedure statement is invalid" << endl;
+		errorMessage = "Procedure statement is invalid";
 		return false;
 	}
 	return true;
@@ -730,9 +730,21 @@ int Parser::handleCloseBracket(string closeBracket) {
 		}
 		else if (containerTracker.back() == IFC) {
 			expectElse = true;
-			lastInIfTracker.push_back(lastStmtInFlow);
+			//cout << "closed if " << lastStmtInFlow << " " << statementNumber << endl;
+			lastInIfTracker.push_back(make_pair(lastStmtInFlow, parentVector.back()));
+
+			//to update parent when tracking for Next
+			for (int i = lastInIfTracker.size()-1; i >= 0; i--) {
+				if (parentVector.size() > 0 && lastInIfTracker.back().second >= parentVector.back())
+					lastInIfTracker[i].second = parentVector.back();
+			}
+			for (int i = lastInElseTracker.size() - 1; i >= 0; i--) {
+				if (parentVector.size() > 0 && lastInElseTracker.back().second >= parentVector.back())
+					lastInElseTracker[i].second = parentVector.back();
+			}
 		}
 		containerTracker.pop_back();
+		
 	}
 	return 0;
 }
@@ -779,6 +791,7 @@ bool Parser::setNext(int stmtNum, Container closingType) {
 	}
 	//for case of first line in else
 	if (firstInElse) {
+		//cout << stmtNum << " first in else" << endl;
 		firstInElse = false;
 		pkb->setNext(parentVector.back(), stmtNum);
 		pkb->setPrevious(parentVector.back(), stmtNum);
@@ -788,16 +801,40 @@ bool Parser::setNext(int stmtNum, Container closingType) {
 	//for case of close bracket involving while
 	if (closingType == WHILEC) {
 		int lastWhile = parentVector.back();
-		if (closedIfCount > 0) {
-			while (closedIfCount > 0) {
-				pkb->setNext(lastInIfTracker.back(), lastWhile);
-				pkb->setPrevious(lastInIfTracker.back(), lastWhile);
-				pkb->setNext(lastInElseTracker.back(), lastWhile);
-				pkb->setPrevious(lastInElseTracker.back(), lastWhile);
-				
-				lastInIfTracker.pop_back();
-				lastInElseTracker.pop_back();
-				closedIfCount--;
+		if (lastInIfTracker.size() > 0 || lastInElseTracker.size() > 0) {
+			while (lastInIfTracker.size() > 0) {
+				bool foundInParent = false;
+				for (unsigned int i = 0; i < parentVector.size(); i++) {
+					if (parentVector[i] == lastInIfTracker.back().second) {
+						foundInParent = true;
+					}
+				}
+				if (foundInParent) {
+					break;
+				}
+				else {
+					//cout << lastInIfTracker.back().first << " " << lastInIfTracker.back().second << " " << "while if tracker" << endl;
+					pkb->setNext(lastInIfTracker.back().first, lastWhile);
+					pkb->setPrevious(lastInIfTracker.back().first, lastWhile);
+					lastInIfTracker.pop_back();
+				}
+			}
+			while (lastInElseTracker.size() > 0) {
+				bool foundInParent = false;
+				for (unsigned int i = 0; i < parentVector.size(); i++) {
+					if (parentVector[i] == lastInElseTracker.back().second) {
+						foundInParent = true;
+					}
+				}
+				if (foundInParent) {
+					break;
+				}
+				else {
+					//cout << lastInElseTracker.back().first << " " << lastInElseTracker.back().second << " " << "while else tracker" << endl;
+					pkb->setNext(lastInElseTracker.back().first, lastWhile);
+					pkb->setPrevious(lastInElseTracker.back().first, lastWhile);
+					lastInElseTracker.pop_back();
+				}
 			}
 		}
 		else {
@@ -809,26 +846,53 @@ bool Parser::setNext(int stmtNum, Container closingType) {
 	}
 	//for case of close bracket involving else
 	if (closingType == ELSEC) {
-		lastInElseTracker.push_back(lastStmtInFlow);
-		closedIfCount++;
+		lastInElseTracker.push_back(make_pair(lastStmtInFlow, parentVector.back()));
 		return true;
 	}
 	//for case of not first line in else, neither is it closing bracket.
-	if (closedIfCount > 0) {
-		while (closedIfCount > 0) {
-			
-			pkb->setNext(lastInIfTracker.back(), stmtNum);
-			pkb->setPrevious(lastInIfTracker.back(), stmtNum);
-			pkb->setNext(lastInElseTracker.back(), stmtNum);
-			pkb->setPrevious(lastInElseTracker.back(), stmtNum);
-			
-			lastInIfTracker.pop_back();
-			lastInElseTracker.pop_back();
-			closedIfCount--;
+	bool updatedNext = false;
+	if (lastInIfTracker.size() > 0 || lastInElseTracker.size() > 0) {
+		while (lastInIfTracker.size() > 0) {
+			bool foundInParent = false;
+			for (unsigned int i = 0; i < parentVector.size(); i++) {
+				if (parentVector[i] == lastInIfTracker.back().second) {
+					foundInParent = true;
+				}
+			}
+			if (foundInParent) {
+				break;
+			}
+			else {
+				//cout << lastInIfTracker.back().first << " " << lastInIfTracker.back().second << endl;
+				pkb->setNext(lastInIfTracker.back().first, stmtNum);
+				pkb->setPrevious(lastInIfTracker.back().first, stmtNum);
+				lastInIfTracker.pop_back();
+				updatedNext = true;
+				lastStmtInFlow = stmtNum;
+			}
 		}
-		lastStmtInFlow = stmtNum;
+		while (lastInElseTracker.size() > 0) {
+			bool foundInParent = false;
+			for (unsigned int i = 0; i < parentVector.size(); i++) {
+				if (parentVector[i] == lastInElseTracker.back().second) {
+					foundInParent = true;
+				}
+			}
+			if (foundInParent) {
+				break;
+			}
+			else {
+				//cout << lastInElseTracker.back().first << " " << lastInElseTracker.back().second << endl;
+				pkb->setNext(lastInElseTracker.back().first, stmtNum);
+				pkb->setPrevious(lastInElseTracker.back().first, stmtNum);
+				lastInElseTracker.pop_back();
+				updatedNext = true;
+				lastStmtInFlow = stmtNum;
+			}
+		}
 	}
-	else {
+	if (!updatedNext) {
+		//cout << stmtNum << " " << lastStmtInFlow << endl;
 		pkb->setNext(lastStmtInFlow, stmtNum);
 		pkb->setPrevious(lastStmtInFlow, stmtNum);
 		lastStmtInFlow = stmtNum;
