@@ -23,3 +23,13 @@ if ifs, variable v;
 Select BOOLEAN such that Parent (ifs, 19) pattern ifs (v, _, _) with v.varName = "a"
 TRUE
 5000
+6 - Check nested parent with pattern
+if ifs;
+Select BOOLEAN such that Parent* (10, 18)
+TRUE
+5000
+7 - Check nested parent with pattern
+if ifs; variable v;
+Select BOOLEAN such that Parent* (16, 24)
+FALSE
+5000
