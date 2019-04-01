@@ -50,6 +50,6 @@ a, b, c
 5000
 11 - Select while pattern
 while w;
-Select w pattern w ("b", _, _)
+Select w pattern w ("b", _)
 25, 35
 5000
