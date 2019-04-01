@@ -1015,7 +1015,7 @@ bool Parser::setCallsT() {
 			string currCalledTProc = bfsQueue.front();
 			bfsQueue.pop();
 			pkb->setCallsT(proc, currCalledTProc);
-			pkb->setCalledByT(currCalledTProc, proc);
+			pkb->setCalledByT(proc, currCalledTProc);
 			for (const auto &calledProc : callGraph[currCalledTProc]) {
 				bfsQueue.push(calledProc);
 			}
