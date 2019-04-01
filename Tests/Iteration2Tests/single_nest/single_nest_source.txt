@@ -15,7 +15,7 @@ procedure P {
 		c = 16;
 	}
 	else {
-		x = a + b
+		x = a + b;
 	}
 	while (b >= c) {		
 			c = 7 + a - b;		
