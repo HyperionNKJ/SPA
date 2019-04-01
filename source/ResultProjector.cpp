@@ -30,7 +30,7 @@ void ResultProjector::setSynonymResults(unordered_map<int, list<unordered_map<st
 	synonymResults = synResults;
 }
 
-list<string> ResultProjector::getResults(vector<DesignEntity> selectedSynonyms, PKB pkb) {
+list<string> ResultProjector::getResults(vector<DesignEntity> selectedSynonyms, int clauseSize, PKB pkb) {
 
 	list<string> projectedResults;
 
@@ -39,11 +39,16 @@ list<string> ResultProjector::getResults(vector<DesignEntity> selectedSynonyms, 
 	// No need to wait till getResults()
 	if (selectedSynonyms.size() == 1) {
 		if (selectedSynonyms.at(0).getType() == Type::BOOLEAN) {
-			if (synonymTable.empty()) {
-				projectedResults.push_back("FALSE");
+			if (clauseSize == 0) {
+				projectedResults.push_back("TRUE");
 			}
 			else {
-				projectedResults.push_back("TRUE");
+				if (synonymTable.empty()) {
+					projectedResults.push_back("FALSE");
+				}
+				else {
+					projectedResults.push_back("TRUE");
+				}
 			}
 			return projectedResults;
 		}
@@ -51,7 +56,7 @@ list<string> ResultProjector::getResults(vector<DesignEntity> selectedSynonyms, 
 
 	vector<string> selectedSynonymsOrder;
 	unordered_map<int, list<DesignEntity>> selectedSynonymTableMap;
-	
+
 	// 1. Loop through all selected synonyms and get their table numbers
 	for (auto selectedSynonym : selectedSynonyms) {
 		selectedSynonymsOrder.push_back(selectedSynonym.getValue());
@@ -73,6 +78,7 @@ list<string> ResultProjector::getResults(vector<DesignEntity> selectedSynonyms, 
 		if (tableMap.first == -1) { // synonym does not exist in table
 			for (auto selectedSyn : tableMap.second) {
 				selectedResults = getSelectedClauseNotInTable(selectedSyn, pkb);
+				allTableResults.push_back(selectedResults);
 			}
 		}
 		else {
@@ -85,8 +91,8 @@ list<string> ResultProjector::getResults(vector<DesignEntity> selectedSynonyms, 
 				}
 				selectedResults.push_back(rowResult);
 			}
+			allTableResults.push_back(selectedResults);
 		}
-		allTableResults.push_back(selectedResults);
 	}
 
 	// 3. Cross product all maps
@@ -113,7 +119,7 @@ list<string> ResultProjector::getResults(vector<DesignEntity> selectedSynonyms, 
 			}
 		}
 	}
-	
+
 	// 4. Convert to required format
 	if (!selectedSynonymsOrder.empty()) {
 		for (auto finalMap : finalMaps) {
@@ -174,54 +180,55 @@ list<unordered_map<string, string>> ResultProjector::getSelectedClauseNotInTable
 	Type type = synonym.getType();
 
 	switch (type) {
-		case Type::STATEMENT:
-			projectedResults = convertSetToList(pkb.getAllStmts(), synonym.getValue());
-			break;
-		case Type::PROGLINE:
-			projectedResults = convertSetToList(pkb.getAllStmts(), synonym.getValue());
-			break;
-		case Type::READ:
-			if (synonym.getAttrRef() == AttrRef::VAR_NAME) {
-				projectedResults = convertSetToList(pkb.getReadVarNames(), synonym.getValue());
-			}
-			else {
-				projectedResults = convertSetToList(pkb.getReadStmts(), synonym.getValue());
-			}
-			break;
-		case Type::PRINT:
-			if (synonym.getAttrRef() == AttrRef::VAR_NAME) {
-				projectedResults = convertSetToList(pkb.getPrintVarNames(), synonym.getValue());
-			}
-			else {
-				projectedResults = convertSetToList(pkb.getPrintStmts(), synonym.getValue());
-			}
-			break;
-		case Type::CALL:	// call statements
-			if (synonym.getAttrRef() == AttrRef::PROC_NAME) {
-				projectedResults = convertSetToList(pkb.getCallProcNames(), synonym.getValue());
-			} else {
-				projectedResults = convertSetToList(pkb.getCallStmts(), synonym.getValue());
-			}
-			break;
-		case Type::WHILE:
-			projectedResults = convertSetToList(pkb.getWhileStmts(), synonym.getValue());
-			break;
-		case Type::IF:
-			projectedResults = convertSetToList(pkb.getIfStmts(), synonym.getValue());
-			break;
-		case Type::ASSIGN:
-			projectedResults = convertSetToList(pkb.getAssignStmts(), synonym.getValue());
-			break;
-		case Type::VARIABLE:
-			projectedResults = convertSetToList(pkb.getAllVariables(), synonym.getValue());
-			break;
-		case Type::CONSTANT:
-			projectedResults = convertSetToList(pkb.getAllConstant(), synonym.getValue());
-			break;
-		case Type::PROCEDURE:
-			projectedResults = convertSetToList(pkb.getAllProcedures(), synonym.getValue());
-			break;
+	case Type::STATEMENT:
+		projectedResults = convertSetToList(pkb.getAllStmts(), synonym.getValue());
+		break;
+	case Type::PROGLINE:
+		projectedResults = convertSetToList(pkb.getAllStmts(), synonym.getValue());
+		break;
+	case Type::READ:
+		if (synonym.getAttrRef() == AttrRef::VAR_NAME) {
+			projectedResults = convertSetToList(pkb.getReadVarNames(), synonym.getValue());
 		}
+		else {
+			projectedResults = convertSetToList(pkb.getReadStmts(), synonym.getValue());
+		}
+		break;
+	case Type::PRINT:
+		if (synonym.getAttrRef() == AttrRef::VAR_NAME) {
+			projectedResults = convertSetToList(pkb.getPrintVarNames(), synonym.getValue());
+		}
+		else {
+			projectedResults = convertSetToList(pkb.getPrintStmts(), synonym.getValue());
+		}
+		break;
+	case Type::CALL:	// call statements
+		if (synonym.getAttrRef() == AttrRef::PROC_NAME) {
+			projectedResults = convertSetToList(pkb.getCallProcNames(), synonym.getValue());
+		}
+		else {
+			projectedResults = convertSetToList(pkb.getCallStmts(), synonym.getValue());
+		}
+		break;
+	case Type::WHILE:
+		projectedResults = convertSetToList(pkb.getWhileStmts(), synonym.getValue());
+		break;
+	case Type::IF:
+		projectedResults = convertSetToList(pkb.getIfStmts(), synonym.getValue());
+		break;
+	case Type::ASSIGN:
+		projectedResults = convertSetToList(pkb.getAssignStmts(), synonym.getValue());
+		break;
+	case Type::VARIABLE:
+		projectedResults = convertSetToList(pkb.getAllVariables(), synonym.getValue());
+		break;
+	case Type::CONSTANT:
+		projectedResults = convertSetToList(pkb.getAllConstant(), synonym.getValue());
+		break;
+	case Type::PROCEDURE:
+		projectedResults = convertSetToList(pkb.getAllProcedures(), synonym.getValue());
+		break;
+	}
 	return projectedResults;
 }
 
@@ -264,7 +271,7 @@ bool ResultProjector::combineResults(unordered_map<int, unordered_set<int>> quer
 	if (queryResultsTwoSynonyms.empty() || synonyms.size() != 2) {
 		return false;
 	}
-	
+
 	combineTwoSynonyms(queryResultsTwoSynonyms, synonyms);
 
 	if (synonymExists(synonyms.at(0)) && synonymExists(synonyms.at(1))) {
@@ -355,7 +362,7 @@ void ResultProjector::addTwoSyn(string key1, string key2, unordered_map<int, uno
 
 	list<unordered_map<string, int>> newSet;
 	unordered_map<string, int> newSetEntry;
-	for (const auto result: results) {
+	for (const auto result : results) {
 		newSetEntry[key1] = result.first;
 		for (const auto key2Results : result.second) {
 			newSetEntry[key2] = key2Results;
@@ -478,7 +485,7 @@ void ResultProjector::mergeTables(string key1, string key2, unordered_map<int, u
 			}
 		}
 	}
-	
+
 	if (newResultsSet.size() != 0) { // add in new table
 		synonymResults[index] = newResultsSet;
 		index++;

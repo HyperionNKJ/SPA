@@ -175,6 +175,7 @@ public:
 	bool isNextT(int prevLineNum, int nextLineNum);
 	bool hasNext(int prevLineNum);
 	bool hasPrevious(int nextLineNum);
+	bool hasNextT();
 	unordered_map<int, unordered_set<int>> getPreviousNextPairs(Type previousType, Type nextType);
 	unordered_map<int, unordered_set<int>> getPreviousNextTPairs(Type previousType, Type nextType);
 	unordered_set<int> getPreviousLines(Type previousType);

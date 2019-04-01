@@ -764,7 +764,7 @@ int Parser::handleCall(string callLine) {
 	pkb->insertCPRStmtType(statementNumber, CALL, calledProcName);
 	currentFollowVector.push_back(statementNumber);
 	
-	procCalledByTable.insert({ currProcedure, statementNumber });
+	procCalledByTable.insert({ statementNumber, calledProcName });
 	setCalls(currProcedure, calledProcName);
 	return 0;
 }
@@ -966,8 +966,8 @@ bool Parser::setCallUsesModifies() {
 	unordered_map<string, unordered_set<string>> procModifiesTable = de.getProcModifiesTable();
 	unordered_map<string, unordered_set<string>> procUsesTable = de.getProcUsesTable();
 	for (const auto &elem : procCalledByTable) {
-		string procName = elem.first;
-		int stmtNum = elem.second;
+		int stmtNum = elem.first;
+		string procName = elem.second;
 		for (const auto &elem : procModifiesTable[procName]) {
 			pkb->setModifies(stmtNum, elem);
 		}
@@ -994,10 +994,10 @@ bool Parser::setProcIndirectUsesModifies() {
 	return true;
 }
 
-bool Parser::setCalls(string currProcedure, string calledProcName) {
-	pkb->setCalls(currProcedure, calledProcName);
-	pkb->setCalledBy(calledProcName, currProcedure);
-	de.insertCall(currProcedure, calledProcName);
+bool Parser::setCalls(string currProc, string calledProcName) {
+	pkb->setCalls(currProc, calledProcName);
+	pkb->setCalledBy(currProc, calledProcName);
+	de.insertCall(currProc, calledProcName);
 	return true;
 }
 
@@ -1064,7 +1064,7 @@ string Parser::getCurrentProcedure() {
 	return currProcedure;
 }
 
-unordered_map<string, int> Parser::getProcCalledByTable() {
+unordered_map<int, string> Parser::getProcCalledByTable() {
 	return procCalledByTable;
 }
 
