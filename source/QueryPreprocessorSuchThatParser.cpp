@@ -189,13 +189,13 @@ bool QueryPreprocessorSuchThatParser::isValidCallsParam(DesignEntity& paramOne, 
 	Type paramOneType = paramOne.getType();
 	Type paramTwoType = paramTwo.getType();
 
-	bool isValidLHS = paramOneType == paramOneType == Type::PROCEDURE
+	bool isValidLHS = paramOneType == Type::PROCEDURE
 		|| paramOneType == Type::UNDERSCORE
 		|| (paramOneType == Type::FIXED && QueryPreprocessorHelper::isVar(paramOne.getValue()));
 
-	bool isValidRHS = paramTwoType == paramOneType == Type::PROCEDURE
-		|| paramOneType == Type::UNDERSCORE
-		|| (paramOneType == Type::FIXED && QueryPreprocessorHelper::isVar(paramOne.getValue()));
+	bool isValidRHS = paramTwoType == Type::PROCEDURE
+		|| paramTwoType == Type::UNDERSCORE
+		|| (paramTwoType == Type::FIXED && QueryPreprocessorHelper::isVar(paramTwo.getValue()));
 
 	return isValidRHS && isValidLHS;
 }
