@@ -16,9 +16,9 @@ procedure P {
 			x = x + a;			
 			c = 16;
 			if (b <= c) then {
-				if (b == b) then {
+				if ((b == b) || (b < b)) then {
 					if (a < c) then {
-						if (c >= b) then {
+						if ((c >= b) && (c == b)) then {
 							a = a + 1;
 						} else {a = b + 1;}
 					} else {b = a + x;}

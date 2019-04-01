@@ -1,4 +1,36 @@
 procedure main {
+1	read a; 
+2	read b; 
+3	read c; 
+4	call P; 
+}
+
+procedure P {
+5	a = a + b; 
+6	b = a - b; 
+7	print b; 
+8	a = a - b; 
+9	c = a * (b - a); 
+10	call Q; 
+11	b = a + 5; 
+12	print b; 
+13	call Q; 
+}
+
+procedure Q {
+14	read x; 
+15	x = x + a; 
+16	c = 16;  
+17	c = 7 * (a - b); 
+18	a = b + c; 
+19	x = c; 
+20	k = x + a - b + a * a; 
+21	print c; 
+}
+
+
+
+procedure main {
 	read a; 
 	read b; 
 	read c; 
