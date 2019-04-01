@@ -1,7 +1,10 @@
+#include "Affects.h"
+#include "AffectsT.h"
 #include "Clause.h"
 #include "Follows.h"
 #include "FollowsT.h"
 #include "ModifiesS.h"
+#include "NextT.h"
 #include "Parent.h"
 #include "ParentT.h"
 #include "UsesS.h"
@@ -34,7 +37,7 @@ void ProcessedQuery::addClause(Clause* clause, const std::string& clauseString) 
 
 void ProcessedQuery::addWithClause(Clause* withClause, const std::string& clauseString) {
 	if (clausesString.find(clauseString) == clausesString.end()) {
-		withClauses.insert(withClause);
+		withClausesSet.insert(withClause);
 		clausesString.insert(clauseString);
 	}
 }
@@ -45,4 +48,40 @@ bool ProcessedQuery::hasSynonym(const std::string& synonym) {
 
 Type ProcessedQuery::getDesignEntity(std::string& synonym) {
 	return declarations.find(synonym)->second;
+}
+
+void ProcessedQuery::sortClauses() {
+	for (auto& clause : clauses) {
+		size_t noOfSynonyms = clause->getNumOfSynonyms();
+		if (noOfSynonyms == 0) {
+			// boolean clauses
+			booleanClauses.push_back(clause);
+			clauses.erase(clause);
+		} else if (dynamic_cast<Affects*>(clause) != nullptr) {
+			affectsClauses.push_back(clause);
+			clauses.erase(clause);
+		} else if (dynamic_cast<AffectsT*>(clause) != nullptr) {
+			affectsTClauses.push_back(clause);
+			clauses.erase(clause);
+		} else if (dynamic_cast<NextT*>(clause) != nullptr) {
+			nextTClauses.push_back(clause);
+			clauses.erase(clause);
+		} else {
+			otherClauses.push_back(clause);
+			clauses.erase(clause);
+		}
+	}
+
+	for (auto& clause : withClausesSet) {
+		size_t noOfSynonyms = clause->getNumOfSynonyms();
+		if (noOfSynonyms == 0) {
+			// boolean clauses
+			booleanClauses.push_back(clause);
+			clauses.erase(clause);
+		}
+		else {
+			withClauses.push_back(clause);
+			clauses.erase(clause);
+		}
+	}
 }

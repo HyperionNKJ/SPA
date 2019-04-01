@@ -15,10 +15,10 @@ public:
 	std::vector<Clause*> booleanClauses;
 	std::vector<Clause*> nextTClauses;
 	std::vector<Clause*> otherClauses;
-	std::vector<Clause*> withCLauses;
+	std::vector<Clause*> withClauses;
 
 	std::unordered_set<Clause*> clauses;
-	std::unordered_set<Clause*> withClauses;
+	std::unordered_set<Clause*> withClausesSet;
 
 	std::unordered_set<std::string> clausesString;
 	std::unordered_set<std::string> withClausesString;
@@ -27,6 +27,8 @@ public:
 
 	bool insertDeclaration(const std::string& synonym,
 		const Type& designEntityType);
+
+	void sortClauses();
 
 	void addResultClElement(const DesignEntity& element);
 	void addClause(Clause* clause, const std::string& clauseString);
