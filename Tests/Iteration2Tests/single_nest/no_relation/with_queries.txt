@@ -12,7 +12,7 @@ TRUE
 variable v;
 read r;
 Select r with v.varName = "a"
-1, 2, 3, 14
+1, 2, 3, 17
 5000
 4 - Find variable with given name
 variable v;
@@ -44,7 +44,7 @@ none
 constant c;
 stmt s;
 Select s with s.stmt#=c.value
-16
+17
 5000
 10 - Select boolean by assignment stmt number
 assign a;
