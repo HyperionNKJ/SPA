@@ -12,7 +12,7 @@ list<string> QueryEvaluator::evaluate(ProcessedQuery& processedQuery, const PKB&
 	list<string> emptyResult;
 
 	vector<Clause*>& booleanClauses = processedQuery.booleanClauses; // boolean clause refers to clause without synonym.
-	vector<Clause*>& sortedWithClauses = optimizationSort(processedQuery.withCLauses); // all types of clauses below have synonyms. Hence optimization is required
+	vector<Clause*>& sortedWithClauses = optimizationSort(processedQuery.withClauses); // all types of clauses below have synonyms. Hence optimization is required
 	vector<Clause*>& sortedAffectsClauses = optimizationSort(processedQuery.affectsClauses);
 	vector<Clause*>& sortedAffectsTClauses = optimizationSort(processedQuery.affectsTClauses);
 	vector<Clause*>& sortedNextTClauses = optimizationSort(processedQuery.nextTClauses);
