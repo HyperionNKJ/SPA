@@ -38,18 +38,8 @@ list<string> ResultProjector::getResults(vector<DesignEntity> selectedSynonyms, 
 	// actually if no common results, should be return false and break out of loop in QueryEvaluator and return FALSE already.
 	// No need to wait till getResults()
 	if (selectedSynonyms.size() == 1) {
-		if (selectedSynonyms.at(0).getType() == Type::BOOLEAN) {
-			if (clauseSize == 0) {
-				projectedResults.push_back("TRUE");
-			}
-			else {
-				if (synonymTable.empty()) {
-					projectedResults.push_back("FALSE");
-				}
-				else {
-					projectedResults.push_back("TRUE");
-				}
-			}
+		if (selectedSynonyms.at(0).getType() == Type::BOOLEAN) { // FALSE boolean handled in QueryEvaluator during early return
+			projectedResults.push_back("TRUE");
 			return projectedResults;
 		}
 	}

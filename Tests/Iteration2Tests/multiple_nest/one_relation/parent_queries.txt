@@ -19,9 +19,9 @@ Select BOOLEAN such that Parent* (ifs, 23) with ifs.stmt# = 16
 FALSE
 5000
 5 - Check nested parent with pattern
-if ifs, variable v;
+if ifs; variable v;
 Select BOOLEAN such that Parent (ifs, 19) pattern ifs (v, _, _) with v.varName = "a"
-TRUE
+FALSE
 5000
 6 - Check nested parent with pattern
 if ifs;
