@@ -101,9 +101,6 @@ bool QueryPreprocessorSelectParser::parse() {
 		else {
 			// Clauses should be in the form of rel(...)
 			size_t relSize = clause.find('(');
-			if (relSize == std::string::npos) {
-				return false;
-			}
 
 			// If rel is found in declarations, the clause is a pattern clause
 			std::string rel = clause.substr(0, relSize);

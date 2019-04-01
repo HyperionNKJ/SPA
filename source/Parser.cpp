@@ -730,7 +730,7 @@ int Parser::handleCloseBracket(string closeBracket) {
 		}
 		else if (containerTracker.back() == IFC) {
 			expectElse = true;
-			lastInIfTracker.push_back(statementNumber - 1);
+			lastInIfTracker.push_back(lastStmtInFlow);
 		}
 		containerTracker.pop_back();
 	}
@@ -809,7 +809,7 @@ bool Parser::setNext(int stmtNum, Container closingType) {
 	}
 	//for case of close bracket involving else
 	if (closingType == ELSEC) {
-		lastInElseTracker.push_back(statementNumber - 1);
+		lastInElseTracker.push_back(lastStmtInFlow);
 		closedIfCount++;
 		return true;
 	}

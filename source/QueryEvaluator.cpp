@@ -4,12 +4,11 @@
 #include <unordered_set>
 #include <map>
 
-// Commented out Affects, AffectsT, NextT line 269, this line 39-47, 59 & 65
+// Commented out Affects, AffectsT, this line 39-47, 59 & 65
 
 list<string> QueryEvaluator::evaluate(ProcessedQuery& processedQuery, const PKB& pkb) {
 	ResultProjector resultProjector;
 	resultProjector.resetResults(); // Reset possible old query result
-	list<string> emptyResult;
 
 	vector<Clause*>& booleanClauses = processedQuery.booleanClauses; // boolean clause refers to clause without synonym.
 	vector<Clause*>& sortedWithClauses = optimizationSort(processedQuery.withClauses); // all types of clauses below have synonyms. Hence optimization is required
@@ -66,14 +65,22 @@ list<string> QueryEvaluator::evaluate(ProcessedQuery& processedQuery, const PKB&
 				}
 			}
 			if (!hasResultSoFar) {
-				return emptyResult; 
+				return returnNegativeResult(processedQuery.resultClElemList);
 			}
 		}
 		else if (!clauseResult.hasPassed()) {
-			return emptyResult;
+			return returnNegativeResult(processedQuery.resultClElemList);
 		}
 	}
 	return resultProjector.getResults(processedQuery.resultClElemList, combinedClauses.size(), pkb);
+}
+
+list<string> QueryEvaluator::returnNegativeResult(vector<DesignEntity>& selectClause) {
+	list<string> emptyResult;
+	if (selectClause[0].getType() == Type::BOOLEAN) {
+		emptyResult.push_back("FALSE");
+	}
+	return emptyResult;
 }
 
 // only called by NextT, Affects, and AffectsT
