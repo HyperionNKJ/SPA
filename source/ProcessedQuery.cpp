@@ -56,19 +56,14 @@ void ProcessedQuery::sortClauses() {
 		if (noOfSynonyms == 0) {
 			// boolean clauses
 			booleanClauses.push_back(clause);
-			clauses.erase(clause);
 		} else if (dynamic_cast<Affects*>(clause) != nullptr) {
 			affectsClauses.push_back(clause);
-			clauses.erase(clause);
 		} else if (dynamic_cast<AffectsT*>(clause) != nullptr) {
 			affectsTClauses.push_back(clause);
-			clauses.erase(clause);
 		} else if (dynamic_cast<NextT*>(clause) != nullptr) {
 			nextTClauses.push_back(clause);
-			clauses.erase(clause);
 		} else {
 			otherClauses.push_back(clause);
-			clauses.erase(clause);
 		}
 	}
 
@@ -77,11 +72,9 @@ void ProcessedQuery::sortClauses() {
 		if (noOfSynonyms == 0) {
 			// boolean clauses
 			booleanClauses.push_back(clause);
-			clauses.erase(clause);
 		}
 		else {
 			withClauses.push_back(clause);
-			clauses.erase(clause);
 		}
 	}
 }
