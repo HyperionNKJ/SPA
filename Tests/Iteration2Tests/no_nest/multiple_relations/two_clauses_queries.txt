@@ -15,6 +15,6 @@ P
 5000
 4 - Select procedure tuples
 procedure p, q;
-Select <p, q> such that Calls (p, q) and Next*(_, _)
-main p, P Q
+Select <p, q> such that Calls (p, q)
+main P, P Q
 5000
