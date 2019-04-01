@@ -19,12 +19,12 @@ Select v such that Uses (11, v)
 a, b, c, x
 5000
 5 - Select stmt uses certain variable
-if ifs, variable v;
+if ifs; variable v;
 Select ifs such that Uses (ifs, v) with v.varName = "x"
 10, 14, 15, 16, 21, 31
 5000
 5 - Select stmt uses certain variable
-if ifs, variable v;
+if ifs; variable v;
 Select ifs such that Uses (ifs, v) with v.varName = "x" pattern ifs ("a", _, _)
 none
 5000
