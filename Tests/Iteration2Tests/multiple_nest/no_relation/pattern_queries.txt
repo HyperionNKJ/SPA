@@ -1,12 +1,12 @@
 1 - Select assign pattern (_, constant)
 assign a;
 Select a pattern a (_, _"16"_)
-13, 31
+13,24,34
 5000
 2 - Select assign pattern (_, _variable_)
 assign a;
 Select a pattern a (_, _"b"_)
-6,7,8,9,23,24,33,34,36
+19,26,27,36,37,39,6,7,8,9
 5000
 3 - Select assign pattern (_, _variable_) does not exist
 assign a;
@@ -16,27 +16,28 @@ FALSE
 4 - Select assign pattern (variable, _) and (_, variable)
 assign a;
 Select a pattern a ("b", _) and a (_, _"a"_)
-7, 26
+20,29,7
 5000
 5 - Select variable-variable tuple with pattern
 assign a1; assign a2;
 Select <a1, a2> pattern a1 ("a", _) and a2 ("b", _"a"_)
-<6, 7>, <8, 7>, <18, 7>, <21, 7>, <24, 7>, <34, 7>, <6, 26>, <8, 26>, <18, 26>, <21, 26>, <24, 26>, <34, 26>
+18 20,18 29,18 7,19 20,19 29,19 7,23 20,23 29,23 7,27 20,27 29,27 7,37 20,37 29,37 7,6 20,6 29,6 7,8 20,8 29,8 7
 5000
 6 - Select assign pattern by expression
 assign a;
 Select a pattern a (_, _"x+a"_)
-12, 20, 30, 36
+12,33,39
 5000
 7 - Select assign pattern by expression
 assign a;
 Select a pattern a (_, _"a-b"_)
-7, 8, 33
+36,7,8
 5000
 8 - Select assign pattern by expression not exist
 assign a;
 Select a pattern a (_, _"b+a"_)
 none
+5000
 9 - Select assign pattern by expression not exist
 assign a;
 Select a pattern a (_, _"a*b"_)
@@ -50,5 +51,5 @@ a, b, c
 11 - Select while pattern
 while w;
 Select w pattern w ("b", _, _)
-22, 32
+25, 35
 5000

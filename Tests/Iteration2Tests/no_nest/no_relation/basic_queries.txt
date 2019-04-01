@@ -36,12 +36,12 @@ a, b, c, x, k
 8 - Select all constants
 constant c;
 Select c
-16
+5, 16, 7
 5000
 9 - Select all variable constant tuple
 constant c; variable v;
 Select <c, v>
-<16, a>, <16, b>, <16, c>, <16, x>, <16, k>
+<16, a>, <16, b>, <16, c>, <16, x>, <16, k>, <5, a>, <5, b>, <5, c>, <5, x>, <5, k>, <7, a>, <7, b>, <7, c>, <7, x>, <7, k>
 5000
 10 - Select empty boolean
 variable v;

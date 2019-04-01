@@ -996,7 +996,7 @@ bool Parser::setProcIndirectUsesModifies() {
 
 bool Parser::setCalls(string currProcedure, string calledProcName) {
 	pkb->setCalls(currProcedure, calledProcName);
-	pkb->setCalledBy(calledProcName, currProcedure);
+	pkb->setCalledBy(currProcedure, calledProcName);
 	de.insertCall(currProcedure, calledProcName);
 	return true;
 }
