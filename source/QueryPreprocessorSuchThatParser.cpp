@@ -59,7 +59,7 @@ bool QueryPreprocessorSuchThatParser::parse() {
 	if (rel == "Calls") {
 		bool status = isValidCallsParam(paramOne, paramTwo);
 		if (!status) {
-			return;
+			return false;
 		}
 
 		Calls* suchThatClause = new Calls(paramOne, paramTwo);
@@ -68,7 +68,7 @@ bool QueryPreprocessorSuchThatParser::parse() {
 	else if (rel == "Calls*") {
 		bool status = isValidCallsParam(paramOne, paramTwo);
 		if (!status) {
-			return;
+			return false;
 		}
 
 		CallsT* suchThatClause = new CallsT(paramOne, paramTwo);
@@ -77,7 +77,7 @@ bool QueryPreprocessorSuchThatParser::parse() {
 	else if (rel == "Follows") {
 		bool status = isValidFollowsParam(paramOne, paramTwo);
 		if (!status) {
-			return;
+			return false;
 		}
 
 		Follows* suchThatClause = new Follows(paramOne, paramTwo);
@@ -86,7 +86,7 @@ bool QueryPreprocessorSuchThatParser::parse() {
 	else if (rel == "Follows*") {
 		bool status = isValidFollowsParam(paramOne, paramTwo);
 		if (!status) {
-			return;
+			return false;
 		}
 
 		FollowsT* suchThatClause = new FollowsT(paramOne, paramTwo);
@@ -95,7 +95,7 @@ bool QueryPreprocessorSuchThatParser::parse() {
 	else if (rel == "Modifies") {
 		bool status = isValidModifiesParam(paramOne, paramTwo);
 		if (!status) {
-			return;
+			return false;
 		}
 
 		if (paramOne.getType() == Type::PROCEDURE) {
@@ -114,7 +114,7 @@ bool QueryPreprocessorSuchThatParser::parse() {
 	else if (rel == "Next") {
 		bool status = isValidNextParam(paramOne, paramTwo);
 		if (!status) {
-			return;
+			return false;
 		}
 
 		Next* suchThatClause = new Next(paramOne, paramTwo);
@@ -123,7 +123,7 @@ bool QueryPreprocessorSuchThatParser::parse() {
 	else if (rel == "Next*") {
 		bool status = isValidNextParam(paramOne, paramTwo);
 		if (!status) {
-			return;
+			return false;
 		}
 
 		NextT* suchThatClause = new NextT(paramOne, paramTwo);
@@ -132,7 +132,7 @@ bool QueryPreprocessorSuchThatParser::parse() {
 	else if (rel == "Parent") {
 		bool status = isValidParentParam(paramOne, paramTwo);
 		if (!status) {
-			return;
+			return false;
 		}
 
 		Parent* suchThatClause = new Parent(paramOne, paramTwo);
@@ -141,7 +141,7 @@ bool QueryPreprocessorSuchThatParser::parse() {
 	else if (rel == "Parent*") {
 		bool status = isValidParentParam(paramOne, paramTwo);
 		if (!status) {
-			return;
+			return false;
 		}
 
 		ParentT* suchThatClause = new ParentT(paramOne, paramTwo);
@@ -150,7 +150,7 @@ bool QueryPreprocessorSuchThatParser::parse() {
 	else if (rel == "Uses") {
 		bool status = isValidUsesParam(paramOne, paramTwo);
 		if (!status) {
-			return;
+			return false;
 		}
 
 		if (paramOne.getType() == Type::PROCEDURE) {
