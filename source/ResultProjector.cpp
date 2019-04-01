@@ -30,7 +30,7 @@ void ResultProjector::setSynonymResults(unordered_map<int, list<unordered_map<st
 	synonymResults = synResults;
 }
 
-list<string> ResultProjector::getResults(vector<DesignEntity> selectedSynonyms, int clauseSize, PKB pkb) {
+list<string> ResultProjector::getResults(vector<DesignEntity> selectedSynonyms, PKB pkb) {
 
 	list<string> projectedResults;
 
