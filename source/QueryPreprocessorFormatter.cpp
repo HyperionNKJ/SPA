@@ -81,4 +81,8 @@ void QueryPreprocessorFormatter::removeSpaces(string& original) {
 	if (spacePos != std::string::npos) {
 		original.erase(spacePos, orginalSize - spacePos);
 	}
+
+	if (original.back() == ')' && original[original.size() - 2] == ')') {
+		original.erase(original.size() - 1, 1);
+	}
 }
