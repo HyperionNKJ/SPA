@@ -6,12 +6,12 @@ FALSE
 2 - Find procedure with given name
 procedure p;
 Select p with p.procName = "P"
-TRUE
+P
 5000
 3 - Find variable with given name
 variable v; read r;
 Select r with v.varName = "a"
-1, 2, 3, 27
+1,2,3,30
 5000
 4 - Find variable with given name
 variable v; print pt;
@@ -21,7 +21,7 @@ none
 5 - Find call-variable tuple with given name and stmt number
 variable v; call cl;
 Select <cl, v> with v.varName = "a" and cl.stmt# = 4
-<4, a>
+4 a
 5000
 6 - Find stmt with given number that does not exist
 stmt s;
@@ -41,7 +41,7 @@ none
 9 - Select stmt by constant value
 constant c; stmt s;
 Select s with s.stmt#=c.value
-1, 5, 7, 15, 16
+1,15,16,5,7
 5000
 10 - Select boolean by assignment stmt number
 assign a;

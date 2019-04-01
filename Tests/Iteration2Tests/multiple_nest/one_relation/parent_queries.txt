@@ -15,11 +15,11 @@ TRUE
 5000
 4 - Check invliad nested parent
 if ifs;
-Select BOOLEAN such that Parent* (ifs, 20) with ifs.stmt# = 16
+Select BOOLEAN such that Parent* (ifs, 23) with ifs.stmt# = 16
 FALSE
 5000
 5 - Check nested parent with pattern
 if ifs, variable v;
-Select BOOLEAN such that Parent (ifs, 17) pattern ifs (v, _, _) with v.varName = "a"
+Select BOOLEAN such that Parent (ifs, 19) pattern ifs (v, _, _) with v.varName = "a"
 TRUE
 5000
