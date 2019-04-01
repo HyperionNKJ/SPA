@@ -40,6 +40,6 @@ Select a such that Follows* (ifs, a) with ifs.stmt# = 31
 5000
 8 - Select assign after if container with condition and pattern
 assign a; if ifs;
-Select a such that Follows* (ifs, a) with ifs.stmt# = 31 pattern  a (_, "x+a") 
+Select a such that Follows* (ifs, a) with ifs.stmt# = 31 pattern  a (_, _"x+a"_)
 39
 5000
