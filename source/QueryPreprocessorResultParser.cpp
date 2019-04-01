@@ -62,6 +62,10 @@ bool QueryPreprocessorResultParser::addElement(std::string& elem) {
 	DesignEntity element = QueryPreprocessorHelper::getParam(elem, query);
 	Type type = element.getType();
 
+	if (!query.hasSynonym(element.getValue())) {
+		return false;
+	}
+
 	if (type == Type::ASSIGN
 		|| type == Type::CALL
 		|| type == Type::CONSTANT
