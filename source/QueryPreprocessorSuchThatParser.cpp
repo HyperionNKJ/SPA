@@ -21,18 +21,18 @@ constexpr char BRACKET_LEFT = '(';
 constexpr char BRACKET_RIGHT = ')';
 constexpr char COMMA = ',';
 
-constexpr char AFFECTS[] = "Affects";
-constexpr char AFFECTS_T[] = "Affects*";
-constexpr char CALLS[] = "Calls";
-constexpr char CALLS_T[] = "Calls*";
-constexpr char FOLLOWS[] = "Follows";
-constexpr char FOLLOWS_T[] = "Follows*";
-constexpr char MODIFIES[] = "Modifies";
-constexpr char NEXT[] = "Next";
-constexpr char NEXT_T[] = "Next*";
-constexpr char PARENT[] = "Parent";
-constexpr char PARENT_T[] = "Parent*";
-constexpr char USES[] = "Uses";
+constexpr char STRING_AFFECTS[] = "Affects";
+constexpr char STRING_AFFECTS_T[] = "Affects*";
+constexpr char STRING_CALLS[] = "Calls";
+constexpr char STRING_CALLS_T[] = "Calls*";
+constexpr char STRING_FOLLOWS[] = "Follows";
+constexpr char STRING_FOLLOWS_T[] = "Follows*";
+constexpr char STRING_MODIFIES[] = "Modifies";
+constexpr char STRING_NEXT[] = "Next";
+constexpr char STRING_NEXT_T[] = "Next*";
+constexpr char STRING_PARENT[] = "Parent";
+constexpr char STRING_PARENT_T[] = "Parent*";
+constexpr char STRING_USES[] = "Uses";
 
 // Initializes a newly created QueryPreprocessorSuchThatParser.
 QueryPreprocessorSuchThatParser::QueryPreprocessorSuchThatParser(const string& clause, ProcessedQuery& query)
@@ -73,25 +73,25 @@ bool QueryPreprocessorSuchThatParser::parse() {
 	DesignEntity paramOne = QueryPreprocessorHelper::getParam(parametersList[0], query);
 	DesignEntity paramTwo = QueryPreprocessorHelper::getParam(parametersList[1], query);
 
-	if (rel == AFFECTS) {
+	if (rel == STRING_AFFECTS) {
 		bool status = isValidAffectsParam(paramOne, paramTwo);
 		if (!status) {
 			return false;
 		}
 
-		Affects* suchThatClause = new Affects(paramOne, paramTwo);
-		query.addClause(suchThatClause, CLAUSE);
+		//Affects* suchThatClause = new Affects(paramOne, paramTwo);
+		//query.addClause(suchThatClause, CLAUSE);
 	}
-	else if (rel == AFFECTS_T) {
+	else if (rel == STRING_AFFECTS_T) {
 		bool status = isValidAffectsParam(paramOne, paramTwo);
 		if (!status) {
 			return false;
 		}
 
-		AffectsT* suchThatClause = new AffectsT(paramOne, paramTwo);
-		query.addClause(suchThatClause, CLAUSE);
+		//AffectsT* suchThatClause = new AffectsT(paramOne, paramTwo);
+		//query.addClause(suchThatClause, CLAUSE);
 	}
-	else if (rel == CALLS) {
+	else if (rel == STRING_CALLS) {
 		bool status = isValidCallsParam(paramOne, paramTwo);
 		if (!status) {
 			return false;
@@ -100,7 +100,7 @@ bool QueryPreprocessorSuchThatParser::parse() {
 		Calls* suchThatClause = new Calls(paramOne, paramTwo);
 		query.addClause(suchThatClause, CLAUSE);
 	}
-	else if (rel == CALLS_T) {
+	else if (rel == STRING_CALLS_T) {
 		bool status = isValidCallsParam(paramOne, paramTwo);
 		if (!status) {
 			return false;
@@ -109,7 +109,7 @@ bool QueryPreprocessorSuchThatParser::parse() {
 		CallsT* suchThatClause = new CallsT(paramOne, paramTwo);
 		query.addClause(suchThatClause, CLAUSE);
 	}
-	else if (rel == FOLLOWS) {
+	else if (rel == STRING_FOLLOWS) {
 		bool status = isValidFollowsParam(paramOne, paramTwo);
 		if (!status) {
 			return false;
@@ -118,7 +118,7 @@ bool QueryPreprocessorSuchThatParser::parse() {
 		Follows* suchThatClause = new Follows(paramOne, paramTwo);
 		query.addClause(suchThatClause, CLAUSE);
 	}
-	else if (rel == FOLLOWS_T) {
+	else if (rel == STRING_FOLLOWS_T) {
 		bool status = isValidFollowsParam(paramOne, paramTwo);
 		if (!status) {
 			return false;
@@ -127,7 +127,7 @@ bool QueryPreprocessorSuchThatParser::parse() {
 		FollowsT* suchThatClause = new FollowsT(paramOne, paramTwo);
 		query.addClause(suchThatClause, CLAUSE);
 	}
-	else if (rel == MODIFIES) {
+	else if (rel == STRING_MODIFIES) {
 		bool status = isValidModifiesParam(paramOne, paramTwo);
 		if (!status) {
 			return false;
@@ -146,7 +146,7 @@ bool QueryPreprocessorSuchThatParser::parse() {
 			query.addClause(suchThatClause, CLAUSE);
 		}
 	}
-	else if (rel == NEXT) {
+	else if (rel == STRING_NEXT) {
 		bool status = isValidNextParam(paramOne, paramTwo);
 		if (!status) {
 			return false;
@@ -155,7 +155,7 @@ bool QueryPreprocessorSuchThatParser::parse() {
 		Next* suchThatClause = new Next(paramOne, paramTwo);
 		query.addClause(suchThatClause, CLAUSE);
 	}
-	else if (rel == NEXT_T) {
+	else if (rel == STRING_NEXT_T) {
 		bool status = isValidNextParam(paramOne, paramTwo);
 		if (!status) {
 			return false;
@@ -164,7 +164,7 @@ bool QueryPreprocessorSuchThatParser::parse() {
 		NextT* suchThatClause = new NextT(paramOne, paramTwo);
 		query.addClause(suchThatClause, CLAUSE);
 	}
-	else if (rel == PARENT) {
+	else if (rel == STRING_PARENT) {
 		bool status = isValidParentParam(paramOne, paramTwo);
 		if (!status) {
 			return false;
@@ -173,7 +173,7 @@ bool QueryPreprocessorSuchThatParser::parse() {
 		Parent* suchThatClause = new Parent(paramOne, paramTwo);
 		query.addClause(suchThatClause, CLAUSE);
 	}
-	else if (rel == PARENT_T) {
+	else if (rel == STRING_PARENT_T) {
 		bool status = isValidParentParam(paramOne, paramTwo);
 		if (!status) {
 			return false;
@@ -182,7 +182,7 @@ bool QueryPreprocessorSuchThatParser::parse() {
 		ParentT* suchThatClause = new ParentT(paramOne, paramTwo);
 		query.addClause(suchThatClause, CLAUSE);
 	}
-	else if (rel == USES) {
+	else if (rel == STRING_USES) {
 		bool status = isValidUsesParam(paramOne, paramTwo);
 		if (!status) {
 			return false;
@@ -206,18 +206,18 @@ bool QueryPreprocessorSuchThatParser::parse() {
 }
 
 bool QueryPreprocessorSuchThatParser::isRelRef(std::string& relRef) {
-	return relRef == AFFECTS
-		|| relRef == AFFECTS_T
-		|| relRef == CALLS
-		|| relRef == CALLS_T
-		|| relRef == FOLLOWS
-		|| relRef == FOLLOWS_T
-		|| relRef == MODIFIES
-		|| relRef == NEXT
-		|| relRef == NEXT_T
-		|| relRef == PARENT
-		|| relRef == PARENT_T
-		|| relRef == USES;
+	return relRef == STRING_AFFECTS
+		|| relRef == STRING_AFFECTS_T
+		|| relRef == STRING_CALLS
+		|| relRef == STRING_CALLS_T
+		|| relRef == STRING_FOLLOWS
+		|| relRef == STRING_FOLLOWS_T
+		|| relRef == STRING_MODIFIES
+		|| relRef == STRING_NEXT
+		|| relRef == STRING_NEXT_T
+		|| relRef == STRING_PARENT
+		|| relRef == STRING_PARENT_T
+		|| relRef == STRING_USES;
 }
 
 bool QueryPreprocessorSuchThatParser::isValidAffectsParam(DesignEntity& paramOne, DesignEntity& paramTwo) {

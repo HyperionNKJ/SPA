@@ -164,6 +164,7 @@
   <ItemGroup>
     <ClCompile Include="TestPKB.cpp" />
     <ClCompile Include="TestQueryEvaluator.cpp" />
+    <ClCompile Include="TestQueryPreprocessorFormatter.cpp" />
     <ClCompile Include="TestResultProjector.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
