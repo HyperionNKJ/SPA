@@ -1,4 +1,6 @@
 #include <regex>
+#include "Affects.h"
+#include "AffectsT.h"
 #include "Calls.h"
 #include "CallsT.h"
 #include "DesignEntity.h"
@@ -15,7 +17,22 @@
 #include "UsesP.h"
 #include "UsesS.h"
 
+constexpr char BRACKET_LEFT = '(';
+constexpr char BRACKET_RIGHT = ')';
 constexpr char COMMA = ',';
+
+constexpr char AFFECTS[] = "Affects";
+constexpr char AFFECTS_T[] = "Affects*";
+constexpr char CALLS[] = "Calls";
+constexpr char CALLS_T[] = "Calls*";
+constexpr char FOLLOWS[] = "Follows";
+constexpr char FOLLOWS_T[] = "Follows*";
+constexpr char MODIFIES[] = "Modifies";
+constexpr char NEXT[] = "Next";
+constexpr char NEXT_T[] = "Next*";
+constexpr char PARENT[] = "Parent";
+constexpr char PARENT_T[] = "Parent*";
+constexpr char USES[] = "Uses";
 
 // Initializes a newly created QueryPreprocessorSuchThatParser.
 QueryPreprocessorSuchThatParser::QueryPreprocessorSuchThatParser(const string& clause, ProcessedQuery& query)
@@ -25,8 +42,8 @@ QueryPreprocessorSuchThatParser::QueryPreprocessorSuchThatParser(const string& c
 // Parses the such that clause.
 // Returns true if parsing is successful and false if unsucessful.
 bool QueryPreprocessorSuchThatParser::parse() {
-	size_t relSize = CLAUSE.find('(');
-	size_t closeBracketPos = CLAUSE.find(')');
+	size_t relSize = CLAUSE.find(BRACKET_LEFT);
+	size_t closeBracketPos = CLAUSE.find(BRACKET_RIGHT);
 
 	// close bracket should be the last character
 	if (closeBracketPos + 1 != CLAUSE.size()) {
@@ -56,7 +73,25 @@ bool QueryPreprocessorSuchThatParser::parse() {
 	DesignEntity paramOne = QueryPreprocessorHelper::getParam(parametersList[0], query);
 	DesignEntity paramTwo = QueryPreprocessorHelper::getParam(parametersList[1], query);
 
-	if (rel == "Calls") {
+	if (rel == AFFECTS) {
+		bool status = isValidAffectsParam(paramOne, paramTwo);
+		if (!status) {
+			return false;
+		}
+
+		Affects* suchThatClause = new Affects(paramOne, paramTwo);
+		query.addClause(suchThatClause, CLAUSE);
+	}
+	else if (rel == AFFECTS_T) {
+		bool status = isValidAffectsParam(paramOne, paramTwo);
+		if (!status) {
+			return false;
+		}
+
+		AffectsT* suchThatClause = new AffectsT(paramOne, paramTwo);
+		query.addClause(suchThatClause, CLAUSE);
+	}
+	else if (rel == CALLS) {
 		bool status = isValidCallsParam(paramOne, paramTwo);
 		if (!status) {
 			return false;
@@ -65,7 +100,7 @@ bool QueryPreprocessorSuchThatParser::parse() {
 		Calls* suchThatClause = new Calls(paramOne, paramTwo);
 		query.addClause(suchThatClause, CLAUSE);
 	}
-	else if (rel == "Calls*") {
+	else if (rel == CALLS_T) {
 		bool status = isValidCallsParam(paramOne, paramTwo);
 		if (!status) {
 			return false;
@@ -74,7 +109,7 @@ bool QueryPreprocessorSuchThatParser::parse() {
 		CallsT* suchThatClause = new CallsT(paramOne, paramTwo);
 		query.addClause(suchThatClause, CLAUSE);
 	}
-	else if (rel == "Follows") {
+	else if (rel == FOLLOWS) {
 		bool status = isValidFollowsParam(paramOne, paramTwo);
 		if (!status) {
 			return false;
@@ -83,7 +118,7 @@ bool QueryPreprocessorSuchThatParser::parse() {
 		Follows* suchThatClause = new Follows(paramOne, paramTwo);
 		query.addClause(suchThatClause, CLAUSE);
 	}
-	else if (rel == "Follows*") {
+	else if (rel == FOLLOWS_T) {
 		bool status = isValidFollowsParam(paramOne, paramTwo);
 		if (!status) {
 			return false;
@@ -92,7 +127,7 @@ bool QueryPreprocessorSuchThatParser::parse() {
 		FollowsT* suchThatClause = new FollowsT(paramOne, paramTwo);
 		query.addClause(suchThatClause, CLAUSE);
 	}
-	else if (rel == "Modifies") {
+	else if (rel == MODIFIES) {
 		bool status = isValidModifiesParam(paramOne, paramTwo);
 		if (!status) {
 			return false;
@@ -111,7 +146,7 @@ bool QueryPreprocessorSuchThatParser::parse() {
 			query.addClause(suchThatClause, CLAUSE);
 		}
 	}
-	else if (rel == "Next") {
+	else if (rel == NEXT) {
 		bool status = isValidNextParam(paramOne, paramTwo);
 		if (!status) {
 			return false;
@@ -120,7 +155,7 @@ bool QueryPreprocessorSuchThatParser::parse() {
 		Next* suchThatClause = new Next(paramOne, paramTwo);
 		query.addClause(suchThatClause, CLAUSE);
 	}
-	else if (rel == "Next*") {
+	else if (rel == NEXT_T) {
 		bool status = isValidNextParam(paramOne, paramTwo);
 		if (!status) {
 			return false;
@@ -129,7 +164,7 @@ bool QueryPreprocessorSuchThatParser::parse() {
 		NextT* suchThatClause = new NextT(paramOne, paramTwo);
 		query.addClause(suchThatClause, CLAUSE);
 	}
-	else if (rel == "Parent") {
+	else if (rel == PARENT) {
 		bool status = isValidParentParam(paramOne, paramTwo);
 		if (!status) {
 			return false;
@@ -138,7 +173,7 @@ bool QueryPreprocessorSuchThatParser::parse() {
 		Parent* suchThatClause = new Parent(paramOne, paramTwo);
 		query.addClause(suchThatClause, CLAUSE);
 	}
-	else if (rel == "Parent*") {
+	else if (rel == PARENT_T) {
 		bool status = isValidParentParam(paramOne, paramTwo);
 		if (!status) {
 			return false;
@@ -147,7 +182,7 @@ bool QueryPreprocessorSuchThatParser::parse() {
 		ParentT* suchThatClause = new ParentT(paramOne, paramTwo);
 		query.addClause(suchThatClause, CLAUSE);
 	}
-	else if (rel == "Uses") {
+	else if (rel == USES) {
 		bool status = isValidUsesParam(paramOne, paramTwo);
 		if (!status) {
 			return false;
@@ -171,18 +206,28 @@ bool QueryPreprocessorSuchThatParser::parse() {
 }
 
 bool QueryPreprocessorSuchThatParser::isRelRef(std::string& relRef) {
-	return relRef == "Affects"
-		|| relRef == "Affects*"
-		|| relRef == "Calls"
-		|| relRef == "Calls*"
-		|| relRef == "Follows"
-		|| relRef == "Follows*"
-		|| relRef == "Modifies"
-		|| relRef == "Next"
-		|| relRef == "Next*"
-		|| relRef == "Parent"
-		|| relRef == "Parent*"
-		|| relRef == "Uses";
+	return relRef == AFFECTS
+		|| relRef == AFFECTS_T
+		|| relRef == CALLS
+		|| relRef == CALLS_T
+		|| relRef == FOLLOWS
+		|| relRef == FOLLOWS_T
+		|| relRef == MODIFIES
+		|| relRef == NEXT
+		|| relRef == NEXT_T
+		|| relRef == PARENT
+		|| relRef == PARENT_T
+		|| relRef == USES;
+}
+
+bool QueryPreprocessorSuchThatParser::isValidAffectsParam(DesignEntity& paramOne, DesignEntity& paramTwo) {
+	Type paramOneType = paramOne.getType();
+	Type paramTwoType = paramTwo.getType();
+
+	bool isValidLHS = true;
+	bool isValidRHS = true;
+
+	return isValidLHS && isValidRHS;
 }
 
 bool QueryPreprocessorSuchThatParser::isValidCallsParam(DesignEntity& paramOne, DesignEntity& paramTwo) {
@@ -197,7 +242,7 @@ bool QueryPreprocessorSuchThatParser::isValidCallsParam(DesignEntity& paramOne, 
 		|| paramTwoType == Type::UNDERSCORE
 		|| (paramTwoType == Type::FIXED && QueryPreprocessorHelper::isVar(paramTwo.getValue()));
 
-	return isValidRHS && isValidLHS;
+	return isValidLHS && isValidRHS;
 }
 
 bool QueryPreprocessorSuchThatParser::isValidFollowsParam(DesignEntity& paramOne, DesignEntity& paramTwo) {
@@ -228,7 +273,7 @@ bool QueryPreprocessorSuchThatParser::isValidFollowsParam(DesignEntity& paramOne
 		|| paramTwoType == Type::UNDERSCORE
 		|| (paramTwoType == Type::FIXED && QueryPreprocessorHelper::isInt(paramTwo.getValue()));
 
-	return isValidRHS && isValidLHS;
+	return isValidLHS && isValidRHS;
 }
 
 bool QueryPreprocessorSuchThatParser::isValidModifiesParam(DesignEntity& paramOne, DesignEntity& paramTwo) {
@@ -250,11 +295,11 @@ bool QueryPreprocessorSuchThatParser::isValidModifiesParam(DesignEntity& paramOn
 		|| paramTwoType == Type::UNDERSCORE
 		|| (paramTwoType == Type::FIXED && QueryPreprocessorHelper::isVar(paramTwo.getValue()));
 
-	return isValidRHS && isValidLHS;
+	return isValidLHS && isValidRHS;
 }
 
 bool QueryPreprocessorSuchThatParser::isValidNextParam(DesignEntity& paramOne, DesignEntity& paramTwo) {
-	return (isValidFollowsParam(paramOne, paramTwo));
+	return isValidFollowsParam(paramOne, paramTwo);
 }
 
 bool QueryPreprocessorSuchThatParser::isValidParentParam(DesignEntity& paramOne, DesignEntity& paramTwo) {
@@ -280,9 +325,9 @@ bool QueryPreprocessorSuchThatParser::isValidParentParam(DesignEntity& paramOne,
 		|| paramTwoType == Type::UNDERSCORE
 		|| (paramTwoType == Type::FIXED && QueryPreprocessorHelper::isInt(paramTwo.getValue()));
 
-	return isValidRHS && isValidLHS;
+	return isValidLHS && isValidRHS;
 }
 
 bool QueryPreprocessorSuchThatParser::isValidUsesParam(DesignEntity& paramOne, DesignEntity& paramTwo) {
-	return (isValidModifiesParam(paramOne, paramTwo));
+	return isValidModifiesParam(paramOne, paramTwo);
 }

@@ -28,8 +28,6 @@ public:
 	bool insertDeclaration(const std::string& synonym,
 		const Type& designEntityType);
 
-	void sortClauses();
-
 	void addResultClElement(const DesignEntity& element);
 	void addClause(Clause* clause, const std::string& clauseString);
 	void addWithClause(Clause* withClause, const std::string& clauseString);

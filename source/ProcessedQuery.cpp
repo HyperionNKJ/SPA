@@ -30,14 +30,44 @@ void ProcessedQuery::addResultClElement(const DesignEntity& element) {
 
 void ProcessedQuery::addClause(Clause* clause, const std::string& clauseString) {
 	if (clausesString.find(clauseString) == clausesString.end()) {
-		clauses.insert(clause);
+		size_t noOfSynonyms = clause->getNumOfSynonyms();
+		if (noOfSynonyms == 0) {
+			// boolean clauses
+			booleanClauses.push_back(clause);
+		}
+		else if (dynamic_cast<Affects*>(clause) != nullptr) {
+			// affects clauses
+			affectsClauses.push_back(clause);
+		}
+		else if (dynamic_cast<AffectsT*>(clause) != nullptr) {
+			// affects* clauses
+			affectsTClauses.push_back(clause);
+		}
+		else if (dynamic_cast<NextT*>(clause) != nullptr) {
+			// next* clauses
+			nextTClauses.push_back(clause);
+		}
+		else {
+			// other clauses
+			otherClauses.push_back(clause);
+		}
+
 		clausesString.insert(clauseString);
 	}
 }
 
 void ProcessedQuery::addWithClause(Clause* withClause, const std::string& clauseString) {
 	if (clausesString.find(clauseString) == clausesString.end()) {
-		withClausesSet.insert(withClause);
+		size_t noOfSynonyms = withClause->getNumOfSynonyms();
+		if (noOfSynonyms == 0) {
+			// boolean clauses
+			booleanClauses.push_back(withClause);
+		}
+		else {
+			// with clauses
+			withClauses.push_back(withClause);
+		}
+
 		clausesString.insert(clauseString);
 	}
 }
@@ -48,33 +78,4 @@ bool ProcessedQuery::hasSynonym(const std::string& synonym) {
 
 Type ProcessedQuery::getDesignEntity(std::string& synonym) {
 	return declarations.find(synonym)->second;
-}
-
-void ProcessedQuery::sortClauses() {
-	for (auto& clause : clauses) {
-		size_t noOfSynonyms = clause->getNumOfSynonyms();
-		if (noOfSynonyms == 0) {
-			// boolean clauses
-			booleanClauses.push_back(clause);
-		} else if (dynamic_cast<Affects*>(clause) != nullptr) {
-			affectsClauses.push_back(clause);
-		} else if (dynamic_cast<AffectsT*>(clause) != nullptr) {
-			affectsTClauses.push_back(clause);
-		} else if (dynamic_cast<NextT*>(clause) != nullptr) {
-			nextTClauses.push_back(clause);
-		} else {
-			otherClauses.push_back(clause);
-		}
-	}
-
-	for (auto& clause : withClausesSet) {
-		size_t noOfSynonyms = clause->getNumOfSynonyms();
-		if (noOfSynonyms == 0) {
-			// boolean clauses
-			booleanClauses.push_back(clause);
-		}
-		else {
-			withClauses.push_back(clause);
-		}
-	}
 }
