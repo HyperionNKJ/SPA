@@ -124,7 +124,7 @@ DesignEntity QueryPreprocessorPatternParser::parseExpression(const std::string& 
 		&& expression[expression.size() - 2] == QUOTE) {
 		// sub match
 		std::string value = expression.substr(2, expression.size() - 4);
-		value = QueryPreprocessorHelper::getPostFix(expression);
+		value = QueryPreprocessorHelper::getPostFix(value);
 
 		if (regex_match(value, EXPRESSION_REGEX)) {
 			return DesignEntity(value, Type::PATTERN_SUB);

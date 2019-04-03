@@ -10,11 +10,6 @@
 #include "Type.h"
 #include "QueryPreprocessorHelper.h"
 
-static std::string varNameRegex = "([[:alpha:]]([[:alnum:]])*)";
-static std::string constantRegex = "[[:digit:]]+";
-static std::string spaceRegex = "[[:s:]]*";
-static std::string openCurlyRegex = "\\{";
-
 const std::unordered_map<std::string, Type> QueryPreprocessorHelper::STRING_TO_TYPE = {
 	{"assign", Type::ASSIGN},
 	{"call", Type::CALL},
@@ -74,86 +69,70 @@ AttrRef QueryPreprocessorHelper::getAttrRef(const std::string& attrRefString) {
 	return STRING_TO_ATTR_REF.find(attrRefString)->second;
 }
 
-bool isValidVarName(const std::string& line) {
-	std::string varNameRegexString = spaceRegex + varNameRegex + spaceRegex;
-	std::regex varRegex(varNameRegexString);
-	if (!std::regex_match(line, varRegex)) {
-		return false;
-	}
-	return true;
-}
-
-bool isValidConstant(const std::string& line) {
-	std::string constantRegexString = spaceRegex + constantRegex + spaceRegex;
-	std::regex constRegex(constantRegexString);
-	if (!std::regex_match(line, constRegex)) {
-		return false;
-	}
-	return true;
-}
-
 std::string QueryPreprocessorHelper::getPostFix(const std::string& infix) {
-	//Separate variable names, constants and operation/brackets from each other
 	std::vector<std::string> assignTokens = std::vector<std::string>();
-	std::string lhsVar = infix.substr(0, infix.find_first_of("="));
-	std::string rhs = infix.substr(infix.find_first_of("=") + 1, std::string::npos);
 	std::string currToken = "";
-	for (unsigned int i = 0; i < rhs.length(); i++) {
+
+	for (size_t index = 0; index < infix.length(); index++) {
 		//assignment should have only alphanum and bracket/op. Less than 48 in ascii must be a bracket/op
-		if (rhs[i] < 48) {
+		if (infix[index] < 48) {
 			if (!currToken.empty()) {
 				assignTokens.push_back(currToken);
 				currToken = "";
 			}
-			assignTokens.push_back(rhs.substr(i, 1));
+			std::string token = infix.substr(index, 1);
+			assignTokens.push_back(token);
 		}
 		else {
-			currToken += rhs[i];
+			currToken += infix[index];
 		}
 	}
+
 	if (!currToken.empty()) {
 		assignTokens.push_back(currToken);
 	}
+
 	//form postfix expression using Dijkstra Shunting Yard
-	std::vector<std::string> postfixRHS = std::vector<std::string>();
+	std::vector<std::string> postfix = std::vector<std::string>();
 	std::vector<std::string> opStack = std::vector<std::string>();
-	for (unsigned int i = 0; i < assignTokens.size(); i++) {
-		if (isValidConstant(assignTokens[i]) || isValidVarName(assignTokens[i])) {
-			postfixRHS.push_back(assignTokens[i]);
+	for (size_t index = 0; index < assignTokens.size(); index++) {
+		if (isInt(assignTokens[index]) || isVar(assignTokens[index])) {
+			postfix.push_back(assignTokens[index]);
 		}
-		else if (assignTokens[i] == "(") {
-			opStack.push_back(assignTokens[i]);
+		else if (assignTokens[index] == "(") {
+			opStack.push_back(assignTokens[index]);
 		}
-		else if (assignTokens[i] == ")") {
+		else if (assignTokens[index] == ")") {
 			while (opStack.back() != "(") {
-				postfixRHS.push_back(opStack.back());
+				postfix.push_back(opStack.back());
 				opStack.pop_back();
 			}
 			opStack.pop_back();
 		}
-		else if (assignTokens[i] == "+" || assignTokens[i] == "-") {
+		else if (assignTokens[index] == "+" || assignTokens[index] == "-") {
 			while (opStack.size() > 0 && (opStack.back() == "+" || opStack.back() == "-")) {
-				postfixRHS.push_back(opStack.back());
+				postfix.push_back(opStack.back());
 				opStack.pop_back();
 			}
-			opStack.push_back(assignTokens[i]);
+			opStack.push_back(assignTokens[index]);
 		}
-		else if (assignTokens[i] == "*" || assignTokens[i] == "/" || assignTokens[i] == "%") {
+		else if (assignTokens[index] == "*" || assignTokens[index] == "/" || assignTokens[index] == "%") {
 			while (opStack.size() > 0 && (opStack.back() == "*" || opStack.back() == "/" || opStack.back() == "%")) {
-				postfixRHS.push_back(opStack.back());
+				postfix.push_back(opStack.back());
 				opStack.pop_back();
 			}
-			opStack.push_back(assignTokens[i]);
+			opStack.push_back(assignTokens[index]);
 		}
 	}
+
 	while (opStack.size() > 0) {
-		postfixRHS.push_back(opStack.back());
+		postfix.push_back(opStack.back());
 		opStack.pop_back();
 	}
 
 	std::string postFix;
 
-	for (std::string elem : postfixRHS) {
+	for (std::string elem : postfix) {
 		postFix += elem + ' ';
 	}
 
