@@ -12,5 +12,5 @@ private:
 
 	ProcessedQuery& query;
 
-	bool addElement(std::string& elem);
+	bool addElement(const std::string& elem);
 };

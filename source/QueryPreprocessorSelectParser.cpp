@@ -97,10 +97,11 @@ bool QueryPreprocessorSelectParser::parse() {
 		else {
 			// Clauses should be in the form of rel(...)
 			size_t relSize = clause.find('(');
-
-			// If rel is found in declarations, the clause is a pattern clause
 			std::string rel = clause.substr(0, relSize);
-			if (query.declarations.find(rel) != query.declarations.end() && clauseType == ClauseType::PATTERN) {
+
+			if (query.hasSynonym(rel) && clauseType == ClauseType::PATTERN) {
+				// rel is a declared synonym
+				// pattern clause
 				QueryPreprocessorPatternParser parsePatternCl(clause, query);
 				status = parsePatternCl.parse();
 			}

@@ -20,7 +20,7 @@ public:
 	};
 
 	QueryPreprocessorSuchThatParser(const std::string& clause, ProcessedQuery& query);
-		
+
 	bool parse();
 private:
 	const std::string& CLAUSE;

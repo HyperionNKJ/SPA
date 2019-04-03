@@ -28,7 +28,6 @@
     <ClCompile Include="..\source\ParentT.cpp" />
     <ClCompile Include="..\source\Parser.cpp" />
     <ClCompile Include="..\source\PatternAssign.cpp" />
-    <ClCompile Include="..\source\PatternClause.cpp" />
     <ClCompile Include="..\source\PatternIf.cpp" />
     <ClCompile Include="..\source\PatternWhile.cpp" />
     <ClCompile Include="..\source\PKB.cpp" />
@@ -60,7 +59,6 @@
     <ClInclude Include="..\source\CallsT.h" />
     <ClInclude Include="..\source\Clause.h" />
     <ClInclude Include="..\source\DesignEntity.h" />
-    <ClInclude Include="..\source\DesignEntityTypeFactory.h" />
     <ClInclude Include="..\source\DesignExtractor.h" />
     <ClInclude Include="..\source\Follows.h" />
     <ClInclude Include="..\source\FollowsT.h" />
@@ -73,7 +71,6 @@
     <ClInclude Include="..\source\ParentT.h" />
     <ClInclude Include="..\source\Parser.h" />
     <ClInclude Include="..\source\PatternAssign.h" />
-    <ClInclude Include="..\source\PatternClause.h" />
     <ClInclude Include="..\source\PatternIf.h" />
     <ClInclude Include="..\source\PatternWhile.h" />
     <ClInclude Include="..\source\PKB.h" />

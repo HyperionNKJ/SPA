@@ -53,10 +53,28 @@ bool DesignEntity::isAnyType(const std::vector<Type>& types) const {
 	return false;
 }
 
+bool DesignEntity::isAttrRef(const AttrRef& other) const {
+	return attrRef == other;
+}
+
+bool DesignEntity::isAnyAttrRef(const std::vector<AttrRef>& attrRefs) const {
+	for (AttrRef index : attrRefs) {
+		if (attrRef == index) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
 bool DesignEntity::isStmtNo() const {
 	return type == Type::FIXED && QueryPreprocessorHelper::isInt(value);
 }
 
 bool DesignEntity::isVar() const {
 	return type == Type::FIXED && QueryPreprocessorHelper::isVar(value);
+}
+
+bool DesignEntity::isInvalid() const {
+	return type == Type::INVALID;
 }

@@ -12,6 +12,6 @@ private:
 
 	ProcessedQuery& query;
 
-	DesignEntity parseWithParam(std::string& param);
-	bool isValidAttrRefComparator(DesignEntity& paramOne, DesignEntity& paramTwo);
+	DesignEntity parseWithParam(const std::string& param) const;
+	bool isValidAttrRefComparator(const DesignEntity& paramOne, const DesignEntity& paramTwo) const;
 };

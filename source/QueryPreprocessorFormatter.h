@@ -6,7 +6,7 @@ using namespace std;
 
 class QueryPreprocessorFormatter {
 public:
-	QueryPreprocessorFormatter(std::string& newQuery);
+	QueryPreprocessorFormatter(std::string& query);
 
 	std::string getFormattedQuery();
 private:

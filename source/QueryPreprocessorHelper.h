@@ -13,12 +13,11 @@ public:
 	static const std::unordered_map<Type, std::string> TYPE_TO_STRING;
 	static const std::unordered_set<std::string> RESERVED_WORD;
 
-	QueryPreprocessorHelper();
 	static std::vector<std::string> split(const std::string& target, const char& delimiter);
 	static Type getType(const std::string& typeString);
 	static AttrRef getAttrRef(const std::string& attrRefString);
 	static std::string getPostFix(const std::string& infix);
 	static bool isInt(const std::string& target);
 	static bool isVar(const std::string& target);
-	static DesignEntity getParam(std::string& param, ProcessedQuery& query);
+	static DesignEntity getParam(const std::string& param, ProcessedQuery& query);
 };

@@ -4,30 +4,30 @@
 #include "AttrRef.h"
 #include "Type.h"
 
-using namespace std;
-
 class DesignEntity {
 private:
-	string value;
+	std::string value;
 	Type type;
 	AttrRef attrRef;
 
 public:
-	
 	DesignEntity();
-	DesignEntity(const string&, const Type&);
-	DesignEntity(const string&, const Type&, const AttrRef&);
+	DesignEntity(const std::string&, const Type&);
+	DesignEntity(const std::string&, const Type&, const AttrRef&);
 
-	void setValue(const string&);
+	void setValue(const std::string&);
 	void setType(const Type&);
 	void setAttrRef(const AttrRef&);
 
-	string getValue();
+	std::string getValue();
 	Type getType();
 	AttrRef getAttrRef();
 
 	bool isType(const Type& type) const;
 	bool isAnyType(const std::vector<Type>& types) const;
-	bool DesignEntity::isStmtNo() const;
-	bool DesignEntity::isVar() const;
+	bool isAttrRef(const AttrRef& attrRef) const;
+	bool isAnyAttrRef(const std::vector<AttrRef>& attrRefs) const;
+	bool isStmtNo() const;
+	bool isVar() const;
+	bool isInvalid() const;
 };

@@ -11,10 +11,9 @@ private:
 	static const std::regex EXPRESSION_REGEX;
 
 	const std::string& CLAUSE;
-
 	ProcessedQuery& query;
 
-	DesignEntity parseEntRef(std::string& parameter);
+	DesignEntity parseEntRef(const std::string& parameter) const;
 
-	static DesignEntity parseExpression(std::string& expression);
+	static DesignEntity parseExpression(const std::string& expression);
 };

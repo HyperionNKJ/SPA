@@ -3,7 +3,8 @@
 #include "QueryPreprocessorHelper.h"
 #include "With.h"
 
-constexpr auto EQUAL = '=';
+constexpr char EQUAL = '=';
+constexpr char EMPTY[] = "";
 
 // Initializes a newly created QueryPreprocessorWithParser.
 QueryPreprocessorWithParser::QueryPreprocessorWithParser(std::string& withCl, ProcessedQuery& query)
@@ -25,7 +26,7 @@ bool QueryPreprocessorWithParser::parse() {
 	DesignEntity paramOne = parseWithParam(lhs);
 	DesignEntity paramTwo = parseWithParam(rhs);
 
-	if (paramOne.getType() == Type::INVALID || paramTwo.getType() == Type::INVALID) {
+	if (paramOne.isInvalid() || paramTwo.isInvalid()) {
 		return false;
 	}
 
@@ -42,14 +43,14 @@ bool QueryPreprocessorWithParser::parse() {
 }
 
 // Parses the individual parameters in with clause.
-DesignEntity QueryPreprocessorWithParser::parseWithParam(std::string& paramString) {
+DesignEntity QueryPreprocessorWithParser::parseWithParam(const std::string& paramString) const {
 	DesignEntity param = QueryPreprocessorHelper::getParam(paramString, query);
 
-	if (param.getType() == Type::UNDERSCORE) {
-		return DesignEntity("", Type::INVALID);
+	if (param.isType(Type::UNDERSCORE)) {
+		return DesignEntity(EMPTY, Type::INVALID);
 	}
 
-	if (param.getType() == Type::FIXED) {
+	if (param.isType(Type::FIXED)) {
 		std::string& val = param.getValue();
 		if (QueryPreprocessorHelper::isInt(val)) {
 			param.setType(Type::WITH_INTEGER);
@@ -59,40 +60,29 @@ DesignEntity QueryPreprocessorWithParser::parseWithParam(std::string& paramStrin
 		}
 	}
 
-	if (param.getAttrRef() == AttrRef::UNASSIGNED
-		&& param.getType() != Type::WITH_INTEGER
-		&& param.getType() != Type::WITH_STRING
-		&& param.getType() != Type::PROGLINE) {
-		return DesignEntity("", Type::INVALID);
+	std::vector<Type> validTypes = { Type::WITH_INTEGER, Type::WITH_STRING, Type::PROGLINE };
+	if (!param.isAttrRef(AttrRef::UNASSIGNED) || param.isAnyType(validTypes)) {
+		return param;
 	}
 
-	return param;
+	return DesignEntity(EMPTY, Type::INVALID);
 }
 
 // Validates that the comparation of two parameters is legal.
 // Returns true if comparing the left and right hand side of the assignment is allowed.
-bool QueryPreprocessorWithParser::isValidAttrRefComparator(DesignEntity& paramOne, DesignEntity& paramTwo) {
-	AttrRef attrRefOne = paramOne.getAttrRef();
-	AttrRef attrRefTwo = paramTwo.getAttrRef();
-
+bool QueryPreprocessorWithParser::isValidAttrRefComparator(const DesignEntity& paramOne, const DesignEntity& paramTwo) const {
 	bool isNameAttrRefOne = false;
 	bool isNameAttrRefTwo = false;
 
-	if (attrRefOne == AttrRef::PROC_NAME
-		|| attrRefOne == AttrRef::VAR_NAME
-		|| paramOne.getType() == Type::WITH_STRING) {
+	std::vector<AttrRef> legalAttrRefs = {AttrRef::PROC_NAME, AttrRef::VAR_NAME};
+
+	if (paramOne.isAnyAttrRef(legalAttrRefs) || paramOne.isType(Type::WITH_STRING)) {
 		isNameAttrRefOne = true;
 	}
 
-	if (attrRefTwo == AttrRef::PROC_NAME
-		|| attrRefTwo == AttrRef::VAR_NAME
-		|| paramTwo.getType() == Type::WITH_STRING) {
+	if (paramTwo.isAnyAttrRef(legalAttrRefs) || paramTwo.isType(Type::WITH_STRING)) {
 		isNameAttrRefTwo = true;
 	}
 
-	if (isNameAttrRefOne != isNameAttrRefTwo) {
-		return false;
-	}
-
-	return true;
+	return isNameAttrRefOne == isNameAttrRefTwo;
 }

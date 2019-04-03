@@ -35,15 +35,15 @@ void ProcessedQuery::addClause(Clause* clause, const std::string& clauseString) 
 			// boolean clauses
 			booleanClauses.push_back(clause);
 		}
-		else if (dynamic_cast<Affects*>(clause) != nullptr) {
+		else if (clause->getClauseType() == ClauseType::AFFECTS) {
 			// affects clauses
 			affectsClauses.push_back(clause);
 		}
-		else if (dynamic_cast<AffectsT*>(clause) != nullptr) {
+		else if (clause->getClauseType() == ClauseType::AFFECTS_T) {
 			// affects* clauses
 			affectsTClauses.push_back(clause);
 		}
-		else if (dynamic_cast<NextT*>(clause) != nullptr) {
+		else if (clause->getClauseType() == ClauseType::NEXT_T) {
 			// next* clauses
 			nextTClauses.push_back(clause);
 		}
@@ -72,10 +72,10 @@ void ProcessedQuery::addWithClause(Clause* withClause, const std::string& clause
 	}
 }
 
-bool ProcessedQuery::hasSynonym(const std::string& synonym) {
+bool ProcessedQuery::hasSynonym(const std::string& synonym) const {
 	return declarations.find(synonym) != declarations.end();
 }
 
-Type ProcessedQuery::getDesignEntity(std::string& synonym) {
+Type ProcessedQuery::getDesignEntity(const std::string& synonym) const {
 	return declarations.find(synonym)->second;
 }

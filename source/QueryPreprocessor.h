@@ -6,7 +6,7 @@ class QueryPreprocessor {
 public:
 	QueryPreprocessor(std::string& query);
 	bool parse();
-	ProcessedQuery getProcessedQuery();
+	ProcessedQuery getProcessedQuery() const;
 private:
 	std::string& query;
 	ProcessedQuery processedQuery;

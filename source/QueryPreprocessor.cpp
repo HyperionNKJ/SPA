@@ -4,9 +4,7 @@
 #include "QueryPreprocessorTokenizer.h"
 #include "QueryPreprocessor.h"
 
-QueryPreprocessor::QueryPreprocessor(std::string& query) : query(query) {
-
-}
+QueryPreprocessor::QueryPreprocessor(std::string& query) : query(query) {}
 
 bool QueryPreprocessor::parse() {
 	QueryPreprocessorFormatter formatter = QueryPreprocessorFormatter(query);
@@ -22,8 +20,8 @@ bool QueryPreprocessor::parse() {
 		return false;
 	}
 
+	// invalid when there exist a statement that cannot be parsed
 	std::vector<std::string> statements = tokenizer.getStatements();
-
 	QueryPreprocessorParser parser = QueryPreprocessorParser(statements);
 	status = parser.parse();
 
@@ -36,6 +34,6 @@ bool QueryPreprocessor::parse() {
 	return true;
 }
 
-ProcessedQuery QueryPreprocessor::getProcessedQuery() {
+ProcessedQuery QueryPreprocessor::getProcessedQuery() const {
 	return processedQuery;
 }

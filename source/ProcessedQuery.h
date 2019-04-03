@@ -3,11 +3,12 @@
 #include <unordered_map>
 #include <unordered_set>
 #include "Clause.h"
-#include "PatternClause.h"
 
 class ProcessedQuery {
-public:
+private:
 	std::unordered_map<std::string, Type> declarations;
+	std::unordered_set<std::string> clausesString;
+public:
 	std::vector<DesignEntity> resultClElemList;
 
 	std::vector<Clause*> affectsClauses;
@@ -17,21 +18,14 @@ public:
 	std::vector<Clause*> otherClauses;
 	std::vector<Clause*> withClauses;
 
-	std::unordered_set<Clause*> clauses;
-	std::unordered_set<Clause*> withClausesSet;
-
-	std::unordered_set<std::string> clausesString;
-	std::unordered_set<std::string> withClausesString;
-
 	ProcessedQuery();
 
-	bool insertDeclaration(const std::string& synonym,
-		const Type& designEntityType);
+	bool insertDeclaration(const std::string& synonym, const Type& designEntityType);
 
 	void addResultClElement(const DesignEntity& element);
 	void addClause(Clause* clause, const std::string& clauseString);
 	void addWithClause(Clause* withClause, const std::string& clauseString);
 
-	bool hasSynonym(const std::string& synonym);
-	Type getDesignEntity(std::string& synonym);
+	bool hasSynonym(const std::string& synonym) const;
+	Type getDesignEntity(const std::string& synonym) const;
 };

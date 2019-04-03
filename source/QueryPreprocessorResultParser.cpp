@@ -58,29 +58,31 @@ bool QueryPreprocessorResultParser::parse() {
 
 // Adds the element to the result clause list in ProcessedQuery
 // Returns false if the element cannot be added
-bool QueryPreprocessorResultParser::addElement(std::string& elem) {
+bool QueryPreprocessorResultParser::addElement(const std::string& elem) {
 	DesignEntity element = QueryPreprocessorHelper::getParam(elem, query);
-	Type type = element.getType();
 
 	if (!query.hasSynonym(element.getValue())) {
 		return false;
 	}
 
-	if (type == Type::ASSIGN
-		|| type == Type::CALL
-		|| type == Type::CONSTANT
-		|| type == Type::IF
-		|| type == Type::PRINT
-		|| type == Type::PROCEDURE
-		|| type == Type::PROGLINE
-		|| type == Type::READ
-		|| type == Type::STATEMENT
-		|| type == Type::VARIABLE
-		|| type == Type::WHILE) {
+	std::vector<Type> validTypes = { 
+		Type::ASSIGN, 
+		Type::CALL,
+		Type::CONSTANT, 
+		Type::IF, 
+		Type::PRINT, 
+		Type::PROCEDURE, 
+		Type::PROGLINE, 
+		Type::READ, 
+		Type::STATEMENT, 
+		Type::VARIABLE, 
+		Type::WHILE 
+	};
+
+	if (element.isAnyType(validTypes)) {
 		query.addResultClElement(element);
 		return true;
 	}
-	else {
-		return false;
-	}
+
+	return false;
 }

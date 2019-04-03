@@ -17,8 +17,8 @@ constexpr char EXPRESSION[] = "^[a-zA-z0-9()*/%+\\- ]+$";
 const regex QueryPreprocessorPatternParser::EXPRESSION_REGEX(EXPRESSION);
 
 // Initializes a newly created QueryPreprocessorPatternParser.
-QueryPreprocessorPatternParser::QueryPreprocessorPatternParser(string& clause,
-	ProcessedQuery& query) : CLAUSE(clause), query(query) {
+QueryPreprocessorPatternParser::QueryPreprocessorPatternParser(string& clause, ProcessedQuery& query) 
+	: CLAUSE(clause), query(query) {
 }
 
 // Parses the pattern clause.
@@ -48,24 +48,32 @@ bool QueryPreprocessorPatternParser::parse() {
 	Type designEntity = query.getDesignEntity(synonym);
 	DesignEntity target(synonym, designEntity);
 
-	// remove synonym and the brackets
-	// tokenise parameters
-	// parse pattern parameters
-	std::string params = CLAUSE.substr(synonymSize + 1, closeBracketPos - synonymSize - 1);
+	// extract parameters
+	size_t paramStart = synonymSize + 1;
+	size_t paramSize = closeBracketPos - synonymSize - 1;
+	std::string params = CLAUSE.substr(paramStart, paramSize);
+
+	// parameters should have at least one comma as delimeter
 	size_t paramOneSize = params.find(DELIMETER);
 	if (paramOneSize == std::string::npos) {
 		return false;
 	}
 
+	// tokenise parameters
 	std::string paramOneString = params.substr(0, paramOneSize);
 	std::string paramTwoString = params.substr(paramOneSize + 1);
 
+	// parse first parameter
+	// first parameter must be of entity reference type
+	DesignEntity paramOne = parseEntRef(paramOneString);
+	if (paramOne.isInvalid()) {
+		return false;
+	}
+
 	if (designEntity == Type::ASSIGN) {
 		// assign pattern
-		DesignEntity paramOne = parseEntRef(paramOneString);
 		DesignEntity paramTwo = parseExpression(paramTwoString);
-
-		if (paramOne.getType() == Type::INVALID || paramTwo.getType() == Type::INVALID) {
+		if (paramTwo.isInvalid()) {
 			return false;
 		}
 
@@ -74,27 +82,16 @@ bool QueryPreprocessorPatternParser::parse() {
 	}
 	else if (designEntity == Type::WHILE && paramTwoString == "_") {
 		// while pattern
-		DesignEntity paramOne = parseEntRef(paramOneString);
-
-		if (paramOne.getType() == Type::INVALID) {
-			return false;
-		}
-
 		PatternWhile* pattern = new PatternWhile(target, paramOne);
 		query.addClause(pattern, CLAUSE);
 	}
 	else if (designEntity == Type::IF && paramTwoString == "_,_") {
 		// if pattern
-		DesignEntity paramOne = parseEntRef(paramOneString);
-
-		if (paramOne.getType() == Type::INVALID) {
-			return false;
-		}
-
 		PatternIf* pattern = new PatternIf(target, paramOne);
 		query.addClause(pattern, CLAUSE);
 	}
 	else {
+		// not a valid pattern clause
 		return false;
 	}
 
@@ -104,46 +101,42 @@ bool QueryPreprocessorPatternParser::parse() {
 // Parse entRef parameters of pattern clauses.
 // Allowable values are underscore, variable name, and variable synonym.
 // Returns DesignEntity of Type::INVALID if parameter cannot be parsed.
-DesignEntity QueryPreprocessorPatternParser::parseEntRef(std::string& entRef) {
+DesignEntity QueryPreprocessorPatternParser::parseEntRef(const std::string& entRef) const {
 	DesignEntity param = QueryPreprocessorHelper::getParam(entRef, query);
-
-	Type designEntityOne = param.getType();
-
-	if (designEntityOne != Type::UNDERSCORE
-		&& designEntityOne != VARIABLE
-		&& !(designEntityOne == Type::FIXED && QueryPreprocessorHelper::isVar(entRef))) {
-		return DesignEntity(EMPTY, Type::INVALID);
+	std::vector<Type> legalTypes = { Type::UNDERSCORE, Type::VARIABLE };
+	if (param.isAnyType(legalTypes) || param.isVar()) {
+		return param;
 	}
 
-	return param;
+	return DesignEntity(EMPTY, Type::INVALID);
 }
 
 // Parse expression parameters of pattern clauses.
 // Returns DesignEntity of Type::INVALID if parameter cannot be parsed.
-DesignEntity QueryPreprocessorPatternParser::parseExpression(std::string& expression) {
+DesignEntity QueryPreprocessorPatternParser::parseExpression(const std::string& expression) {
 	if (expression == "_") {
 		// underscore
 		return DesignEntity(EMPTY, Type::UNDERSCORE);
 	}
-	else if (expression.front() == UNDERSCOR
-		&& expression.back() == UNDERSCOR
+	else if (expression.front() == UNDERSCOR 
 		&& expression[1] == QUOTE
+		&& expression.back() == UNDERSCOR
 		&& expression[expression.size() - 2] == QUOTE) {
 		// sub match
-		expression = expression.substr(2, expression.size() - 4);
-		expression = QueryPreprocessorHelper::getPostFix(expression);
+		std::string value = expression.substr(2, expression.size() - 4);
+		value = QueryPreprocessorHelper::getPostFix(expression);
 
-		if (regex_match(expression, EXPRESSION_REGEX)) {
-			return DesignEntity(expression, Type::PATTERN_SUB);
+		if (regex_match(value, EXPRESSION_REGEX)) {
+			return DesignEntity(value, Type::PATTERN_SUB);
 		}
 	}
 	else if (expression.front() == QUOTE && expression.back() == QUOTE) {
 		// exact match
-		expression = expression.substr(1, expression.size() - 2);
-		expression = QueryPreprocessorHelper::getPostFix(expression);
+		std::string value = expression.substr(1, expression.size() - 2);
+		value = QueryPreprocessorHelper::getPostFix(expression);
 
-		if (regex_match(expression, EXPRESSION_REGEX)) {
-			return DesignEntity(expression, Type::PATTERN_EXACT);
+		if (regex_match(value, EXPRESSION_REGEX)) {
+			return DesignEntity(value, Type::PATTERN_EXACT);
 		}
 	}
 

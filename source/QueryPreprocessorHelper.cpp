@@ -54,10 +54,6 @@ const std::unordered_map<std::string, AttrRef> QueryPreprocessorHelper::STRING_T
 	{"stmt#", AttrRef::STMT_NUM}
 };
 
-QueryPreprocessorHelper::QueryPreprocessorHelper() {
-
-}
-
 std::vector<std::string> QueryPreprocessorHelper::split(const std::string& target, const char& delimiter) {
 	std::vector<std::string> tokens;
 	std::stringstream ss(target);
@@ -189,8 +185,7 @@ bool QueryPreprocessorHelper::isVar(const std::string& target) {
 	return true;
 }
 
-DesignEntity QueryPreprocessorHelper::getParam(std::string& param,
-	ProcessedQuery& query) {
+DesignEntity QueryPreprocessorHelper::getParam(const std::string& param, ProcessedQuery& query) {
 	size_t synonymSize = param.find('.');
 	if (synonymSize == std::string::npos) {
 		// param without attrRef
@@ -207,9 +202,9 @@ DesignEntity QueryPreprocessorHelper::getParam(std::string& param,
 
 			// remove front and back quotes
 			// validate that param is a variable
-			param = param.substr(1, param.size() - 2);
-			if (isVar(param)) {
-				return DesignEntity(param, Type::FIXED);
+			std::string var = param.substr(1, param.size() - 2);
+			if (isVar(var)) {
+				return DesignEntity(var, Type::FIXED);
 			}
 			else {
 				return DesignEntity("", Type::INVALID);
