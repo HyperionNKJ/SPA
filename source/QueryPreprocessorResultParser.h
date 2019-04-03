@@ -4,14 +4,13 @@
 
 class QueryPreprocessorResultParser {
 public:
-	ProcessedQuery query;
-
 	QueryPreprocessorResultParser(const std::string& clause, ProcessedQuery& query);
 
 	bool parse();
 private:
+	const std::string& CLAUSE;
 
-	const std::string CLAUSE;
+	ProcessedQuery& query;
 
 	bool addElement(std::string& elem);
 };

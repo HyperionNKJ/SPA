@@ -8,6 +8,6 @@ public:
 	bool parse();
 	ProcessedQuery getQuery();
 private:
-	std::vector<std::string> STATEMENTS;
+	const std::vector<std::string>& STATEMENTS;
 	ProcessedQuery query;
 };

@@ -1,6 +1,7 @@
 #include <regex>
 #include <sstream>
 #include <string>
+#include "QueryPreprocessorHelper.h"
 #include "QueryPreprocessorTokenizer.h"
 
 constexpr auto DELIMITER = ';';
@@ -11,7 +12,7 @@ const std::regex QueryPreprocessorTokenizer::DECLARE_REGEX_STMT(DECLARE_STMT);
 
 // Initializes a newly created QueryPreprocessorFormatterTokenizer.
 QueryPreprocessorTokenizer::QueryPreprocessorTokenizer(const std::string& query)
-	: query(query) {
+	: QUERY(query) {
 }
 
 // Tokenises the query into statements.
@@ -29,18 +30,13 @@ std::vector<std::string> QueryPreprocessorTokenizer::getStatements() {
 
 // Splits the query into statements.
 void QueryPreprocessorTokenizer::split() {
-	std::stringstream ss(query);
-	std::string statement;
-
-	while (std::getline(ss, statement, DELIMITER)) {
-		statements.push_back(statement);
-	}
+	statements = QueryPreprocessorHelper::split(QUERY, DELIMITER);
 }
 
 // Validate that the statements are in the correct order.
 // First to second last statement must be Declarative statements.
 // Last statement must be a Select statement.
-bool QueryPreprocessorTokenizer::validateStatement() {
+bool QueryPreprocessorTokenizer::validateStatement() const {
 	// loop through the first to second last statement and check that they are
 	// all declarative statements
 	size_t numberOfStatements = statements.size();

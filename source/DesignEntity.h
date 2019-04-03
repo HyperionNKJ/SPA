@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <vector>
 #include "AttrRef.h"
 #include "Type.h"
 
@@ -24,5 +25,9 @@ public:
 	string getValue();
 	Type getType();
 	AttrRef getAttrRef();
-};
 
+	bool isType(const Type& type) const;
+	bool isAnyType(const std::vector<Type>& types) const;
+	bool DesignEntity::isStmtNo() const;
+	bool DesignEntity::isVar() const;
+};

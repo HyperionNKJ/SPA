@@ -24,21 +24,13 @@ bool QueryPreprocessorParser::parse() {
 	for (size_t index = 0; index < numberOfDeclarativeStatements; index++) {
 		QueryPreprocessorDeclareParser declareParser(STATEMENTS[index], query);
 		bool status = declareParser.parse();
-		query = declareParser.query;
 		if (!status) {
 			return false;
 		}
 	}
 
 	QueryPreprocessorSelectParser selectParser(STATEMENTS.back(), query);
-	bool status = selectParser.parse();
-	query = selectParser.query;
-
-	if (!status) {
-		return false;
-	}
-
-	return true;
+	return selectParser.parse();
 }
 
 // Returns the processed query.
