@@ -224,8 +224,13 @@ bool QueryPreprocessorSuchThatParser::isValidAffectsParam(DesignEntity& paramOne
 	Type paramOneType = paramOne.getType();
 	Type paramTwoType = paramTwo.getType();
 
-	bool isValidLHS = true;
-	bool isValidRHS = true;
+	bool isValidLHS = paramOneType == Type::ASSIGN
+		|| paramOneType == Type::UNDERSCORE
+		|| (paramOneType == Type::FIXED && QueryPreprocessorHelper::isInt(paramOne.getValue));
+	
+	bool isValidRHS = paramTwoType == Type::ASSIGN
+		|| paramTwoType == Type::UNDERSCORE
+		|| (paramTwoType == Type::FIXED && QueryPreprocessorHelper::isInt(paramTwo.getValue));
 
 	return isValidLHS && isValidRHS;
 }
