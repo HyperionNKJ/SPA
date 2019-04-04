@@ -28,4 +28,6 @@ public:
 
 	bool hasSynonym(const std::string& synonym) const;
 	Type getDesignEntity(const std::string& synonym) const;
+
+	void optimiseClauses();
 };

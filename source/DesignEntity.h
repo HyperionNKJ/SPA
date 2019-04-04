@@ -30,4 +30,6 @@ public:
 	bool isStmtNo() const;
 	bool isVar() const;
 	bool isInvalid() const;
+	std::string toString() const;
+	bool operator==(const DesignEntity& other) const;
 };

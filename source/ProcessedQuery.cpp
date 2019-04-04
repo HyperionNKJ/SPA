@@ -10,6 +10,12 @@
 #include "UsesS.h"
 #include "ProcessedQuery.h"
 
+struct ElementHasher {
+	std::size_t operator()(const DesignEntity& element) const {
+		return hash<string>()(element.toString());
+	}
+};
+
 ProcessedQuery::ProcessedQuery() {
 }
 
@@ -58,16 +64,7 @@ void ProcessedQuery::addClause(Clause* clause, const std::string& clauseString) 
 
 void ProcessedQuery::addWithClause(Clause* withClause, const std::string& clauseString) {
 	if (clausesString.find(clauseString) == clausesString.end()) {
-		size_t noOfSynonyms = withClause->getNumOfSynonyms();
-		if (noOfSynonyms == 0) {
-			// boolean clauses
-			booleanClauses.push_back(withClause);
-		}
-		else {
-			// with clauses
-			withClauses.push_back(withClause);
-		}
-
+		withClauses.push_back(withClause);
 		clausesString.insert(clauseString);
 	}
 }
@@ -78,4 +75,152 @@ bool ProcessedQuery::hasSynonym(const std::string& synonym) const {
 
 Type ProcessedQuery::getDesignEntity(const std::string& synonym) const {
 	return declarations.find(synonym)->second;
+}
+
+void ProcessedQuery::optimiseClauses() {
+	std::unordered_map<DesignEntity, DesignEntity, ElementHasher> with;
+
+	for (auto clause : withClauses) {
+		if (clause->getNumOfSynonyms() == 1) {
+			DesignEntity paramOne = clause->getParaOne();
+			DesignEntity paramTwo = clause->getParaTwo();
+
+			if (paramOne.isAnyType({ Type::WITH_INTEGER, Type::WITH_STRING })) {
+				DesignEntity synonym (paramTwo.getValue(), paramTwo.getType());
+				with.insert({ synonym , paramOne });
+				with.insert({ paramTwo, paramOne });
+			}
+			else {
+				DesignEntity synonym(paramOne.getValue(), paramOne.getType());
+				with.insert({ synonym , paramTwo });
+				with.insert({ paramOne, paramTwo });
+			}
+		}
+	}
+
+	bool isFirst = true;
+	bool hasChanges = false;
+	while (isFirst || hasChanges) {
+		isFirst = false;
+		hasChanges = false;
+
+		for (auto clause : withClauses) {
+			DesignEntity paramOne = clause->getParaOne();
+			DesignEntity paramTwo = clause->getParaTwo();
+
+			std::unordered_map<DesignEntity, DesignEntity>::const_iterator paramOneResult;
+			std::unordered_map<DesignEntity, DesignEntity>::const_iterator paramTwoResult;
+
+			paramOneResult = with.find(paramOne);
+			paramTwoResult = with.find(paramTwo);
+
+			if (paramOneResult != with.end() && paramTwoResult == with.end()) {
+				DesignEntity synonym(paramTwo.getValue(), paramTwo.getType());
+				with.insert({ synonym , paramOneResult->second });
+				with.insert({ paramTwo, paramOneResult->second });
+				hasChanges = true;
+				continue;
+			}
+
+			if (paramOneResult == with.end() && paramTwoResult != with.end()) {
+				DesignEntity synonym(paramOne.getValue(), paramOne.getType());
+				with.insert({ synonym , paramTwoResult->second });
+				with.insert({ paramOne, paramTwoResult->second });
+				hasChanges = true;
+				continue;
+			}
+		}
+	}
+
+	for (auto clause : nextTClauses) {
+		DesignEntity paramOne = clause->getParaOne();
+		DesignEntity paramTwo = clause->getParaTwo();
+
+		std::unordered_map<DesignEntity, DesignEntity>::const_iterator paramOneResult;
+		std::unordered_map<DesignEntity, DesignEntity>::const_iterator paramTwoResult;
+
+		paramOneResult = with.find(paramOne);
+		paramTwoResult = with.find(paramTwo);
+
+		if (paramOneResult != with.end()) {
+			DesignEntity replacement = paramOneResult->second;
+			replacement.setType(Type::FIXED);
+			clause->setParaOne(replacement);
+		}
+
+		if (paramTwoResult != with.end()) {
+			DesignEntity replacement = paramOneResult->second;
+			replacement.setType(Type::FIXED);
+			clause->setParaTwo(replacement);
+		}
+	}
+
+	for (auto clause : affectsClauses) {
+		DesignEntity paramOne = clause->getParaOne();
+		DesignEntity paramTwo = clause->getParaTwo();
+
+		std::unordered_map<DesignEntity, DesignEntity>::const_iterator paramOneResult;
+		std::unordered_map<DesignEntity, DesignEntity>::const_iterator paramTwoResult;
+
+		paramOneResult = with.find(paramOne);
+		paramTwoResult = with.find(paramTwo);
+
+		if (paramOneResult != with.end()) {
+			DesignEntity replacement = paramOneResult->second;
+			replacement.setType(Type::FIXED);
+			clause->setParaOne(replacement);
+		}
+
+		if (paramTwoResult != with.end()) {
+			DesignEntity replacement = paramOneResult->second;
+			replacement.setType(Type::FIXED);
+			clause->setParaTwo(replacement);
+		}
+	}
+
+	for (auto clause : affectsTClauses) {
+		DesignEntity paramOne = clause->getParaOne();
+		DesignEntity paramTwo = clause->getParaTwo();
+
+		std::unordered_map<DesignEntity, DesignEntity>::const_iterator paramOneResult;
+		std::unordered_map<DesignEntity, DesignEntity>::const_iterator paramTwoResult;
+
+		paramOneResult = with.find(paramOne);
+		paramTwoResult = with.find(paramTwo);
+
+		if (paramOneResult != with.end()) {
+			DesignEntity replacement = paramOneResult->second;
+			replacement.setType(Type::FIXED);
+			clause->setParaOne(replacement);
+		}
+
+		if (paramTwoResult != with.end()) {
+			DesignEntity replacement = paramOneResult->second;
+			replacement.setType(Type::FIXED);
+			clause->setParaTwo(replacement);
+		}
+	}
+
+	for (auto clause : otherClauses) {
+		DesignEntity paramOne = clause->getParaOne();
+		DesignEntity paramTwo = clause->getParaTwo();
+
+		std::unordered_map<DesignEntity, DesignEntity>::const_iterator paramOneResult;
+		std::unordered_map<DesignEntity, DesignEntity>::const_iterator paramTwoResult;
+
+		paramOneResult = with.find(paramOne);
+		paramTwoResult = with.find(paramTwo);
+
+		if (paramOneResult != with.end()) {
+			DesignEntity replacement = paramOneResult->second;
+			replacement.setType(Type::FIXED);
+			clause->setParaOne(replacement);
+		}
+
+		if (paramTwoResult != with.end()) {
+			DesignEntity replacement = paramTwoResult->second;
+			replacement.setType(Type::FIXED);
+			clause->setParaTwo(replacement);
+		}
+	}
 }

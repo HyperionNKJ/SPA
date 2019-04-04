@@ -30,6 +30,25 @@ bool QueryPreprocessorWithParser::parse() {
 		return false;
 	}
 
+	// with clause not added since it will always evaluate to true
+	if (lhs == rhs) {
+		return true;
+	}
+
+	// with clause fixed statement number but different 
+	if (paramOne.isType(Type::WITH_INTEGER) 
+		&& paramTwo.isType(Type::WITH_INTEGER) 
+		&& paramOne.getValue() != paramTwo.getValue()) {
+		return false;
+	}
+
+	// with clause fixed variable but different 
+	if (paramOne.isType(Type::WITH_STRING)
+		&& paramTwo.isType(Type::WITH_STRING)
+		&& paramOne.getValue() != paramTwo.getValue()) {
+		return false;
+	}
+
 	// LHS AttrRef type must be the same as RHS AttrRef type
 	bool status = isValidAttrRefComparator(paramOne, paramTwo);
 	if (!status) {

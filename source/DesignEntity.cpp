@@ -78,3 +78,13 @@ bool DesignEntity::isVar() const {
 bool DesignEntity::isInvalid() const {
 	return type == Type::INVALID;
 }
+
+std::string DesignEntity::toString() const {
+	size_t typeInt = static_cast<std::size_t>(type);
+	size_t attrRefInt = static_cast<std::size_t>(attrRef);
+	return std::to_string(typeInt) + std::to_string(attrRef) + value;
+}
+
+bool DesignEntity::operator==(const DesignEntity &other) const {
+	return type == other.type && attrRef == other.attrRef && value == other.value;
+}
