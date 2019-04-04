@@ -1,5 +1,6 @@
 #include "QueryPreprocessorHelper.h"
 #include "QueryPreprocessorDeclareParser.h"
+#include "Type.h"
 
 constexpr auto SPACE = ' ';
 constexpr auto DELIMITER = ',';

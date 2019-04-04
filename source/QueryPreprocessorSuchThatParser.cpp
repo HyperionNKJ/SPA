@@ -142,11 +142,7 @@ bool QueryPreprocessorSuchThatParser::addClause(const RelRef& relRef, const Desi
 			return false;
 		}
 
-		if (paramOne.isType(Type::PROCEDURE)) {
-			ModifiesP* suchThatClause = new ModifiesP(paramOne, paramTwo);
-			query.addClause(suchThatClause, CLAUSE);
-		}
-		else if (paramOne.isVar()) {
+		if (paramOne.isType(Type::PROCEDURE) || paramOne.isVar()) {
 			ModifiesP* suchThatClause = new ModifiesP(paramOne, paramTwo);
 			query.addClause(suchThatClause, CLAUSE);
 		}
@@ -197,11 +193,7 @@ bool QueryPreprocessorSuchThatParser::addClause(const RelRef& relRef, const Desi
 			return false;
 		}
 
-		if (paramOne.isType(Type::PROCEDURE)) {
-			UsesP* suchThatClause = new UsesP(paramOne, paramTwo);
-			query.addClause(suchThatClause, CLAUSE);
-		}
-		else if (paramOne.isVar()) {
+		if (paramOne.isType(Type::PROCEDURE) || paramOne.isVar()) {
 			UsesP* suchThatClause = new UsesP(paramOne, paramTwo);
 			query.addClause(suchThatClause, CLAUSE);
 		}

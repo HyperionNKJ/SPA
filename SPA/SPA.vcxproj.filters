@@ -19,6 +19,12 @@
     <Filter Include="Header Files\Clauses">
       <UniqueIdentifier>{363a016e-52b4-4728-8cac-0700d33ddd7a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\QueryPreprocessor">
+      <UniqueIdentifier>{4986781a-2ff9-4725-b43a-d27416d8bd96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\QueryPreprocessor">
+      <UniqueIdentifier>{a62af465-4509-4af8-960f-22f05df8d8f8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\DesignEntity.cpp">
@@ -37,12 +43,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\source\QueryEvaluator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\QueryPreprocessor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\QueryPreprocessorHelper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\source\QueryProcessor.cpp">
@@ -105,38 +105,44 @@
     <ClCompile Include="..\source\With.cpp">
       <Filter>Source Files\Clauses</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\QueryPreprocessorDeclareParser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\QueryPreprocessorFormatter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\QueryPreprocessorParser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\QueryPreprocessorSelectParser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\QueryPreprocessorTokenizer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\QueryPreprocessorPatternParser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\QueryPreprocessorWithParser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\QueryPreprocessorResultParser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\QueryPreprocessorSuchThatParser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\Affects.cpp">
       <Filter>Source Files\Clauses</Filter>
     </ClCompile>
     <ClCompile Include="..\source\AffectsT.cpp">
       <Filter>Source Files\Clauses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\QueryPreprocessor.cpp">
+      <Filter>Source Files\QueryPreprocessor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\QueryPreprocessorDeclareParser.cpp">
+      <Filter>Source Files\QueryPreprocessor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\QueryPreprocessorFormatter.cpp">
+      <Filter>Source Files\QueryPreprocessor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\QueryPreprocessorHelper.cpp">
+      <Filter>Source Files\QueryPreprocessor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\QueryPreprocessorParser.cpp">
+      <Filter>Source Files\QueryPreprocessor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\QueryPreprocessorPatternParser.cpp">
+      <Filter>Source Files\QueryPreprocessor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\QueryPreprocessorResultParser.cpp">
+      <Filter>Source Files\QueryPreprocessor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\QueryPreprocessorSelectParser.cpp">
+      <Filter>Source Files\QueryPreprocessor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\QueryPreprocessorSuchThatParser.cpp">
+      <Filter>Source Files\QueryPreprocessor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\QueryPreprocessorTokenizer.cpp">
+      <Filter>Source Files\QueryPreprocessor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\QueryPreprocessorWithParser.cpp">
+      <Filter>Source Files\QueryPreprocessor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -159,12 +165,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\QueryParser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\QueryPreprocessor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\QueryPreprocessorHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\QueryProcessor.h">
@@ -239,38 +239,44 @@
     <ClInclude Include="..\source\AttrRef.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\QueryPreprocessorDeclareParser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\QueryPreprocessorFormatter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\QueryPreprocessorParser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\QueryPreprocessorSelectParser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\QueryPreprocessorTokenizer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\QueryPreprocessorPatternParser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\QueryPreprocessorWithParser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\QueryPreprocessorResultParser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\QueryPreprocessorSuchThatParser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\Affects.h">
       <Filter>Header Files\Clauses</Filter>
     </ClInclude>
     <ClInclude Include="..\source\AffectsT.h">
       <Filter>Header Files\Clauses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\QueryPreprocessor.h">
+      <Filter>Header Files\QueryPreprocessor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\QueryPreprocessorDeclareParser.h">
+      <Filter>Header Files\QueryPreprocessor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\QueryPreprocessorFormatter.h">
+      <Filter>Header Files\QueryPreprocessor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\QueryPreprocessorHelper.h">
+      <Filter>Header Files\QueryPreprocessor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\QueryPreprocessorParser.h">
+      <Filter>Header Files\QueryPreprocessor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\QueryPreprocessorPatternParser.h">
+      <Filter>Header Files\QueryPreprocessor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\QueryPreprocessorResultParser.h">
+      <Filter>Header Files\QueryPreprocessor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\QueryPreprocessorSelectParser.h">
+      <Filter>Header Files\QueryPreprocessor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\QueryPreprocessorSuchThatParser.h">
+      <Filter>Header Files\QueryPreprocessor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\QueryPreprocessorTokenizer.h">
+      <Filter>Header Files\QueryPreprocessor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\QueryPreprocessorWithParser.h">
+      <Filter>Header Files\QueryPreprocessor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

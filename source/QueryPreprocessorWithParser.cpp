@@ -8,21 +8,21 @@ constexpr char EMPTY[] = "";
 
 // Initializes a newly created QueryPreprocessorWithParser.
 QueryPreprocessorWithParser::QueryPreprocessorWithParser(std::string& withCl, ProcessedQuery& query)
-	: WITH_CL(withCl), query(query) {
+	: CLAUSE(withCl), query(query) {
 }
 
 // Parses the with clause.
 // Returns true if parsing is successful and false if unsucessful.
 bool QueryPreprocessorWithParser::parse() {
 	// with clauses must have "="
-	size_t lhsSize = WITH_CL.find(EQUAL);
+	size_t lhsSize = CLAUSE.find(EQUAL);
 	if (lhsSize == std::string::npos) {
 		return false;
 	}
 
 	// extract the lhs and rhs of with clause
-	std::string lhs = WITH_CL.substr(0, lhsSize);
-	std::string rhs = WITH_CL.substr(lhsSize + 1);
+	std::string lhs = CLAUSE.substr(0, lhsSize);
+	std::string rhs = CLAUSE.substr(lhsSize + 1);
 	DesignEntity paramOne = parseWithParam(lhs);
 	DesignEntity paramTwo = parseWithParam(rhs);
 
@@ -37,7 +37,7 @@ bool QueryPreprocessorWithParser::parse() {
 	}
 
 	With* withClause = new With(paramOne, paramTwo);
-	query.addWithClause(withClause, WITH_CL);
+	query.addWithClause(withClause, CLAUSE);
 
 	return true;
 }

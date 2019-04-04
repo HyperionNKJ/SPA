@@ -8,11 +8,6 @@
 
 class QueryPreprocessorHelper {
 public:
-	static const std::unordered_map<std::string, Type> STRING_TO_TYPE;
-	static const std::unordered_map<std::string, AttrRef> STRING_TO_ATTR_REF;
-	static const std::unordered_map<Type, std::string> TYPE_TO_STRING;
-	static const std::unordered_set<std::string> RESERVED_WORD;
-
 	static std::vector<std::string> split(const std::string& target, const char& delimiter);
 	static Type getType(const std::string& typeString);
 	static AttrRef getAttrRef(const std::string& attrRefString);
@@ -20,4 +15,8 @@ public:
 	static bool isInt(const std::string& target);
 	static bool isVar(const std::string& target);
 	static DesignEntity getParam(const std::string& param, ProcessedQuery& query);
+private:
+	static const std::unordered_map<std::string, AttrRef> STRING_TO_ATTR_REF;
+	static const std::unordered_map<std::string, Type> STRING_TO_TYPE;
+	static const std::unordered_map<Type, std::string> TYPE_TO_STRING;
 };
