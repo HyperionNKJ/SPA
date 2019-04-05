@@ -13,8 +13,7 @@ constexpr char EMPTY[] = "";
 
 // Initializes a newly created QueryPreprocessorPatternParser.
 QueryPreprocessorResultParser::QueryPreprocessorResultParser(const string& clause, ProcessedQuery& query)
-	: CLAUSE(clause), query(query) {
-}
+	: CLAUSE(clause), query(query) {}
 
 // Parses the result clause.
 // Returns true if parsing is successful and false if unsucessful.

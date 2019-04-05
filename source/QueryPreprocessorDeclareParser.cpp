@@ -7,8 +7,7 @@ constexpr auto DELIMITER = ',';
 
 // Initializes a newly created QueryPreprocessorDeclareParser.
 QueryPreprocessorDeclareParser::QueryPreprocessorDeclareParser(const std::string& statement, ProcessedQuery& query)
-	: STATEMENT(statement), query(query) {
-}
+	: STATEMENT(statement), query(query) {}
 
 // Parses synonyms in declarative statement and adds them to declarations.
 // Returns true if all the synonyms in the declarative statement can be added into declarations.

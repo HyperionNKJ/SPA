@@ -8,8 +8,7 @@ constexpr char EMPTY[] = "";
 
 // Initializes a newly created QueryPreprocessorWithParser.
 QueryPreprocessorWithParser::QueryPreprocessorWithParser(std::string& withCl, ProcessedQuery& query)
-	: CLAUSE(withCl), query(query) {
-}
+	: CLAUSE(withCl), query(query) {}
 
 // Parses the with clause.
 // Returns true if parsing is successful and false if unsucessful.

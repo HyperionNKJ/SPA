@@ -38,8 +38,7 @@ const std::unordered_map<std::string, QueryPreprocessorSuchThatParser::RelRef> Q
 
 // Initializes a newly created QueryPreprocessorSuchThatParser.
 QueryPreprocessorSuchThatParser::QueryPreprocessorSuchThatParser(const string& clause, ProcessedQuery& query)
-	: CLAUSE(clause), query(query) {
-}
+	: CLAUSE(clause), query(query) {}
 
 // Parses the such that clause.
 // Returns true if parsing is successful and false if unsucessful.
