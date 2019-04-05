@@ -20,6 +20,7 @@ private:
 	unordered_set<int> allStmts, readStmts, printStmts, whileStmts, ifStmts, assignStmts, constSet, callStmts, ifControlStmtSet, whileControlStmtSet, *getTypedStmtSet(Type type);
 	unordered_map<int, unordered_set<int>> leaderTMap, followerTMap, parentMap, parentTMap, childrenTMap, nextMap, prevMap;
 	unordered_map<int, int> leaderMap, followerMap, childrenMap;
+	unordered_map<int, string> callMapByStmtNum, printMapByStmtNum, readMapByStmtNum;
 	unordered_map<string, unordered_set<int>> calledStmtMap, printStmtMap, readStmtMap, modifiesByVarMap, usesByVarMap, patternMap, fullPatternMap, ifControlVarMap, whileControlVarMap;
 	unordered_map<int, unordered_set<string>> modifiesByStmtNumMap, usesByStmtNumMap, ifControlStmtMap, whileControlStmtMap;
 	unordered_map<string, unordered_set<string>> modifiesByProcMap, varModifiedByProcMap, usesByProcMap, varUsedByProcMap, callMap, calledByMap, callsTMap, calledByTMap;
@@ -92,12 +93,15 @@ public:
 
 	int getCallIdx(string procName);
 	string getCallAtIdx(int callIdx);
+	string getCallAtStmtNum(int stmtNum);
 
 	int getReadIdx(string varName);
 	string getReadAtIdx(int readIdx);
+	string getReadAtStmtNum(int stmtNum);
 
 	int getPrintIdx(string varName);
 	string getPrintAtIdx(int idx);
+	string getPrintAtStmtNum(int stmtNum);
 
 	bool isModifies(int stmtNum, string varName);
 	bool doesStmtModifies(int stmtNum);

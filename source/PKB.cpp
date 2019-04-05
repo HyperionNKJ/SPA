@@ -102,34 +102,39 @@ bool PKB::insertCPRStmtType(int stmtNum, Type type, string name) {
 	unordered_set<int> *typedStmtSet;
 	unordered_map<string, int> *typedTable;
 	unordered_map<string, unordered_set<int>> *typedByNameMap;
-	vector<string> *typedVector; 
+	unordered_map<int, string> *typedByStmtNumMap;
+	vector<string> *typedVector;
 
 	switch(type) {
 		case CALL:
 			typedNameSet = &calledSet;
 			typedStmtSet = &callStmts;
 			typedTable = &callTableByName;
-			typedVector = &callTableByIdx;
+			typedByStmtNumMap = &callMapByStmtNum;
 			typedByNameMap = &calledStmtMap;
+			typedVector = &callTableByIdx;
 			break;
 		case PRINT:
 			typedNameSet = &printSet;
 			typedStmtSet = &printStmts;
 			typedTable = &printTableByName;
-			typedVector = &printTableByIdx;
+			typedByStmtNumMap = &printMapByStmtNum;
 			typedByNameMap = &printStmtMap;
+			typedVector = &printTableByIdx;
 			break;
 		case READ:
 			typedNameSet = &readSet;
 			typedStmtSet = &readStmts;
 			typedTable = &readTableByName;
-			typedVector = &readTableByIdx;
+			typedByStmtNumMap = &readMapByStmtNum;
 			typedByNameMap = &readStmtMap;
+			typedVector = &readTableByIdx;
 			break;
 		default:
 			return false;
 	}
 	typedByNameMap->operator[](name).insert(stmtNum);
+	typedByStmtNumMap->insert({stmtNum, name});
 	isValidStmt = allStmts.insert(stmtNum).second && typedStmtSet->insert(stmtNum).second;
 	if (!isValidStmt)
 		return false;
@@ -369,6 +374,12 @@ string PKB::getCallAtIdx(int callIdx) {
 	return callTableByIdx[callIdx];
 }
 
+string PKB::getCallAtStmtNum(int stmtNum) {
+	if (callMapByStmtNum.count(stmtNum))
+		return callMapByStmtNum[stmtNum];
+	return "";
+}
+
 int PKB::getReadIdx(string varName) {
 	return readTableByName[varName];
 }
@@ -377,12 +388,24 @@ string PKB::getReadAtIdx(int readIdx) {
 	return readTableByIdx[readIdx];
 }
 
+string PKB::getReadAtStmtNum(int stmtNum) {
+	if (readMapByStmtNum.count(stmtNum))
+		return readMapByStmtNum[stmtNum];
+	return "";
+}
+
 int PKB::getPrintIdx(string varName) {
 	return printTableByName[varName];
 }
 
 string PKB::getPrintAtIdx(int printIdx) {
 	return printTableByIdx[printIdx];
+}
+
+string PKB::getPrintAtStmtNum(int stmtNum) {
+	if (printMapByStmtNum.count(stmtNum))
+		return printMapByStmtNum[stmtNum];
+	return "";
 }
 
 bool PKB::isModifies(int stmtNum, string varName) {
