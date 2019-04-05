@@ -26,5 +26,5 @@ Select ifs such that Uses (ifs, v) with v.varName = "x"
 5 - Select stmt uses certain variable
 if ifs; variable v;
 Select ifs such that Uses (ifs, v) with v.varName = "x" pattern ifs ("a", _, _)
-none
+16
 5000
