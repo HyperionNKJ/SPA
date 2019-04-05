@@ -12,8 +12,7 @@ const std::regex QueryPreprocessorTokenizer::DECLARE_REGEX_STMT(DECLARE_STMT);
 
 // Initializes a newly created QueryPreprocessorFormatterTokenizer.
 QueryPreprocessorTokenizer::QueryPreprocessorTokenizer(const std::string& query)
-	: QUERY(query) {
-}
+	: QUERY(query) {}
 
 // Tokenises the query into statements.
 // Returns false if first to last statement is not a declarative statement or 
@@ -37,6 +36,10 @@ void QueryPreprocessorTokenizer::split() {
 // First to second last statement must be Declarative statements.
 // Last statement must be a Select statement.
 bool QueryPreprocessorTokenizer::validateStatement() const {
+	if (statements.size() == 1) {
+		return false;
+	}
+
 	// loop through the first to second last statement and check that they are
 	// all declarative statements
 	size_t numberOfStatements = statements.size();

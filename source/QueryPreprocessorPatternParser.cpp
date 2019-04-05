@@ -18,8 +18,7 @@ const regex QueryPreprocessorPatternParser::EXPRESSION_REGEX(EXPRESSION);
 
 // Initializes a newly created QueryPreprocessorPatternParser.
 QueryPreprocessorPatternParser::QueryPreprocessorPatternParser(string& clause, ProcessedQuery& query) 
-	: CLAUSE(clause), query(query) {
-}
+	: CLAUSE(clause), query(query) {}
 
 // Parses the pattern clause.
 // Returns true if parsing is successful and false if unsucessful.

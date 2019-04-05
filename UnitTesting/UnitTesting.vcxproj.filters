@@ -35,7 +35,7 @@
     <ClCompile Include="TestQueryEvaluator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TestQueryPreprocessorFormatter.cpp">
+    <ClCompile Include="TestQueryPreprocessor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

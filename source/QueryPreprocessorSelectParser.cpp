@@ -10,8 +10,7 @@ constexpr auto SPACE = ' ';
 
 // Initializes a newly created QueryPreprocessorSelectParser.
 QueryPreprocessorSelectParser::QueryPreprocessorSelectParser(const string& statement, ProcessedQuery& query)
-	: STATEMENT(statement), query(query) {
-}
+	: STATEMENT(statement), query(query) {}
 
 // Parse select clause.
 bool QueryPreprocessorSelectParser::parse() {

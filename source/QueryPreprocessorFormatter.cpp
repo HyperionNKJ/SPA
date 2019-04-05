@@ -7,21 +7,23 @@ constexpr char CHAR_CLOSE_BRACKET = ')';
 constexpr char STRING_SPACE[] = " ";
 
 constexpr char WHITESPACE[] = " \t\f\v\n\r";
-constexpr char FIRST_CAPTURE_GROUP[] = "$1";
 constexpr char LEADING_SPACE[] = "()>=,_;\"";
 constexpr char TRAILING_SPACE[] = "(<=,_;\"";
 
 // Initializes a newly created QueryPreprocessorFormatter.
 QueryPreprocessorFormatter::QueryPreprocessorFormatter(std::string& query)
 	: query(query) {
-	trim();
-	removeExtraWhitespace();
+	if (query != "") {
+		trim();
+		removeExtraWhitespace();
+	}
 }
 
 // Omits the leading and trailing whitespace of the query.
 void QueryPreprocessorFormatter::trim() {
 	size_t start = query.find_first_not_of(WHITESPACE);
 	size_t end = query.find_last_not_of(WHITESPACE) - start + 1;
+
 	query = query.substr(start, end);
 }
 
@@ -30,12 +32,6 @@ void QueryPreprocessorFormatter::removeExtraWhitespace() {
 	removeSpaces();
 	removeLeadingSpace();
 	removeTrailingSpace();
-
-	size_t hasFixRHSWithClause = query.find("\"and");
-	while (hasFixRHSWithClause != std::string::npos) {
-		query.insert(hasFixRHSWithClause + 1, STRING_SPACE);
-		hasFixRHSWithClause = query.find("\"and");
-	}
 }
 
 // Returns the formatted query.
@@ -54,38 +50,24 @@ void QueryPreprocessorFormatter::removeSpaces() {
 
 	// read all characters of original string 
 	while (oldPos < orginalSize) {
-		if (query[oldPos] != CHAR_SPACE
-			&& query[oldPos] != '\t'
-			&& query[oldPos] != '\f'
-			&& query[oldPos] != '\v'
-			&& query[oldPos] != '\n'
-			&& query[oldPos] != '\r') {
-			// current characters is non-space 
-			query[newPos++] = query[oldPos++];
-			spaceFound = false;
-		}
-		else if (query[oldPos++] == CHAR_SPACE
-			|| query[oldPos++] == '\t'
-			|| query[oldPos++] == '\f'
-			|| query[oldPos++] == '\v'
-			|| query[oldPos++] == '\n'
-			|| query[oldPos++] == '\r') {
+		if (isspace(query[oldPos++])) {
 			// current character is a space 
 			if (!spaceFound) {
 				query[newPos++] = CHAR_SPACE;
 				spaceFound = true;
 			}
+		} else {
+			// current character is a non space
+			query[newPos++] = query[oldPos - 1];
+			spaceFound = false;
 		}
 	}
 
-	size_t spacePos = query.find_last_not_of(WHITESPACE) + 1;
-	if (spacePos != std::string::npos) {
-		query.erase(spacePos, orginalSize - spacePos);
+	if (newPos == orginalSize) {
+		return;
 	}
 
-	if (query.back() == CHAR_CLOSE_BRACKET && query[query.size() - 2] == CHAR_CLOSE_BRACKET) {
-		query.erase(query.size() - 1, 1);
-	}
+	query.erase(newPos);
 }
 
 void QueryPreprocessorFormatter::removeLeadingSpace() {
@@ -99,11 +81,20 @@ void QueryPreprocessorFormatter::removeLeadingSpace() {
 }
 
 void QueryPreprocessorFormatter::removeTrailingSpace() {
-	size_t index = query.find_first_of(TRAILING_SPACE);
-	while (index != std::string::npos) {
+	for (size_t index = query.find_first_of(TRAILING_SPACE);
+		index != std::string::npos;
+		index = query.find_first_of(TRAILING_SPACE, index + 1)) {
+		if (query[index] == '"') {
+			if (query.find(" and ", index + 1) == index + 1
+				|| query.find(" such that ", index + 1) == index + 1
+				|| query.find(" pattern ", index + 1) == index + 1
+				|| query.find(" with ", index + 1) == index + 1) {
+				continue;
+			}
+		}
+
 		if (query[index + 1] == CHAR_SPACE) {
 			query.erase(index + 1, 1);
 		}
-		index = query.find_first_of(TRAILING_SPACE, index + 1);
 	}
 }

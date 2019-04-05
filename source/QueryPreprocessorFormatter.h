@@ -14,4 +14,5 @@ private:
 	void removeSpaces();
 	void removeLeadingSpace();
 	void removeTrailingSpace();
+	static bool isWhitespace();
 };
