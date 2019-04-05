@@ -2,6 +2,9 @@
 
 using namespace std;
 
+static ResultCache affectsCache;
+static ResultCache affectsTCache;
+static ResultCache nextTCache;
 static unordered_map<string, int> synonymTable;
 static unordered_map<int, list<unordered_map<string, int>>> synonymResults;
 static int index;
@@ -9,6 +12,9 @@ static int index;
 // Reset tables for new query
 void ResultProjector::resetResults()
 {
+	affectsCache.resetCache();
+	affectsTCache.resetCache();
+	nextTCache.resetCache();
 	synonymTable.clear();
 	synonymResults.clear();
 	index = 0;
@@ -161,7 +167,7 @@ string ResultProjector::convertSynonymResultToRequired(Type type, int result, At
 		break;
 	case Type::CALL:
 		if (attrRef == AttrRef::PROC_NAME) {
-			convertedResult = pkb.getCallAtIdx(result);
+			convertedResult = pkb.getCallAtStmtNum(result);
 		}
 		else {
 			convertedResult = to_string(result);
@@ -169,7 +175,7 @@ string ResultProjector::convertSynonymResultToRequired(Type type, int result, At
 		break;
 	case Type::READ:
 		if (attrRef == AttrRef::VAR_NAME) {
-			convertedResult = pkb.getReadAtIdx(result);
+			convertedResult = pkb.getReadAtStmtNum(result);
 		}
 		else {
 			convertedResult = to_string(result);
@@ -177,7 +183,7 @@ string ResultProjector::convertSynonymResultToRequired(Type type, int result, At
 		break;
 	case Type::PRINT:
 		if (attrRef == AttrRef::VAR_NAME) {
-			convertedResult = pkb.getPrintAtIdx(result);
+			convertedResult = pkb.getPrintAtStmtNum(result);
 		}
 		else {
 			convertedResult = to_string(result);
@@ -589,6 +595,74 @@ unordered_map<int, unordered_set<int>> ResultProjector::invertResults(unordered_
 	}
 	return newResults;
 }
+
+ResultCache ResultProjector::getCacheType(Clause* clause) {
+	ClauseType clauseType = clause->getClauseType();
+	ResultCache resultCache;
+
+	switch (clauseType) {
+	case ClauseType::AFFECTS:
+		resultCache = affectsCache;
+		break;
+	case ClauseType::AFFECTS_T:
+		resultCache = affectsTCache;
+		break;
+	case ClauseType::NEXT_T:
+		resultCache = nextTCache;
+		break;
+	}
+
+	return resultCache;
+}
+
+bool ResultProjector::cacheExists(Clause* clause) {
+	ResultCache resultCache = getCacheType(clause);
+	return resultCache.cacheExists(clause);
+}
+
+void ResultProjector::storeInCache(Clause* clause, unordered_set<int> queryResultsOneSynonym) {
+	ResultCache resultCache = getCacheType(clause);
+	resultCache.storeInCache(clause, queryResultsOneSynonym);
+}
+
+void ResultProjector::storeInCache(Clause* clause, unordered_map<int, unordered_set<int>> queryResultsTwoSynonyms) {
+	ResultCache resultCache = getCacheType(clause);
+	resultCache.storeInCache(clause, queryResultsTwoSynonyms);
+}
+
+bool ResultProjector::combineCacheResults(Clause* clause) {
+	DesignEntity paraOne = clause->getParaOne();
+	DesignEntity paraTwo = clause->getParaTwo();
+	Type paraOneType = paraOne.getType();
+	Type paraTwoType = paraTwo.getType();
+
+	vector<string> synonyms;
+	ResultCache resultCache = getCacheType(clause);
+
+	if (isStmtType(paraOneType) && isStmtType(paraTwoType)) {
+		unordered_map<int, unordered_set<int>> cacheResult = resultCache.getTwoSynCacheResult();
+		synonyms.push_back(paraOne.getValue());
+		synonyms.push_back(paraTwo.getValue());
+
+		return combineResults(cacheResult, synonyms);
+	}
+	else {
+		if (isStmtType(paraOneType)) {
+			synonyms.push_back(paraOne.getValue());
+		}
+		else if (isStmtType(paraTwoType)) {
+			synonyms.push_back(paraTwo.getValue());
+		}
+		unordered_set<int> cacheResult = resultCache.getOneSynCacheResult();
+		return combineResults(cacheResult, synonyms);
+	}
+}
+
+bool ResultProjector::isStmtType(Type type) {
+	return  type == Type::STATEMENT || type == Type::PROGLINE || type == Type::READ || type == Type::PRINT || type == Type::CALL ||
+		type == Type::WHILE || type == Type::IF || type == Type::ASSIGN;
+}
+
 
 // For debugging purposes
 void ResultProjector::printTables() {
