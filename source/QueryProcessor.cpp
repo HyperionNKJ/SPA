@@ -11,7 +11,7 @@ std::list<std::string> QueryProcessor::evaluate(std::string& query, const PKB& p
 	}
 
 	ProcessedQuery processedQuery = queryPreprocessor.getProcessedQuery();
-	//processedQuery.optimiseClauses();
+	processedQuery.optimiseClauses();
 
 	results = queryEvaluator.evaluate(processedQuery, pkb);
 	return results;
