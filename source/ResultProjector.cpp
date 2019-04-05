@@ -70,20 +70,26 @@ list<string> ResultProjector::getResults(vector<DesignEntity> selectedSynonyms, 
 			}
 		}
 		else {
+			unordered_set<string> testForDuplicatesSet;
 			list<unordered_map<string, int>> results = synonymResults[tableMap.first];
 			for (auto result : results) {
+				string testForDuplicates = "";
 				unordered_map<string, string> rowResult;
 				for (auto selectedSyn : tableMap.second) {
 					string convertedResult = convertSynonymResultToRequired(selectedSyn.getType(), result.at(selectedSyn.getValue()), selectedSyn.getAttrRef(), pkb);
-					if (selectedSyn.getType() == READ || selectedSyn.getType() == Type::PRINT || selectedSyn.getType() == Type::CALL) {
+					if (selectedSyn.getType() == Type::READ || selectedSyn.getType() == Type::PRINT || selectedSyn.getType() == Type::CALL) {
 						string key = selectedSyn.getValue() + to_string(selectedSyn.getAttrRef());
 						rowResult[key] = convertedResult;
 					}
 					else {
 						rowResult[selectedSyn.getValue()] = convertedResult;
 					}
+					testForDuplicates += convertedResult + " ";
 				}
-				selectedResults.push_back(rowResult);
+				if (testForDuplicatesSet.find(testForDuplicates) == testForDuplicatesSet.end()) { // only insert result if it is not a duplicate. Reduce cross product time
+					testForDuplicatesSet.insert(testForDuplicates);
+					selectedResults.push_back(rowResult);
+				}
 			}
 			allTableResults.push_back(selectedResults);
 		}
