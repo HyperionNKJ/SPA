@@ -519,3 +519,53 @@ CacheType ResultCache::startWithAssign(Type type2) {
 	}
 	return cacheType;
 }
+
+// For testing purposes
+void ResultCache::setSynSynSame(unordered_map<CacheType, unordered_map<int, unordered_set<int>>> result) {
+	SynSynSame = result;
+}
+
+void ResultCache::setSynSynDiff(unordered_map<CacheType, unordered_map<int, unordered_set<int>>> result) {
+	SynSynDiff = result;
+}
+
+void ResultCache::setSynUnderscore(unordered_map<Type, unordered_set<int>> result) {
+	SynUnderscore = result;
+}
+
+void ResultCache::setUnderscoreSyn(unordered_map<Type, unordered_set<int>> result) {
+	UnderscoreSyn = result;
+}
+
+void ResultCache::setSynFixed(unordered_map<Type, unordered_map<int, unordered_set<int>>> result) {
+	SynFixed = result;
+}
+
+void ResultCache::setFixedSyn(unordered_map<Type, unordered_map<int, unordered_set<int>>> result) {
+	FixedSyn = result;
+}
+
+unordered_map<CacheType, unordered_map<int, unordered_set<int>>> ResultCache::getSynSynSame() {
+	return SynSynSame;
+}
+
+unordered_map<CacheType, unordered_map<int, unordered_set<int>>> ResultCache::getSynSynDiff() {
+	return SynSynDiff;
+}
+unordered_map<Type, unordered_set<int>> ResultCache::getSynUnderscore() {
+	return SynUnderscore;
+}
+unordered_map<Type, unordered_set<int>> ResultCache::getUnderscoreSyn() {
+	return UnderscoreSyn;
+}
+unordered_map<Type, unordered_map<int, unordered_set<int>>> ResultCache::getSynFixed() {
+	return SynFixed;
+}
+unordered_map<Type, unordered_map<int, unordered_set<int>>> ResultCache::getFixedSyn() {
+	return FixedSyn;
+}
+
+bool ResultCache::isEquals(ResultCache other) {
+	return SynSynSame == other.getSynSynSame() && SynSynDiff == other.getSynSynDiff() && SynUnderscore == other.getSynUnderscore() &&
+		UnderscoreSyn == other.getUnderscoreSyn() && SynFixed == other.getSynFixed() && FixedSyn == other.getFixedSyn();
+}

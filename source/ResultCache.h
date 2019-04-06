@@ -39,4 +39,19 @@ public:
 	unordered_set<int> getOneSynCacheResult();
 	void storeInCache(Clause* clause, unordered_map<int, unordered_set<int>>& result); // Two Synonyms
 	void storeInCache(Clause* clause, unordered_set<int>& result); // One Synonym
+
+	// for testing
+	bool isEquals(ResultCache other);
+	void ResultCache::setSynSynSame(unordered_map<CacheType, unordered_map<int, unordered_set<int>>> result);
+	void ResultCache::setSynSynDiff(unordered_map<CacheType, unordered_map<int, unordered_set<int>>> result);
+	void ResultCache::setSynUnderscore(unordered_map<Type, unordered_set<int>> result);
+	void ResultCache::setUnderscoreSyn(unordered_map<Type, unordered_set<int>> result);
+	void ResultCache::setSynFixed(unordered_map<Type, unordered_map<int, unordered_set<int>>> result);
+	void ResultCache::setFixedSyn(unordered_map<Type, unordered_map<int, unordered_set<int>>> result);
+	unordered_map<CacheType, unordered_map<int, unordered_set<int>>> getSynSynSame();
+	unordered_map<CacheType, unordered_map<int, unordered_set<int>>> getSynSynDiff();
+	unordered_map<Type, unordered_set<int>> getSynUnderscore();
+	unordered_map<Type, unordered_set<int>> getUnderscoreSyn();
+	unordered_map<Type, unordered_map<int, unordered_set<int>>> getSynFixed();
+	unordered_map<Type, unordered_map<int, unordered_set<int>>> getFixedSyn();
 };

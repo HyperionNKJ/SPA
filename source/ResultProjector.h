@@ -46,10 +46,15 @@ public:
 	bool isStmtType(Type type);
 	bool combineCacheResults(Clause* clause);
 
-	void printTables(); // for debugging
-	unordered_map<string, int> getSynonymTable(); // for testing
-	void setSynonymTable(unordered_map<string, int> synTable); // for testing
-	unordered_map<int, list<unordered_map<string, int>>> ResultProjector::getSynonymResults(); // for testing
-	void setSynonymResults(unordered_map<int, list<unordered_map<string, int>>> synResults); // for testing
+	// for testing
+	unordered_map<string, int> getSynonymTable(); 
+	void setSynonymTable(unordered_map<string, int> synTable);
+	unordered_map<int, list<unordered_map<string, int>>> getSynonymResults();
+	void setSynonymResults(unordered_map<int, list<unordered_map<string, int>>> synResults);
+	ResultCache getAffectsCache();
+	ResultCache getAffectsTCache();
+	ResultCache getNextTCache();
 
+	// for debugging
+	void printTables();
 };

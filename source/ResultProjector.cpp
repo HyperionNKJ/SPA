@@ -20,22 +20,6 @@ void ResultProjector::resetResults()
 	index = 0;
 }
 
-unordered_map<string, int> ResultProjector::getSynonymTable() {
-	return synonymTable;
-}
-
-void ResultProjector::setSynonymTable(unordered_map<string, int> synTable) {
-	synonymTable = synTable;
-}
-
-unordered_map<int, list<unordered_map<string, int>>> ResultProjector::getSynonymResults() {
-	return synonymResults;
-}
-
-void ResultProjector::setSynonymResults(unordered_map<int, list<unordered_map<string, int>>> synResults) {
-	synonymResults = synResults;
-}
-
 list<string> ResultProjector::getResults(vector<DesignEntity> selectedSynonyms, PKB pkb) {
 
 	list<string> projectedResults;
@@ -663,6 +647,34 @@ bool ResultProjector::isStmtType(Type type) {
 		type == Type::WHILE || type == Type::IF || type == Type::ASSIGN;
 }
 
+// For testing purposes
+unordered_map<string, int> ResultProjector::getSynonymTable() {
+	return synonymTable;
+}
+
+void ResultProjector::setSynonymTable(unordered_map<string, int> synTable) {
+	synonymTable = synTable;
+}
+
+unordered_map<int, list<unordered_map<string, int>>> ResultProjector::getSynonymResults() {
+	return synonymResults;
+}
+
+void ResultProjector::setSynonymResults(unordered_map<int, list<unordered_map<string, int>>> synResults) {
+	synonymResults = synResults;
+}
+
+ResultCache ResultProjector::getAffectsCache() {
+	return affectsCache;
+}
+
+ResultCache ResultProjector::getAffectsTCache() {
+	return affectsTCache;
+}
+
+ResultCache ResultProjector::getNextTCache() {
+	return nextTCache;
+}
 
 // For debugging purposes
 void ResultProjector::printTables() {
