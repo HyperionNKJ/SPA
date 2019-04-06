@@ -285,7 +285,7 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\ResultCache.h">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
