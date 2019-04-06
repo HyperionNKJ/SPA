@@ -2,6 +2,9 @@
 
 using namespace std;
 
+ResultCache affectsCache;
+ResultCache affectsTCache;
+ResultCache nextTCache;
 static unordered_map<string, int> synonymTable;
 static unordered_map<int, list<unordered_map<string, int>>> synonymResults;
 static int index;
@@ -9,25 +12,12 @@ static int index;
 // Reset tables for new query
 void ResultProjector::resetResults()
 {
+	affectsCache.resetCache();
+	affectsTCache.resetCache();
+	nextTCache.resetCache();
 	synonymTable.clear();
 	synonymResults.clear();
 	index = 0;
-}
-
-unordered_map<string, int> ResultProjector::getSynonymTable() {
-	return synonymTable;
-}
-
-void ResultProjector::setSynonymTable(unordered_map<string, int> synTable) {
-	synonymTable = synTable;
-}
-
-unordered_map<int, list<unordered_map<string, int>>> ResultProjector::getSynonymResults() {
-	return synonymResults;
-}
-
-void ResultProjector::setSynonymResults(unordered_map<int, list<unordered_map<string, int>>> synResults) {
-	synonymResults = synResults;
 }
 
 list<string> ResultProjector::getResults(vector<DesignEntity> selectedSynonyms, PKB pkb) {
@@ -44,12 +34,10 @@ list<string> ResultProjector::getResults(vector<DesignEntity> selectedSynonyms, 
 		}
 	}
 
-	vector<string> selectedSynonymsOrder;
 	unordered_map<int, list<DesignEntity>> selectedSynonymTableMap;
 
 	// 1. Loop through all selected synonyms and get their table numbers
 	for (auto selectedSynonym : selectedSynonyms) {
-		selectedSynonymsOrder.push_back(selectedSynonym.getValue());
 		string synonym = selectedSynonym.getValue();
 		int tableNum;
 		if (synonymExists(synonym)) {
@@ -72,14 +60,26 @@ list<string> ResultProjector::getResults(vector<DesignEntity> selectedSynonyms, 
 			}
 		}
 		else {
+			unordered_set<string> testForDuplicatesSet;
 			list<unordered_map<string, int>> results = synonymResults[tableMap.first];
 			for (auto result : results) {
+				string testForDuplicates = "";
 				unordered_map<string, string> rowResult;
 				for (auto selectedSyn : tableMap.second) {
 					string convertedResult = convertSynonymResultToRequired(selectedSyn.getType(), result.at(selectedSyn.getValue()), selectedSyn.getAttrRef(), pkb);
-					rowResult[selectedSyn.getValue()] = convertedResult;
+					if (selectedSyn.getType() == Type::READ || selectedSyn.getType() == Type::PRINT || selectedSyn.getType() == Type::CALL) {
+						string key = selectedSyn.getValue() + to_string(selectedSyn.getAttrRef());
+						rowResult[key] = convertedResult;
+					}
+					else {
+						rowResult[selectedSyn.getValue()] = convertedResult;
+					}
+					testForDuplicates += convertedResult + " ";
 				}
-				selectedResults.push_back(rowResult);
+				if (testForDuplicatesSet.find(testForDuplicates) == testForDuplicatesSet.end()) { // only insert result if it is not a duplicate. Reduce cross product time
+					testForDuplicatesSet.insert(testForDuplicates);
+					selectedResults.push_back(rowResult);
+				}
 			}
 			allTableResults.push_back(selectedResults);
 		}
@@ -111,11 +111,28 @@ list<string> ResultProjector::getResults(vector<DesignEntity> selectedSynonyms, 
 	}
 
 	// 4. Convert to required format
-	if (!selectedSynonymsOrder.empty()) {
+	if (!selectedSynonyms.empty()) {
 		for (auto finalMap : finalMaps) {
-			string resultString = finalMap[selectedSynonymsOrder.at(0)];
-			for (size_t i = 1; i < selectedSynonymsOrder.size(); i++) {
-				resultString += " " + finalMap[selectedSynonymsOrder.at(i)];
+			string resultString;
+
+			DesignEntity firstSelectedSyn = selectedSynonyms.at(0);
+			if (firstSelectedSyn.getType() == Type::READ || firstSelectedSyn.getType() == Type::PRINT || firstSelectedSyn.getType() == Type::CALL) {
+				string key = firstSelectedSyn.getValue() + to_string(firstSelectedSyn.getAttrRef());
+				resultString = finalMap[key];
+			}
+			else {
+				resultString = finalMap[firstSelectedSyn.getValue()];
+			}
+			
+			for (size_t i = 1; i < selectedSynonyms.size(); i++) {
+				Type selectedSynType = selectedSynonyms.at(i).getType();
+				if (selectedSynType == Type::READ || selectedSynType == Type::PRINT || selectedSynType == Type::CALL) {
+					string key = selectedSynonyms.at(i).getValue() + to_string(selectedSynonyms.at(i).getAttrRef());
+					resultString += " " + finalMap[key];
+				}
+				else {
+					resultString += " " + finalMap[selectedSynonyms.at(i).getValue()];
+				}
 			}
 			projectedResults.push_back(resultString);
 		}
@@ -134,7 +151,7 @@ string ResultProjector::convertSynonymResultToRequired(Type type, int result, At
 		break;
 	case Type::CALL:
 		if (attrRef == AttrRef::PROC_NAME) {
-			convertedResult = pkb.getCallAtIdx(result);
+			convertedResult = pkb.getCallAtStmtNum(result);
 		}
 		else {
 			convertedResult = to_string(result);
@@ -142,7 +159,7 @@ string ResultProjector::convertSynonymResultToRequired(Type type, int result, At
 		break;
 	case Type::READ:
 		if (attrRef == AttrRef::VAR_NAME) {
-			convertedResult = pkb.getReadAtIdx(result);
+			convertedResult = pkb.getReadAtStmtNum(result);
 		}
 		else {
 			convertedResult = to_string(result);
@@ -150,7 +167,7 @@ string ResultProjector::convertSynonymResultToRequired(Type type, int result, At
 		break;
 	case Type::PRINT:
 		if (attrRef == AttrRef::VAR_NAME) {
-			convertedResult = pkb.getPrintAtIdx(result);
+			convertedResult = pkb.getPrintAtStmtNum(result);
 		}
 		else {
 			convertedResult = to_string(result);
@@ -171,72 +188,86 @@ list<unordered_map<string, string>> ResultProjector::getSelectedClauseNotInTable
 
 	switch (type) {
 	case Type::STATEMENT:
-		projectedResults = convertSetToList(pkb.getAllStmts(), synonym.getValue());
+		projectedResults = convertSetToList(synonym, pkb.getAllStmts());
 		break;
 	case Type::PROGLINE:
-		projectedResults = convertSetToList(pkb.getAllStmts(), synonym.getValue());
+		projectedResults = convertSetToList(synonym, pkb.getAllStmts());
 		break;
 	case Type::READ:
 		if (synonym.getAttrRef() == AttrRef::VAR_NAME) {
-			projectedResults = convertSetToList(pkb.getReadVarNames(), synonym.getValue());
+			projectedResults = convertSetToList(synonym, pkb.getReadVarNames());
 		}
 		else {
-			projectedResults = convertSetToList(pkb.getReadStmts(), synonym.getValue());
+			projectedResults = convertSetToList(synonym, pkb.getReadStmts());
 		}
 		break;
 	case Type::PRINT:
 		if (synonym.getAttrRef() == AttrRef::VAR_NAME) {
-			projectedResults = convertSetToList(pkb.getPrintVarNames(), synonym.getValue());
+			projectedResults = convertSetToList(synonym, pkb.getPrintVarNames());
 		}
 		else {
-			projectedResults = convertSetToList(pkb.getPrintStmts(), synonym.getValue());
+			projectedResults = convertSetToList(synonym, pkb.getPrintStmts());
 		}
 		break;
 	case Type::CALL:	// call statements
 		if (synonym.getAttrRef() == AttrRef::PROC_NAME) {
-			projectedResults = convertSetToList(pkb.getCallProcNames(), synonym.getValue());
+			projectedResults = convertSetToList(synonym, pkb.getCallProcNames());
 		}
 		else {
-			projectedResults = convertSetToList(pkb.getCallStmts(), synonym.getValue());
+			projectedResults = convertSetToList(synonym, pkb.getCallStmts());
 		}
 		break;
 	case Type::WHILE:
-		projectedResults = convertSetToList(pkb.getWhileStmts(), synonym.getValue());
+		projectedResults = convertSetToList(synonym, pkb.getWhileStmts());
 		break;
 	case Type::IF:
-		projectedResults = convertSetToList(pkb.getIfStmts(), synonym.getValue());
+		projectedResults = convertSetToList(synonym, pkb.getIfStmts());
 		break;
 	case Type::ASSIGN:
-		projectedResults = convertSetToList(pkb.getAssignStmts(), synonym.getValue());
+		projectedResults = convertSetToList(synonym, pkb.getAssignStmts());
 		break;
 	case Type::VARIABLE:
-		projectedResults = convertSetToList(pkb.getAllVariables(), synonym.getValue());
+		projectedResults = convertSetToList(synonym, pkb.getAllVariables());
 		break;
 	case Type::CONSTANT:
-		projectedResults = convertSetToList(pkb.getAllConstant(), synonym.getValue());
+		projectedResults = convertSetToList(synonym, pkb.getAllConstant());
 		break;
 	case Type::PROCEDURE:
-		projectedResults = convertSetToList(pkb.getAllProcedures(), synonym.getValue());
+		projectedResults = convertSetToList(synonym, pkb.getAllProcedures());
 		break;
 	}
 	return projectedResults;
 }
 
-list<unordered_map<string, string>> ResultProjector::convertSetToList(unordered_set<string> resultSet, string synonym) {
+list<unordered_map<string, string>> ResultProjector::convertSetToList(DesignEntity synonym, unordered_set<string> resultSet) {
 	list<unordered_map<string, string>> results;
 	unordered_map<string, string> row;
+	Type type = synonym.getType();
 	for (string result : resultSet) {
-		row[synonym] = result;
+		if (type == Type::READ || type == Type::PRINT || type == Type::CALL) {
+			string key = synonym.getValue() + to_string(synonym.getAttrRef());
+			row[key] = result;
+		}
+		else {
+			row[synonym.getValue()] = result;
+		}
 		results.push_back(row);
 	}
 	return results;
 }
 
-list<unordered_map<string, string>> ResultProjector::convertSetToList(unordered_set<int> resultSet, string synonym) {
+list<unordered_map<string, string>> ResultProjector::convertSetToList(DesignEntity synonym, unordered_set<int> resultSet) {
 	list<unordered_map<string, string>> results;
 	unordered_map<string, string> row;
+	Type type = synonym.getType();
 	for (int result : resultSet) {
-		row[synonym] = to_string(result);
+		if (type == Type::READ || type == Type::PRINT || type == Type::CALL) {
+			string key = synonym.getValue() + to_string(synonym.getAttrRef());
+			row[key] = to_string(result);
+		}
+		else {
+			row[synonym.getValue()] = to_string(result);
+		}
 		results.push_back(row);
 	}
 	return results;
@@ -547,6 +578,102 @@ unordered_map<int, unordered_set<int>> ResultProjector::invertResults(unordered_
 		}
 	}
 	return newResults;
+}
+
+ResultCache* ResultProjector::getCacheType(Clause* clause) {
+	ClauseType clauseType = clause->getClauseType();
+	ResultCache* resultCache;
+
+	switch (clauseType) {
+	case ClauseType::AFFECTS:
+		resultCache = &affectsCache;
+		break;
+	case ClauseType::AFFECTS_T:
+		resultCache = &affectsTCache;
+		break;
+	case ClauseType::NEXT_T:
+		resultCache = &nextTCache;
+		break;
+	}
+
+	return resultCache;
+}
+
+bool ResultProjector::cacheExists(Clause* clause) {
+	ResultCache* resultCache = getCacheType(clause);
+	return resultCache->cacheExists(clause);
+}
+
+void ResultProjector::storeInCache(Clause* clause, unordered_set<int> queryResultsOneSynonym) {
+	ResultCache* resultCache = getCacheType(clause);
+	resultCache->storeInCache(clause, queryResultsOneSynonym);
+}
+
+void ResultProjector::storeInCache(Clause* clause, unordered_map<int, unordered_set<int>> queryResultsTwoSynonyms) {
+	ResultCache* resultCache = getCacheType(clause);
+	resultCache->storeInCache(clause, queryResultsTwoSynonyms);
+}
+
+bool ResultProjector::combineCacheResults(Clause* clause) {
+	DesignEntity paraOne = clause->getParaOne();
+	DesignEntity paraTwo = clause->getParaTwo();
+	Type paraOneType = paraOne.getType();
+	Type paraTwoType = paraTwo.getType();
+
+	vector<string> synonyms;
+	ResultCache* resultCache = getCacheType(clause);
+
+	if (isStmtType(paraOneType) && isStmtType(paraTwoType)) {
+		unordered_map<int, unordered_set<int>> cacheResult = resultCache->getTwoSynCacheResult();
+		synonyms.push_back(paraOne.getValue());
+		synonyms.push_back(paraTwo.getValue());
+
+		return combineResults(cacheResult, synonyms);
+	}
+	else {
+		if (isStmtType(paraOneType)) {
+			synonyms.push_back(paraOne.getValue());
+		}
+		else if (isStmtType(paraTwoType)) {
+			synonyms.push_back(paraTwo.getValue());
+		}
+		unordered_set<int> cacheResult = resultCache->getOneSynCacheResult();
+		return combineResults(cacheResult, synonyms);
+	}
+}
+
+bool ResultProjector::isStmtType(Type type) {
+	return  type == Type::STATEMENT || type == Type::PROGLINE || type == Type::READ || type == Type::PRINT || type == Type::CALL ||
+		type == Type::WHILE || type == Type::IF || type == Type::ASSIGN;
+}
+
+// For testing purposes
+unordered_map<string, int> ResultProjector::getSynonymTable() {
+	return synonymTable;
+}
+
+void ResultProjector::setSynonymTable(unordered_map<string, int> synTable) {
+	synonymTable = synTable;
+}
+
+unordered_map<int, list<unordered_map<string, int>>> ResultProjector::getSynonymResults() {
+	return synonymResults;
+}
+
+void ResultProjector::setSynonymResults(unordered_map<int, list<unordered_map<string, int>>> synResults) {
+	synonymResults = synResults;
+}
+
+ResultCache ResultProjector::getAffectsCache() {
+	return affectsCache;
+}
+
+ResultCache ResultProjector::getAffectsTCache() {
+	return affectsTCache;
+}
+
+ResultCache ResultProjector::getNextTCache() {
+	return nextTCache;
 }
 
 // For debugging purposes

@@ -144,6 +144,9 @@
     <ClCompile Include="..\source\QueryPreprocessorWithParser.cpp">
       <Filter>Source Files\QueryPreprocessor</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\ResultCache.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\DesignEntity.h">
@@ -277,6 +280,12 @@
     </ClInclude>
     <ClInclude Include="..\source\QueryPreprocessorWithParser.h">
       <Filter>Header Files\QueryPreprocessor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\CacheType.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\ResultCache.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
