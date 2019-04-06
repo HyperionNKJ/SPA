@@ -170,7 +170,7 @@ DesignEntity QueryPreprocessorHelper::getParam(const std::string& param, Process
 		// param without attrRef
 		if (param == "_") {
 			// param is a underscore
-			return DesignEntity(param, Type::UNDERSCORE);
+			return DesignEntity("", Type::UNDERSCORE);
 		}
 		else if (isInt(param)) {
 			// param is a statement number

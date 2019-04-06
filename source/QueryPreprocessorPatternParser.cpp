@@ -24,16 +24,15 @@ QueryPreprocessorPatternParser::QueryPreprocessorPatternParser(string& clause, P
 // Returns true if parsing is successful and false if unsucessful.
 bool QueryPreprocessorPatternParser::parse() {
 	size_t synonymSize = CLAUSE.find(BRACKET_OPEN);
-	size_t closeBracketPos = CLAUSE.find(BRACKET_CLOSE);
+	size_t closeBracketPos = CLAUSE.rfind(BRACKET_CLOSE);
 
 	// open bracket must exist
 	if (synonymSize == std::string::npos) {
 		return false;
 	}
 
-	// first close bracket must be the last close bracket
 	// close bracket must be the last character in pattern clause
-	if (closeBracketPos + 1 != CLAUSE.size()) {
+	if (CLAUSE[CLAUSE.size() - 1] == closeBracketPos) {
 		return false;
 	}
 
