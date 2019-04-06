@@ -918,19 +918,27 @@ bool PKB::isNextT(int firstLine, int secondLine) {
 	while (!found) {
 		if (nextMap.count(toExplore) > 0) {
 			int nextExplore = -1;
-			currentNextLines = nextMap[firstLine];
-			for (auto &elem : currentNextLines) {
-				if (elem > nextExplore && elem <= secondLine) {
-					nextExplore = elem;
+			currentNextLines = nextMap[toExplore];
+			//if there are 2 possible next, it is an if or for
+			//then look for which branch it must be in to speedup
+			if (currentNextLines.size() > 1) {
+				for (auto &elem : currentNextLines) {
+					if (elem > nextExplore && elem <= secondLine) {
+						nextExplore = elem;
+					}
 				}
+				toExplore = nextExplore;
 			}
-			toExplore = nextExplore;
+			else
+			{
+				//otherwise just follow the next line
+				for (auto &elem : currentNextLines) toExplore = elem;
+			}
 			if (toExplore == secondLine) {
 				found = true;
 			}
 		}
 		else {
-			found = false;
 			break;
 		}
 	}
