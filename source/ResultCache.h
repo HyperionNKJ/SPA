@@ -10,6 +10,16 @@
 
 class ResultCache {
 private:
+	unordered_map<CacheType, unordered_map<int, unordered_set<int>>> SynSynSame; // Affects(a, a)
+	unordered_map<CacheType, unordered_map<int, unordered_set<int>>> SynSynDiff; // Affects(a, a1)
+	unordered_map<Type, unordered_set<int>> SynUnderscore; // Affects(a, _)
+	unordered_map<Type, unordered_set<int>> UnderscoreSyn; // Affects(_, a)
+	unordered_map<Type, unordered_map<int, unordered_set<int>>> SynFixed; // Affects(a, 1)
+	unordered_map<Type, unordered_map<int, unordered_set<int>>> FixedSyn; // Affects(1, a)
+
+	unordered_map<int, unordered_set<int>> twoSynCacheResult;
+	unordered_set<int> oneSynCacheResult;
+
 	bool isStmtType(Type type);
 	CacheType convertToCacheType(Type type1, Type type2);
 	CacheType startWithStatement(Type type2);

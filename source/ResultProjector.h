@@ -39,7 +39,7 @@ public:
 	bool synonymExists(string synonym);
 	unordered_set<int> getPossibleValues(string synonym);
 
-	ResultCache getCacheType(Clause* clause);
+	ResultCache* getCacheType(Clause* clause);
 	bool cacheExists(Clause* clause);
 	void storeInCache(Clause* clause, unordered_set<int> queryResultsOneSynonym);
 	void storeInCache(Clause* clause, unordered_map<int, unordered_set<int>> queryResultsTwoSynonyms);

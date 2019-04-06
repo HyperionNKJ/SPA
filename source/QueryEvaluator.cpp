@@ -35,15 +35,15 @@ list<string> QueryEvaluator::evaluate(ProcessedQuery& processedQuery, const PKB&
 		if (clauseIsExpensive && clause->getNumOfSynonyms() != 0) {
 			reducedDomainExists = findReducedDomain(clause, &resultProjector); // reduce domain based on resultProjector's intermediate table
 			// if reducedDomain exists, clause will use reduced domain to evaluate.
-			/*
-			if (!reducedDomainExists && (cacheResultExists = resultProjector.cacheExists(*clause))) {
-				bool hasResult = resultProjector.combineCacheResults(*clause); // if results were cached beforehand, simply re-use the results.
+			
+			if (!reducedDomainExists && (cacheResultExists = resultProjector.cacheExists(clause))) {
+				bool hasResult = resultProjector.combineCacheResults(clause); // if results were cached beforehand, simply re-use the results.
 				if (!hasResult) {
-					return emptyResult;
+					return returnNegativeResult(processedQuery.resultClElemList);
 				}
 				continue; // skip re-evaluation
 			}
-			*/
+			
 		}
 
 		Result clauseResult = clause->evaluate(pkb);
@@ -55,13 +55,13 @@ list<string> QueryEvaluator::evaluate(ProcessedQuery& processedQuery, const PKB&
 			if (numOfSyn == 1) {
 				hasResultSoFar = resultProjector.combineResults(clauseResult.getOneSynAnswer(), synonyms);
 				if (shouldStoreInCache) {
-					//resultProjector.storeInCache(*clause, clauseResult.getOneSynAnswer());
+					resultProjector.storeInCache(clause, clauseResult.getOneSynAnswer());
 				}
 			}
 			else if (numOfSyn == 2) { 
 				hasResultSoFar = resultProjector.combineResults(clauseResult.getTwoSynAnswer(), synonyms);
 				if (shouldStoreInCache) {
-					//resultProjector.storeInCache(*clause, clauseResult.getTwoSynAnswer());
+					resultProjector.storeInCache(clause, clauseResult.getTwoSynAnswer());
 				}
 			}
 			if (!hasResultSoFar) {
@@ -91,7 +91,7 @@ bool QueryEvaluator::findReducedDomain(Clause* clause, ResultProjector* resultPr
 	for (const auto& s : synonyms) {
 		if (resultProjector->synonymExists(s)) {
 			reducedDomain.insert({ s, resultProjector->getPossibleValues(s) });
-			bool hasReducedDomain = true;
+			hasReducedDomain = true;
 		}
 	}
 	clause->setReducedDomain(reducedDomain);

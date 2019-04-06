@@ -2,9 +2,9 @@
 
 using namespace std;
 
-static ResultCache affectsCache;
-static ResultCache affectsTCache;
-static ResultCache nextTCache;
+ResultCache affectsCache;
+ResultCache affectsTCache;
+ResultCache nextTCache;
 static unordered_map<string, int> synonymTable;
 static unordered_map<int, list<unordered_map<string, int>>> synonymResults;
 static int index;
@@ -596,19 +596,19 @@ unordered_map<int, unordered_set<int>> ResultProjector::invertResults(unordered_
 	return newResults;
 }
 
-ResultCache ResultProjector::getCacheType(Clause* clause) {
+ResultCache* ResultProjector::getCacheType(Clause* clause) {
 	ClauseType clauseType = clause->getClauseType();
-	ResultCache resultCache;
+	ResultCache* resultCache;
 
 	switch (clauseType) {
 	case ClauseType::AFFECTS:
-		resultCache = affectsCache;
+		resultCache = &affectsCache;
 		break;
 	case ClauseType::AFFECTS_T:
-		resultCache = affectsTCache;
+		resultCache = &affectsTCache;
 		break;
 	case ClauseType::NEXT_T:
-		resultCache = nextTCache;
+		resultCache = &nextTCache;
 		break;
 	}
 
@@ -616,18 +616,18 @@ ResultCache ResultProjector::getCacheType(Clause* clause) {
 }
 
 bool ResultProjector::cacheExists(Clause* clause) {
-	ResultCache resultCache = getCacheType(clause);
-	return resultCache.cacheExists(clause);
+	ResultCache* resultCache = getCacheType(clause);
+	return resultCache->cacheExists(clause);
 }
 
 void ResultProjector::storeInCache(Clause* clause, unordered_set<int> queryResultsOneSynonym) {
-	ResultCache resultCache = getCacheType(clause);
-	resultCache.storeInCache(clause, queryResultsOneSynonym);
+	ResultCache* resultCache = getCacheType(clause);
+	resultCache->storeInCache(clause, queryResultsOneSynonym);
 }
 
 void ResultProjector::storeInCache(Clause* clause, unordered_map<int, unordered_set<int>> queryResultsTwoSynonyms) {
-	ResultCache resultCache = getCacheType(clause);
-	resultCache.storeInCache(clause, queryResultsTwoSynonyms);
+	ResultCache* resultCache = getCacheType(clause);
+	resultCache->storeInCache(clause, queryResultsTwoSynonyms);
 }
 
 bool ResultProjector::combineCacheResults(Clause* clause) {
@@ -637,10 +637,10 @@ bool ResultProjector::combineCacheResults(Clause* clause) {
 	Type paraTwoType = paraTwo.getType();
 
 	vector<string> synonyms;
-	ResultCache resultCache = getCacheType(clause);
+	ResultCache* resultCache = getCacheType(clause);
 
 	if (isStmtType(paraOneType) && isStmtType(paraTwoType)) {
-		unordered_map<int, unordered_set<int>> cacheResult = resultCache.getTwoSynCacheResult();
+		unordered_map<int, unordered_set<int>> cacheResult = resultCache->getTwoSynCacheResult();
 		synonyms.push_back(paraOne.getValue());
 		synonyms.push_back(paraTwo.getValue());
 
@@ -653,7 +653,7 @@ bool ResultProjector::combineCacheResults(Clause* clause) {
 		else if (isStmtType(paraTwoType)) {
 			synonyms.push_back(paraTwo.getValue());
 		}
-		unordered_set<int> cacheResult = resultCache.getOneSynCacheResult();
+		unordered_set<int> cacheResult = resultCache->getOneSynCacheResult();
 		return combineResults(cacheResult, synonyms);
 	}
 }
