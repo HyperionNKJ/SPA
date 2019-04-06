@@ -9,6 +9,8 @@ void ResultCache::resetCache() {
 	UnderscoreSyn.clear();
 	SynFixed.clear();
 	FixedSyn.clear();
+	twoSynCacheResult.clear();
+	oneSynCacheResult.clear();
 }
 
 bool ResultCache::cacheExists(Clause* clause) {
