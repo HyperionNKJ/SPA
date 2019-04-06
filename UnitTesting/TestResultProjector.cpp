@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
 #include "ResultProjector.h"
+#include "NextT.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -1315,8 +1316,8 @@ namespace UnitTesting {
 			Assert::IsTrue(sameResult);
 		}
 
-		// -----------------------------------------------------------------------------------------------------
-		// test select
+		// ---------------------------------- TEST SELECT -----------------------------------------------
+	
 		TEST_METHOD(selectOneSynonym) {
 			ResultProjector resultProjector;
 			// set up
@@ -1410,8 +1411,7 @@ namespace UnitTesting {
 			// get results
 			list<string> actualResults = resultProjector.getResults(selectedSynonyms, pkb);
 			list<string> expectedResults = {	"2 11", "2 33", "2 77",
-												"1 11", "1 33", "1 77",
-												"2 11", "2 33", "2 77" };
+												"1 11", "1 33", "1 77" };
 
 			Assert::IsTrue(isSameResult(expectedResults, actualResults));
 		}
@@ -1491,11 +1491,230 @@ namespace UnitTesting {
 			// get results
 			list<string> actualResults = resultProjector.getResults(selectedSynonyms, pkb);
 			list<string> expectedResults = {	"2 4 11", "2 6 11", "2 4 33", "2 6 33", "2 4 77", "2 6 77",
-												"1 4 11", "1 6 11", "1 4 33", "1 6 33", "1 4 77", "1 6 77",
-												"2 4 11", "2 6 11", "2 4 33", "2 6 33", "2 4 77", "2 6 77" };
+												"1 4 11", "1 6 11", "1 4 33", "1 6 33", "1 4 77", "1 6 77" };
 
 			Assert::IsTrue(isSameResult(expectedResults, actualResults));
 		}
+
+		// ---------------------------------- TEST CACHING -----------------------------------------------
+		TEST_METHOD(cacheSynSynSame) {
+			ResultProjector resultProjector;
+			// set up
+			resultProjector.resetResults();
+
+			DesignEntity paramOne = DesignEntity("s", Type::STATEMENT, AttrRef::UNASSIGNED);
+			DesignEntity paramTwo = DesignEntity("s", Type::STATEMENT, AttrRef::UNASSIGNED);
+			NextT* clause = new NextT(paramOne, paramTwo);
+
+			unordered_map<int, unordered_set<int>> result;
+			result = { {2, {1,3}},
+						{5, {4,6}},
+						{6, {2,8,3}} };
+
+			resultProjector.storeInCache(clause, result);
+
+			ResultCache expectedCache;
+			unordered_map<CacheType, unordered_map<int, unordered_set<int>>> expectedResult;
+			expectedResult[CacheType::STMT_STMT] = result;
+			expectedCache.setSynSynSame(expectedResult);
+			Assert::IsTrue(resultProjector.getNextTCache().isEquals(expectedCache));
+
+			paramOne = DesignEntity("s1", Type::STATEMENT, AttrRef::UNASSIGNED);
+			paramTwo = DesignEntity("s1", Type::STATEMENT, AttrRef::UNASSIGNED);
+			clause = new NextT(paramOne, paramTwo);
+			Assert::IsTrue(resultProjector.cacheExists(clause));
+
+			bool isSameResultCached = resultProjector.getNextTCache().getTwoSynCacheResult() == result;
+			Assert::IsTrue(isSameResultCached);
+		}
+		TEST_METHOD(cacheSynSynDiff) {
+			ResultProjector resultProjector;
+			// set up
+			resultProjector.resetResults();
+
+			DesignEntity paramOne = DesignEntity("r", Type::READ, AttrRef::UNASSIGNED);
+			DesignEntity paramTwo = DesignEntity("s", Type::STATEMENT, AttrRef::UNASSIGNED);
+			NextT* clause = new NextT(paramOne, paramTwo);
+
+			unordered_map<int, unordered_set<int>> result;
+			result = { {2, {1,3}},
+						{5, {4,6}},
+						{6, {2,8,3}} };
+
+			resultProjector.storeInCache(clause, result);
+
+			ResultCache expectedCache;
+			unordered_map<CacheType, unordered_map<int, unordered_set<int>>> expectedResult;
+			expectedResult[CacheType::READ_STMT] = result;
+			expectedCache.setSynSynDiff(expectedResult);
+			Assert::IsTrue(resultProjector.getNextTCache().isEquals(expectedCache));
+
+			paramOne = DesignEntity("r1", Type::READ, AttrRef::UNASSIGNED);
+			paramTwo = DesignEntity("s1", Type::STATEMENT, AttrRef::UNASSIGNED);
+			clause = new NextT(paramOne, paramTwo);
+			Assert::IsTrue(resultProjector.cacheExists(clause));
+
+			bool isSameResultCached = resultProjector.getNextTCache().getTwoSynCacheResult() == result;
+			Assert::IsTrue(isSameResultCached);
+
+			paramOne = DesignEntity("r", Type::READ, AttrRef::UNASSIGNED);
+			paramTwo = DesignEntity("a", Type::ASSIGN, AttrRef::UNASSIGNED);
+			clause = new NextT(paramOne, paramTwo);
+			Assert::IsFalse(resultProjector.cacheExists(clause));
+		}
+		TEST_METHOD(cacheSynSynDiff2) {
+			ResultProjector resultProjector;
+			// set up
+			resultProjector.resetResults();
+
+			DesignEntity paramOne = DesignEntity("s", Type::STATEMENT, AttrRef::UNASSIGNED);
+			DesignEntity paramTwo = DesignEntity("s1", Type::STATEMENT, AttrRef::UNASSIGNED);
+			NextT* clause = new NextT(paramOne, paramTwo);
+
+			unordered_map<int, unordered_set<int>> result;
+			result = { {2, {1,3}},
+						{5, {4,6}},
+						{6, {2,8,3}} };
+
+			resultProjector.storeInCache(clause, result);
+
+			ResultCache expectedCache;
+			unordered_map<CacheType, unordered_map<int, unordered_set<int>>> expectedResult;
+			expectedResult[CacheType::STMT_STMT] = result;
+			expectedCache.setSynSynDiff(expectedResult);
+			Assert::IsTrue(resultProjector.getNextTCache().isEquals(expectedCache));
+
+			paramOne = DesignEntity("s2", Type::STATEMENT, AttrRef::UNASSIGNED);
+			paramTwo = DesignEntity("s3", Type::STATEMENT, AttrRef::UNASSIGNED);
+			clause = new NextT(paramOne, paramTwo);
+			Assert::IsTrue(resultProjector.cacheExists(clause));
+
+			bool isSameResultCached = resultProjector.getNextTCache().getTwoSynCacheResult() == result;
+			Assert::IsTrue(isSameResultCached);
+		}
+		TEST_METHOD(cacheSynUnderscore) {
+			ResultProjector resultProjector;
+			// set up
+			resultProjector.resetResults();
+
+			DesignEntity paramOne = DesignEntity("s", Type::STATEMENT, AttrRef::UNASSIGNED);
+			DesignEntity paramTwo = DesignEntity("_", Type::UNDERSCORE, AttrRef::UNASSIGNED);
+			NextT* clause = new NextT(paramOne, paramTwo);
+
+			unordered_set<int> result;
+			result = { 2,1,5,8 };
+
+			resultProjector.storeInCache(clause, result);
+
+			ResultCache expectedCache;
+			unordered_map<Type, unordered_set<int>> expectedResult;
+			expectedResult[Type::STATEMENT] = result;
+			expectedCache.setSynUnderscore(expectedResult);
+			Assert::IsTrue(resultProjector.getNextTCache().isEquals(expectedCache));
+
+			paramOne = DesignEntity("s1", Type::STATEMENT, AttrRef::UNASSIGNED);
+			paramTwo = DesignEntity("_", Type::UNDERSCORE, AttrRef::UNASSIGNED);
+			clause = new NextT(paramOne, paramTwo);
+			Assert::IsTrue(resultProjector.cacheExists(clause));
+
+			bool isSameResultCached = resultProjector.getNextTCache().getOneSynCacheResult() == result;
+			Assert::IsTrue(isSameResultCached);
+		}
+		TEST_METHOD(cacheUnderscoreSyn) {
+			ResultProjector resultProjector;
+			// set up
+			resultProjector.resetResults();
+
+			DesignEntity paramOne = DesignEntity("_", Type::UNDERSCORE, AttrRef::UNASSIGNED);
+			DesignEntity paramTwo = DesignEntity("pn", Type::PRINT, AttrRef::UNASSIGNED);
+			NextT* clause = new NextT(paramOne, paramTwo);
+
+			unordered_set<int> result;
+			result = { 2,1,5,8 };
+
+			resultProjector.storeInCache(clause, result);
+
+			ResultCache expectedCache;
+			unordered_map<Type, unordered_set<int>> expectedResult;
+			expectedResult[Type::PRINT] = result;
+			expectedCache.setUnderscoreSyn(expectedResult);
+			Assert::IsTrue(resultProjector.getNextTCache().isEquals(expectedCache));
+
+			paramOne = DesignEntity("_", Type::UNDERSCORE, AttrRef::UNASSIGNED);
+			paramTwo = DesignEntity("pn1", Type::PRINT, AttrRef::UNASSIGNED);
+			clause = new NextT(paramOne, paramTwo);
+			Assert::IsTrue(resultProjector.cacheExists(clause));
+
+			bool isSameResultCached = resultProjector.getNextTCache().getOneSynCacheResult() == result;
+			Assert::IsTrue(isSameResultCached);
+		}
+		TEST_METHOD(cacheSynFixed) {
+			ResultProjector resultProjector;
+			// set up
+			resultProjector.resetResults();
+
+			DesignEntity paramOne = DesignEntity("cl", Type::CALL, AttrRef::UNASSIGNED);
+			DesignEntity paramTwo = DesignEntity("2", Type::FIXED, AttrRef::UNASSIGNED);
+			NextT* clause = new NextT(paramOne, paramTwo);
+
+			unordered_set<int> result;
+			result = { 2,1,5,8 };
+
+			resultProjector.storeInCache(clause, result);
+
+			ResultCache expectedCache;
+			unordered_map<Type, unordered_map<int, unordered_set<int>>> expectedResult;
+			expectedResult[Type::CALL][2] = result;
+			expectedCache.setSynFixed(expectedResult);
+			Assert::IsTrue(resultProjector.getNextTCache().isEquals(expectedCache));
+
+			paramOne = DesignEntity("cl2", Type::CALL, AttrRef::UNASSIGNED);
+			paramTwo = DesignEntity("2", Type::FIXED, AttrRef::UNASSIGNED);
+			clause = new NextT(paramOne, paramTwo);
+			Assert::IsTrue(resultProjector.cacheExists(clause));
+
+			bool isSameResultCached = resultProjector.getNextTCache().getOneSynCacheResult() == result;
+			Assert::IsTrue(isSameResultCached);
+
+			paramOne = DesignEntity("cl2", Type::CALL, AttrRef::UNASSIGNED);
+			paramTwo = DesignEntity("3", Type::FIXED, AttrRef::UNASSIGNED);
+			clause = new NextT(paramOne, paramTwo);
+			Assert::IsFalse(resultProjector.cacheExists(clause));
+		}
+		TEST_METHOD(cacheFixedSyn) {
+			ResultProjector resultProjector;
+			// set up
+			resultProjector.resetResults();
+
+			DesignEntity paramOne = DesignEntity("1", Type::FIXED, AttrRef::UNASSIGNED);
+			DesignEntity paramTwo = DesignEntity("w", Type::WHILE, AttrRef::UNASSIGNED);
+			NextT* clause = new NextT(paramOne, paramTwo);
+
+			unordered_set<int> result;
+			result = { 2,1,5,8 };
+
+			resultProjector.storeInCache(clause, result);
+
+			ResultCache expectedCache;
+			unordered_map<Type, unordered_map<int, unordered_set<int>>> expectedResult;
+			expectedResult[Type::WHILE][1] = result;
+			expectedCache.setFixedSyn(expectedResult);
+			Assert::IsTrue(resultProjector.getNextTCache().isEquals(expectedCache));
+
+			paramOne = DesignEntity("1", Type::FIXED, AttrRef::UNASSIGNED);
+			paramTwo = DesignEntity("w2", Type::WHILE, AttrRef::UNASSIGNED);
+			clause = new NextT(paramOne, paramTwo);
+			Assert::IsTrue(resultProjector.cacheExists(clause));
+
+			bool isSameResultCached = resultProjector.getNextTCache().getOneSynCacheResult() == result;
+			Assert::IsTrue(isSameResultCached);
+
+			paramOne = DesignEntity("3", Type::FIXED, AttrRef::UNASSIGNED);
+			paramTwo = DesignEntity("w3", Type::WHILE, AttrRef::UNASSIGNED);
+			clause = new NextT(paramOne, paramTwo);
+			Assert::IsFalse(resultProjector.cacheExists(clause));
+		}
+
 
 		// ---------------------------------- HELPER FUNCTIONS -----------------------------------------------
 		// order in list does not matter
