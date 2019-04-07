@@ -148,6 +148,7 @@ bool ResultCache::cacheExists(Clause* clause) {
 			}
 		}
 	}
+	return false;
 }
 
 unordered_map<int, unordered_set<int>> ResultCache::getTwoSynCacheResult() {
