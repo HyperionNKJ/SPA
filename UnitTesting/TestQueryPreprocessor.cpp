@@ -3,6 +3,7 @@
 #include "CppUnitTest.h"
 #include "QueryPreprocessorFormatter.h"
 #include "QueryPreprocessorPatternParser.h"
+#include "QueryPreprocessorSelectParser.h"
 #include "QueryPreprocessorTokenizer.h"
 #include "QueryPreprocessorWithParser.h"
 
@@ -102,7 +103,7 @@ public:
 
 		Assert::IsFalse(status);
 	}
-	TEST_METHOD(withClauseWithSameRhsLhsValueNotAdded) {
+	TEST_METHOD(parseWithClauseWithRhsEqualLhsValueIgnored) {
 		ProcessedQuery stubQuery;
 		stubQuery.insertDeclaration("a", Type::ASSIGN);
 		stubQuery.insertDeclaration("p", Type::PROCEDURE);
@@ -158,7 +159,7 @@ public:
 		Assert::IsTrue(stubQuery.booleanClauses.size() == 0);
 		Assert::IsTrue(stubQuery.withClauses.size() == 0);
 	}
-	TEST_METHOD(withClauseWithConstantRhsLhsValueReturnEmptyResult) {
+	TEST_METHOD(oarseWithClauseWithConstantRhsNotEqualLhsShouldReturnEmptyResult) {
 		ProcessedQuery stubQuery;
 
 		std::string withClauseA = "1=2";
@@ -178,7 +179,7 @@ public:
 		Assert::IsTrue(stubQuery.booleanClauses.size() == 0);
 		Assert::IsTrue(stubQuery.withClauses.size() == 0);
 	}
-	TEST_METHOD(withClauseStmtNumStmtNumParsed) {
+	TEST_METHOD(parseWithClauseStmtNumStmtNumPass) {
 		ProcessedQuery stubQuery;
 		stubQuery.insertDeclaration("a1", Type::ASSIGN);
 		stubQuery.insertDeclaration("a2", Type::ASSIGN);
@@ -202,7 +203,7 @@ public:
 		Assert::IsTrue(paramTwo.isType(Type::ASSIGN));
 		Assert::IsTrue(paramTwo.isAttrRef(AttrRef::STMT_NUM));
 	}
-	TEST_METHOD(withClauseProcLineProcLineParsed) {
+	TEST_METHOD(parseWithClauseProcLineProcLinePass) {
 		ProcessedQuery stubQuery;
 		stubQuery.insertDeclaration("p1", Type::PROGLINE);
 		stubQuery.insertDeclaration("p2", Type::PROGLINE);
@@ -226,7 +227,7 @@ public:
 		Assert::IsTrue(paramOne.isType(Type::PROGLINE));
 		Assert::IsTrue(paramOne.isAttrRef(AttrRef::UNASSIGNED));
 	}
-	TEST_METHOD(withClauseStmtNumProcLineParsed) {
+	TEST_METHOD(parseWithClauseStmtNumProcLinePass) {
 		ProcessedQuery stubQuery;
 		stubQuery.insertDeclaration("a", Type::ASSIGN);
 		stubQuery.insertDeclaration("p", Type::PROGLINE);
@@ -250,7 +251,7 @@ public:
 		Assert::IsTrue(paramTwo.isType(Type::PROGLINE));
 		Assert::IsTrue(paramTwo.isAttrRef(AttrRef::UNASSIGNED));
 	}
-	TEST_METHOD(withClauseStmtNumConstantParsed) {
+	TEST_METHOD(parseWithClauseStmtNumConstantPass) {
 		ProcessedQuery stubQuery;
 		stubQuery.insertDeclaration("a", Type::ASSIGN);
 
@@ -273,7 +274,7 @@ public:
 		Assert::IsTrue(paramTwo.isType(Type::WITH_INTEGER));
 		Assert::IsTrue(paramTwo.isAttrRef(AttrRef::UNASSIGNED));
 	}
-	TEST_METHOD(withClauseVarVarParsed) {
+	TEST_METHOD(parseWithClauseVarVarPass) {
 		ProcessedQuery stubQuery;
 		stubQuery.insertDeclaration("v1", Type::VARIABLE);
 		stubQuery.insertDeclaration("v2", Type::VARIABLE);
@@ -297,7 +298,7 @@ public:
 		Assert::IsTrue(paramTwo.isType(Type::VARIABLE));
 		Assert::IsTrue(paramTwo.isAttrRef(AttrRef::VAR_NAME));
 	}
-	TEST_METHOD(withClauseProcProcParsed) {
+	TEST_METHOD(parseWithClauseProcProcPass) {
 		ProcessedQuery stubQuery;
 		stubQuery.insertDeclaration("p1", Type::PROCEDURE);
 		stubQuery.insertDeclaration("p2", Type::PROCEDURE);
@@ -321,7 +322,7 @@ public:
 		Assert::IsTrue(paramTwo.isType(Type::PROCEDURE));
 		Assert::IsTrue(paramTwo.isAttrRef(AttrRef::PROC_NAME));
 	}
-	TEST_METHOD(withClauseVarProcParsed) {
+	TEST_METHOD(parseWithClauseVarProcPass) {
 		ProcessedQuery stubQuery;
 		stubQuery.insertDeclaration("v", Type::VARIABLE);
 		stubQuery.insertDeclaration("p", Type::PROCEDURE);
@@ -345,7 +346,7 @@ public:
 		Assert::IsTrue(paramTwo.isType(Type::PROCEDURE));
 		Assert::IsTrue(paramTwo.isAttrRef(AttrRef::PROC_NAME));
 	}
-	TEST_METHOD(withClauseVarConstantParsed) {
+	TEST_METHOD(parseWithClauseVarConstantPass) {
 		ProcessedQuery stubQuery;
 		stubQuery.insertDeclaration("v", Type::VARIABLE);
 
@@ -368,7 +369,7 @@ public:
 		Assert::IsTrue(paramTwo.isType(Type::WITH_STRING));
 		Assert::IsTrue(paramTwo.isAttrRef(AttrRef::UNASSIGNED));
 	}
-	TEST_METHOD(withClauseProcConstantParsed) {
+	TEST_METHOD(parseWithClauseProcConstantPass) {
 		ProcessedQuery stubQuery;
 		stubQuery.insertDeclaration("p", Type::PROCEDURE);
 
@@ -391,7 +392,7 @@ public:
 		Assert::IsTrue(paramTwo.isType(Type::WITH_STRING));
 		Assert::IsTrue(paramTwo.isAttrRef(AttrRef::UNASSIGNED));
 	}
-	TEST_METHOD(withClauseIntNameFail) {
+	TEST_METHOD(parseWithClauseIntNameFail) {
 		ProcessedQuery stubQuery;
 		stubQuery.insertDeclaration("a", Type::ASSIGN);
 		stubQuery.insertDeclaration("v", Type::VARIABLE);
@@ -403,7 +404,7 @@ public:
 
 		Assert::IsFalse(status);
 	}
-	TEST_METHOD(withClauseNameIntFail) {
+	TEST_METHOD(parseWithClauseNameIntFail) {
 		ProcessedQuery stubQuery;
 		stubQuery.insertDeclaration("a", Type::ASSIGN);
 		stubQuery.insertDeclaration("v", Type::VARIABLE);
@@ -541,6 +542,221 @@ public:
 		Assert::IsTrue(paramTwo.getValue() == "a b + z x + *");
 		Assert::IsTrue(paramTwo.isType(Type::PATTERN_SUB));
 		Assert::IsTrue(paramTwo.isAttrRef(AttrRef::UNASSIGNED));
+	}
+	TEST_METHOD(parseAssignPatternClauseConstantExactPass) {
+		ProcessedQuery stubQuery;
+		stubQuery.insertDeclaration("a", Type::ASSIGN);
+
+		std::string patternCl = "a(\"v\",\"((a+b)*(z+x))\")";
+
+		QueryPreprocessorPatternParser parser(patternCl, stubQuery);
+		bool status = parser.parse();
+
+		Assert::IsTrue(status);
+
+		DesignEntity paramOne = stubQuery.otherClauses[0]->getParaOne();
+		DesignEntity paramTwo = stubQuery.otherClauses[0]->getParaTwo();
+
+		Assert::IsTrue(paramOne.getValue() == "v");
+		Assert::IsTrue(paramOne.isType(Type::FIXED));
+		Assert::IsTrue(paramOne.isAttrRef(AttrRef::UNASSIGNED));
+		Assert::IsTrue(paramTwo.getValue() == "a b + z x + *");
+		Assert::IsTrue(paramTwo.isType(Type::PATTERN_EXACT));
+		Assert::IsTrue(paramTwo.isAttrRef(AttrRef::UNASSIGNED));
+	}
+	TEST_METHOD(parseAssignPatternClauseConstantSubPass) {
+		ProcessedQuery stubQuery;
+		stubQuery.insertDeclaration("a", Type::ASSIGN);
+
+		std::string patternCl = "a(\"v\",_\"((a+b)*(z+x))\"_)";
+
+		QueryPreprocessorPatternParser parser(patternCl, stubQuery);
+		bool status = parser.parse();
+
+		Assert::IsTrue(status);
+
+		DesignEntity paramOne = stubQuery.otherClauses[0]->getParaOne();
+		DesignEntity paramTwo = stubQuery.otherClauses[0]->getParaTwo();
+
+		Assert::IsTrue(paramOne.getValue() == "v");
+		Assert::IsTrue(paramOne.isType(Type::FIXED));
+		Assert::IsTrue(paramOne.isAttrRef(AttrRef::UNASSIGNED));
+		Assert::IsTrue(paramTwo.getValue() == "a b + z x + *");
+		Assert::IsTrue(paramTwo.isType(Type::PATTERN_SUB));
+		Assert::IsTrue(paramTwo.isAttrRef(AttrRef::UNASSIGNED));
+	}
+	TEST_METHOD(parseAssignPatternClauseVariableExactPass) {
+		ProcessedQuery stubQuery;
+		stubQuery.insertDeclaration("a", Type::ASSIGN);
+		stubQuery.insertDeclaration("v", Type::VARIABLE);
+
+		std::string patternCl = "a(v,\"((a+b)*(z+x))\")";
+
+		QueryPreprocessorPatternParser parser(patternCl, stubQuery);
+		bool status = parser.parse();
+
+		Assert::IsTrue(status);
+
+		DesignEntity paramOne = stubQuery.otherClauses[0]->getParaOne();
+		DesignEntity paramTwo = stubQuery.otherClauses[0]->getParaTwo();
+
+		Assert::IsTrue(paramOne.getValue() == "v");
+		Assert::IsTrue(paramOne.isType(Type::VARIABLE));
+		Assert::IsTrue(paramOne.isAttrRef(AttrRef::UNASSIGNED));
+		Assert::IsTrue(paramTwo.getValue() == "a b + z x + *");
+		Assert::IsTrue(paramTwo.isType(Type::PATTERN_EXACT));
+		Assert::IsTrue(paramTwo.isAttrRef(AttrRef::UNASSIGNED));
+	}
+	TEST_METHOD(parseAssignPatternClauseVariableSubPass) {
+		ProcessedQuery stubQuery;
+		stubQuery.insertDeclaration("a", Type::ASSIGN);
+		stubQuery.insertDeclaration("v", Type::VARIABLE);
+
+		std::string patternCl = "a(v,_\"((a+b)*(z+x))\"_)";
+
+		QueryPreprocessorPatternParser parser(patternCl, stubQuery);
+		bool status = parser.parse();
+
+		Assert::IsTrue(status);
+
+		DesignEntity paramOne = stubQuery.otherClauses[0]->getParaOne();
+		DesignEntity paramTwo = stubQuery.otherClauses[0]->getParaTwo();
+
+		Assert::IsTrue(paramOne.getValue() == "v");
+		Assert::IsTrue(paramOne.isType(Type::VARIABLE));
+		Assert::IsTrue(paramOne.isAttrRef(AttrRef::UNASSIGNED));
+		Assert::IsTrue(paramTwo.getValue() == "a b + z x + *");
+		Assert::IsTrue(paramTwo.isType(Type::PATTERN_SUB));
+		Assert::IsTrue(paramTwo.isAttrRef(AttrRef::UNASSIGNED));
+	}
+	TEST_METHOD(parseIfPatternClauseVariablePass) {
+		ProcessedQuery stubQuery;
+		stubQuery.insertDeclaration("if", Type::IF);
+		stubQuery.insertDeclaration("v", Type::VARIABLE);
+
+		std::string patternCl = "if(v,_,_)";
+
+		QueryPreprocessorPatternParser parser(patternCl, stubQuery);
+		bool status = parser.parse();
+
+		Assert::IsTrue(status);
+
+		DesignEntity paramOne = stubQuery.otherClauses[0]->getParaOne();
+		DesignEntity paramTwo = stubQuery.otherClauses[0]->getParaTwo();
+
+		Assert::IsTrue(paramOne.getValue() == "v");
+		Assert::IsTrue(paramOne.isType(Type::VARIABLE));
+		Assert::IsTrue(paramOne.isAttrRef(AttrRef::UNASSIGNED));
+	}
+	TEST_METHOD(parseIfPatternClauseUnderscorePass) {
+		ProcessedQuery stubQuery;
+		stubQuery.insertDeclaration("if", Type::IF);
+
+		std::string patternCl = "if(_,_,_)";
+
+		QueryPreprocessorPatternParser parser(patternCl, stubQuery);
+		bool status = parser.parse();
+
+		Assert::IsTrue(status);
+
+		DesignEntity paramOne = stubQuery.otherClauses[0]->getParaOne();
+		DesignEntity paramTwo = stubQuery.otherClauses[0]->getParaTwo();
+
+		Assert::IsTrue(paramOne.getValue() == "");
+		Assert::IsTrue(paramOne.isType(Type::UNDERSCORE));
+		Assert::IsTrue(paramOne.isAttrRef(AttrRef::UNASSIGNED));
+	}
+	TEST_METHOD(parseIfPatternClauseConstantPass) {
+		ProcessedQuery stubQuery;
+		stubQuery.insertDeclaration("if", Type::IF);
+
+		std::string patternCl = "if(\"v\",_,_)";
+
+		QueryPreprocessorPatternParser parser(patternCl, stubQuery);
+		bool status = parser.parse();
+
+		Assert::IsTrue(status);
+
+		DesignEntity paramOne = stubQuery.otherClauses[0]->getParaOne();
+		DesignEntity paramTwo = stubQuery.otherClauses[0]->getParaTwo();
+
+		Assert::IsTrue(paramOne.getValue() == "v");
+		Assert::IsTrue(paramOne.isType(Type::FIXED));
+		Assert::IsTrue(paramOne.isAttrRef(AttrRef::UNASSIGNED));
+	}
+	TEST_METHOD(parseWhilePatternClauseVariablePass) {
+		ProcessedQuery stubQuery;
+		stubQuery.insertDeclaration("while", Type::WHILE);
+		stubQuery.insertDeclaration("v", Type::VARIABLE);
+
+		std::string patternCl = "while(v,_)";
+
+		QueryPreprocessorPatternParser parser(patternCl, stubQuery);
+		bool status = parser.parse();
+
+		Assert::IsTrue(status);
+
+		DesignEntity paramOne = stubQuery.otherClauses[0]->getParaOne();
+		DesignEntity paramTwo = stubQuery.otherClauses[0]->getParaTwo();
+
+		Assert::IsTrue(paramOne.getValue() == "v");
+		Assert::IsTrue(paramOne.isType(Type::VARIABLE));
+		Assert::IsTrue(paramOne.isAttrRef(AttrRef::UNASSIGNED));
+	}
+	TEST_METHOD(parseWhilePatternClauseUnderscorePass) {
+		ProcessedQuery stubQuery;
+		stubQuery.insertDeclaration("while", Type::WHILE);
+
+		std::string patternCl = "while(_,_)";
+
+		QueryPreprocessorPatternParser parser(patternCl, stubQuery);
+		bool status = parser.parse();
+
+		Assert::IsTrue(status);
+
+		DesignEntity paramOne = stubQuery.otherClauses[0]->getParaOne();
+		DesignEntity paramTwo = stubQuery.otherClauses[0]->getParaTwo();
+
+		Assert::IsTrue(paramOne.getValue() == "");
+		Assert::IsTrue(paramOne.isType(Type::UNDERSCORE));
+		Assert::IsTrue(paramOne.isAttrRef(AttrRef::UNASSIGNED));
+	}
+	TEST_METHOD(parseWhilePatternClauseConstantPass) {
+		ProcessedQuery stubQuery;
+		stubQuery.insertDeclaration("while", Type::WHILE);
+
+		std::string patternCl = "while(\"v\",_)";
+
+		QueryPreprocessorPatternParser parser(patternCl, stubQuery);
+		bool status = parser.parse();
+
+		Assert::IsTrue(status);
+
+		DesignEntity paramOne = stubQuery.otherClauses[0]->getParaOne();
+		DesignEntity paramTwo = stubQuery.otherClauses[0]->getParaTwo();
+
+		Assert::IsTrue(paramOne.getValue() == "v");
+		Assert::IsTrue(paramOne.isType(Type::FIXED));
+		Assert::IsTrue(paramOne.isAttrRef(AttrRef::UNASSIGNED));
+	}
+	TEST_METHOD(parseSelectClauseConstantPass) {
+		ProcessedQuery stubQuery;
+		stubQuery.insertDeclaration("a", Type::ASSIGN);
+		stubQuery.insertDeclaration("i", Type::IF);
+		stubQuery.insertDeclaration("w", Type::WHILE);
+		stubQuery.insertDeclaration("v", Type::VARIABLE);
+
+		std::string modifiesSuchThatCl = "such that Modifies(a,\"v\")";
+		std::string assignPatternCl = "pattern a(v,_)";
+		std::string ifPatternCl = "pattern i(\"v\",_,_)";
+		std::string withPatternCl = "pattern w(\"v\",_)";
+
+		std::string selectCl = "Select a " + modifiesSuchThatCl + " " + assignPatternCl + " " + ifPatternCl + " " + withPatternCl;
+
+		QueryPreprocessorSelectParser parser(selectCl, stubQuery);
+		bool status = parser.parse();
+
+		Assert::IsTrue(status);
 	}
 	};
 }
