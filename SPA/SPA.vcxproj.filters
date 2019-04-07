@@ -281,10 +281,10 @@
     <ClInclude Include="..\source\QueryPreprocessorWithParser.h">
       <Filter>Header Files\QueryPreprocessor</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\CacheType.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\ResultCache.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\CacheType.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
