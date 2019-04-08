@@ -73,12 +73,12 @@ bool DesignExtractor::topologicalVisit(string procName, unordered_set<string>* v
 	}
 	else if (currentDFSVisited->count(procName) > 0) {
 		//not a DAG, since we point back to a node higher in this dfs search, return error due to cyclic calls
-		cout << "Cyclic/Self calls in program are detected" << endl;
+		errorMessage = "Cyclic/Self calls in program are detected";
 		return false;
 	}
 	else if (procList.count(procName) < 1) {
 		//procedure called does not exist, return error
-		cout << "Error: Call statement to non-existent procedure " << procName << "found" << endl;
+		errorMessage = "Call statement to non-existent procedure " + procName + " found";
 		return false;
 	}
 	else {
@@ -121,4 +121,8 @@ unordered_map<string, unordered_set<string>> DesignExtractor::getCallGraph() {
 
 unordered_set<string> DesignExtractor::getProcList() {
 	return procList;
+}
+
+string DesignExtractor::getErrorMessage() {
+	return errorMessage;
 }

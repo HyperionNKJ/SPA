@@ -15,6 +15,7 @@ class DesignExtractor {
 	unordered_map<string, unordered_set<string>> procUsesTable;
 	unordered_map<string, unordered_set<string>> procModifiesTable;
 	vector<string> topoSortedProc;
+	string errorMessage;
 
 private:
 	bool topologicalSortCalls();
@@ -33,4 +34,5 @@ public:
 	unordered_map<string, unordered_set<string>> getProcModifiesTable();
 	unordered_map<string, unordered_set<string>> getCallGraph();
 	unordered_set<string> getProcList();
+	string getErrorMessage();
 };

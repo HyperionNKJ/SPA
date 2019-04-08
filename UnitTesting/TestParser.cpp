@@ -521,8 +521,8 @@ namespace UnitTesting {
 			vector<vector<int>> expectedAllFollowStack = vector<vector<int>>();
 			expectedAllFollowStack.push_back(tempVector);
 
-			unordered_map<string, int> expectedProcCalledByTable;
-			expectedProcCalledByTable.insert({ "proc2", 7 });
+			unordered_map<int, string> expectedProcCalledByTable;
+			expectedProcCalledByTable.insert({ 7, "proc2" });
 
 			parser.setParentVector(expectedParentVector);
 			parser.setCurrentFollowVector(testFollowVector);
