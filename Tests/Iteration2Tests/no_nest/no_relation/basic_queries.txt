@@ -70,7 +70,7 @@ Select cl.stmt#
 5000
 13 - Select all call variables
 call cl;
-Select cl.varName
+Select cl.procName
 P, Q
 5000
 14 - Select all variables
