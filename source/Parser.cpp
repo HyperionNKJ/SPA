@@ -148,6 +148,15 @@ bool Parser::checkProcedure(string procLine) {
 		errorMessage = "Procedure statement is invalid";
 		return false;
 	}
+	size_t startPos = procLine.find("procedure");
+	size_t endPos = procLine.find_first_of("{");
+	string procedureName = procLine.substr(startPos + 9, endPos - startPos - 9);
+	procedureName = leftTrim(procedureName, " \t");
+	procedureName = rightTrim(procedureName, " \t");
+	if (procNames.count(procedureName) > 0) {
+		errorMessage = "Two procedures with the same name have been found: " + procedureName;
+		return false;
+	}
 	return true;
 }
 
@@ -169,6 +178,7 @@ int Parser::handleProcedure(string procLine) {
 	withinProcedure = true;
 	emptyProcedure = true;
 	firstInProc = true;
+	procNames.insert(procedureName);
 	return 0;
 }
 
