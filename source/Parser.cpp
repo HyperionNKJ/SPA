@@ -80,6 +80,12 @@ int Parser::parse(string fileName, PKB& p) {
 						statementNumber++;
 						emptyProcedure = false;
 					}
+					else if (intent == KEY_SWITCH) {
+						statementNumber++;
+					}
+					else if (intent == KEY_SWITCHCASE) {
+						statementNumber++;
+					}
 					else {
 						errorMessage = "Statement of unknown type encountered at line " + statementNumber;
 						result = -1;
@@ -136,6 +142,12 @@ Statement_Key Parser::getStatementIntent(string line) {
 	}
 	if (tokenLine[0] == "}") {
 		return KEY_CLOSE_BRACKET;
+	}
+	if (tokenLine[0] == "switch") {
+		return KEY_SWITCH;
+	}
+	if (tokenLine[0] == "case") {
+		return KEY_SWITCHCASE;
 	}
 	return KEY_ERROR;
 }
@@ -788,6 +800,52 @@ int Parser::handleCall(string callLine) {
 	return 0;
 }
 
+bool Parser::checkSwitch(string switchLine) {
+	size_t firstOpenBracket = switchLine.find_first_of("(");
+	size_t lastCloseBracket = switchLine.find_last_of(")");
+	if (firstOpenBracket == string::npos || lastCloseBracket == string::npos) {
+		errorMessage = "Missing ( and ) brackets around the variable name at line " + statementNumber;
+		return false;
+	}
+	string truncSwitchLine = switchLine.substr(0, firstOpenBracket) + switchLine.substr(lastCloseBracket + 1, string::npos);
+	string controlVar = switchLine.substr(firstOpenBracket, lastCloseBracket - firstOpenBracket + 1);
+	string switchRegexString = spaceRegex + "switch" + spaceRegex + openCurlyRegex + spaceRegex;
+	regex switchRegex(switchRegexString);
+	if (!regex_match(truncSwitchLine, switchRegex)) {
+		errorMessage = "Unexpected tokens in the switch statement at line " + statementNumber;
+		return false;
+	}
+	if (!isValidVarName(controlVar)) {
+		errorMessage = "Variable expected within ( ) for switch statement at line " + statementNumber;
+		return false;
+	}
+	return true;
+}
+
+int Parser::handleSwitch(string switchLine) {
+	if (!checkSwitch(switchLine)) {
+		return -1;
+	}
+	return 0;
+}
+
+bool Parser::checkSwitchCase(string switchCaseLine) {
+	string switchCaseRegexString = spaceRegex + "case" + spaceRegex + varNameRegex + spaceRegex + ":" + spaceRegex;
+	regex switchCaseRegex(switchCaseRegexString);
+	if (!regex_match(switchCaseLine, switchCaseRegex)) {
+		errorMessage = "Unexpected tokens in the switch case statement at line " + statementNumber;
+		return false;
+	}
+	return true;
+}
+
+int Parser::handleSwitchCase(string switchCaseLine) {
+	if (!checkSwitchCase(switchCaseLine)) {
+		return -1;
+	}
+	return 0;
+}
+
 vector<string> Parser::loadFile(string fileName) {
 	ifstream sourceFile;
 	sourceFile.open(fileName);
@@ -803,13 +861,14 @@ vector<string> Parser::loadFile(string fileName) {
 	while (!allSourceCode.empty()) {
 		allSourceCode = leftTrim(allSourceCode, " \t\n");
 		/*Break up into lines in 3 cases
-		First is semicolon, second is open brackets, third is close brackets */
-		size_t delimitPos = allSourceCode.find_first_of(";{}");
+		First is semicolon, second is open brackets, third is close brackets 
+		Extra case is colon for extension switch statement */
+		size_t delimitPos = allSourceCode.find_first_of(";{}:");
 		while (delimitPos != string::npos) {
 			string currStatement = allSourceCode.substr(0, delimitPos+1);
 			sourceCode.push_back(currStatement);
 			allSourceCode = allSourceCode.substr(delimitPos + 1, string::npos);
-			delimitPos = allSourceCode.find_first_of(";{}");
+			delimitPos = allSourceCode.find_first_of(";{}:");
 		}
 		if (!allSourceCode.empty()) {
 			sourceCode.push_back(allSourceCode);

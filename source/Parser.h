@@ -15,7 +15,7 @@
 enum Container { WHILEC, IFC, ELSEC, NONEC };
 enum Statement_Key {
 	KEY_PROCEDURE, KEY_ASSIGN, KEY_IF, KEY_ELSE, KEY_WHILE,
-	KEY_READ, KEY_PRINT, KEY_CLOSE_BRACKET, KEY_CALL, KEY_ERROR
+	KEY_READ, KEY_PRINT, KEY_CLOSE_BRACKET, KEY_CALL, KEY_ERROR, KEY_SWITCH, KEY_SWITCHCASE
 };
 
 class Parser {
@@ -62,6 +62,8 @@ private:
 	bool checkRelExpr(string);
 	bool checkRelFactor(string);
 	bool checkCall(string);
+	bool checkSwitch(string);
+	bool checkSwitchCase(string);
 
 	Statement_Key getStatementIntent(string);
 
@@ -91,6 +93,8 @@ public:
 	int handleIf(string);
 	int handleElse(string);
 	int handleCall(string);
+	int handleSwitch(string);
+	int handleSwitchCase(string);
 	int handleCloseBracket(string);
 
 	int parse(string, PKB&);
