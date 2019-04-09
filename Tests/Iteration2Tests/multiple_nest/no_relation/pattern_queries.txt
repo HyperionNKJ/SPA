@@ -48,8 +48,28 @@ if ifs; variable v;
 Select v pattern ifs (v, _, _)
 a, b, c
 5000
-11 - Select while pattern
+11 - Select variable in if pattern
+if ifs; variable v;
+Select v pattern ifs (v, _, _)
+a, b, c
+5000
+12 - Select variable in if pattern
+if ifs; variable v;
+Select ifs pattern ifs (_, _, _)
+10,14,15,16,17,21,31
+5000
+13 - Select while pattern
 while w;
 Select w pattern w ("b", _)
 25, 35
+5000
+14 - Select while pattern
+while w;
+Select w pattern w (_, _)
+11,25,32,35
+5000
+15 - Select while pattern
+while w; variable v;
+Select v pattern w (v, _)
+b,c,x
 5000
