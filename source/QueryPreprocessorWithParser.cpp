@@ -37,14 +37,16 @@ bool QueryPreprocessorWithParser::parse() {
 	// with clause fixed statement number but different 
 	if (paramOne.isType(Type::WITH_INTEGER) 
 		&& paramTwo.isType(Type::WITH_INTEGER) 
-		&& paramOne.getValue() != paramTwo.getValue()) {
+		&& paramOne.getValue() != paramTwo.getValue()
+		&& !query.resultClElemList[0].isType(Type::BOOLEAN)) {
 		return false;
 	}
 
 	// with clause fixed variable but different 
 	if (paramOne.isType(Type::WITH_STRING)
 		&& paramTwo.isType(Type::WITH_STRING)
-		&& paramOne.getValue() != paramTwo.getValue()) {
+		&& paramOne.getValue() != paramTwo.getValue()
+		&& !query.resultClElemList[0].isType(Type::BOOLEAN)) {
 		return false;
 	}
 

@@ -29,6 +29,7 @@ class Parser {
 	string currProcedure;
 	vector<string> sourceCode = vector<string>();
 	int statementNumber = 1;
+	unordered_set<string> procNames = unordered_set<string>();
 	
 	//trackers for parent, follows
 	vector<int> parentVector = vector<int>();
@@ -42,8 +43,7 @@ class Parser {
 	//trackers for next
 	bool firstInProc = false;
 	bool firstInElse = false;
-	vector<pair<int, int>>  lastInIfTracker = vector<pair<int, int>>();
-	vector<pair<int, int>>  lastInElseTracker = vector<pair<int, int>>();	
+	vector<pair<int, int>>  lastInIfElseTracker = vector<pair<int, int>>();
 	int closedIfCount = 0;
 	int lastStmtInFlow = -1;
 

@@ -149,7 +149,7 @@ void ProcessedQuery::optimiseClauses() {
 		}
 
 		if (paramTwoResult != with.end()) {
-			DesignEntity replacement = paramOneResult->second;
+			DesignEntity replacement = paramTwoResult->second;
 			replacement.setType(Type::FIXED);
 			clause->setParaTwo(replacement);
 		}

@@ -43,8 +43,213 @@ variable v;
 Select v such that Modifies (5, v)
 a
 5000
-10 - Select variables modified by stmt with given number
+10 - Procedure with Variable
+procedure p; variable v;
+Select p such that Modifies (p, v)
+main, P, Q
+5000
+11 - Procedure with Underscore
+procedure p; variable v;
+Select p such that Modifies (p, _)
+main, P, Q
+5000
+12 - Procedure with Fixed
+procedure p; variable v;
+Select p such that Modifies (p, "x")
+main, P, Q
+5000
+13 - Stmt with Variable
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select s such that Modifies (s, v)
+1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19, 20
+5000
+14 - Assign with Variable
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select a such that Modifies (a, v)
+5, 6, 8, 9, 11, 15, 16, 17, 18, 19, 20
+5000
+15 - Call with Variable
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select v such that Modifies (cl, v)
+x, a, b, c, k
+5000
+16 - Print with Variable
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select p such that Modifies (p, v)
+none
+5000
+17 - Read with Variable
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select r such that Modifies (r, v)
+1, 2, 3, 14
+5000
+18 - Progline with Variable
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select v such that Modifies (n, v)
+x, a, b, c, k
+5000
+19 - While with Variable
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select v such that Modifies (w, v)
+none
+5000
+20 - If with Variable
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select v such that Modifies (ifs, v)
+none
+5000
+21 - Stmt with Underscore
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select s such that Modifies (s, _)
+1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19, 20
+5000
+22 - Assign with Underscore
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select a such that Modifies (a, _)
+5, 6, 8, 9, 11, 15, 16, 17, 18, 19, 20
+5000
+23 - Call with Underscore
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select cl such that Modifies (cl, _)
+4, 10, 13
+5000
+24 - Print with Underscore
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select p such that Modifies (p, _)
+none
+5000
+25 - Read with Underscore
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select r such that Modifies (r, _)
+1, 2, 3, 14
+5000
+26 - Progline with Underscore
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select n such that Modifies (n, _)
+1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19, 20
+5000
+27 - While with Underscore
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select w such that Modifies (w, _)
+none
+5000
+28 - If with Underscore
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select ifs such that Modifies (ifs, _)
+none
+5000
+29 - Stmt with Fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select s such that Modifies (s, "a")
+1, 4, 5, 8, 10, 13, 18
+5000
+30 - Assign with Fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select a such that Modifies (a, "a")
+5, 8, 18
+5000
+31 - Call with Fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select cl such that Modifies (cl, "a")
+4, 10, 13
+5000
+32 - Print with Fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select p such that Modifies (p, "a")
+none
+5000
+33 - Read with Fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select r such that Modifies (r, "a")
+1
+5000
+34 - Progline with Fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select n such that Modifies (n, "a")
+1, 4, 5, 8, 10, 13, 18
+5000
+35 - While with Fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select w such that Modifies (w, "a")
+none
+5000
+36 - If with Fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select ifs such that Modifies (ifs, "a")
+none
+5000
+37 - Fixed (procedure) with Variable
+procedure p; variable v;
+Select v such that Modifies ("P", v)
+a, b, c, x, k
+5000
+38 - Fixed (procedure) with Underscore
+procedure p; variable v;
+Select BOOLEAN such that Modifies ("Q", _)
+TRUE
+5000
+39 - Fixed (procedure) with Fixed
+procedure p; variable v;
+Select BOOLEAN such that Modifies ("P", "k")
+TRUE
+5000
+40 - Fixed (stmt) with Variable
+procedure p; variable v;
+Select v such that Modifies (3, v)
+c
+5000
+41 - Fixed (stmt) with Variable
+procedure p; variable v;
+Select v such that Modifies (9, v)
+c
+5000
+42 - Fixed (stmt) with Underscore
+procedure p; variable v;
+Select BOOLEAN such that Modifies (14, _)
+TRUE
+5000
+43 - Fixed (stmt) with Fixed
+procedure p; variable v;
+Select BOOLEAN such that Modifies (20, "b")
+FALSE
+5000
+44 - Invalid
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select v such that Modifies (_, _)
+none
+5000
+45 - Invalid
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select BOOLEAN such that Modifies (_, "a")
+FALSE
+5000
+46 - Select variables modified by stmt with given number
 variable v;
 Select v such that Modifies (21, v)
 none
+5000
+47 - Fixed with Fixed
+procedure p; variable v;
+Select BOOLEAN such that Modifies ("1", "k")
+FALSE
+5000
+48 - Fixed with Fixed
+procedure p; variable v;
+Select BOOLEAN such that Modifies ("P", "123")
+FALSE
+5000
+49 - Fixed with Fixed
+procedure p; variable v;
+Select BOOLEAN such that Modifies ("a", "123")
+FALSE
+5000
+50 - Variable with Fixed
+procedure p; variable v;
+Select BOOLEAN such that Modifies (v, "123")
+FALSE
+5000
+51 - Procedure with Fixed
+procedure p; variable v;
+Select BOOLEAN such that Modifies (p, "123")
+FALSE
 5000
