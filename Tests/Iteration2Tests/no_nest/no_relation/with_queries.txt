@@ -194,7 +194,7 @@ Select n with n = 3 and n = rd.stmt#
 3
 5000
 40 - Multiple with restriction
-stmt s; const c; assign a;
+stmt s; constant c; assign a;
 Select s with s.stmt# = c.value and a.stmt# = s.stmt#
 5, 16
 5000
