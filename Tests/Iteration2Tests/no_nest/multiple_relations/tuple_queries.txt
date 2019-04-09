@@ -6,39 +6,74 @@ Select <pt>
 2 - Repeated
 stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
 Select <pt, pt>
-7 7, 7 12, 7 21, 12 7, 12 12, 12 21, 21 7, 21 12, 21 21
+7 7, 12 12, 21 21
 5000
-3 - Tuple with varName
-stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
-Select <pt, pt.varName>
-7 b, 7 c, 12 b, 12 c, 21 b, 21 c
-5000
-4 - Tuple with stmt#
+3 - Tuple with stmt#
 stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
 Select <pt, pt.stmt#>
-7 7, 7 12, 7 21, 12 7, 12 12, 12 21, 21 7, 21 12, 21 21
+7 7, 12 12, 21 21
+5000
+4 - Tuple with varName
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select <pt, pt.varName>
+7 b, 12 b, 21 c
 5000
 5 - Tuple with stmt# and varName
 stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
 Select <pt, pt.stmt#, pt.varName>
-7 7 b, 7 7 c, 7 12 b, 7 12 c, 7 21 b, 7 21 c, 12 7 b, 12 7 c, 12 12 b, 12 12 c, 12 21 b, 12 21 c, 21 7 b, 21 7 c, 21 12 b, 21 12 c, 21 21 b, 21 21 c
+7 7 b, 12 12 b, 21 21 c
 5000
-6 - Tuple in same table
+6 - Tuple cross table
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select <pt, r.stmt#, pt.varName, r.varName>
+7 1 b a, 7 2 b b, 7 3 b c, 7 14 b x, 12 1 b a, 12 2 b b, 12 3 b c, 12 14 b x, 21 1 c a, 21 2 c b, 21 3 c c, 21 14 c x,
+5000
+7 - Single tuple in results table
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select <pt> such that Follows (s, pt)
+7, 12, 21
+5000
+8 - Repeated in results table
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select <pt, pt> such that Follows (s, pt)
+7 7, 12 12, 21 21
+5000
+9 - Tuple with stmt# in results table
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select <pt, pt.stmt#> such that Follows (s, pt)
+7 7, 12 12, 21 21
+5000
+10 - Tuple with varName in results table
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select <pt, pt.varName> such that Follows (s, pt)
+7 b, 12 b, 21 c
+5000
+11 - Tuple with stmt# and varName in results table
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select <pt, pt.stmt#, pt.varName> such that Follows (s, pt)
+7 7 b, 12 12 b, 21 21 c
+5000
+12 - Tuple cross table in results table
+stmt s, s1; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select <pt, r.stmt#, pt.varName, r.varName> such that Follows (s, pt) and Follows (r, s1);
+7 1 b a, 7 2 b b, 7 3 b c, 7 14 b x, 12 1 b a, 12 2 b b, 12 3 b c, 12 14 b x, 21 1 c a, 21 2 c b, 21 3 c c, 21 14 c x,
+5000
+13 - Tuple in same table
 stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
 Select <p, v> such that Uses (p, v)
 main a, main b, main c, main x, P a, P b, P c, P x, Q a, Q b, Q c, Q x
 5000
-7 - Tuple in same table
+14 - Tuple in same table
 stmt s, s1; variable v; constant c;
 Select <c, v, s1> such that Uses (s, v) and Follows (s, s1) with s.stmt# = c.value
 5 a 6, 5 b 6, 7 b 8
 5000
-8 - Tuple in different table
+15 - Tuple in different table
 print pt; variable v; procedure p;
 Select <p.procName, v.varName, pt.stmt#> such that Uses (p, v) and Uses  (pt, "b")
 main a 7, main a 12, main b 7, main b 12, main c 7, main c 12, main x 7, main x 12, P a 7, P a 12, P b 7, P b 12, P c 7, P c 12, P x 7, P x 12, Q a 7, Q a 12, Q b 7, Q b 12, Q c 7, Q c 12, Q x 7, Q x 12
 5000
-9 - Tuple in different table
+16 - Tuple in different table
 print pt; procedure p; constant c; read r; variable v;
 Select <r, c> such that Uses (p, v) and Uses (pt, "b")
 1 5, 1 7, 1 16, 2 5, 2 7, 2 16, 3 5, 3 7, 3 16, 14 5, 14 7, 14 16
