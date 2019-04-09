@@ -77,7 +77,12 @@ bool QueryPreprocessorSuchThatParser::parse() {
 	DesignEntity paramOne = QueryPreprocessorHelper::getParam(parametersList[0], query);
 	DesignEntity paramTwo = QueryPreprocessorHelper::getParam(parametersList[1], query);
 
-	return addClause(relRef, paramOne, paramTwo);
+	bool status = addClause(relRef, paramOne, paramTwo);
+	if (!status && query.resultClElemList[0].isType(Type::BOOLEAN)) {
+		throw "Invalid";
+	}
+
+	return status;
 }
 
 bool QueryPreprocessorSuchThatParser::addClause(const RelRef& relRef, const DesignEntity& paramOne, const DesignEntity& paramTwo) {
