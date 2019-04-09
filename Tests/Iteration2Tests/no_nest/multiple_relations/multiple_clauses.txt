@@ -1,0 +1,70 @@
+1 - [Follows] [Modifies, Calls, Uses, Pattern]
+assign a, a1; stmt s; procedure p, q; variable v;
+Select <a, p> such that Follows (a, s) and Modifies (p, "a") and Calls (p, q) and Uses (q, v) pattern a1 (v, "a+b")
+5 main, 5 P, 6 main, 6 P, 8 main, 8 P, 9 main, 9 P, 11 main, 11 P, 15 main, 15 P, 16 main, 16 P, 17 main, 17 P, 18 main, 18 P, 19 main, 19 P, 20 main, 20 P
+5000
+2 - [Follows, Modifies] [Calls, Uses, Pattern]
+assign a, a1; stmt s; procedure p, q; variable v;
+Select <a, v> such that Follows (a, s) and Modifies (a, "a") and Calls (p, q) and Uses (q, v) pattern a1 (v, "a+b")
+5 a, 8 a, 18 a 
+5000
+3 - [Follows] [Modifies, Calls] [Uses, Pattern]
+assign a, a1; stmt s; procedure p, q; variable v;
+Select <a, q, a1> such that Follows (a, s) and Modifies (p, "a") and Calls (p, q) and Uses (a1, "b") pattern a1 (v, "a+b")
+5 P 5, 6 P 5, 8 P 5, 9 P 5, 11 P 5, 15 P 5, 16 P 5, 17 P 5, 18 P 5, 19 P 5, 20 P 5, 5 Q 5, 6 Q 5, 8 Q 5, 9 Q 5, 11 Q 5, 15 Q 5, 16 Q 5, 17 Q 5, 18 Q 5, 19 Q 5, 20 Q 5
+5000
+4 - [Follows, Modifies] [Calls, Uses] [Pattern]
+assign a, a1; stmt s; procedure p, q; variable v;
+Select <a, v, p> such that Follows (a, s) and Modifies (s, "a") and Calls (p, q) and Uses (p, "b") pattern a1 (v, "a+b")
+9 a main, 17 a main, 9 a P, 17 a P 
+5000
+5 - [Follows, Modifies, Calls, Uses, Pattern]
+assign a, a1; stmt s; procedure p, q; variable v;
+Select <a, s, p, v> such that Follows (a, s) and Modifies (p, "a") and Calls (p, q) and Uses (s, "b") pattern a (v, "a+b")
+5 6 P a, 5 6 main a
+5000
+6 - [Next*] [Follows*, Modifies, Next, Calls*, Uses]
+assign a, a1; stmt s; procedure p, q; variable v;
+Select <a, p> such that Next* (a, s) and Follows* (a1, 12) and Modifies (a1, v) and Next (5, a1) and Calls* (p, q) and Uses (q, v)
+5 main, 5 P, 6 main, 6 P, 8 main, 8 P, 9 main, 9 P, 11 main, 11 P, 15 main, 15 P, 16 main, 16 P, 17 main, 17 P, 18 main, 18 P, 19 main, 19 P, 20 main, 20 P
+5000
+7 - [Next*, Follows*] [Modifies, Next, Calls*, Uses]
+assign a, a1; stmt s; procedure p, q; variable v;
+Select <a, v> such that Next* (a, s) and Follows* (a, 12) and Modifies (a1, v) and Next (5, a1) and Calls* (p, q) and Uses (q, v)
+5 b, 6 b, 8 b, 9 b, 11 b
+5000
+8 - [Next*, Follows*, Modifies] [Next] [Calls*, Uses]
+assign a, a1, a2; stmt s; procedure p, q; variable v;
+Select <a, a2, q> such that Next* (a, s) and Follows* (a1, s) and Modifies (a1, "a") and Next (5, a2) and Calls* (p, q) and Uses (q, v)
+5 6 P, 6 6 P, 8 6 P, 9 6 P, 11 6 P, 15 6 P, 16 6 P, 17 6 P, 18 6 P, 19 6 P, 20 6 P, 5 6 Q, 6 6 Q, 8 6 Q, 9 6 Q, 11 6 Q, 15 6 Q, 16 6 Q, 17 6 Q, 18 6 Q, 19 6 Q, 20 6 Q
+5000
+9 - [Next*, Follows* Modifies, Next] [Calls*, Uses]
+assign a, a1, a2; stmt s; procedure p, q; variable v;
+Select <a, p> such that Next* (a, s) and Follows* (a1, s) and Modifies (a1, "a") and Next (7, a) and Calls* (p, q) and Uses (q, v)
+8 main, 8 P
+5000
+10 - [Next*, Follows* Modifies, Next, Calls*] [Uses]
+assign a, a1, a2; stmt s; procedure p, q; variable v;
+Select <a, p, v> such that Next* (a, s) and Follows* (a1, s) and Modifies (p, "a") and Next (5, a1) and Calls* (p, "P") and Uses (a2, v)
+5 main a, 6 main a, 8 main a, 9 main a, 11 main a, 5 main b, 6 main b, 8 main b, 9 main b, 11 main b, 5 main c, 6 main c, 8 main c, 9 main c, 11 main c, 5 main x, 6 main x, 8 main x, 9 main x, 11 main x
+5000
+11 - [Next*, Follows* Modifies, Next, Calls*, Uses]
+assign a, a1, a2; stmt s; procedure p, q; variable v;
+Select <a, p> such that Next* (a, s) and Follows* (a1, s) and Modifies (p, "a") and Next (5, a) and Calls* (p, q) and Uses (a, v)
+6 main, 6 P
+5000
+12 - Multiple Next*
+stmt s, s1, s2, s3, s4, s5;
+Select s such that Next* (s, s1) and Next* (s2, s3) and Next* (s4, s5)
+1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 20
+5000
+13 - Multiple Next*
+stmt s, s1, s2, s3, s4, s5;
+Select s such that Next* (s, s1) and Next* (s1, s2)
+1, 2, 5, 6, 7, 8, 9, 10, 11, 14, 15, 16, 17, 18, 19
+5000
+14 - Multiple Next*
+stmt s, s1, s2, s3, s4, s5;
+Select s such that Next* (s, s1) and Next* (s1, s2) and Next* (s1, s3)
+1, 2, 5, 6, 7, 8, 9, 10, 11, 14, 15, 16, 17, 18, 19
+5000
