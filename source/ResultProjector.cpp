@@ -35,54 +35,73 @@ list<string> ResultProjector::getResults(vector<DesignEntity> selectedSynonyms, 
 	}
 
 	unordered_map<int, list<DesignEntity>> selectedSynonymTableMap;
+	unordered_map<string, list<DesignEntity>> selectedSynNotInTableMap;
 
 	// 1. Loop through all selected synonyms and get their table numbers
 	for (auto selectedSynonym : selectedSynonyms) {
 		string synonym = selectedSynonym.getValue();
-		int tableNum;
 		if (synonymExists(synonym)) {
-			tableNum = synonymTable[selectedSynonym.getValue()];
+			int tableNum = synonymTable[selectedSynonym.getValue()];
+			selectedSynonymTableMap[tableNum].push_back(selectedSynonym);
 		}
 		else {
-			tableNum = -1;
+			string synonym = selectedSynonym.getValue();
+			selectedSynNotInTableMap[synonym].push_back(selectedSynonym);
 		}
-		selectedSynonymTableMap[tableNum].push_back(selectedSynonym);
 	}
 
 	// 2. For each tableNum, put selected results in an unordered_map
 	vector<list<unordered_map<string, string>>> allTableResults;
-	for (auto tableMap : selectedSynonymTableMap) {
+	// 2a. Results not in table
+	for (auto selectedSynonym : selectedSynNotInTableMap) {
 		list<unordered_map<string, string>> selectedResults;
-		if (tableMap.first == -1) { // synonym does not exist in table
-			for (auto selectedSyn : tableMap.second) {
-				selectedResults = getSelectedClauseNotInTable(selectedSyn, pkb);
-				allTableResults.push_back(selectedResults);
-			}
-		}
-		else {
-			unordered_set<string> testForDuplicatesSet;
-			list<unordered_map<string, int>> results = synonymResults[tableMap.first];
-			for (auto result : results) {
-				string testForDuplicates = "";
-				unordered_map<string, string> rowResult;
-				for (auto selectedSyn : tableMap.second) {
-					string convertedResult = convertSynonymResultToRequired(selectedSyn.getType(), result.at(selectedSyn.getValue()), selectedSyn.getAttrRef(), pkb);
+		if (selectedSynonym.second.size() != 0) {
+			DesignEntity firstSynonymEntity = *(selectedSynonym.second.begin());
+			Type type = firstSynonymEntity.getType();
+			unordered_set<string> results = getAllResults(type, pkb);
+
+			unordered_map<string, string> rowResult;
+			for (string result : results) {
+				for (DesignEntity selectedSyn : selectedSynonym.second) {
 					if (selectedSyn.getType() == Type::READ || selectedSyn.getType() == Type::PRINT || selectedSyn.getType() == Type::CALL) {
 						string key = selectedSyn.getValue() + to_string(selectedSyn.getAttrRef());
-						rowResult[key] = convertedResult;
+						rowResult[key] = convertSynonymResultToRequired(type, result, selectedSyn.getAttrRef(), pkb);
 					}
 					else {
-						rowResult[selectedSyn.getValue()] = convertedResult;
+						rowResult[selectedSyn.getValue()] = result;
 					}
-					testForDuplicates += convertedResult + " ";
 				}
-				if (testForDuplicatesSet.find(testForDuplicates) == testForDuplicatesSet.end()) { // only insert result if it is not a duplicate. Reduce cross product time
-					testForDuplicatesSet.insert(testForDuplicates);
-					selectedResults.push_back(rowResult);
-				}
+				selectedResults.push_back(rowResult);
 			}
-			allTableResults.push_back(selectedResults);
 		}
+		allTableResults.push_back(selectedResults);
+	}
+
+	// 2b. Results in table
+	for (auto tableMap : selectedSynonymTableMap) {
+		list<unordered_map<string, string>> selectedResults;
+		unordered_set<string> testForDuplicatesSet;
+		list<unordered_map<string, int>> results = synonymResults[tableMap.first];
+		for (auto result : results) {
+			string testForDuplicates = "";
+			unordered_map<string, string> rowResult;
+			for (auto selectedSyn : tableMap.second) {
+				string convertedResult = convertSynonymResultToRequired(selectedSyn.getType(), result.at(selectedSyn.getValue()), selectedSyn.getAttrRef(), pkb);
+				if (selectedSyn.getType() == Type::READ || selectedSyn.getType() == Type::PRINT || selectedSyn.getType() == Type::CALL) {
+					string key = selectedSyn.getValue() + to_string(selectedSyn.getAttrRef());
+					rowResult[key] = convertedResult;
+				}
+				else {
+					rowResult[selectedSyn.getValue()] = convertedResult;
+				}
+				testForDuplicates += convertedResult + " ";
+			}
+			if (testForDuplicatesSet.find(testForDuplicates) == testForDuplicatesSet.end()) { // only insert result if it is not a duplicate. Reduce cross product time
+				testForDuplicatesSet.insert(testForDuplicates);
+				selectedResults.push_back(rowResult);
+			}
+		}
+		allTableResults.push_back(selectedResults);
 	}
 
 	// 3. Cross product all maps
@@ -140,6 +159,90 @@ list<string> ResultProjector::getResults(vector<DesignEntity> selectedSynonyms, 
 	return projectedResults;
 }
 
+unordered_set<string> ResultProjector::getAllResults(Type type, PKB pkb) {
+	unordered_set<string> results;
+
+	switch (type) {
+	case Type::STATEMENT:
+		results = convertSetToString(pkb.getAllStmts());
+		break;
+	case Type::PROGLINE:
+		results = convertSetToString(pkb.getAllStmts());
+		break;
+	case Type::READ:
+		results = convertSetToString(pkb.getReadStmts());
+		break;
+	case Type::PRINT:
+		results = convertSetToString(pkb.getPrintStmts());
+		break;
+	case Type::CALL:
+		results = convertSetToString(pkb.getCallStmts());
+		break;
+	case Type::WHILE:
+		results = convertSetToString(pkb.getWhileStmts());
+		break;
+	case Type::IF:
+		results = convertSetToString(pkb.getIfStmts());
+		break;
+	case Type::ASSIGN:
+		results = convertSetToString(pkb.getAssignStmts());
+		break;
+	case Type::VARIABLE:
+		results = pkb.getAllVariables();
+		break;
+	case Type::CONSTANT:
+		results = convertSetToString(pkb.getAllConstant());
+		break;
+	case Type::PROCEDURE:
+		results = pkb.getAllProcedures();
+		break;
+	}
+	return results;
+}
+
+unordered_set<string> ResultProjector::convertSetToString(unordered_set<int> resultSet) {
+	unordered_set<string> convertedSet;
+	for (int result : resultSet) {
+		convertedSet.insert(to_string(result));
+	}
+	return convertedSet;
+}
+
+string ResultProjector::convertSynonymResultToRequired(Type type, string result, AttrRef attrRef, PKB pkb) {
+	int resultInt = stoi(result);
+	string convertedResult;
+	switch (type) {
+	case Type::CALL:
+		if (attrRef == AttrRef::PROC_NAME) {
+			convertedResult = pkb.getCallAtStmtNum(resultInt);
+		}
+		else {
+			convertedResult = result;
+		}
+		break;
+	case Type::READ:
+		if (attrRef == AttrRef::VAR_NAME) {
+			convertedResult = pkb.getReadAtStmtNum(resultInt);
+		}
+		else {
+			convertedResult = result;
+		}
+		break;
+	case Type::PRINT:
+		if (attrRef == AttrRef::VAR_NAME) {
+			convertedResult = pkb.getPrintAtStmtNum(resultInt);
+		}
+		else {
+			convertedResult = result;
+		}
+		break;
+	default: // EVERYTHING ELSE
+		convertedResult = result;
+		break;
+	}
+	return convertedResult;
+}
+
 string ResultProjector::convertSynonymResultToRequired(Type type, int result, AttrRef attrRef, PKB pkb) {
 	string convertedResult;
 	switch (type) {
@@ -178,99 +281,6 @@ string ResultProjector::convertSynonymResultToRequired(Type type, int result, At
 		break;
 	}
 	return convertedResult;
-}
-
-list<unordered_map<string, string>> ResultProjector::getSelectedClauseNotInTable(DesignEntity synonym, PKB pkb) {
-	list<unordered_map<string, string>> projectedResults;
-	//STATEMENT, READ, PRINT, CALL, WHILE, IF, ASSIGN, VARIABLE, CONSTANT, PROCEDURE, UNDERSCORE, FIXED --> need to update
-
-	Type type = synonym.getType();
-
-	switch (type) {
-	case Type::STATEMENT:
-		projectedResults = convertSetToList(synonym, pkb.getAllStmts());
-		break;
-	case Type::PROGLINE:
-		projectedResults = convertSetToList(synonym, pkb.getAllStmts());
-		break;
-	case Type::READ:
-		if (synonym.getAttrRef() == AttrRef::VAR_NAME) {
-			projectedResults = convertSetToList(synonym, pkb.getReadVarNames());
-		}
-		else {
-			projectedResults = convertSetToList(synonym, pkb.getReadStmts());
-		}
-		break;
-	case Type::PRINT:
-		if (synonym.getAttrRef() == AttrRef::VAR_NAME) {
-			projectedResults = convertSetToList(synonym, pkb.getPrintVarNames());
-		}
-		else {
-			projectedResults = convertSetToList(synonym, pkb.getPrintStmts());
-		}
-		break;
-	case Type::CALL:	// call statements
-		if (synonym.getAttrRef() == AttrRef::PROC_NAME) {
-			projectedResults = convertSetToList(synonym, pkb.getCallProcNames());
-		}
-		else {
-			projectedResults = convertSetToList(synonym, pkb.getCallStmts());
-		}
-		break;
-	case Type::WHILE:
-		projectedResults = convertSetToList(synonym, pkb.getWhileStmts());
-		break;
-	case Type::IF:
-		projectedResults = convertSetToList(synonym, pkb.getIfStmts());
-		break;
-	case Type::ASSIGN:
-		projectedResults = convertSetToList(synonym, pkb.getAssignStmts());
-		break;
-	case Type::VARIABLE:
-		projectedResults = convertSetToList(synonym, pkb.getAllVariables());
-		break;
-	case Type::CONSTANT:
-		projectedResults = convertSetToList(synonym, pkb.getAllConstant());
-		break;
-	case Type::PROCEDURE:
-		projectedResults = convertSetToList(synonym, pkb.getAllProcedures());
-		break;
-	}
-	return projectedResults;
-}
-
-list<unordered_map<string, string>> ResultProjector::convertSetToList(DesignEntity synonym, unordered_set<string> resultSet) {
-	list<unordered_map<string, string>> results;
-	unordered_map<string, string> row;
-	Type type = synonym.getType();
-	for (string result : resultSet) {
-		if (type == Type::READ || type == Type::PRINT || type == Type::CALL) {
-			string key = synonym.getValue() + to_string(synonym.getAttrRef());
-			row[key] = result;
-		}
-		else {
-			row[synonym.getValue()] = result;
-		}
-		results.push_back(row);
-	}
-	return results;
-}
-
-list<unordered_map<string, string>> ResultProjector::convertSetToList(DesignEntity synonym, unordered_set<int> resultSet) {
-	list<unordered_map<string, string>> results;
-	unordered_map<string, string> row;
-	Type type = synonym.getType();
-	for (int result : resultSet) {
-		if (type == Type::READ || type == Type::PRINT || type == Type::CALL) {
-			string key = synonym.getValue() + to_string(synonym.getAttrRef());
-			row[key] = to_string(result);
-		}
-		else {
-			row[synonym.getValue()] = to_string(result);
-		}
-		results.push_back(row);
-	}
-	return results;
 }
 
 bool ResultProjector::combineResults(unordered_set<int> queryResultsOneSynonym, vector<string> synonyms) { // one synonym

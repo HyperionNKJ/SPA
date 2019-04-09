@@ -27,9 +27,9 @@ private:
 	unordered_map<int, unordered_set<int>> invertResults(unordered_map<int, unordered_set<int>> queryResults);
 
 	string convertSynonymResultToRequired(Type, int, AttrRef, PKB);
-	list<unordered_map<string, string>> getSelectedClauseNotInTable(DesignEntity, PKB);
-	list<unordered_map<string, string>> convertSetToList(DesignEntity, unordered_set<string>);
-	list<unordered_map<string, string>> convertSetToList(DesignEntity, unordered_set<int>);
+	string convertSynonymResultToRequired(Type, string, AttrRef, PKB);
+	unordered_set<string> getAllResults(Type, PKB);
+	unordered_set<string> convertSetToString(unordered_set<int>);
 
 public:
 	void resetResults();
