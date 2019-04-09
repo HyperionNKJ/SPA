@@ -73,7 +73,16 @@ void QueryPreprocessorFormatter::removeSpaces() {
 void QueryPreprocessorFormatter::removeLeadingSpace() {
 	size_t index = query.find_first_of(LEADING_SPACE);
 	while (index != std::string::npos) {
-		if (query[index - 1] == CHAR_SPACE) {
+		if (index > 3
+			&& query[index] == '"'
+			&& query[index - 5] == 'w'
+			&& query[index - 4] == 'i'
+			&& query[index - 3] == 't'
+			&& query[index - 2] == 'h'
+			&& query[index - 1] == ' ') {
+			// do nothing
+		}
+		else if (query[index - 1] == CHAR_SPACE) {
 			query.erase(index - 1, 1);
 		}
 		index = query.find_first_of(LEADING_SPACE, index + 2);

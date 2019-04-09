@@ -37,22 +37,29 @@ bool QueryPreprocessorWithParser::parse() {
 	// with clause fixed statement number but different 
 	if (paramOne.isType(Type::WITH_INTEGER) 
 		&& paramTwo.isType(Type::WITH_INTEGER) 
-		&& paramOne.getValue() != paramTwo.getValue()
-		&& !query.resultClElemList[0].isType(Type::BOOLEAN)) {
+		&& paramOne.getValue() != paramTwo.getValue()) {
+		if (query.resultClElemList[0].isType(Type::BOOLEAN)) {
+			throw "Invalid";
+		}
 		return false;
 	}
 
 	// with clause fixed variable but different 
 	if (paramOne.isType(Type::WITH_STRING)
 		&& paramTwo.isType(Type::WITH_STRING)
-		&& paramOne.getValue() != paramTwo.getValue()
-		&& !query.resultClElemList[0].isType(Type::BOOLEAN)) {
+		&& paramOne.getValue() != paramTwo.getValue()) {
+		if (query.resultClElemList[0].isType(Type::BOOLEAN)) {
+			throw "Invalid";
+		}
 		return false;
 	}
 
 	// LHS AttrRef type must be the same as RHS AttrRef type
 	bool status = isValidAttrRefComparator(paramOne, paramTwo);
 	if (!status) {
+		if (query.resultClElemList[0].isType(Type::BOOLEAN)) {
+			throw "Invalid";
+		}
 		return false;
 	}
 
