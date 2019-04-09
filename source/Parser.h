@@ -48,6 +48,23 @@ class Parser {
 	int lastStmtInFlow = -1;
 
 private:
+	bool checkProcedure(string);
+	bool checkAssignment(string);
+	bool checkExpr(string);
+	bool checkTerm(string);
+	bool checkFactor(string);
+	bool checkRead(string);
+	bool checkPrint(string);
+	bool checkWhile(string);
+	bool checkIf(string);
+	bool checkElse(string);
+	bool checkCondExpr(string);
+	bool checkRelExpr(string);
+	bool checkRelFactor(string);
+	bool checkCall(string);
+
+	Statement_Key getStatementIntent(string);
+
 	bool setParent(int);
 	bool setModifies(int, string, string);
 	bool setUses(int, string, string);
@@ -66,37 +83,16 @@ private:
 	bool isValidConstant(string);
 	vector<string> tokeniseString(string, string);
 public:
-
-	bool checkProcedure(string);
 	int handleProcedure(string);
-	
-	bool checkAssignment(string);
-	bool checkExpr(string);
-	bool checkTerm(string);
-	bool checkFactor(string);
 	int handleAssignment(string);
-	
-	bool checkRead(string);
 	int handleRead(string);
-	bool checkPrint(string);
 	int handlePrint(string);
-	
-	bool checkWhile(string);
 	int handleWhile(string);
-	bool checkIf(string);
 	int handleIf(string);
-	bool checkElse(string);
 	int handleElse(string);
-	bool checkCondExpr(string);
-	bool checkRelExpr(string);
-	bool checkRelFactor(string);
-
-	bool checkCall(string);
 	int handleCall(string);
-
 	int handleCloseBracket(string);
 
-	Statement_Key getStatementIntent(string);
 	int parse(string, PKB&);
 
 	//setter/getter functions for testing
