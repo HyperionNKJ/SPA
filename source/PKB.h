@@ -17,13 +17,14 @@ private:
 	unordered_set<string> varSet, procSet, callSet, calledSet, printSet, readSet, modifiesProcSet, usesProcSet;
 	unordered_map<string, int> varTableByName, procTableByName, callTableByName, printTableByName, readTableByName;
 	vector<string> varTableByIdx, procTableByIdx, callTableByIdx, printTableByIdx, readTableByIdx;
-	unordered_set<int> allStmts, readStmts, printStmts, whileStmts, ifStmts, assignStmts, constSet, callStmts, ifControlStmtSet, whileControlStmtSet, *getTypedStmtSet(Type type);
-	unordered_map<int, unordered_set<int>> leaderTMap, followerTMap, parentMap, parentTMap, childrenTMap, nextMap, prevMap;
+	unordered_set<int> allStmts, readStmts, printStmts, whileStmts, ifStmts, assignStmts, constSet, callStmts, ifControlStmtSet, whileControlStmtSet, *getTypedStmtSet(Type type), getAffectsSet(bool isAffects, bool isTransitive, int modifierStmtNum, int userStmtNum);
+	unordered_map<int, unordered_set<int>> leaderTMap, followerTMap, parentMap, parentTMap, childrenTMap, nextMap, prevMap, getAffectsMap(bool isTransitive, bool isAffects);
 	unordered_map<int, int> leaderMap, followerMap, childrenMap;
 	unordered_map<int, string> callMapByStmtNum, printMapByStmtNum, readMapByStmtNum;
 	unordered_map<string, unordered_set<int>> calledStmtMap, printStmtMap, readStmtMap, modifiesByVarMap, usesByVarMap, patternMap, fullPatternMap, ifControlVarMap, whileControlVarMap;
 	unordered_map<int, unordered_set<string>> modifiesByStmtNumMap, usesByStmtNumMap, ifControlStmtMap, whileControlStmtMap;
 	unordered_map<string, unordered_set<string>> modifiesByProcMap, varModifiedByProcMap, usesByProcMap, varUsedByProcMap, callMap, calledByMap, callsTMap, calledByTMap;
+	bool getAffectsBoolean(bool isTransitive, int modifierStmtNum, int userStmtNum);
 
 public:
 	// Frontend APIs
@@ -200,4 +201,18 @@ public:
 	unordered_set<int> getCallStmtsWithProc(string procName);
 	unordered_set<int> getPrintStmtsWithVar(string varName);
 	unordered_set<int> getReadStmtsWithVar(string varName);
+
+	bool isAffects(int modifierStmtNum, int userStmtNum);
+	bool isAffectsT(int modifierStmtNum, int userStmtNum);
+	bool hasAffects();
+	bool hasUser(int modifierStmtNum);
+	bool hasModifier(int userStmtNum);
+	unordered_map<int, unordered_set<int>> getModifierUserPairs();
+	unordered_map<int, unordered_set<int>> getModifierUserTPairs();
+	unordered_set<int> getModifierStmts();
+	unordered_set<int> getUserStmts();
+	unordered_set<int> getModifierOf(int userStmtNum);
+	unordered_set<int> getModifierTOf(int userStmtNum);
+	unordered_set<int> getUserOf(int modifierStmtNum);
+	unordered_set<int> getUserTOf(int modifierStmtNum);
 };
