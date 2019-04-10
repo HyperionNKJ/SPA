@@ -12,7 +12,7 @@
 #include "Type.h"
 #include "DesignExtractor.h"
 
-enum Container { WHILEC, IFC, ELSEC, NONEC };
+enum Container { WHILEC, IFC, ELSEC, NONEC, SWITCHC };
 enum Statement_Key {
 	KEY_PROCEDURE, KEY_ASSIGN, KEY_IF, KEY_ELSE, KEY_WHILE,
 	KEY_READ, KEY_PRINT, KEY_CLOSE_BRACKET, KEY_CALL, KEY_ERROR, KEY_SWITCH, KEY_SWITCHCASE

@@ -13,3 +13,8 @@ procedure p, q;
 Select p.procName such that Uses (p, "a") and Calls (p, q) with q.procName = "Q"
 P, main
 5000
+4 - Select Next* in same stmtlist past large chain of if/else statements
+assign a; call c;
+Select a such that Next*(a, c) and Follows*(a, c)
+6, 7, 8, 9
+5000

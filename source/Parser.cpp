@@ -532,7 +532,7 @@ int Parser::handleWhile(string whileLine) {
 
 bool Parser::checkIf(string ifLine) {
 	//check for brackets, then check the cond_expr
-	//practically the same as while
+
 	size_t firstOpenBracket = ifLine.find_first_of("(");
 	size_t lastCloseBracket = ifLine.find_last_of(")");
 	if (firstOpenBracket == string::npos || lastCloseBracket == string::npos) {
@@ -600,9 +600,7 @@ int Parser::handleElse(string elseLine) {
 	if (!checkElse(elseLine)) {
 		return -1;
 	}
-	//reset booleans
-	//reset follow tracker
-	//set container tracker
+	//reset booleans, reset follow tracker, set container tracker
 	expectElse = false;
 	firstInElse = true;
 	containerTracker.push_back(ELSEC);
@@ -734,11 +732,11 @@ int Parser::handleCloseBracket(string closeBracket) {
 		return 0;
 	}
 	else {
-		//pop from parent stack, pop from stack of follow vectors for while, else
+		//pop from parent stack, pop from stack of follow vectors for while, else, switch
 		//clear follow vector
 		//set else checker and container for if
 		currentFollowVector.clear();
-		if (containerTracker.back() == WHILEC || containerTracker.back() == ELSEC) {
+		if (containerTracker.back() == WHILEC || containerTracker.back() == ELSEC || containerTracker.back() == SWITCHC) {
 			if (parentVector.size() == 0) {
 				errorMessage = "Unexpected error when parsing end of container statement. Parent vector is empty. At line " + statementNumber;
 				return -1;
@@ -826,6 +824,30 @@ int Parser::handleSwitch(string switchLine) {
 	if (!checkSwitch(switchLine)) {
 		return -1;
 	}
+
+	//set follow, parent relationships
+	setParent(statementNumber);
+	setFollow(statementNumber);
+	setNext(statementNumber, NONEC);
+
+	//update parent, follow, container trackers
+	currentFollowVector.push_back(statementNumber);
+	parentVector.push_back(statementNumber);
+	containerTracker.push_back(SWITCHC);
+	allFollowStack.push_back(currentFollowVector);
+	currentFollowVector.clear();
+	
+	//pkb->insertStmtType(statementNumber, SWITCH);
+
+	//set uses relationships
+	size_t openBracketPos = switchLine.find_first_of("(");
+	size_t closeBracketPos = switchLine.find_last_of(")");
+	string controlVar = switchLine.substr(openBracketPos + 1, closeBracketPos - openBracketPos - 1);
+	controlVar = leftTrim(rightTrim(controlVar, " \t"), " \t");
+	pkb->insertVar(controlVar);
+	setUses(statementNumber, currProcedure, controlVar);
+	pkb->insertIfControlVar(statementNumber, controlVar);
+
 	return 0;
 }
 
@@ -843,6 +865,11 @@ int Parser::handleSwitchCase(string switchCaseLine) {
 	if (!checkSwitchCase(switchCaseLine)) {
 		return -1;
 	}
+
+	//discard previous statement list for follows, prepare first statement in switch case for the next
+	currentFollowVector.clear();
+	firstInElse = true;
+	//add constant to pkb
 	return 0;
 }
 
@@ -991,6 +1018,7 @@ bool Parser::setNext(int stmtNum, Container closingType) {
 	//for case of close bracket involving while
 	if (closingType == WHILEC) {
 		int lastWhile = parentVector.back();
+		bool updatedNext = false;
 		if (lastInIfElseTracker.size() > 0) {
 			while (lastInIfElseTracker.size() > 0) {
 				bool foundInParent = false;
@@ -1006,10 +1034,11 @@ bool Parser::setNext(int stmtNum, Container closingType) {
 					pkb->setNext(lastInIfElseTracker.back().first, lastWhile);
 					pkb->setPrevious(lastInIfElseTracker.back().first, lastWhile);
 					lastInIfElseTracker.pop_back();
+					updatedNext = true;
 				}
 			}
 		}
-		else {
+		if (!updatedNext) {
 			pkb->setNext(lastStmtInFlow, lastWhile);
 			pkb->setPrevious(lastStmtInFlow, lastWhile);
 		}
