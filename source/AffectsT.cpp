@@ -108,6 +108,7 @@ Result AffectsT::evaluateFixedFixed(const string& modifierStmtNum, const string&
 // case Affects*(s, pl)
 Result AffectsT::evaluateSynonymSynonym(const string& modifierSynonym, const string& userSynonym) {
 	Result result;
+	bool isSameSynonym = modifierSynonym == userSynonym;
 	bool hasDomainForModifierSyn = reducedDomain.count(modifierSynonym);
 	bool hasDomainForUserSyn = reducedDomain.count(userSynonym);
 	unordered_set<int> modifierSynPossibleValues;
@@ -126,21 +127,27 @@ Result AffectsT::evaluateSynonymSynonym(const string& modifierSynonym, const str
 
 	if (hasDomainForModifierSyn && hasDomainForUserSyn) { // if both synonyms exist in intermediate table
 		if (modifierSynPossibleValues.size() < userSynPossibleValues.size()) {
-			keyIsModifierSyn = evaluateSynSynFromModifier(modifierSynPossibleValues, pkb, answer);
+			keyIsModifierSyn = evaluateSynSynFromModifier(modifierSynPossibleValues, pkb, answer, isSameSynonym);
 		}
 		else {
-			keyIsModifierSyn = evaluateSynSynFromUser(userSynPossibleValues, pkb, answer);
+			keyIsModifierSyn = evaluateSynSynFromUser(userSynPossibleValues, pkb, answer, isSameSynonym);
 		}
 	}
 	else if (hasDomainForModifierSyn && !hasDomainForUserSyn) {
-		keyIsModifierSyn = evaluateSynSynFromModifier(modifierSynPossibleValues, pkb, answer);
+		keyIsModifierSyn = evaluateSynSynFromModifier(modifierSynPossibleValues, pkb, answer, isSameSynonym);
 	}
 	else if (!hasDomainForModifierSyn && hasDomainForUserSyn) {
-		keyIsModifierSyn = evaluateSynSynFromUser(userSynPossibleValues, pkb, answer);
+		keyIsModifierSyn = evaluateSynSynFromUser(userSynPossibleValues, pkb, answer, isSameSynonym);
 	}
 	else {
-		answer = pkb.getModifierUserTPairs();
-		keyIsModifierSyn = true;
+		if (isSameSynonym) {
+			unordered_set<int> modifiers = pkb.getModifierStmts();
+			evaluateSameSynonym(modifiers, pkb, answer);
+		}
+		else {
+			answer = pkb.getModifierUserTPairs();
+			keyIsModifierSyn = true;
+		}
 	}
 
 	if (!answer.empty()) {
@@ -159,7 +166,12 @@ Result AffectsT::evaluateSynonymSynonym(const string& modifierSynonym, const str
 }
 
 // Helper method for evaluateSynonymSynonym()
-bool AffectsT::evaluateSynSynFromModifier(const unordered_set<int>& modifierSynPossibleValues, PKB& pkb, unordered_map<int, unordered_set<int>>& answer) {
+bool AffectsT::evaluateSynSynFromModifier(const unordered_set<int>& modifierSynPossibleValues, PKB& pkb, unordered_map<int, unordered_set<int>>& answer, const bool& isSameSynonym) {
+	if (isSameSynonym) {
+		evaluateSameSynonym(modifierSynPossibleValues, pkb, answer);
+		return true; // does not matter since same synonym
+	}
+	
 	for (const auto& modifier : modifierSynPossibleValues) {
 		unordered_set<int> users = pkb.getUserTOf(modifier);
 		if (!users.empty()) {
@@ -170,7 +182,12 @@ bool AffectsT::evaluateSynSynFromModifier(const unordered_set<int>& modifierSynP
 }
 
 // Helper method for evaluateSynonymSynonym()
-bool AffectsT::evaluateSynSynFromUser(const unordered_set<int>& userSynPossibleValues, PKB& pkb, unordered_map<int, unordered_set<int>>& answer) {
+bool AffectsT::evaluateSynSynFromUser(const unordered_set<int>& userSynPossibleValues, PKB& pkb, unordered_map<int, unordered_set<int>>& answer, const bool& isSameSynonym) {
+	if (isSameSynonym) {
+		evaluateSameSynonym(userSynPossibleValues, pkb, answer);
+		return false; // does not matter since same synonym
+	}
+	
 	for (auto user : userSynPossibleValues) {
 		unordered_set<int> modifiers = pkb.getModifierTOf(user);
 		if (!modifiers.empty()) {
@@ -178,6 +195,14 @@ bool AffectsT::evaluateSynSynFromUser(const unordered_set<int>& userSynPossibleV
 		}
 	}
 	return false; // false because answer's key is not modifier
+}
+
+void AffectsT::evaluateSameSynonym(const unordered_set<int>& possibleValues, PKB& pkb, unordered_map<int, unordered_set<int>>& answer) {
+	for (auto value : possibleValues) {
+		if (pkb.isAffectsT(value, value)) {
+			answer.insert({ value, {value} });
+		}
+	}
 }
 
 // case Affects*(a, _)

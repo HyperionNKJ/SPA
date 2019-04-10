@@ -13,8 +13,9 @@ private:
 	Result evaluateUnderscoreUnderscore(); // Next*(_, _)
 	Result evaluateUnderscoreFixed(const string&); // Next*(_, 23)
 
-	bool evaluateSynSynFromPrev(const unordered_set<int>&, const Type&, PKB&, unordered_map<int, unordered_set<int>>&);
-	bool evaluateSynSynFromNext(const unordered_set<int>&, const Type&, PKB&, unordered_map<int, unordered_set<int>>&);
+	bool evaluateSynSynFromPrev(const unordered_set<int>&, const Type&, PKB&, unordered_map<int, unordered_set<int>>&, const bool&);
+	bool evaluateSynSynFromNext(const unordered_set<int>&, const Type&, PKB&, unordered_map<int, unordered_set<int>>&, const bool&);
+	void evaluateSameSynonym(const unordered_set<int>&, PKB&, unordered_map<int, unordered_set<int>>&);
 
 public:
 	NextT(const DesignEntity&, const DesignEntity&);

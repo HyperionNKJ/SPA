@@ -13,8 +13,9 @@ private:
 	Result evaluateUnderscoreUnderscore(); // Affects(_, _)
 	Result evaluateUnderscoreFixed(const string&); // Affects(_, 8)
 
-	bool evaluateSynSynFromModifier(const unordered_set<int>&, PKB&, unordered_map<int, unordered_set<int>>&);
-	bool evaluateSynSynFromUser(const unordered_set<int>&, PKB&, unordered_map<int, unordered_set<int>>&);
+	bool evaluateSynSynFromModifier(const unordered_set<int>&, PKB&, unordered_map<int, unordered_set<int>>&, const bool&);
+	bool evaluateSynSynFromUser(const unordered_set<int>&, PKB&, unordered_map<int, unordered_set<int>>&, const bool&);
+	void evaluateSameSynonym(const unordered_set<int>&, PKB&, unordered_map<int, unordered_set<int>>&);
 
 public:
 	Affects(const DesignEntity&, const DesignEntity&);

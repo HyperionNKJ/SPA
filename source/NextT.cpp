@@ -111,6 +111,7 @@ Result NextT::evaluateFixedFixed(const string& previousLineNum, const string& ne
 // case Next*(s, s1)
 Result NextT::evaluateSynonymSynonym(const string& previousSynonym, const string& nextSynonym, const Type& previousType, const Type& nextType) {
 	Result result;
+	bool isSameSynonym = nextSynonym == previousSynonym;
 	bool hasReducedDomainForPrevSyn = reducedDomain.count(previousSynonym);
 	bool hasReducedDomainForNextSyn = reducedDomain.count(nextSynonym);
 	unordered_set<int> prevSynPossibleValues; 
@@ -129,20 +130,26 @@ Result NextT::evaluateSynonymSynonym(const string& previousSynonym, const string
 
 	if (hasReducedDomainForPrevSyn && hasReducedDomainForNextSyn) { // if both synonyms exist in intermediate table
 		if (prevSynPossibleValues.size() < nextSynPossibleValues.size()) {
-			keyIsPrevSyn = evaluateSynSynFromPrev(prevSynPossibleValues, nextType, pkb, answer);
+			keyIsPrevSyn = evaluateSynSynFromPrev(prevSynPossibleValues, nextType, pkb, answer, isSameSynonym); // work with the smaller domain
 		}
 		else {
-			keyIsPrevSyn = evaluateSynSynFromNext(nextSynPossibleValues, previousType, pkb, answer);
+			keyIsPrevSyn = evaluateSynSynFromNext(nextSynPossibleValues, previousType, pkb, answer, isSameSynonym);
 		}
 	} else if (hasReducedDomainForPrevSyn && !hasReducedDomainForNextSyn) {
-		keyIsPrevSyn = evaluateSynSynFromPrev(prevSynPossibleValues, nextType, pkb, answer);
+		keyIsPrevSyn = evaluateSynSynFromPrev(prevSynPossibleValues, nextType, pkb, answer, isSameSynonym);
 	}
 	else if (!hasReducedDomainForPrevSyn && hasReducedDomainForNextSyn) {
-		keyIsPrevSyn = evaluateSynSynFromNext(nextSynPossibleValues, previousType, pkb, answer);
+		keyIsPrevSyn = evaluateSynSynFromNext(nextSynPossibleValues, previousType, pkb, answer, isSameSynonym);
 	}
 	else {
-		answer = pkb.getPreviousNextTPairs(previousType, nextType); // no choice but have to compute all exhaustively -> expensive.
-		keyIsPrevSyn = true;
+		if (isSameSynonym) {
+			unordered_set<int> prevLines = pkb.getPreviousLines(previousType);
+			evaluateSameSynonym(prevLines, pkb, answer);
+		}
+		else {
+			answer = pkb.getPreviousNextTPairs(previousType, nextType); // no choice but have to compute all exhaustively -> expensive.
+			keyIsPrevSyn = true;
+		}
 	}
 	
 	if (!answer.empty()) {
@@ -161,7 +168,12 @@ Result NextT::evaluateSynonymSynonym(const string& previousSynonym, const string
 }
 
 // Helper method for evaluateSynonymSynonym()
-bool NextT::evaluateSynSynFromPrev(const unordered_set<int>& prevSynPossibleValues, const Type& nextType, PKB& pkb, unordered_map<int, unordered_set<int>>& answer) {
+bool NextT::evaluateSynSynFromPrev(const unordered_set<int>& prevSynPossibleValues, const Type& nextType, PKB& pkb, unordered_map<int, unordered_set<int>>& answer, const bool& isSameSynonym) {
+	if (isSameSynonym) {
+		evaluateSameSynonym(prevSynPossibleValues, pkb, answer);
+		return true; // does not matter since same synonym
+	}
+	
 	for (auto prevValue : prevSynPossibleValues) {
 		unordered_set<int> nextValues = pkb.getNextTOf(prevValue, nextType);
 		if (!nextValues.empty()) {
@@ -172,7 +184,12 @@ bool NextT::evaluateSynSynFromPrev(const unordered_set<int>& prevSynPossibleValu
 }
 
 // Helper method for evaluateSynonymSynonym()
-bool NextT::evaluateSynSynFromNext(const unordered_set<int>& nextSynPossibleValues, const Type& previousType, PKB& pkb, unordered_map<int, unordered_set<int>>& answer) {
+bool NextT::evaluateSynSynFromNext(const unordered_set<int>& nextSynPossibleValues, const Type& previousType, PKB& pkb, unordered_map<int, unordered_set<int>>& answer, const bool& isSameSynonym) {
+	if (isSameSynonym) {
+		evaluateSameSynonym(nextSynPossibleValues, pkb, answer);
+		return false; // does not matter since same synonym
+	}
+	
 	for (auto nextValue : nextSynPossibleValues) {
 		unordered_set<int> prevValues = pkb.getPreviousTOf(nextValue, previousType); 
 		if (!prevValues.empty()) {
@@ -180,6 +197,14 @@ bool NextT::evaluateSynSynFromNext(const unordered_set<int>& nextSynPossibleValu
 		}
 	}
 	return false; // false because answer's key is next
+}
+
+void NextT::evaluateSameSynonym(const unordered_set<int>& possibleValues, PKB& pkb, unordered_map<int, unordered_set<int>>& answer) {
+	for (auto value : possibleValues) {
+		if (pkb.isNextT(value, value)) {
+			answer.insert({ value, {value} });
+		}
+	}
 }
 
 // case Next*(w, _)
