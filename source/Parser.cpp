@@ -826,6 +826,30 @@ int Parser::handleSwitch(string switchLine) {
 	if (!checkSwitch(switchLine)) {
 		return -1;
 	}
+
+	//set follow, parent relationships
+	setParent(statementNumber);
+	setFollow(statementNumber);
+	setNext(statementNumber, NONEC);
+
+	//update parent, follow, container trackers
+	currentFollowVector.push_back(statementNumber);
+	parentVector.push_back(statementNumber);
+	containerTracker.push_back(SWITCHC);
+	allFollowStack.push_back(currentFollowVector);
+	currentFollowVector.clear();
+	
+	//pkb->insertStmtType(statementNumber, SWITCH);
+
+	//set uses relationships
+	size_t openBracketPos = switchLine.find_first_of("(");
+	size_t closeBracketPos = switchLine.find_last_of(")");
+	string controlVar = switchLine.substr(openBracketPos + 1, closeBracketPos - openBracketPos - 1);
+	controlVar = leftTrim(rightTrim(controlVar, " \t"), " \t");
+	pkb->insertVar(controlVar);
+	setUses(statementNumber, currProcedure, controlVar);
+	pkb->insertIfControlVar(statementNumber, controlVar);
+
 	return 0;
 }
 
@@ -991,6 +1015,7 @@ bool Parser::setNext(int stmtNum, Container closingType) {
 	//for case of close bracket involving while
 	if (closingType == WHILEC) {
 		int lastWhile = parentVector.back();
+		bool updatedNext = false;
 		if (lastInIfElseTracker.size() > 0) {
 			while (lastInIfElseTracker.size() > 0) {
 				bool foundInParent = false;
@@ -1006,10 +1031,11 @@ bool Parser::setNext(int stmtNum, Container closingType) {
 					pkb->setNext(lastInIfElseTracker.back().first, lastWhile);
 					pkb->setPrevious(lastInIfElseTracker.back().first, lastWhile);
 					lastInIfElseTracker.pop_back();
+					updatedNext = true;
 				}
 			}
 		}
-		else {
+		if (!updatedNext) {
 			pkb->setNext(lastStmtInFlow, lastWhile);
 			pkb->setPrevious(lastStmtInFlow, lastWhile);
 		}
