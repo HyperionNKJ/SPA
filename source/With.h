@@ -42,19 +42,19 @@ private:
 	unordered_map<string, unordered_set<int>> getStrIntPairWithCommonStr(const unordered_set<string>&, const Type&);
 
 
-	Result* evaulateIntInt(const string&, const string&); // e.g. 12 = 15
-	Result* evaulateIntSyn(const string&, const string&); // e.g. 12 = n
-	Result* evaulateIntConstVal(const string&, const string&); // e.g. 12 = c.value
-	Result* evaulateIntAttrRefInt(const string&, const string&, const Type&); // e.g. 12 = c.stmt#
-	Result* evaluateStrStr(const string&, const string&); // e.g. "second" = "second"
-	Result* evaluateStrAttrRefStr(const string&, const string&, const Type&); // e.g. "main" = p.procName
-	Result* evaulateConstValSyn(const string&, const string&); // e.g. c.value = n
-	Result* evaulateConstValConstVal(const string&, const string&); // e.g. c.value = c1.value
-	Result* evaulateSynSyn(const string&, const string&); // e.g. n = n1
-	Result* evaulateAttrRefIntSyn(const string&, const Type&, const string&);  // e.g. w.stmt# = n
-	Result* evaulateAttrRefIntConstVal(const string&, const Type&, const string&); // e.g. a.stmt# = c.value
-	Result* evaulateAttrRefIntAttrRefInt(const string&, const Type&, const string&, const Type&); // e.g. s.stmt# = w.stmt#
-	Result* evaulateAttrRefStrAttrRefStr(const string&, const Type&, const string&, const Type&); // e.g. v.varName = p.procName
+	Result evaulateIntInt(const string&, const string&); // e.g. 12 = 15
+	Result evaulateIntSyn(const string&, const string&); // e.g. 12 = n
+	Result evaulateIntConstVal(const string&, const string&); // e.g. 12 = c.value
+	Result evaulateIntAttrRefInt(const string&, const string&, const Type&); // e.g. 12 = c.stmt#
+	Result evaluateStrStr(const string&, const string&); // e.g. "second" = "second"
+	Result evaluateStrAttrRefStr(const string&, const string&, const Type&); // e.g. "main" = p.procName
+	Result evaulateConstValSyn(const string&, const string&); // e.g. c.value = n
+	Result evaulateConstValConstVal(const string&, const string&); // e.g. c.value = c1.value
+	Result evaulateSynSyn(const string&, const string&); // e.g. n = n1
+	Result evaulateAttrRefIntSyn(const string&, const Type&, const string&);  // e.g. w.stmt# = n
+	Result evaulateAttrRefIntConstVal(const string&, const Type&, const string&); // e.g. a.stmt# = c.value
+	Result evaulateAttrRefIntAttrRefInt(const string&, const Type&, const string&, const Type&); // e.g. s.stmt# = w.stmt#
+	Result evaulateAttrRefStrAttrRefStr(const string&, const Type&, const string&, const Type&); // e.g. v.varName = p.procName
 	
 public:
 	With(DesignEntity&, DesignEntity&);

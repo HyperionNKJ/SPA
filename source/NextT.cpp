@@ -14,7 +14,7 @@ Result NextT::evaluate(const PKB& pkb) {
 	string paraOneValue = paraOne.getValue();
 	string paraTwoValue = paraTwo.getValue();
 
-	Result* result;
+	Result result;
 
 	if (paraOneType == FIXED) {
 		if (paraTwoType == STATEMENT || paraTwoType == READ || paraTwoType == PRINT
@@ -28,8 +28,7 @@ Result NextT::evaluate(const PKB& pkb) {
 			result = this->evaluateFixedFixed(paraOneValue, paraTwoValue);
 		}
 		else {
-			result = new Result();
-			result->setPassed(false);
+			result.setPassed(false);
 		}
 	}
 	else if (paraOneType == STATEMENT || paraOneType == READ || paraOneType == PRINT
@@ -45,8 +44,7 @@ Result NextT::evaluate(const PKB& pkb) {
 			result = this->evaluateSynonymFixed(paraOneValue, paraTwoValue, paraOneType);
 		}
 		else {
-			result = new Result();
-			result->setPassed(false);
+			result.setPassed(false);
 		}
 	}
 	else if (paraOneType == UNDERSCORE) {
@@ -61,20 +59,18 @@ Result NextT::evaluate(const PKB& pkb) {
 			result = this->evaluateUnderscoreFixed(paraTwoValue);
 		}
 		else {
-			result = new Result();
-			result->setPassed(false);
+			result.setPassed(false);
 		}
 	}
 	else {
-		result = new Result();
-		result->setPassed(false);
+		result.setPassed(false);
 	}
-	return *result;
+	return result;
 }
 
 // case Next*(12, a)
-Result* NextT::evaluateFixedSynonym(const string& previousLineNum, const string& nextSynonym, const Type& nextType) {
-	Result* result = new Result();
+Result NextT::evaluateFixedSynonym(const string& previousLineNum, const string& nextSynonym, const Type& nextType) {
+	Result result;
 	unordered_set<int> answer;
 	if (reducedDomain.count(nextSynonym)) { // domain is reduced if synonym is present in intermediate table. Can improve performance
 		unordered_set<int> possibleValues = reducedDomain.at(nextSynonym);
@@ -89,32 +85,32 @@ Result* NextT::evaluateFixedSynonym(const string& previousLineNum, const string&
 	}
 
 	if (!answer.empty()) {
-		result->setPassed(true);
-		result->setAnswer(nextSynonym, answer);
+		result.setPassed(true);
+		result.setAnswer(nextSynonym, answer);
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }
 
 // case Next*(12, _)
-Result* NextT::evaluateFixedUnderscore(const string& previousLineNum) {
-	Result* result = new Result();
-	result->setPassed(pkb.hasNext(stoi(previousLineNum)));
+Result NextT::evaluateFixedUnderscore(const string& previousLineNum) {
+	Result result;
+	result.setPassed(pkb.hasNext(stoi(previousLineNum)));
 	return result;
 }
 
 // case Next*(12, 13)
-Result* NextT::evaluateFixedFixed(const string& previousLineNum, const string& nextLineNum) {
-	Result* result = new Result();
-	result->setPassed(pkb.isNextT(stoi(previousLineNum), stoi(nextLineNum)));
+Result NextT::evaluateFixedFixed(const string& previousLineNum, const string& nextLineNum) {
+	Result result;
+	result.setPassed(pkb.isNextT(stoi(previousLineNum), stoi(nextLineNum)));
 	return result;
 }
 
 // case Next*(s, s1)
-Result* NextT::evaluateSynonymSynonym(const string& previousSynonym, const string& nextSynonym, const Type& previousType, const Type& nextType) {
-	Result* result = new Result();
+Result NextT::evaluateSynonymSynonym(const string& previousSynonym, const string& nextSynonym, const Type& previousType, const Type& nextType) {
+	Result result;
 	bool hasReducedDomainForPrevSyn = reducedDomain.count(previousSynonym);
 	bool hasReducedDomainForNextSyn = reducedDomain.count(nextSynonym);
 	unordered_set<int> prevSynPossibleValues; 
@@ -150,16 +146,16 @@ Result* NextT::evaluateSynonymSynonym(const string& previousSynonym, const strin
 	}
 	
 	if (!answer.empty()) {
-		result->setPassed(true);
+		result.setPassed(true);
 		if (keyIsPrevSyn) {
-			result->setAnswer(previousSynonym, nextSynonym, answer);
+			result.setAnswer(previousSynonym, nextSynonym, answer);
 		}
 		else {
-			result->setAnswer(nextSynonym, previousSynonym, answer);
+			result.setAnswer(nextSynonym, previousSynonym, answer);
 		}
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }
@@ -187,8 +183,8 @@ bool NextT::evaluateSynSynFromNext(const unordered_set<int>& nextSynPossibleValu
 }
 
 // case Next*(w, _)
-Result* NextT::evaluateSynonymUnderscore(const string& previousSynonym, const Type& previousType) {
-	Result* result = new Result();
+Result NextT::evaluateSynonymUnderscore(const string& previousSynonym, const Type& previousType) {
+	Result result;
 	unordered_set<int> answer;
 	if (reducedDomain.count(previousSynonym)) { 
 		unordered_set<int> possibleValues = reducedDomain.at(previousSynonym);
@@ -203,18 +199,18 @@ Result* NextT::evaluateSynonymUnderscore(const string& previousSynonym, const Ty
 	}
 
 	if (!answer.empty()) {
-		result->setPassed(true);
-		result->setAnswer(previousSynonym, answer);
+		result.setPassed(true);
+		result.setAnswer(previousSynonym, answer);
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }
 
 // case Next*(s, 14)
-Result* NextT::evaluateSynonymFixed(const string& previousSynonym, const string& nextLineNum, const Type& previousType) {
-	Result* result = new Result();
+Result NextT::evaluateSynonymFixed(const string& previousSynonym, const string& nextLineNum, const Type& previousType) {
+	Result result;
 	unordered_set<int> answer;
 	if (reducedDomain.count(previousSynonym)) {
 		unordered_set<int> possibleValues = reducedDomain.at(previousSynonym);
@@ -228,18 +224,18 @@ Result* NextT::evaluateSynonymFixed(const string& previousSynonym, const string&
 		answer = pkb.getPreviousTOf(stoi(nextLineNum), previousType);
 	}
 	if (!answer.empty()) {
-		result->setPassed(true);
-		result->setAnswer(previousSynonym, answer);
+		result.setPassed(true);
+		result.setAnswer(previousSynonym, answer);
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }
 
 // case Next*(_, pl)
-Result* NextT::evaluateUnderscoreSynonym(const string& nextSynonym, const Type& nextType) {
-	Result* result = new Result();
+Result NextT::evaluateUnderscoreSynonym(const string& nextSynonym, const Type& nextType) {
+	Result result;
 	unordered_set<int> answer;
 	if (reducedDomain.count(nextSynonym)) {
 		unordered_set<int> possibleValues = reducedDomain.at(nextSynonym);
@@ -254,25 +250,25 @@ Result* NextT::evaluateUnderscoreSynonym(const string& nextSynonym, const Type& 
 	}
 
 	if (!answer.empty()) {
-		result->setPassed(true);
-		result->setAnswer(nextSynonym, answer);
+		result.setPassed(true);
+		result.setAnswer(nextSynonym, answer);
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }
 
 // case Next*(_, _)
-Result* NextT::evaluateUnderscoreUnderscore() {
-	Result* result = new Result();
-	result->setPassed(pkb.hasNextT());
+Result NextT::evaluateUnderscoreUnderscore() {
+	Result result;
+	result.setPassed(pkb.hasNextT());
 	return result;
 }
 
 // case Next*(_, 23)
-Result* NextT::evaluateUnderscoreFixed(const string& nextLineNum) {
-	Result* result = new Result();
-	result->setPassed(pkb.hasPrevious(stoi(nextLineNum)));
+Result NextT::evaluateUnderscoreFixed(const string& nextLineNum) {
+	Result result;
+	result.setPassed(pkb.hasPrevious(stoi(nextLineNum)));
 	return result;
 }

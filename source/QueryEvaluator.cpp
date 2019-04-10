@@ -4,8 +4,6 @@
 #include <unordered_set>
 #include <map>
 
-// Commented out Affects, AffectsT, this line 39-47, 59 & 65
-
 list<string> QueryEvaluator::evaluate(ProcessedQuery& processedQuery, const PKB& pkb) {
 	ResultProjector resultProjector;
 	resultProjector.resetResults(); // Reset possible old query result
@@ -43,7 +41,6 @@ list<string> QueryEvaluator::evaluate(ProcessedQuery& processedQuery, const PKB&
 				}
 				continue; // skip re-evaluation
 			}
-			
 		}
 
 		Result clauseResult = clause->evaluate(pkb);

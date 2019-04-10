@@ -18,11 +18,10 @@ Result PatternAssign::evaluate(const PKB& pkb) {
 	string paraOneValue = paraOne.getValue();
 	string paraTwoValue = paraTwo.getValue();
 
-	Result* result;
+	Result result;
 
 	if (subjectType != ASSIGN) {
-		result = new Result();
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 
 	if (paraOneType == VARIABLE) {
@@ -36,8 +35,7 @@ Result PatternAssign::evaluate(const PKB& pkb) {
 			result = this->evaluateVariableUnderscore(paraOneValue, subjectValue);
 		}
 		else {
-			result = new Result();
-			result->setPassed(false);
+			result.setPassed(false);
 		}
 	}
 	else if (paraOneType == UNDERSCORE) {
@@ -51,8 +49,7 @@ Result PatternAssign::evaluate(const PKB& pkb) {
 			result = this->evaluateUnderscoreUnderscore(subjectValue);
 		}
 		else {
-			result = new Result();
-			result->setPassed(false);
+			result.setPassed(false);
 		}
 	}
 	else if (paraOneType == FIXED) {
@@ -66,20 +63,18 @@ Result PatternAssign::evaluate(const PKB& pkb) {
 			result = this->evaluateFixedUnderscore(paraOneValue, subjectValue);
 		}
 		else {
-			result = new Result();
-			result->setPassed(false);
+			result.setPassed(false);
 		}
 	}
 	else {
-		result = new Result();
-		result->setPassed(false);
+		result.setPassed(false);
 	}
-	return *result;
+	return result;
 }
 
 // case a(v, "x+y+10")
-Result* PatternAssign::evaluateVariableExact(const string& variableSynonym, const string& exactString, const string& assignSynonym) {
-	Result* result = new Result();
+Result PatternAssign::evaluateVariableExact(const string& variableSynonym, const string& exactString, const string& assignSynonym) {
+	Result result;
 	unordered_set<int> assignStmtsWithExactMatch = pkb.getAssignStmtsWithExactMatch(exactString);
 	unordered_map<int, string> answer;
 
@@ -89,18 +84,18 @@ Result* PatternAssign::evaluateVariableExact(const string& variableSynonym, cons
 	}
 
 	if (!answer.empty()) {
-		result->setPassed(true);
-		result->setAnswer(assignSynonym, variableSynonym, answer, pkb.getVarTable());
+		result.setPassed(true);
+		result.setAnswer(assignSynonym, variableSynonym, answer, pkb.getVarTable());
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }
 
 // case a(v, _"x+y+10"_)
-Result* PatternAssign::evaluateVariableSub(const string& variableSynonym, const string& subString, const string& assignSynonym) {
-	Result* result = new Result();
+Result PatternAssign::evaluateVariableSub(const string& variableSynonym, const string& subString, const string& assignSynonym) {
+	Result result;
 	unordered_set<int> assignStmtsWithSubMatch = pkb.getAssignStmtsWithSubMatch(subString);
 	unordered_map<int, string> answer;
 
@@ -110,76 +105,76 @@ Result* PatternAssign::evaluateVariableSub(const string& variableSynonym, const 
 	}
 
 	if (!answer.empty()) {
-		result->setPassed(true);
-		result->setAnswer(assignSynonym, variableSynonym, answer, pkb.getVarTable());
+		result.setPassed(true);
+		result.setAnswer(assignSynonym, variableSynonym, answer, pkb.getVarTable());
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }
 
 // case a(v, _) = Modifies(a, v)
-Result* PatternAssign::evaluateVariableUnderscore(const string& variableSynonym, const string& assignSynonym) {
-	Result* result = new Result();
+Result PatternAssign::evaluateVariableUnderscore(const string& variableSynonym, const string& assignSynonym) {
+	Result result;
 	unordered_map<int, unordered_set<string>> answer = pkb.getModifiesStmtVarPairs(Type::ASSIGN);
 	if (!answer.empty()) {
-		result->setPassed(true);
-		result->setAnswer(assignSynonym, variableSynonym, answer, pkb.getVarTable());
+		result.setPassed(true);
+		result.setAnswer(assignSynonym, variableSynonym, answer, pkb.getVarTable());
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }
 
 // case a(_, "count")
-Result* PatternAssign::evaluateUnderscoreExact(const string& exactString, const string& assignSynonym) {
-	Result* result = new Result();
+Result PatternAssign::evaluateUnderscoreExact(const string& exactString, const string& assignSynonym) {
+	Result result;
 	unordered_set<int> answer = pkb.getAssignStmtsWithExactMatch(exactString);
 
 	if (!answer.empty()) {
-		result->setPassed(true);
-		result->setAnswer(assignSynonym, answer);
+		result.setPassed(true);
+		result.setAnswer(assignSynonym, answer);
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }
 
 // case a(_, _"count+10"_)
-Result* PatternAssign::evaluateUnderscoreSub(const string& subString, const string& assignSynonym) {
-	Result* result = new Result();
+Result PatternAssign::evaluateUnderscoreSub(const string& subString, const string& assignSynonym) {
+	Result result;
 	unordered_set<int> answer = pkb.getAssignStmtsWithSubMatch(subString);
 
 	if (!answer.empty()) {
-		result->setPassed(true);
-		result->setAnswer(assignSynonym, answer);
+		result.setPassed(true);
+		result.setAnswer(assignSynonym, answer);
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }
 
 // case a(_, _) = All assign statements, since they must have a LHS and RHS
-Result* PatternAssign::evaluateUnderscoreUnderscore(const string& assignSynonym) {
-	Result* result = new Result();
+Result PatternAssign::evaluateUnderscoreUnderscore(const string& assignSynonym) {
+	Result result;
 	unordered_set<int> answer = pkb.getAssignStmts();
 	if (!answer.empty()) {
-		result->setPassed(true);
-		result->setAnswer(assignSynonym, answer);
+		result.setPassed(true);
+		result.setAnswer(assignSynonym, answer);
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }
 
 // case a("x", "x+1")
-Result* PatternAssign::evaluateFixedExact(const string& varName, const string& exactString, const string& assignSynonym) {
-	Result* result = new Result();
+Result PatternAssign::evaluateFixedExact(const string& varName, const string& exactString, const string& assignSynonym) {
+	Result result;
 	unordered_set<int> answer;
 
 	unordered_set<int> assignStmtsWithExactMatch = pkb.getAssignStmtsWithExactMatch(exactString);
@@ -190,18 +185,18 @@ Result* PatternAssign::evaluateFixedExact(const string& varName, const string& e
 	}
 
 	if (!answer.empty()) {
-		result->setPassed(true);
-		result->setAnswer(assignSynonym, answer);
+		result.setPassed(true);
+		result.setAnswer(assignSynonym, answer);
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }
 
 // case a("x", _"y*x+z"_)
-Result* PatternAssign::evaluateFixedSub(const string& varName, const string& subString, const string& assignSynonym) {
-	Result* result = new Result();
+Result PatternAssign::evaluateFixedSub(const string& varName, const string& subString, const string& assignSynonym) {
+	Result result;
 	unordered_set<int> answer;
 
 	unordered_set<int> assignStmtsWithSubMatch = pkb.getAssignStmtsWithSubMatch(subString);
@@ -212,26 +207,26 @@ Result* PatternAssign::evaluateFixedSub(const string& varName, const string& sub
 	}
 
 	if (!answer.empty()) {
-		result->setPassed(true);
-		result->setAnswer(assignSynonym, answer);
+		result.setPassed(true);
+		result.setAnswer(assignSynonym, answer);
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }
 
 // case a("i", _) = Modifies(a, "i")
-Result* PatternAssign::evaluateFixedUnderscore(const string& varName, const string& assignSynonym) {
-	Result* result = new Result();
+Result PatternAssign::evaluateFixedUnderscore(const string& varName, const string& assignSynonym) {
+	Result result;
 	unordered_set<int> answer = pkb.getStmtsThatModifiesVar(varName, Type::ASSIGN);
 
 	if (!answer.empty()) {
-		result->setPassed(true);
-		result->setAnswer(assignSynonym, answer);
+		result.setPassed(true);
+		result.setAnswer(assignSynonym, answer);
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }

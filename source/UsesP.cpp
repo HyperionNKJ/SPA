@@ -16,7 +16,7 @@ Result UsesP::evaluate(const PKB& pkb) {
 	string paraOneValue = paraOne.getValue();
 	string paraTwoValue = paraTwo.getValue();
 
-	Result* result;
+	Result result;
 
 	if (paraOneType == FIXED) {
 		if (paraTwoType == VARIABLE) {
@@ -29,8 +29,7 @@ Result UsesP::evaluate(const PKB& pkb) {
 			result = this->evaluateFixedFixed(paraOneValue, paraTwoValue);
 		}
 		else {
-			result = new Result();
-			result->setPassed(false);
+			result.setPassed(false);
 		}
 	}
 	else if (paraOneType == PROCEDURE) {
@@ -44,83 +43,81 @@ Result UsesP::evaluate(const PKB& pkb) {
 			result = this->evaluateSynonymFixed(paraOneValue, paraTwoValue);
 		}
 		else {
-			result = new Result();
-			result->setPassed(false);
+			result.setPassed(false);
 		}
 	}
 	else {
-		result = new Result();
-		result->setPassed(false);
+		result.setPassed(false);
 	}
-	return *result;
+	return result;
 }
 
 // case Uses("main", v)
-Result* UsesP::evaluateFixedVariable(const string& procName, const string& variableSynonym) {
-	Result* result = new Result();
+Result UsesP::evaluateFixedVariable(const string& procName, const string& variableSynonym) {
+	Result result;
 	unordered_set<string> answer = pkb.getVarUsedByProc(procName);
 	if (!answer.empty()) {
-		result->setPassed(true);
-		result->setAnswer(variableSynonym, answer, pkb.getVarTable());
+		result.setPassed(true);
+		result.setAnswer(variableSynonym, answer, pkb.getVarTable());
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }
 
 // case Uses("main", _)
-Result* UsesP::evaluateFixedUnderscore(const string& procName) {
-	Result* result = new Result();
-	result->setPassed(pkb.doesProcUses(procName));
+Result UsesP::evaluateFixedUnderscore(const string& procName) {
+	Result result;
+	result.setPassed(pkb.doesProcUses(procName));
 	return result;
 }
 
 // case Uses("main", "count")
-Result* UsesP::evaluateFixedFixed(const string& procName, const string& varName) {
-	Result* result = new Result();
-	result->setPassed(pkb.isProcUses(procName, varName));
+Result UsesP::evaluateFixedFixed(const string& procName, const string& varName) {
+	Result result;
+	result.setPassed(pkb.isProcUses(procName, varName));
 	return result;
 }
 
 // case Uses(p, v)
-Result* UsesP::evaluateSynonymVariable(const string& procSynonym, const string& variableSynonym) {
-	Result* result = new Result();
+Result UsesP::evaluateSynonymVariable(const string& procSynonym, const string& variableSynonym) {
+	Result result;
 	unordered_map<string, unordered_set<string>> answer = pkb.getUsesProcVarPairs();
 	if (!answer.empty()) {
-		result->setPassed(true);
-		result->setAnswer(procSynonym, variableSynonym, answer, pkb.getProcTable(), pkb.getVarTable());
+		result.setPassed(true);
+		result.setAnswer(procSynonym, variableSynonym, answer, pkb.getProcTable(), pkb.getVarTable());
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }
 
 // case Uses(p, _)
-Result* UsesP::evaluateSynonymUnderscore(const string& procSynonym) {
-	Result* result = new Result();
+Result UsesP::evaluateSynonymUnderscore(const string& procSynonym) {
+	Result result;
 	unordered_set<string> answer = pkb.getProcThatUsesVar();
 	if (!answer.empty()) {
-		result->setPassed(true);
-		result->setAnswer(procSynonym, answer, pkb.getProcTable());
+		result.setPassed(true);
+		result.setAnswer(procSynonym, answer, pkb.getProcTable());
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }
 
 // case Uses(p, "count")
-Result* UsesP::evaluateSynonymFixed(const string& procSynonym, const string& varName) {
-	Result* result = new Result();
+Result UsesP::evaluateSynonymFixed(const string& procSynonym, const string& varName) {
+	Result result;
 	unordered_set<string> answer = pkb.getProcThatUsesVar(varName);
 	if (!answer.empty()) {
-		result->setPassed(true);
-		result->setAnswer(procSynonym, answer, pkb.getProcTable());
+		result.setPassed(true);
+		result.setAnswer(procSynonym, answer, pkb.getProcTable());
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }

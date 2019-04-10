@@ -16,11 +16,10 @@ Result PatternIf::evaluate(const PKB& pkb) {
 	string subjectValue = subject.getValue();
 	string paraOneValue = paraOne.getValue();
 
-	Result* result;
+	Result result;
 
 	if (subjectType != IF) {
-		result = new Result();
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 
 	if (paraOneType == VARIABLE) {
@@ -33,53 +32,52 @@ Result PatternIf::evaluate(const PKB& pkb) {
 		result = this->evaluateFixed(paraOneValue, subjectValue);
 	}
 	else {
-		result = new Result();
-		result->setPassed(false);
+		result.setPassed(false);
 	}
-	return *result;
+	return result;
 }
 
 // case i(v, _, _)
-Result* PatternIf::evaluateVariable(const string& controlVar, const string& ifSynonym) {
-	Result* result = new Result();
+Result PatternIf::evaluateVariable(const string& controlVar, const string& ifSynonym) {
+	Result result;
 	unordered_map<int, unordered_set<string>> answer = pkb.getIfControlVarPair();
 
 	if (!answer.empty()) {
-		result->setPassed(true);
-		result->setAnswer(ifSynonym, controlVar, answer, pkb.getVarTable());
+		result.setPassed(true);
+		result.setAnswer(ifSynonym, controlVar, answer, pkb.getVarTable());
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }
 
 // i(_, _, _)
-Result* PatternIf::evaluateUnderscore(const string& ifSynonym) {
-	Result* result = new Result();
+Result PatternIf::evaluateUnderscore(const string& ifSynonym) {
+	Result result;
 	unordered_set<int> answer = pkb.getIfWithControlVar();
 
 	if (!answer.empty()) {
-		result->setPassed(true);
-		result->setAnswer(ifSynonym, answer);
+		result.setPassed(true);
+		result.setAnswer(ifSynonym, answer);
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }
 
 // case i("count", _, _)
-Result* PatternIf::evaluateFixed(const string& controlVar, const string& ifSynonym) {
-	Result* result = new Result();
+Result PatternIf::evaluateFixed(const string& controlVar, const string& ifSynonym) {
+	Result result;
 	unordered_set<int> answer = pkb.getIfWithControlVar(controlVar);
 
 	if (!answer.empty()) {
-		result->setPassed(true);
-		result->setAnswer(ifSynonym, answer);
+		result.setPassed(true);
+		result.setAnswer(ifSynonym, answer);
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }
