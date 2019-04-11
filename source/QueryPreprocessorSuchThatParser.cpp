@@ -211,7 +211,7 @@ bool QueryPreprocessorSuchThatParser::addClause(const RelRef& relRef, const Desi
 }
 
 bool QueryPreprocessorSuchThatParser::isValidAffectsParam(const DesignEntity& paramOne, const DesignEntity& paramTwo) {
-	std::vector<Type> legalTypes = { Type::ASSIGN, Type::PROGLINE, Type::UNDERSCORE };
+	std::vector<Type> legalTypes = { Type::ASSIGN, Type::PROGLINE, Type::STATEMENT, Type::UNDERSCORE };
 	
 	bool isValidLHS = paramOne.isAnyType(legalTypes) || paramOne.isStmtNo();
 	bool isValidRHS = paramTwo.isAnyType(legalTypes) || paramTwo.isStmtNo();
