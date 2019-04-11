@@ -7,7 +7,7 @@
 constexpr auto DELIMITER = ';';
 
 // Regular Expressions
-constexpr char DECLARE_STMT[] = "^(stmt|read|print|call|while|if|assign|variable|constant|prog_line|procedure) [a-zA-z][a-zA-Z0-9,]*$";
+constexpr char DECLARE_STMT[] = "^(stmt|switch|read|print|call|while|if|assign|variable|constant|prog_line|procedure) [a-zA-z][a-zA-Z0-9,]*$";
 const std::regex QueryPreprocessorTokenizer::DECLARE_REGEX_STMT(DECLARE_STMT);
 
 // Initializes a newly created QueryPreprocessorFormatterTokenizer.

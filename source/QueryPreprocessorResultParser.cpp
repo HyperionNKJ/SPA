@@ -73,7 +73,8 @@ bool QueryPreprocessorResultParser::addElement(const std::string& elem) {
 		Type::PROCEDURE, 
 		Type::PROGLINE, 
 		Type::READ, 
-		Type::STATEMENT, 
+		Type::STATEMENT,
+		Type::SWITCH,
 		Type::VARIABLE, 
 		Type::WHILE 
 	};

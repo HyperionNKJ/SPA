@@ -1,6 +1,7 @@
 #include <iostream>
 #include "stdafx.h"
 #include "CppUnitTest.h"
+#include "QueryPreprocessor.h"
 #include "QueryPreprocessorFormatter.h"
 #include "QueryPreprocessorPatternParser.h"
 #include "QueryPreprocessorSelectParser.h"
@@ -156,26 +157,6 @@ public:
 		status = withParserF.parse();
 
 		Assert::IsTrue(status);
-		Assert::IsTrue(stubQuery.booleanClauses.size() == 0);
-		Assert::IsTrue(stubQuery.withClauses.size() == 0);
-	}
-	TEST_METHOD(oarseWithClauseWithConstantRhsNotEqualLhsShouldReturnEmptyResult) {
-		ProcessedQuery stubQuery;
-
-		std::string withClauseA = "1=2";
-		std::string withClauseB = "\"a\"=\"b\"";
-
-		QueryPreprocessorWithParser withParserA(withClauseA, stubQuery);
-		bool status = withParserA.parse();
-
-		Assert::IsFalse(status);
-		Assert::IsTrue(stubQuery.booleanClauses.size() == 0);
-		Assert::IsTrue(stubQuery.withClauses.size() == 0);
-
-		QueryPreprocessorWithParser withParserB(withClauseB, stubQuery);
-		status = withParserB.parse();
-
-		Assert::IsFalse(status);
 		Assert::IsTrue(stubQuery.booleanClauses.size() == 0);
 		Assert::IsTrue(stubQuery.withClauses.size() == 0);
 	}
@@ -391,30 +372,6 @@ public:
 		Assert::IsTrue(paramTwo.getValue() == "var");
 		Assert::IsTrue(paramTwo.isType(Type::WITH_STRING));
 		Assert::IsTrue(paramTwo.isAttrRef(AttrRef::UNASSIGNED));
-	}
-	TEST_METHOD(parseWithClauseIntNameFail) {
-		ProcessedQuery stubQuery;
-		stubQuery.insertDeclaration("a", Type::ASSIGN);
-		stubQuery.insertDeclaration("v", Type::VARIABLE);
-
-		std::string withClauseA = "a.stmt#=v.varName";
-
-		QueryPreprocessorWithParser withParserA(withClauseA, stubQuery);
-		bool status = withParserA.parse();
-
-		Assert::IsFalse(status);
-	}
-	TEST_METHOD(parseWithClauseNameIntFail) {
-		ProcessedQuery stubQuery;
-		stubQuery.insertDeclaration("a", Type::ASSIGN);
-		stubQuery.insertDeclaration("v", Type::VARIABLE);
-
-		std::string withClauseA = "v.varName=a.stmt#";
-
-		QueryPreprocessorWithParser withParserA(withClauseA, stubQuery);
-		bool status = withParserA.parse();
-
-		Assert::IsFalse(status);
 	}
 	TEST_METHOD(parseAssignPatternClauseUnderscoreUnderscorePass) {
 		ProcessedQuery stubQuery;
@@ -757,6 +714,14 @@ public:
 		bool status = parser.parse();
 
 		Assert::IsTrue(status);
+	}
+	TEST_METHOD(parseSwitchDeclarePass) {
+		std::string query = "switch s;Select s pattern s(\"v\",_)";
+
+		QueryPreprocessor parser(query);
+		bool status = parser.parse();
+
+		Assert::IsTrue(parser.getProcessedQuery().hasSynonym("s"));
 	}
 	};
 }
