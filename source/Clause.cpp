@@ -14,7 +14,7 @@ void Clause::setSynonyms() {
 	if (isSynonym(paraTwoType)) {
 		synonyms.insert(paraTwo.getValue());
 	}
-	if (type == ClauseType::PATTERN_ASSIGN || type == ClauseType::PATTERN_IF || type == ClauseType::PATTERN_WHILE) {
+	if (type == ClauseType::PATTERN_ASSIGN || type == ClauseType::PATTERN_IF || type == ClauseType::PATTERN_WHILE || type == ClauseType::PATTERN_SWITCH) {
 		synonyms.insert(subject.getValue()); // subject is always a synonym
 	}
 }
