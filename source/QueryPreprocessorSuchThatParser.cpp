@@ -92,8 +92,8 @@ bool QueryPreprocessorSuchThatParser::addClause(const RelRef& relRef, const Desi
 			return false;
 		}
 
-		//Affects* suchThatClause = new Affects(paramOne, paramTwo);
-		//query.addClause(suchThatClause, CLAUSE);
+		Affects* suchThatClause = new Affects(paramOne, paramTwo);
+		query.addClause(suchThatClause, CLAUSE);
 	}
 	else if (relRef == RelRef::AFFECTS_T) {
 		bool status = isValidAffectsParam(paramOne, paramTwo);
@@ -101,8 +101,8 @@ bool QueryPreprocessorSuchThatParser::addClause(const RelRef& relRef, const Desi
 			return false;
 		}
 
-		//AffectsT* suchThatClause = new AffectsT(paramOne, paramTwo);
-		//query.addClause(suchThatClause, CLAUSE);
+		AffectsT* suchThatClause = new AffectsT(paramOne, paramTwo);
+		query.addClause(suchThatClause, CLAUSE);
 	}
 	else if (relRef == RelRef::CALLS) {
 		bool status = isValidCallsParam(paramOne, paramTwo);
