@@ -26,6 +26,8 @@ class Parser {
 	bool withinProcedure = false;
 	bool emptyProcedure = true;
 	bool expectElse = false;
+	bool withinSwitch = false;
+	bool expectStatement = false;
 	string currProcedure;
 	vector<string> sourceCode = vector<string>();
 	int statementNumber = 1;
@@ -39,6 +41,7 @@ class Parser {
 	
 	//trackers for calls
 	unordered_map<int, string> procCalledByTable;
+	unordered_map<int, vector<int>> callParentTable;
 	
 	//trackers for next
 	bool firstInProc = false;

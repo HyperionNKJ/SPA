@@ -1,0 +1,30 @@
+1 - Switch statement follows another statement
+switch sw; stmt s;
+Select s such that Follows (s, sw)
+1
+5000
+2 - Switch statement followed by another statement
+switch sw; stmt s;
+Select s such that Follows (sw, s)
+12
+5000
+3 - FollowsT for switch statement
+stmt s;
+Select s such that Follows* (1, s)
+2, 12
+5000
+4 - Follows within case container
+stmt s;
+Select s such that Follows* (3, s)
+4
+5000
+5 - Follows within default container
+stmt s;
+Select s such that Follows* (9, s)
+10, 11
+5000
+6 - Check end of case container
+stmt s;
+Select s such that Follows* (6, s)
+none
+5000

@@ -43,7 +43,6 @@ int Parser::parse(string fileName, PKB& p) {
 				else {
 					if (intent == KEY_ASSIGN) {
 						result = handleAssignment(sourceCode[i]);
-						emptyProcedure = false;
 						statementNumber++;
 					}
 					else if (intent == KEY_CLOSE_BRACKET) {
@@ -51,22 +50,18 @@ int Parser::parse(string fileName, PKB& p) {
 					}
 					else if (intent == KEY_IF) {
 						result = handleIf(sourceCode[i]);
-						emptyProcedure = false;
 						statementNumber++;
 					}
 					else if (intent == KEY_WHILE) {
 						result = handleWhile(sourceCode[i]);
-						emptyProcedure = false;
 						statementNumber++;
 					}
 					else if (intent == KEY_PRINT) {
 						result = handlePrint(sourceCode[i]);
-						emptyProcedure = false;
 						statementNumber++;
 					}
 					else if (intent == KEY_READ) {
 						result = handleRead(sourceCode[i]);
-						emptyProcedure = false;
 						statementNumber++;
 					}
 					else if (intent == KEY_ELSE && expectElse == true) {
@@ -78,12 +73,10 @@ int Parser::parse(string fileName, PKB& p) {
 					else if (intent == KEY_CALL) {
 						result = handleCall(sourceCode[i]);
 						statementNumber++;
-						emptyProcedure = false;
 					}
 					else if (intent == KEY_SWITCH) {
 						result = handleSwitch(sourceCode[i]);
 						statementNumber++;
-						emptyProcedure = false;
 					}
 					else if (intent == KEY_SWITCHCASE) {
 						result = handleSwitchCase(sourceCode[i]);
@@ -93,6 +86,8 @@ int Parser::parse(string fileName, PKB& p) {
 						errorMessage = "Statement of unknown type encountered at line "  + to_string(statementNumber);
 						result = -1;
 					}
+					emptyProcedure = false;
+					expectStatement = false;
 				}
 			}
 		}
@@ -345,7 +340,7 @@ int Parser::handleAssignment(string assignmentLine) {
 			opStack.pop_back();
 		}
 		else if (assignTokens[i] == "+" || assignTokens[i] == "-") {
-			while (opStack.size() > 0 && (opStack.back() == "+" || opStack.back() == "-")) {
+			while (opStack.size() > 0 && (opStack.back() != "(")) {
 				postfixRHS.push_back(opStack.back());
 				opStack.pop_back();
 			}
@@ -799,15 +794,20 @@ int Parser::handleCall(string callLine) {
 	currentFollowVector.push_back(statementNumber);
 	
 	procCalledByTable.insert({ statementNumber, calledProcName });
+	callParentTable.insert({ statementNumber, parentVector });
 	setCalls(currProcedure, calledProcName);
 	return 0;
 }
 
 bool Parser::checkSwitch(string switchLine) {
-	string switchRegexString = spaceRegex + "switch" + spaceRegex + "\\(" + spaceRegex + varNameRegex + "\\)" + openCurlyRegex + spaceRegex;
+	string switchRegexString = spaceRegex + "switch" + spaceRegex + "\\(" + spaceRegex + varNameRegex + spaceRegex + "\\)" + spaceRegex + openCurlyRegex + spaceRegex;
 	regex switchRegex(switchRegexString);
 	if (!regex_match(switchLine, switchRegex)) {
 		errorMessage = "Unexpected tokens in the switch statement at line "  + to_string(statementNumber);
+		return false;
+	}
+	if (withinSwitch) {
+		errorMessage = "Nested switch statements are not allowed; at line " + to_string(statementNumber);
 		return false;
 	}
 	return true;
@@ -817,7 +817,7 @@ int Parser::handleSwitch(string switchLine) {
 	if (!checkSwitch(switchLine)) {
 		return -1;
 	}
-
+	withinSwitch = true;
 	//set follow, parent relationships
 	setParent(statementNumber);
 	setFollow(statementNumber);
@@ -853,6 +853,14 @@ bool Parser::checkSwitchCase(string switchCaseLine) {
 		errorMessage = "Unexpected tokens in the switch case statement at line "  + to_string(statementNumber);
 		return false;
 	}
+	if (expectStatement) {
+		errorMessage = "Case statements in switch must be followed by at least 1 statement at line " + to_string(statementNumber);
+		return false;
+	}
+	if (!withinSwitch) {
+		errorMessage = "Case statement not within a switch container found at line " + to_string(statementNumber);
+		return false;
+	}
 	return true;
 }
 
@@ -866,6 +874,7 @@ int Parser::handleSwitchCase(string switchCaseLine) {
 	//discard previous statement list for follows, prepare first statement in switch case for the next
 	currentFollowVector.clear();
 	firstInElse = true;
+	expectStatement = true;
 	//add constant to pkb
 	size_t casePos = switchCaseLine.find("case");
 	size_t colonPos = switchCaseLine.find_last_of(":");
@@ -1097,11 +1106,18 @@ bool Parser::setCallUsesModifies() {
 	for (const auto &elem : procCalledByTable) {
 		int stmtNum = elem.first;
 		string procName = elem.second;
-		for (const auto &elem : procModifiesTable[procName]) {
-			pkb->setModifies(stmtNum, elem);
+		vector<int> parentOfCall = callParentTable[stmtNum];
+		for (const auto &var : procModifiesTable[procName]) {
+			pkb->setModifies(stmtNum, var);
+			for (int i = 0; i < parentOfCall.size(); i++) {
+				pkb->setModifies(parentOfCall[i], var);
+			}
 		}
-		for (const auto &elem : procUsesTable[procName]) {
-			pkb->setUses(stmtNum, elem);
+		for (const auto &var : procUsesTable[procName]) {
+			pkb->setUses(stmtNum, var);
+			for (int i = 0; i < parentOfCall.size(); i++) {
+				pkb->setUses(parentOfCall[i], var);
+			}
 		}
 	}
 	return true;
