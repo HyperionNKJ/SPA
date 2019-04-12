@@ -799,12 +799,13 @@ int Parser::handleCall(string callLine) {
 	currentFollowVector.push_back(statementNumber);
 	
 	procCalledByTable.insert({ statementNumber, calledProcName });
+	callParentTable.insert({ statementNumber, parentVector });
 	setCalls(currProcedure, calledProcName);
 	return 0;
 }
 
 bool Parser::checkSwitch(string switchLine) {
-	string switchRegexString = spaceRegex + "switch" + spaceRegex + "\\(" + spaceRegex + varNameRegex + "\\)" + openCurlyRegex + spaceRegex;
+	string switchRegexString = spaceRegex + "switch" + spaceRegex + "\\(" + spaceRegex + varNameRegex + spaceRegex + "\\)" + spaceRegex + openCurlyRegex + spaceRegex;
 	regex switchRegex(switchRegexString);
 	if (!regex_match(switchLine, switchRegex)) {
 		errorMessage = "Unexpected tokens in the switch statement at line "  + to_string(statementNumber);
