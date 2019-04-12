@@ -5,7 +5,7 @@
 class QueryPreprocessorParser {
 public:
 	QueryPreprocessorParser(const std::vector<std::string>& statements);
-	bool parse();
+	void parse();
 	ProcessedQuery getQuery();
 private:
 	const std::vector<std::string>& STATEMENTS;

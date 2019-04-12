@@ -1,5 +1,6 @@
-#include "QueryPreprocessorHelper.h"
 #include "QueryPreprocessorDeclareParser.h"
+#include "QueryPreprocessorError.h"
+#include "QueryPreprocessorHelper.h"
 #include "Type.h"
 
 constexpr auto SPACE = ' ';
@@ -12,7 +13,7 @@ QueryPreprocessorDeclareParser::QueryPreprocessorDeclareParser(const std::string
 // Parses synonyms in declarative statement and adds them to declarations.
 // Returns true if all the synonyms in the declarative statement can be added into declarations.
 // False if there exist a synonym that cannot be added into declarations.
-bool QueryPreprocessorDeclareParser::parse() {
+void QueryPreprocessorDeclareParser::parse() {
 	// extract design entity of this declaration statement
 	size_t designEntitySize = STATEMENT.find_first_of(SPACE);
 	std::string designEntityString = STATEMENT.substr(0, designEntitySize);
@@ -25,9 +26,7 @@ bool QueryPreprocessorDeclareParser::parse() {
 		// insert synonym into declarations
 		bool status = query.insertDeclaration(synonym, designEntity);
 		if (!status) {
-			return false;
+			throw QueryPreprocessorError(ErrorType::SYNTACTIC);
 		}
 	}
-
-	return true;
 }

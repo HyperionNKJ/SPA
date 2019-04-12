@@ -6,7 +6,7 @@
 class QueryPreprocessorTokenizer {
 public:
 	QueryPreprocessorTokenizer(const std::string& query);
-	bool tokenize();
+	void tokenize();
 	std::vector<std::string> getStatements();
 private:
 	static const std::regex DECLARE_REGEX_STMT;
@@ -15,6 +15,6 @@ private:
 	std::vector<std::string> statements;
 	void split();
 	bool validateStatement() const;
-	static bool isDeclareStatement(const std::string& statement);
-	static bool isSelectStatement(const std::string& statement);
+	static void isDeclareStatement(const std::string& statement);
+	static void isSelectStatement(const std::string& statement);
 };
