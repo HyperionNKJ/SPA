@@ -1,0 +1,35 @@
+1 - Select stmt that is parent of read
+stmt s; read r;
+Select s such that Parent (s, r)
+none
+5000
+2 - Select stmt that is parent of print
+stmt s; print pn;
+Select s such that Parent (s, pn)
+none
+5000
+3 - Check nested parent
+if ifs;
+Select BOOLEAN such that Parent* (ifs, 21) with ifs.stmt# = 10
+TRUE
+5000
+4 - Check invliad nested parent
+if ifs;
+Select BOOLEAN such that Parent* (ifs, 23) with ifs.stmt# = 16
+FALSE
+5000
+5 - Check nested parent with pattern
+if ifs; variable v;
+Select BOOLEAN such that Parent (ifs, 19) pattern ifs (v, _, _) with v.varName = "a"
+FALSE
+5000
+6 - Check nested parent with pattern
+if ifs;
+Select BOOLEAN such that Parent* (10, 18)
+TRUE
+5000
+7 - Check nested parent with pattern
+if ifs; variable v;
+Select BOOLEAN such that Parent* (16, 24)
+FALSE
+5000

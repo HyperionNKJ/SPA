@@ -1,0 +1,220 @@
+1 - Select stmt such that Uses (stmt, variable)
+stmt s; variable v;
+Select s such that Uses (s, v)
+4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 17, 18, 19, 20, 21
+5000
+3 - Select assign such that Uses (assign, variable)
+assign a; variable v;
+Select a such that Uses (a, v)
+5, 6, 8, 9, 11, 15, 17, 18, 19, 20 
+5000
+4 - Select print such that Uses (print, variable)
+print pn; variable v;
+Select pn such that Uses (pn, v)
+7, 12, 21
+5000
+5 - Select procedure such that uses variable
+procedure p; variable v;
+Select p such that Uses (p, v)
+main, P, Q
+5000
+6 - Select procedure with given name such that uses variable
+procedure p; variable v;
+Select p such that Uses (p, v) with p.procName="R"
+none
+5000
+7 - Select procedure such that uses variable with given name
+procedure p; variable v;
+Select p such that Uses (p, v) with v.varName="a"
+main, P, Q
+5000
+8 - Select procedure such that uses variable with given name
+procedure p;
+Select p such that Uses (p, "a")
+main, P, Q
+5000
+9 - Select variables used by procedure with given name
+variable v;
+Select v such that Uses ("Q", v)
+x, a, b, c
+5000
+10 - Procedure with Variable
+procedure p; variable v;
+Select p such that Uses (p, v)
+main, P, Q
+5000
+11 - Procedure with Underscore
+procedure p; variable v;
+Select p such that Uses (p, _)
+main, P, Q
+5000
+12 - Procedure with Fixed
+procedure p; variable v;
+Select p such that Uses (p, "x")
+main, P, Q
+5000
+13 - Stmt with Variable
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select s such that Uses (s, v)
+4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 17, 18, 19, 20, 21
+5000
+14 - Assign with Variable
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select a such that Uses (a, v)
+5, 6, 8, 9, 11, 15, 17, 18, 19, 20
+5000
+15 - Call with Variable
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select v such that Uses (cl, v)
+x, a, b, c
+5000
+16 - Print with Variable
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select p such that Uses (p, v)
+7, 12, 21
+5000
+17 - Read with Variable
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select v such that Uses (r, v)
+none
+5000
+18 - Progline with Variable
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select v such that Uses (n, v)
+x, a, b, c
+5000
+19 - While with Variable
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select v such that Uses (w, v)
+none
+5000
+20 - If with Variable
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select v such that Uses (ifs, v)
+none
+5000
+21 - Stmt with Underscore
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select s such that Uses (s, _)
+4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 17, 18, 19, 20, 21
+5000
+22 - Assign with Underscore
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select a such that Uses (a, _)
+5, 6, 8, 9, 11, 15, 17, 18, 19, 20
+5000
+23 - Call with Underscore
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select cl such that Uses (cl, _)
+4, 10, 13
+5000
+24 - Print with Underscore
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select p such that Uses (p, _)
+7, 12, 21
+5000
+25 - Read with Underscore
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select r such that Uses (r, _)
+none
+5000
+26 - Progline with Underscore
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select n such that Uses (n, _)
+4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 17, 18, 19, 20, 21
+5000
+27 - While with Underscore
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select w such that Uses (w, _)
+none
+5000
+28 - If with Underscore
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select ifs such that Uses (ifs, _)
+none
+5000
+29 - Stmt with Fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select s such that Uses (s, "a")
+4, 5, 6, 8, 9, 10, 11, 13, 15, 17, 20
+5000
+30 - Assign with Fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select a such that Uses (a, "a")
+5, 6, 8, 9, 11, 15, 17, 20
+5000
+31 - Call with Fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select cl such that Uses (cl, "a")
+4, 10, 13
+5000
+32 - Print with Fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select p such that Uses (p, "a")
+none
+5000
+33 - Read with Fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select r such that Uses (r, "a")
+none
+5000
+34 - Progline with Fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select n such that Uses (n, "a")
+4, 5, 6, 8, 9, 10, 11, 13, 15, 17, 20
+5000
+35 - While with Fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select w such that Uses (w, "a")
+none
+5000
+36 - If with Fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select ifs such that Uses (ifs, "a")
+none
+5000
+37 - Fixed (procedure) with Variable
+procedure p; variable v;
+Select v such that Uses ("P", v)
+a, b, c, x
+5000
+38 - Fixed (procedure) with Underscore
+procedure p; variable v;
+Select BOOLEAN such that Uses ("Q", _)
+TRUE
+5000
+39 - Fixed (procedure) with Fixed
+procedure p; variable v;
+Select BOOLEAN such that Uses ("P", "c")
+TRUE
+5000
+40 - Fixed (stmt) with Variable
+procedure p; variable v;
+Select v such that Uses (3, v)
+none
+5000
+41 - Fixed (stmt) with Variable
+procedure p; variable v;
+Select v such that Uses (9, v)
+a, b
+5000
+42 - Fixed (stmt) with Underscore
+procedure p; variable v;
+Select BOOLEAN such that Uses (14, _)
+FALSE
+5000
+43 - Fixed (stmt) with Fixed
+procedure p; variable v;
+Select BOOLEAN such that Uses (20, "b")
+TRUE
+5000
+44 - Invalid
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select v such that Uses (_, _)
+none
+5000
+45 - Invalid
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs; variable v;
+Select BOOLEAN such that Uses (_, "a")
+FALSE
+5000

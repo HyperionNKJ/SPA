@@ -1,0 +1,150 @@
+1 - Select assign pattern (_, constant)
+assign a;
+Select a pattern a (_, _"16"_)
+16
+5000
+2 - Select assign pattern (_, _variable_)
+assign a;
+Select a pattern a (_, _"b"_)
+5, 6, 8, 9, 17, 18, 20
+5000
+3 - Select assign pattern (_, _variable_) does not exist
+assign a;
+Select BOOLEAN pattern a (_, _"salkfjask"_)
+FALSE
+5000
+4 - Select assign pattern (variable, _) and (_, variable)
+assign a;
+Select a pattern a ("b", _) and a (_, _"a"_)
+6, 11
+5000
+5 - Select variable-variable tuple with pattern
+assign a1; assign a2;
+Select <a1, a2> pattern a1 ("a", _) and a2 ("b", _"a"_)
+5 6, 8 6, 18 6, 5 11, 8 11, 18 11
+5000
+6 - Select assign pattern by expression
+assign a;
+Select a pattern a (_, _"x+a"_)
+15, 20
+5000
+8 - Select assign pattern by expression not exist
+assign a;
+Select a pattern a (_, _"b+a"_)
+none
+5000
+9 - Select assign pattern by expression not exist
+assign a;
+Select a pattern a (_, _"a*b"_)
+none
+5000
+10 - Variable with exact match
+assign a; variable v;
+Select a pattern a (v, "a-b")
+6, 8
+5000
+11 - Variable with partial match
+assign a; variable v;
+Select a pattern a (v, _"a-b"_)
+6, 8, 17
+5000
+12 - Variable with underscore
+assign a; variable v;
+Select v pattern a (v, _)
+a, b, c, x, k
+5000
+13 - Underscore with exact match
+assign a;
+Select a pattern a (_, "a-b")
+6, 8
+5000
+14 - Underscore with partial match
+assign a;
+Select a pattern a (_, _"a-b"_)
+6, 8, 17
+5000
+15 - Underscore with underscore
+assign a;
+Select a pattern a (_, _)
+5, 6, 8, 9, 11, 15, 16, 17, 18, 19, 20
+5000
+16 - Fixed (exist) with exact match
+assign a, a1;
+Select a pattern a ("a", "a-b")
+8
+5000
+17 - Fixed (does not exist) with exact match
+assign a, a1;
+Select a pattern a ("1", "a-b")
+none
+5000
+18 - Fixed (exist) with partial match
+assign a;
+Select a pattern a ("b", _"a-b"_)
+6
+5000
+19 - Fixed (does not exist) with partial match
+assign a;
+Select a pattern a ("z", _"a-b"_)
+none
+5000
+20 - Fixed (exist) with underscore
+assign a;
+Select a pattern a ("a", _)
+5, 8, 18
+5000
+21 - Fixed (does not exist) with underscore
+assign a, a1;
+Select a1 pattern a ("123", _)
+none
+5000
+22 - Pattern matching sub tree
+assign a;
+Select a pattern a (_, _"x+a"_)
+15, 20
+5000
+23 - Pattern matching sub tree
+assign a;
+Select a pattern a (_, _"x+a-b"_)
+20
+5000
+24 - Pattern matching sub tree
+assign a;
+Select a pattern a (_, _"a*a"_)
+20
+5000
+25 - Pattern matching sub tree
+assign a;
+Select a pattern a (_, _"x+a-b+a*a"_)
+20
+5000
+26 - Pattern matching exact
+assign a;
+Select a pattern a (_, "x+a-b+a*a")
+20
+5000
+27 - Pattern matching sub tree (does not match)
+assign a;
+Select a pattern a (_, _"b+a*a"_)
+none
+5000
+28 - Pattern matching sub tree (does not match)
+assign a;
+Select a pattern a (_, _"a-b+a"_) 
+none
+5000
+29 - Pattern matching sub tree (does not match)
+assign a;
+Select a pattern a (_, _"b+a"_) 
+none
+5000
+30 - Multiple pattern
+assign a;
+Select a pattern a ("a", _) and a (_, "a+b") 
+5
+5000
+31 - Multiple pattern
+assign a; variable v;
+Select a pattern a (_, _) and a (v, _"a"_) 
+5, 6, 8, 9, 11, 15, 17, 20
+5000

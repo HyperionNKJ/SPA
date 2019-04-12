@@ -1,0 +1,10 @@
+1 - Select all if statements
+if ifs;
+Select ifs
+10,14,15,16,17,21,31
+5000
+2 - Select all while statements
+while w;
+Select w
+11,25,32,35
+5000

@@ -1,0 +1,45 @@
+procedure main {
+	read a;
+	read b;
+	read c;
+	call Q;
+}
+
+procedure P {
+	a = a           +               b;
+	b = a - b;
+	a = a - b;
+	c = a  * (         b - a                  );
+	if ( b    <        15       ) then {			
+		x = x + a;			
+		c = 16;
+	}
+	else {
+		x = a + b;
+	}
+	while (b >= c) {		
+			c = 7 + a - b;		
+			a = b + c;			
+	}
+	b = a + 5; 
+}
+
+procedure Q {
+	read x;
+	if (b < 15) then {
+								x = x + a;
+				c = 16;
+	}
+	else {
+		c = 7 * (a - b);
+				a = b + c;
+	}
+	while (b >= c) {
+					c = 7 * (a - b);
+			a = b + c;
+	}
+	x = c;
+	call P            ;
+	k = x + a - b + a * a;
+	print k;
+}

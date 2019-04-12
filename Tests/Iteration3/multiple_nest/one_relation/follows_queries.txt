@@ -1,0 +1,45 @@
+1 - Select stmt that is followed within while container
+stmt s;
+Select s such that Follows* (25, s)
+none
+5000
+2 - Select stmt follows while stmt
+stmt s; while w;
+Select s such that Follows (w, s)
+none
+5000
+3 - Select stmt that is followed within if container
+stmt s;
+Select s such that Follows* (s, 14)
+12,13
+5000
+4 - Select stmt followed by if statement
+if ifs; stmt s;
+Select s such that Follows* (s, ifs)
+12,13,30,6,7,8,9
+5000
+5 - Select all stmts if the given clause is false
+stmt s;
+Select s such that Follows* (1, 6)
+none
+5000
+6 - Select all stmts if the given clause is true
+stmt s;
+Select s such that Follows* (12, 13)
+1,10,11,12,13,14,15,16,17,18,19,2,20,21,22,23,24,25,26,27,28,29,3,30,31,32,33,34,35,36,37,38,39,4,40,5,6,7,8,9
+5000
+7 - Select assign inside while container with pattern
+assign a;
+Select a such that Follows* (26, a) pattern a ("a", _"c"_) 
+27
+5000
+8 - Select assign after if container with condition
+assign a; if ifs;
+Select a such that Follows* (ifs, a) with ifs.stmt# = 31
+38,39
+5000
+8 - Select assign after if container with condition and pattern
+assign a; if ifs;
+Select a such that Follows* (ifs, a) with ifs.stmt# = 31 pattern  a (_, _"x+a"_)
+39
+5000

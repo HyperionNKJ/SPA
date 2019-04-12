@@ -1,0 +1,55 @@
+1 - Select variable modified in if container
+variable v; if ifs;
+Select v such that Modifies (ifs, v)
+a, c, x
+5000
+2 - Select variable modified in while container
+variable v; while w;
+Select v such that Modifies (w, v)
+a, c
+5000
+3 - Select stmt modifies certain variable
+stmt s;
+Select s such that Modifies (s, "z")
+none
+5000
+4 - Select variable modified in specified stmt
+variable v;
+Select v such that Modifies (4, v)
+a, b, c, k, x
+5000
+5 - Select assign modifies any variable
+assign a;
+Select a such that Modifies (a, _)
+10,11,12,14,15,16,19,20,21,22,24,25,26,28,5,6,7,8
+5000
+6 - Invalid query
+assign a;
+Select a such that Modifies (_, a)
+none
+5000
+7 - Select variable inside if container with certain assignment pattern
+if ifs; assign a; variable v;
+Select v such that Modifies (ifs, v) pattern a (v, _"x"_)
+x
+5000
+8 - Select assign with certain pattern inside if container that doesn't exist
+if ifs; assign a; variable v;
+Select a such that Modifies (ifs, v) pattern a (v, _"x"_)
+10, 19
+5000
+9 - Select variable modified in while container with pattern
+while w; assign a; variable v;
+Select v such that Modifies (w, v) pattern a (v, _"x"_)
+none
+5000
+10 - Select variable modified in assign with pattern
+assign a; variable v;
+Select v such that Modifies (a, v) pattern a (v, _"x"_)
+k, x
+5000
+11 - Select while that modifies a variable if pattern is true
+while w; assign a;
+Select w such that Modifies (w, _) pattern a (_, _"x"_)
+13, 23
+5000
