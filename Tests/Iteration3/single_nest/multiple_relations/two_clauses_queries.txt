@@ -1,0 +1,255 @@
+1 - Select assign that is followed by assign and modifies variable
+assign a1; stmt s2;
+Select a1 such that Follows (a1, s2) and Modifies (s2, "a")
+6,14,21,24,26
+5000
+2 - Select assign that is followed by assign and modifies variable
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select a such that Modifies (a, v) such that Uses (a, v)
+5, 6, 7, 10, 19
+5000
+3 - Select procedure that uses given variable and call given procedure
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select p.procName such that Uses (p, "a") and Calls (p, "P")
+Q
+5000
+4 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select s.stmtNum# such that Next(5, s) and Next(s, 7)
+6
+5000
+5 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select a.stmtNum# such that Next(5, s) and Next(s, 7)
+5, 6, 7, 8, 10, 11, 12, 14, 15, 16, 19, 20, 21, 22, 24, 25, 26, 28
+5000
+6 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select a.stmtNum# such that Next(5, s) and Next(s, 7)
+5, 6, 7, 8, 10, 11, 12, 14, 15, 16, 19, 20, 21, 22, 24, 25, 26, 28
+5000
+7 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select s such that Next(5, s) and Uses(s, "b")
+6
+5000
+8 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select BOOLEAN such that Next(5, s) and Uses(s, "b")
+TRUE
+5000
+9 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select BOOLEAN such that Next(4, 5) and Uses(s, "b")
+FALSE
+5000
+10 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select a such that Next*(6, a) with a.stmt# = 5
+none
+5000
+11 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select a such that Next*(6, a) with a.stmt# = 11
+11
+5000
+12 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select p.procName such that Calls(main , p) with 12 = 12
+Q
+5000
+13 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select v.varName such that Parent(13, a) and Uses(a, v)
+a, b, c
+5000
+14 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select v.varName such that Parent(13, a) and Modifies(a, v)
+a, c
+5000
+15 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select c with a.stmt# = 20 such that Uses(a, "16")
+none
+5000
+16 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select a with a.stmt# = 20 and 20 = a.stmt#
+20
+5000
+17 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select s with p.procName = cl.procName such that Next*(cl, s)
+28, 29
+5000
+18 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select ifs pattern ifs(v, _,_) with v.varName = r.varName
+9, 18
+5000
+19 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select w.stmt# pattern ifs(v, _,_) pattern w(v, "_")
+13, 23
+5000
+20 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select w.stmt# pattern ifs(v, _,_) and w(v, "_")
+13, 23
+5000
+21 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select s pattern a(_, _"a * a"_) such that Follows*(s, a)
+27, 26, 23, 17, 18
+5000
+22 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select a such that Next(a, pt) with pt.varName = "kk"
+none
+5000
+23 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select a such that Next(a, pt) with pt.varName = "k"
+28
+5000
+24 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select w.stmt# such that Next*(w, w) and Parent(w, a)
+13, 23
+5000
+25 - To be filled INVALID
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select w.stmt# such that Next*(w, w.stmt#) Parent(w, a)
+none
+5000
+26 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select s.stmt# such that Uses(a,v) and Modifies(a,v)
+5, 6, 7, 10, 19
+5000
+27 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select a.stmt# pattern a(v, _"x + a"_) with v.varName = pt.varName
+28
+5000
+28 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select s pattern a(v, _"x + a"_) with v.varName = pt.varName
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29
+5000
+29 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select a such that Next*(a, a) and Parent(s,a)
+14, 15, 24, 25
+5000
+30 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select v such that Calls(p, "Q") and Modifies(p, v)
+a, b, c
+5000
+31 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select s such that Parent(23, a) and Next*(a, s)
+24, 25, 23, 26, 27, 28, 29
+5000
+32 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select cl.procName such that Parent(23, a) and Next*(a, cl)
+P
+5000
+33 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select v.varName with a.stmt# = c.value such that Modifies(a,v)
+a, b
+5000
+34 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select v.varName such that Uses(a,v) with r.stmt# = c.value
+none
+5000
+35 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select v.varName such that Uses(p, v) and Modifies(p,v)
+a, b, c, x, k
+5000
+36 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select c.value such that Uses(p, c) and Modifies(p,v)
+none
+5000
+37 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select v such that Follows(r, 18) and Modifies(r, v)
+x
+5000
+38 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select v such that Calls("Q", p) and Parent(p, a)
+none
+5000
+39 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select BOOLEAN such that Calls("Q", p) and Modifies(p, "k")
+FALSE
+5000
+40 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select BOOLEAN such that Calls("Q", p) and Uses(p, "x")
+TRUE
+5000
+41 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select BOOLEAN such that Calls("Q", p) and Next*(n, n)
+TRUE
+5000
+42 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select BOOLEAN such that Calls("Q", "main") and Next*(n, n)
+FALSE
+5000
+43 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select BOOLEAN such that Calls("Q","P") and Next(n, n)
+FALSE
+5000
+44 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select n with s = n and 1234 = 1234
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29
+5000
+45 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select n pattern ifs(_,_,_) and w(_,_)
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29
+5000
+46 - To be filled - INVALID
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select n pattern ifs(_,_,_) and pattern w(_,_)
+none
+5000
+47 - To be filled - INVALID
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select n pattern ifs(_,"x",_) and pattern w(_,_)
+none
+5000
+48 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select BOOLEAN such that Parent(ifs, a) and Next*(ifs, a)
+FALSE
+5000
+49 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select a.stmt# such that Parent*(w, a) and Next*(w, a)
+14, 15, 24, 25
+5000
+50 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select p.procName with v.varName = pt.varName such that Uses (p, v)
+main, Q
+5000
+51 - To be filled
+stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
+Select <pt, p> with v.varName = pt.varName such that Uses (p, v)
+29 Q, 29 main
+5000

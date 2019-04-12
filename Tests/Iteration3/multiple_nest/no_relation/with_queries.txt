@@ -1,0 +1,50 @@
+1 - Find procedure with given name
+procedure p;
+Select BOOLEAN with p.procName = "R"
+FALSE
+5000
+2 - Find procedure with given name
+procedure p;
+Select p with p.procName = "P"
+P
+5000
+3 - Find variable with given name
+variable v; read r;
+Select r with v.varName = "a"
+1,2,3,30
+5000
+4 - Find variable with given name
+variable v; print pt;
+Select pt with v.varName = "y"
+none
+5000
+5 - Find call-variable tuple with given name and stmt number
+variable v; call cl;
+Select <cl, v> with v.varName = "a" and cl.stmt# = 4
+4 a
+5000
+6 - Find stmt with given number that does not exist
+stmt s;
+Select s with s.stmt# = 13 and s.stmt# = 14
+none
+5000
+7 - Find constant with value
+constant c;
+Select c with c.value = 15
+15
+5000
+8 - Find invalid constant with value
+constant c;
+Select c with c.value = "a"
+none
+5000
+9 - Select stmt by constant value
+constant c; stmt s;
+Select s with s.stmt#=c.value
+1,15,16,5,7
+5000
+10 - Select boolean by assignment stmt number
+assign a;
+Select BOOLEAN with a.stmt# = 6
+TRUE
+5000

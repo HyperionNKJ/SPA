@@ -8,5 +8,5 @@ Path to executable (in Debug configuration): Debug/AutoTester.exe
 
 To test, run following command in current directory.
 Single test command: .\Release\AutoTester.exe .\Tests\Iteration1Tests\[nest_level]\[source_file].txt .\Tests\Iteration1Tests\[nest_level]\[num_of_clauses]\[type_of_clauses].txt .\Tests\Iteration1Tests\[nest_level]\[num_of_clauses]\[type_of_clauses].xml
-Batch test command: python .\Tests\Iteration1Tests\iter1tests.py
+Batch test command: python .\Tests\Iteration3\iter3tests.py
 

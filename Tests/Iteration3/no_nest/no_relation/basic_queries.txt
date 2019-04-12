@@ -1,0 +1,155 @@
+1 - Select all procedure
+procedure p;
+Select p
+main, P, Q
+5000
+2 - Select all procedure
+procedure p;
+Select p.procName
+main, P, Q
+5000
+3 - Select all statements
+stmt s;
+Select s
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21
+5000
+2 - Select all statements
+stmt s;
+Select s.stmt#
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21
+5000
+3 - Select all assign statements
+assign a;
+Select a
+5, 6, 8, 9, 11, 15, 16, 17, 18, 19, 20
+5000
+4 - Select all assign statements
+assign a;
+Select a.stmt#
+5, 6, 8, 9, 11, 15, 16, 17, 18, 19, 20
+5000
+5 - Select all read statements
+read r;
+Select r
+1, 2, 3, 14
+5000
+6 - Select all read statements number
+read r;
+Select r.stmt#
+1, 2, 3, 14
+5000
+7 - Select all read variables
+read r;
+Select r.varName
+a, b, x, c
+5000
+8 - Select all print statements
+print p;
+Select p
+7, 12, 21
+5000
+9 - Select all print statements number
+print p;
+Select p.stmt#
+7, 12, 21
+5000
+10 - Select all print variables
+print p;
+Select p.varName
+b, c
+5000
+11 - Select all call statements
+call cl;
+Select cl
+4, 10, 13
+5000
+12 - Select all call statements number
+call cl;
+Select cl.stmt#
+4, 10, 13
+5000
+13 - Select all call variables
+call cl;
+Select cl.procName
+P, Q
+5000
+14 - Select all variables
+variable v;
+Select v
+a, b, c, x, k
+5000
+15 - Select all variables name
+variable v;
+Select v.varName
+a, b, c, x, k
+5000
+16 - Select all constants
+constant c;
+Select c
+5, 16, 7
+5000
+17 - Select all constants value
+constant c;
+Select c.value
+5, 16, 7
+5000
+18 - Select all prog lines
+prog_line n;
+Select n
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21
+5000
+19 - Select all while
+while w;
+Select w
+none
+5000
+20 - Select all while statements number
+while w;
+Select w.stmt#
+none
+5000
+21 - Select all ifs
+if ifs;
+Select ifs
+none
+5000
+22 - Select all ifs number
+if ifs;
+Select ifs.stmt#
+none
+5000
+23 - Select all variable constant tuple
+constant c; variable v;
+Select <c, v>
+16 a, 16 b, 16 c, 16 x, 16 k, 5 a, 5 b, 5 c, 5 x, 5 k, 7 a, 7 b, 7 c, 7 x, 7 k
+5000
+24 - Select empty boolean
+variable v;
+Select BOOLEAN
+TRUE
+5000
+25 - (Invalid) Select all procedure statements
+procedure p;
+Select p.stmt#
+none
+5000
+26 - (Invalid) Select all statement variables
+stmt s;
+Select s.varName;
+none
+5000
+27 - (Invalid) Select all assign variables
+assign a;
+Select a.varName;
+none
+5000
+28 - (Invalid) Select all progline statements
+prog_line n;
+Select n.stmt#
+none
+5000
+29 - (Invalid) Select all constant variables
+const c;
+Select c.varName
+none
+5000

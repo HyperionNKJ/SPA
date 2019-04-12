@@ -1,0 +1,30 @@
+1 - Multiple relaion clauses
+assign a1; stmt s2;
+Select a1 such that Follows (a1, s2) and Modifies (s2, "a") such that Uses (s2, "a")
+13,7,9
+5000
+2 - Multiple relation clauses
+assign a1, a2; stmt s1, s2; variable v1, v2; if ifs; while w;
+Select <a1, a2> such that Parent* (s1, a1) and Modifies (a1, "a") and Modifies (a2, "x") and Parent* (s1, a2) with s1.stmt# = 11
+18 12, 19 12, 23 12, 18 22, 19 22, 23 22
+5000
+3 - Multiple relation clauses
+assign a1, a2; stmt s1, s2; variable v1, v2; if ifs; while w;
+Select <a1, a2> such that Parent* (s1, a1) and Uses (a1, "a") and Uses (a2, "x") and Parent* (s1, a2) with s1.stmt# = 11
+12 12,12 20,12 22,18 12,18 20,18 22,20 12,20 20,20 22,23 12,23 20,23 22
+5000
+4 - Repeat same relations
+stmt s1; assign a2;
+Select s1 such that Follows* (s1, a2) such that Follows* (s1, a2) such that Follows* (s1, a2) and Follows* (s1, a2) and Follows* (s1, a2) such that Follows* (s1, a2) and Follows* (s1, a2) such that Follows* (s1, a2) and Follows* (s1, a2) such that Follows* (s1, a2) such that Follows* (s1, a2) such that Follows* (s1, a2) such that Follows* (s1, a2) such that Follows* (s1, a2) such that Follows* (s1, a2) 
+10,12,26,28,30,31,33,36,38,6,7,8,9
+5000
+5 - Optimiazation test
+assign a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15; stmt s; 
+Select s such that Follows* (s, a1) such that Follows* (s, a2) such that Follows* (s, a3) and Follows* (s, a4)
+10,12,26,28,30,31,33,36,38,6,7,8,9
+30000
+6 - Optimiazation test
+assign a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15; stmt s;
+Select s such that Follows* (s, a1) such that Follows* (s, a2) such that Follows* (s, a3) and Follows* (s, a4) with a1.stmt#=a2.stmt# with a2.stmt#=a3.stmt# with a3.stmt#=a4.stmt#
+10,12,26,28,30,31,33,36,38,6,7,8,9
+5000

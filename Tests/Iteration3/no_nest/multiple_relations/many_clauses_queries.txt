@@ -1,0 +1,20 @@
+1 - Select assign that is followed by anything
+assign a1; stmt s2;
+Select a1 such that Follows* (a1, s2) and Modifies (s2, "a") such that Uses (s2, "a")
+11,5,6,8,9
+5000
+2 - Repeat same relations
+stmt s1; assign a2;
+Select s1 such that Follows* (s1, a2) such that Follows* (s1, a2) such that Follows* (s1, a2) and Follows* (s1, a2) and Follows* (s1, a2) such that Follows* (s1, a2) and Follows* (s1, a2) such that Follows* (s1, a2) and Follows* (s1, a2) such that Follows* (s1, a2) such that Follows* (s1, a2) such that Follows* (s1, a2) such that Follows* (s1, a2) such that Follows* (s1, a2) such that Follows* (s1, a2) 
+10,14,15,16,17,18,19,5,6,7,8,9
+5000
+3 - Optimiazation test
+assign a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15; stmt s;
+Select s such that Follows* (s, a1) such that Follows* (s, a2) such that Follows* (s, a3)
+10,14,15,16,17,18,19,5,6,7,8,9
+30000
+4 - Optimiazation test
+assign a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15; stmt s;
+Select s such that Follows* (s, a1) such that Follows* (s, a2) such that Follows* (s, a3) and Follows* (s, a4) with a1.stmt#=a2.stmt# with a2.stmt#=a3.stmt# with a3.stmt#=a4.stmt#
+10,14,15,16,17,18,19,5,6,7,8,9
+30000
