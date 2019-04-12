@@ -5,12 +5,10 @@ std::list<std::string> QueryProcessor::evaluate(std::string& query, const PKB& p
 	QueryPreprocessor queryPreprocessor = QueryPreprocessor(query);
 	QueryEvaluator queryEvaluator = QueryEvaluator();
 	std::list<std::string> results; //initially empty
+	ProcessedQuery processedQuery;
 
 	try {
-		bool isValidQuery = queryPreprocessor.parse();
-		if (!isValidQuery) {
-			return results; // invalid query
-		}
+		processedQuery = queryPreprocessor.parse();
 	}
 	catch (QueryPreprocessorError& exception) {
 		if (exception.isSemanticError() && exception.isBooleanResultClause()) {
@@ -19,9 +17,6 @@ std::list<std::string> QueryProcessor::evaluate(std::string& query, const PKB& p
 
 		return results;
 	}
-
-	ProcessedQuery processedQuery = queryPreprocessor.getProcessedQuery();
-	processedQuery.optimiseClauses();
 
 	results = queryEvaluator.evaluate(processedQuery, pkb);
 	return results;
