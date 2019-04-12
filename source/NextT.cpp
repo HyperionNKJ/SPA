@@ -126,7 +126,7 @@ Result NextT::evaluateSynonymSynonym(const string& previousSynonym, const string
 	}
 
 	unordered_map<int, unordered_set<int>> answer;
-	bool keyIsPrevSyn; // true if above answer's key = previousSynonym & value = nextSynonym. false otherwise.
+	bool keyIsPrevSyn = false; // true if above answer's key = previousSynonym & value = nextSynonym. false otherwise.
 
 	if (hasReducedDomainForPrevSyn && hasReducedDomainForNextSyn) { // if both synonyms exist in intermediate table
 		if (prevSynPossibleValues.size() < nextSynPossibleValues.size()) {
