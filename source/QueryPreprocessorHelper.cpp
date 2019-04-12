@@ -8,6 +8,7 @@
 #include "DesignEntity.h"
 #include "ProcessedQuery.h"
 #include "Type.h"
+#include "QueryPreprocessorError.h"
 #include "QueryPreprocessorHelper.h"
 
 const std::unordered_map<std::string, Type> QueryPreprocessorHelper::STRING_TO_TYPE = {
@@ -188,16 +189,18 @@ DesignEntity QueryPreprocessorHelper::getParam(const std::string& param, Process
 				return DesignEntity(var, Type::FIXED);
 			}
 			else {
-				return DesignEntity("", Type::INVALID);
+				throw QueryPreprocessorError(ErrorType::SYNTACTIC);
 			}
 		}
 		else if (query.hasSynonym(param)) {
 			// param is a synonym
 			return DesignEntity(param, query.getDesignEntity(param));
 		}
+		else if (isVar(param)) {
+			throw QueryPreprocessorError(query, ErrorType::SEMANTIC);
+		}
 
-		// invalid
-		return DesignEntity("", Type::INVALID);
+		throw QueryPreprocessorError(ErrorType::SYNTACTIC);
 	}
 	else {
 		// param with attrRef
@@ -235,9 +238,9 @@ DesignEntity QueryPreprocessorHelper::getParam(const std::string& param, Process
 				return DesignEntity(synonym, designEntity, AttrRef::STMT_NUM);
 			}
 
-			return DesignEntity("", Type::INVALID);
+			throw QueryPreprocessorError(query, ErrorType::SEMANTIC);
 		}
 
-		return DesignEntity("", Type::INVALID);
+		throw QueryPreprocessorError(query, ErrorType::SEMANTIC);
 	}
 }

@@ -35,7 +35,7 @@ QueryPreprocessorResultParser::QueryPreprocessorResultParser(const string& claus
 // Returns true if parsing is successful and false if unsucessful.
 void QueryPreprocessorResultParser::parse() {
 	// case 0: result clause is a boolean
-	if (CLAUSE == "BOOLEAN") {
+	if (CLAUSE == "BOOLEAN" && !query.hasSynonym("BOOLEAN")) {
 		DesignEntity element(EMPTY, Type::BOOLEAN);
 		query.addResultClElement(element);
 

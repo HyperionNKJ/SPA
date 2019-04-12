@@ -23,6 +23,11 @@ void QueryPreprocessorWithParser::parse() {
 	// extract the lhs and rhs of with clause
 	std::string lhs = CLAUSE.substr(0, lhsSize);
 	std::string rhs = CLAUSE.substr(lhsSize + 1);
+
+	if (rhs.find("=") != std::string::npos) {
+		throw QueryPreprocessorError(ErrorType::SYNTACTIC);
+	}
+
 	DesignEntity paramOne = parseWithParam(lhs);
 	DesignEntity paramTwo = parseWithParam(rhs);
 
