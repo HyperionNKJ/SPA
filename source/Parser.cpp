@@ -523,7 +523,7 @@ int Parser::handleWhile(string whileLine) {
 	size_t openBracketPos = whileLine.find_first_of("(");
 	size_t closeBracketPos = whileLine.find_last_of(")");
 	string condExpr = whileLine.substr(openBracketPos + 1, closeBracketPos - openBracketPos - 1);
-	vector<string> tokens = tokeniseString(condExpr, " \t&|()!");
+	vector<string> tokens = tokeniseString(condExpr, " \t&|()!+-*/%");
 	for (unsigned int i = 0; i < tokens.size(); i++) {
 		if (isValidVarName(tokens[i])) {
 			pkb->insertVar(tokens[i]);
@@ -579,7 +579,7 @@ int Parser::handleIf(string ifLine) {
 	size_t openBracketPos = ifLine.find_first_of("(");
 	size_t closeBracketPos = ifLine.find_last_of(")");
 	string condExpr = ifLine.substr(openBracketPos + 1, closeBracketPos - openBracketPos - 1);
-	vector<string> tokens = tokeniseString(condExpr, " \t&|()!");
+	vector<string> tokens = tokeniseString(condExpr, " \t&|()!+-*/%");
 	for (unsigned int i = 0; i < tokens.size(); i++) {
 		if (isValidVarName(tokens[i])) {
 			pkb->insertVar(tokens[i]);
