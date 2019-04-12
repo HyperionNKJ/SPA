@@ -61,6 +61,7 @@ int Parser::parse(string fileName, PKB& p) {
 						statementNumber++;
 					}
 					else if (intent == KEY_READ) {
+						result = handleRead(sourceCode[i]);
 						statementNumber++;
 					}
 					else if (intent == KEY_ELSE && expectElse == true) {
