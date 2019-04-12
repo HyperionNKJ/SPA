@@ -153,6 +153,9 @@
     <ClCompile Include="..\source\SPA.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\PatternSwitch.cpp">
+      <Filter>Source Files\Clauses</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\DesignEntity.h">
@@ -292,6 +295,9 @@
     </ClInclude>
     <ClInclude Include="..\source\SPA.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\PatternSwitch.h">
+      <Filter>Header Files\Clauses</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

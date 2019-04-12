@@ -17,8 +17,8 @@ Result Follows::evaluate(const PKB& pkb) {
 	Result result;
 
 	if (paraOneType == FIXED) {
-		if (paraTwoType == STATEMENT || paraTwoType == READ || paraTwoType == PRINT
-			|| paraTwoType == WHILE || paraTwoType == IF || paraTwoType == ASSIGN || paraTwoType == CALL || paraTwoType == PROGLINE) {
+		if (paraTwoType == STATEMENT || paraTwoType == READ || paraTwoType == PRINT || paraTwoType == WHILE || paraTwoType == IF 
+			|| paraTwoType == ASSIGN || paraTwoType == CALL || paraTwoType == PROGLINE || paraTwoType == SWITCH) {
 			result = this->evaluateFixedSynonym(paraOneValue, paraTwoValue, paraTwoType);
 		}
 		else if (paraTwoType == UNDERSCORE) {
@@ -31,10 +31,10 @@ Result Follows::evaluate(const PKB& pkb) {
 			result.setPassed(false);
 		}
 	}
-	else if (paraOneType == STATEMENT || paraOneType == READ || paraOneType == PRINT 
-		|| paraOneType == WHILE || paraOneType == IF || paraOneType == ASSIGN || paraOneType == CALL || paraOneType == PROGLINE) {
-		if (paraTwoType == STATEMENT || paraTwoType == READ || paraTwoType == PRINT
-			|| paraTwoType == WHILE || paraTwoType == IF || paraTwoType == ASSIGN || paraTwoType == CALL || paraTwoType == PROGLINE) {
+	else if (paraOneType == STATEMENT || paraOneType == READ || paraOneType == PRINT || paraOneType == WHILE || paraOneType == IF 
+		|| paraOneType == ASSIGN || paraOneType == CALL || paraOneType == PROGLINE || paraOneType == SWITCH) {
+		if (paraTwoType == STATEMENT || paraTwoType == READ || paraTwoType == PRINT || paraTwoType == WHILE || paraTwoType == IF 
+			|| paraTwoType == ASSIGN || paraTwoType == CALL || paraTwoType == PROGLINE || paraTwoType == SWITCH) {
 			result = this->evaluateSynonymSynonym(paraOneValue, paraTwoValue, paraOneType, paraTwoType);
 		}
 		else if (paraTwoType == UNDERSCORE) {
@@ -48,8 +48,8 @@ Result Follows::evaluate(const PKB& pkb) {
 		}
 	}
 	else if (paraOneType == UNDERSCORE) {
-		if (paraTwoType == STATEMENT || paraTwoType == READ || paraTwoType == PRINT
-			|| paraTwoType == WHILE || paraTwoType == IF || paraTwoType == ASSIGN || paraTwoType == CALL || paraTwoType == PROGLINE) {
+		if (paraTwoType == STATEMENT || paraTwoType == READ || paraTwoType == PRINT || paraTwoType == WHILE || paraTwoType == IF 
+			|| paraTwoType == ASSIGN || paraTwoType == CALL || paraTwoType == PROGLINE || paraTwoType == SWITCH) {
 			result = this->evaluateUnderscoreSynonym(paraTwoValue, paraTwoType);
 		}
 		else if (paraTwoType == UNDERSCORE) {

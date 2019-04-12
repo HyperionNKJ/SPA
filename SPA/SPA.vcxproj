@@ -29,6 +29,7 @@
     <ClCompile Include="..\source\Parser.cpp" />
     <ClCompile Include="..\source\PatternAssign.cpp" />
     <ClCompile Include="..\source\PatternIf.cpp" />
+    <ClCompile Include="..\Source\PatternSwitch.cpp" />
     <ClCompile Include="..\source\PatternWhile.cpp" />
     <ClCompile Include="..\source\PKB.cpp" />
     <ClCompile Include="..\source\ProcessedQuery.cpp" />
@@ -76,6 +77,7 @@
     <ClInclude Include="..\source\Parser.h" />
     <ClInclude Include="..\source\PatternAssign.h" />
     <ClInclude Include="..\source\PatternIf.h" />
+    <ClInclude Include="..\Source\PatternSwitch.h" />
     <ClInclude Include="..\source\PatternWhile.h" />
     <ClInclude Include="..\source\PKB.h" />
     <ClInclude Include="..\source\ProcessedQuery.h" />

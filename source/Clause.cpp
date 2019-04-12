@@ -14,14 +14,14 @@ void Clause::setSynonyms() {
 	if (isSynonym(paraTwoType)) {
 		synonyms.insert(paraTwo.getValue());
 	}
-	if (type == ClauseType::PATTERN_ASSIGN || type == ClauseType::PATTERN_IF || type == ClauseType::PATTERN_WHILE) {
+	if (type == ClauseType::PATTERN_ASSIGN || type == ClauseType::PATTERN_IF || type == ClauseType::PATTERN_WHILE || type == ClauseType::PATTERN_SWITCH) {
 		synonyms.insert(subject.getValue()); // subject is always a synonym
 	}
 }
 
 bool Clause::isSynonym(Type& type) {
 	return (type == STATEMENT || type == PROGLINE || type == READ || type == PRINT || type == CALL || type == WHILE || type == IF 
-		|| type == ASSIGN || type == VARIABLE || type == CONSTANT || type == PROCEDURE);
+		|| type == ASSIGN || type == VARIABLE || type == CONSTANT || type == PROCEDURE || type == SWITCH);
 }
 
 unordered_set<string> Clause::getSynonyms() {

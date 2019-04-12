@@ -33,7 +33,7 @@ Result UsesS::evaluate(const PKB& pkb) {
 		}
 	}
 	else if (paraOneType == STATEMENT || paraOneType == PRINT || paraOneType == WHILE || paraOneType == IF 
-		|| paraOneType == ASSIGN || paraOneType == CALL || paraOneType == PROGLINE) {
+		|| paraOneType == ASSIGN || paraOneType == CALL || paraOneType == PROGLINE || paraOneType == SWITCH) {
 		if (paraTwoType == VARIABLE) {
 			result = this->evaluateSynonymVariable(paraOneValue, paraTwoValue, paraOneType);
 		}
