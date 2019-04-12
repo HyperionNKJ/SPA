@@ -43,7 +43,6 @@ int Parser::parse(string fileName, PKB& p) {
 				else {
 					if (intent == KEY_ASSIGN) {
 						result = handleAssignment(sourceCode[i]);
-						emptyProcedure = false;
 						statementNumber++;
 					}
 					else if (intent == KEY_CLOSE_BRACKET) {
@@ -51,22 +50,17 @@ int Parser::parse(string fileName, PKB& p) {
 					}
 					else if (intent == KEY_IF) {
 						result = handleIf(sourceCode[i]);
-						emptyProcedure = false;
 						statementNumber++;
 					}
 					else if (intent == KEY_WHILE) {
 						result = handleWhile(sourceCode[i]);
-						emptyProcedure = false;
 						statementNumber++;
 					}
 					else if (intent == KEY_PRINT) {
 						result = handlePrint(sourceCode[i]);
-						emptyProcedure = false;
 						statementNumber++;
 					}
 					else if (intent == KEY_READ) {
-						result = handleRead(sourceCode[i]);
-						emptyProcedure = false;
 						statementNumber++;
 					}
 					else if (intent == KEY_ELSE && expectElse == true) {
@@ -78,12 +72,10 @@ int Parser::parse(string fileName, PKB& p) {
 					else if (intent == KEY_CALL) {
 						result = handleCall(sourceCode[i]);
 						statementNumber++;
-						emptyProcedure = false;
 					}
 					else if (intent == KEY_SWITCH) {
 						result = handleSwitch(sourceCode[i]);
 						statementNumber++;
-						emptyProcedure = false;
 					}
 					else if (intent == KEY_SWITCHCASE) {
 						result = handleSwitchCase(sourceCode[i]);
@@ -93,6 +85,8 @@ int Parser::parse(string fileName, PKB& p) {
 						errorMessage = "Statement of unknown type encountered at line "  + to_string(statementNumber);
 						result = -1;
 					}
+					emptyProcedure = false;
+					expectStatement = false;
 				}
 			}
 		}
@@ -811,6 +805,10 @@ bool Parser::checkSwitch(string switchLine) {
 		errorMessage = "Unexpected tokens in the switch statement at line "  + to_string(statementNumber);
 		return false;
 	}
+	if (withinSwitch) {
+		errorMessage = "Nested switch statements are not allowed; at line " + to_string(statementNumber);
+		return false;
+	}
 	return true;
 }
 
@@ -818,7 +816,7 @@ int Parser::handleSwitch(string switchLine) {
 	if (!checkSwitch(switchLine)) {
 		return -1;
 	}
-
+	withinSwitch = true;
 	//set follow, parent relationships
 	setParent(statementNumber);
 	setFollow(statementNumber);
@@ -854,6 +852,14 @@ bool Parser::checkSwitchCase(string switchCaseLine) {
 		errorMessage = "Unexpected tokens in the switch case statement at line "  + to_string(statementNumber);
 		return false;
 	}
+	if (expectStatement) {
+		errorMessage = "Case statements in switch must be followed by at least 1 statement at line " + to_string(statementNumber);
+		return false;
+	}
+	if (!withinSwitch) {
+		errorMessage = "Case statement not within a switch container found at line " + to_string(statementNumber);
+		return false;
+	}
 	return true;
 }
 
@@ -867,6 +873,7 @@ int Parser::handleSwitchCase(string switchCaseLine) {
 	//discard previous statement list for follows, prepare first statement in switch case for the next
 	currentFollowVector.clear();
 	firstInElse = true;
+	expectStatement = true;
 	//add constant to pkb
 	size_t casePos = switchCaseLine.find("case");
 	size_t colonPos = switchCaseLine.find_last_of(":");

@@ -26,6 +26,8 @@ class Parser {
 	bool withinProcedure = false;
 	bool emptyProcedure = true;
 	bool expectElse = false;
+	bool withinSwitch = false;
+	bool expectStatement = false;
 	string currProcedure;
 	vector<string> sourceCode = vector<string>();
 	int statementNumber = 1;
