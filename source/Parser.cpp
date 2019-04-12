@@ -760,8 +760,9 @@ int Parser::handleCloseBracket(string closeBracket) {
 			//to update parent when tracking for Next - if we close consecutively, need to update parent to track how far to hold on to the previous
 			//statements
 			for (int i = lastInIfElseTracker.size()-1; i >= 0; i--) {
-				if (parentVector.size() > 0 && lastInIfElseTracker.back().second >= parentVector.back())
+				if (parentVector.size() > 0 && lastInIfElseTracker.back().second > parentVector.back()) {
 					lastInIfElseTracker[i].second = parentVector.back();
+				}
 			}
 		}
 		containerTracker.pop_back();
