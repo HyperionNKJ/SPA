@@ -345,7 +345,7 @@ int Parser::handleAssignment(string assignmentLine) {
 			opStack.pop_back();
 		}
 		else if (assignTokens[i] == "+" || assignTokens[i] == "-") {
-			while (opStack.size() > 0 && (opStack.back() == "+" || opStack.back() == "-")) {
+			while (opStack.size() > 0 && (opStack.back() != "(")) {
 				postfixRHS.push_back(opStack.back());
 				opStack.pop_back();
 			}
