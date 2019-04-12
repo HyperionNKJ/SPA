@@ -81,9 +81,12 @@ int Parser::parse(string fileName, PKB& p) {
 						emptyProcedure = false;
 					}
 					else if (intent == KEY_SWITCH) {
+						result = handleSwitch(sourceCode[i]);
 						statementNumber++;
+						emptyProcedure = false;
 					}
 					else if (intent == KEY_SWITCHCASE) {
+						result = handleSwitchCase(sourceCode[i]);
 						statementNumber++;
 					}
 					else {
@@ -158,6 +161,10 @@ bool Parser::checkProcedure(string procLine) {
 	regex procedureRegex(procedureRegexString);
 	if (!regex_match(procLine, procedureRegex)) {
 		errorMessage = "Procedure statement is invalid";
+		return false;
+	}
+	if (withinProcedure) {
+		errorMessage = "Procedure statements cannot be nested within each other. Error at line " + statementNumber;
 		return false;
 	}
 	size_t startPos = procLine.find("procedure");
@@ -754,7 +761,8 @@ int Parser::handleCloseBracket(string closeBracket) {
 			expectElse = true;
 			lastInIfElseTracker.push_back(make_pair(lastStmtInFlow, parentVector.back()));
 
-			//to update parent when tracking for Next
+			//to update parent when tracking for Next - if we close consecutively, need to update parent to track how far to hold on to the previous
+			//statements
 			for (int i = lastInIfElseTracker.size()-1; i >= 0; i--) {
 				if (parentVector.size() > 0 && lastInIfElseTracker.back().second >= parentVector.back())
 					lastInIfElseTracker[i].second = parentVector.back();
@@ -866,10 +874,16 @@ int Parser::handleSwitchCase(string switchCaseLine) {
 		return -1;
 	}
 
+	//Need to handle tracking for Next here as there is no close brackets for case statements
+	lastInIfElseTracker.push_back(make_pair(lastStmtInFlow, parentVector.back()));
 	//discard previous statement list for follows, prepare first statement in switch case for the next
 	currentFollowVector.clear();
 	firstInElse = true;
 	//add constant to pkb
+	size_t casePos = switchCaseLine.find("case");
+	size_t colonPos = switchCaseLine.find_last_of(":");
+	string caseConstant = switchCaseLine.substr(casePos + 1, colonPos - casePos - 1);
+	pkb->insertConstant(stoi(caseConstant));
 	return 0;
 }
 
