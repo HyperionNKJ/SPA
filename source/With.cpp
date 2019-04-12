@@ -376,7 +376,7 @@ unordered_set<int> With::getValidStmts(const Type& type) {
 	case IF:
 		return pkb.getIfStmts();
 	case SWITCH:
-		return pkb.getSwitchStmts(); // extension
+		//return pkb.getSwitchStmts(); // extension
 	case ASSIGN:
 		return pkb.getAssignStmts();
 	default:

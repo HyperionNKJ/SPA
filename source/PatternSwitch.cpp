@@ -1,3 +1,4 @@
+/*
 #include "PatternSwitch.h"
 
 PatternSwitch::PatternSwitch(const DesignEntity& patternSubject, const DesignEntity& controlVar) {
@@ -81,3 +82,4 @@ Result PatternSwitch::evaluateFixed(const string& controlVar, const string& swit
 	}
 	return result;
 }
+*/
