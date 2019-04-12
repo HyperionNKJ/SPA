@@ -73,7 +73,7 @@ int Parser::parse(string fileName, PKB& p) {
 						result = handleElse(sourceCode[i]);
 					}
 					else if (intent == KEY_ELSE && expectElse == false) {
-						errorMessage = "Else statement without accompanying if found just before line " + + to_string(statementNumber);
+						errorMessage = "Else statement without accompanying if found just before line " + to_string(statementNumber);
 					}
 					else if (intent == KEY_CALL) {
 						result = handleCall(sourceCode[i]);
