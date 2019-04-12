@@ -81,9 +81,12 @@ int Parser::parse(string fileName, PKB& p) {
 						emptyProcedure = false;
 					}
 					else if (intent == KEY_SWITCH) {
+						result = handleSwitch(sourceCode[i]);
 						statementNumber++;
+						emptyProcedure = false;
 					}
 					else if (intent == KEY_SWITCHCASE) {
+						result = handleSwitchCase(sourceCode[i]);
 						statementNumber++;
 					}
 					else {
@@ -158,6 +161,10 @@ bool Parser::checkProcedure(string procLine) {
 	regex procedureRegex(procedureRegexString);
 	if (!regex_match(procLine, procedureRegex)) {
 		errorMessage = "Procedure statement is invalid";
+		return false;
+	}
+	if (withinProcedure) {
+		errorMessage = "Procedure statements cannot be nested within each other. Error at line " + statementNumber;
 		return false;
 	}
 	size_t startPos = procLine.find("procedure");
@@ -754,7 +761,8 @@ int Parser::handleCloseBracket(string closeBracket) {
 			expectElse = true;
 			lastInIfElseTracker.push_back(make_pair(lastStmtInFlow, parentVector.back()));
 
-			//to update parent when tracking for Next
+			//to update parent when tracking for Next - if we close consecutively, need to update parent to track how far to hold on to the previous
+			//statements
 			for (int i = lastInIfElseTracker.size()-1; i >= 0; i--) {
 				if (parentVector.size() > 0 && lastInIfElseTracker.back().second >= parentVector.back())
 					lastInIfElseTracker[i].second = parentVector.back();
@@ -799,22 +807,10 @@ int Parser::handleCall(string callLine) {
 }
 
 bool Parser::checkSwitch(string switchLine) {
-	size_t firstOpenBracket = switchLine.find_first_of("(");
-	size_t lastCloseBracket = switchLine.find_last_of(")");
-	if (firstOpenBracket == string::npos || lastCloseBracket == string::npos) {
-		errorMessage = "Missing ( and ) brackets around the variable name at line " + statementNumber;
-		return false;
-	}
-	string truncSwitchLine = switchLine.substr(0, firstOpenBracket) + switchLine.substr(lastCloseBracket + 1, string::npos);
-	string controlVar = switchLine.substr(firstOpenBracket, lastCloseBracket - firstOpenBracket + 1);
-	string switchRegexString = spaceRegex + "switch" + spaceRegex + openCurlyRegex + spaceRegex;
+	string switchRegexString = spaceRegex + "switch" + spaceRegex + "\\(" + spaceRegex + varNameRegex + "\\)" + openCurlyRegex + spaceRegex;
 	regex switchRegex(switchRegexString);
-	if (!regex_match(truncSwitchLine, switchRegex)) {
+	if (!regex_match(switchLine, switchRegex)) {
 		errorMessage = "Unexpected tokens in the switch statement at line " + statementNumber;
-		return false;
-	}
-	if (!isValidVarName(controlVar)) {
-		errorMessage = "Variable expected within ( ) for switch statement at line " + statementNumber;
 		return false;
 	}
 	return true;
@@ -846,15 +842,17 @@ int Parser::handleSwitch(string switchLine) {
 	controlVar = leftTrim(rightTrim(controlVar, " \t"), " \t");
 	pkb->insertVar(controlVar);
 	setUses(statementNumber, currProcedure, controlVar);
-	pkb->insertIfControlVar(statementNumber, controlVar);
+	//pkb->insertIfControlVar(statementNumber, controlVar);
 
 	return 0;
 }
 
 bool Parser::checkSwitchCase(string switchCaseLine) {
-	string switchCaseRegexString = spaceRegex + "case" + spaceRegex + varNameRegex + spaceRegex + ":" + spaceRegex;
-	regex switchCaseRegex(switchCaseRegexString);
-	if (!regex_match(switchCaseLine, switchCaseRegex)) {
+	string switchCaseVarRegexString = spaceRegex + "case" + spaceRegex + varNameRegex + spaceRegex + ":" + spaceRegex;
+	string switchCaseConstRegexString = spaceRegex + "case" + spaceRegex + constantRegex + spaceRegex + ":" + spaceRegex;
+	regex switchCaseVarRegex(switchCaseVarRegexString);
+	regex switchCaseConstRegex(switchCaseConstRegexString);
+	if (!(regex_match(switchCaseLine, switchCaseVarRegex) || regex_match(switchCaseLine, switchCaseConstRegex))) {
 		errorMessage = "Unexpected tokens in the switch case statement at line " + statementNumber;
 		return false;
 	}
@@ -866,10 +864,21 @@ int Parser::handleSwitchCase(string switchCaseLine) {
 		return -1;
 	}
 
+	//Need to handle tracking for Next here as there is no close brackets for case statements
+	lastInIfElseTracker.push_back(make_pair(lastStmtInFlow, parentVector.back()));
 	//discard previous statement list for follows, prepare first statement in switch case for the next
 	currentFollowVector.clear();
 	firstInElse = true;
 	//add constant to pkb
+	size_t casePos = switchCaseLine.find("case");
+	size_t colonPos = switchCaseLine.find_last_of(":");
+	string caseVar = switchCaseLine.substr(casePos + 1, colonPos - casePos - 1);
+	if (isValidConstant(caseVar)) {
+		pkb->insertConstant(stoi(caseVar));
+	}
+	if (isValidVarName(caseVar)) {
+		setUses(-1, currProcedure, caseVar);
+	}
 	return 0;
 }
 
@@ -994,7 +1003,9 @@ bool Parser::setUses(int currStatementNum, string currProc, string varName) {
 	for (unsigned int i = 0; i < parentVector.size(); i++) {
 		pkb->setUses(parentVector[i], varName);
 	}
-	pkb->setUses(currStatementNum, varName);
+	if (currStatementNum > 0) {
+		pkb->setUses(currStatementNum, varName);
+	}
 	de.insertProcUses(currProc, varName);
 	return true;
 }
