@@ -3,6 +3,7 @@
 #include "PatternIf.h"
 //#include "PatternSwitch.h"
 #include "PatternWhile.h"
+#include "QueryPreprocessorError.h"
 #include "QueryPreprocessorHelper.h"
 #include "QueryPreprocessorPatternParser.h"
 
@@ -23,25 +24,25 @@ QueryPreprocessorPatternParser::QueryPreprocessorPatternParser(string& clause, P
 
 // Parses the pattern clause.
 // Returns true if parsing is successful and false if unsucessful.
-bool QueryPreprocessorPatternParser::parse() {
+void QueryPreprocessorPatternParser::parse() {
 	size_t synonymSize = CLAUSE.find(BRACKET_OPEN);
 	size_t closeBracketPos = CLAUSE.rfind(BRACKET_CLOSE);
 
 	// open bracket must exist
 	if (synonymSize == std::string::npos) {
-		return false;
+		throw QueryPreprocessorError(ErrorType::SYNTACTIC);
 	}
 
 	// close bracket must be the last character in pattern clause
 	if (CLAUSE[CLAUSE.size() - 1] == closeBracketPos) {
-		return false;
+		throw QueryPreprocessorError(ErrorType::SYNTACTIC);
 	}
 
 	// extract synonym and its design entity
 	// synonym must have already exist in declarations
 	std::string synonym = CLAUSE.substr(0, synonymSize);
 	if (!query.hasSynonym(synonym)) {
-		return false;
+		throw QueryPreprocessorError(query, ErrorType::SEMANTIC);
 	}
 
 	Type designEntity = query.getDesignEntity(synonym);
@@ -54,8 +55,8 @@ bool QueryPreprocessorPatternParser::parse() {
 
 	// parameters should have at least one comma as delimeter
 	size_t paramOneSize = params.find(DELIMETER);
-	if (paramOneSize == std::string::npos) {
-		return false;
+	if (CLAUSE[CLAUSE.size() - 1] == closeBracketPos) {
+		throw QueryPreprocessorError(ErrorType::SYNTACTIC);
 	}
 
 	// tokenise parameters
@@ -65,17 +66,10 @@ bool QueryPreprocessorPatternParser::parse() {
 	// parse first parameter
 	// first parameter must be of entity reference type
 	DesignEntity paramOne = parseEntRef(paramOneString);
-	if (paramOne.isInvalid()) {
-		return false;
-	}
 
 	if (designEntity == Type::ASSIGN) {
 		// assign pattern
 		DesignEntity paramTwo = parseExpression(paramTwoString);
-		if (paramTwo.isInvalid()) {
-			return false;
-		}
-
 		PatternAssign* pattern = new PatternAssign(target, paramOne, paramTwo);
 		query.addClause(pattern, CLAUSE);
 	}
@@ -96,10 +90,8 @@ bool QueryPreprocessorPatternParser::parse() {
 	}
 	else {
 		// not a valid pattern clause
-		return false;
+		throw QueryPreprocessorError(ErrorType::SYNTACTIC);
 	}
-
-	return true;
 }
 
 // Parse entRef parameters of pattern clauses.
@@ -112,12 +104,12 @@ DesignEntity QueryPreprocessorPatternParser::parseEntRef(const std::string& entR
 		return param;
 	}
 
-	return DesignEntity(EMPTY, Type::INVALID);
+	throw QueryPreprocessorError(query, ErrorType::SEMANTIC);
 }
 
 // Parse expression parameters of pattern clauses.
 // Returns DesignEntity of Type::INVALID if parameter cannot be parsed.
-DesignEntity QueryPreprocessorPatternParser::parseExpression(const std::string& expression) {
+DesignEntity QueryPreprocessorPatternParser::parseExpression(const std::string& expression) const {
 	if (expression == "_") {
 		// underscore
 		return DesignEntity(EMPTY, Type::UNDERSCORE);
@@ -144,5 +136,5 @@ DesignEntity QueryPreprocessorPatternParser::parseExpression(const std::string& 
 		}
 	}
 
-	return DesignEntity(expression, Type::INVALID);
+	throw QueryPreprocessorError(query, ErrorType::SEMANTIC);
 }

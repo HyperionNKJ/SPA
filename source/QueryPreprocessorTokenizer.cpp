@@ -2,6 +2,7 @@
 #include <sstream>
 #include <string>
 #include "QueryPreprocessorHelper.h"
+#include "QueryPreprocessorError.h"
 #include "QueryPreprocessorTokenizer.h"
 
 constexpr auto DELIMITER = ';';
@@ -17,9 +18,9 @@ QueryPreprocessorTokenizer::QueryPreprocessorTokenizer(const std::string& query)
 // Tokenises the query into statements.
 // Returns false if first to last statement is not a declarative statement or 
 // if the last statement is a Select statement.
-bool QueryPreprocessorTokenizer::tokenize() {
+void QueryPreprocessorTokenizer::tokenize() {
 	split();
-	return validateStatement();
+	validateStatement();
 }
 
 // Return a vector of statements.
@@ -37,32 +38,32 @@ void QueryPreprocessorTokenizer::split() {
 // Last statement must be a Select statement.
 bool QueryPreprocessorTokenizer::validateStatement() const {
 	if (statements.size() == 1) {
-		return false;
+		throw QueryPreprocessorError(ErrorType::SYNTACTIC);
 	}
 
 	// loop through the first to second last statement and check that they are
 	// all declarative statements
 	size_t numberOfStatements = statements.size();
 	for (size_t index = 0; index < numberOfStatements - 1; index++) {
-		if (!isDeclareStatement(statements[index])) {
-			return false;
-		}
+		isDeclareStatement(statements[index]);
 	}
 
 	// last statement must be a declarative statement
-	if (!isSelectStatement(statements.back())) {
-		return false;
-	}
-
-	return true;
+	isSelectStatement(statements.back());
 }
 
 // Check if statement is a declarative statement.
-bool QueryPreprocessorTokenizer::isDeclareStatement(const std::string& statement) {
-	return std::regex_match(statement, DECLARE_REGEX_STMT);
+void QueryPreprocessorTokenizer::isDeclareStatement(const std::string& statement) {
+	bool isValid = std::regex_match(statement, DECLARE_REGEX_STMT);
+	if (!isValid) {
+		throw QueryPreprocessorError(ErrorType::SYNTACTIC);
+	}
 }
 
 // Check if statement is a select statement.
-bool QueryPreprocessorTokenizer::isSelectStatement(const std::string& statement) {
-	return statement.find("Select ", 0, 7) != std::string::npos;
+void QueryPreprocessorTokenizer::isSelectStatement(const std::string& statement) {
+	bool isValid = statement.find("Select ", 0, 7) != std::string::npos;
+	if (!isValid) {
+		throw QueryPreprocessorError(ErrorType::SYNTACTIC);
+	}
 }

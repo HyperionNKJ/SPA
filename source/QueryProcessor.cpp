@@ -1,3 +1,4 @@
+#include "QueryPreprocessorError.h"
 #include "QueryProcessor.h"
 
 std::list<std::string> QueryProcessor::evaluate(std::string& query, const PKB& pkb) {
@@ -11,13 +12,13 @@ std::list<std::string> QueryProcessor::evaluate(std::string& query, const PKB& p
 			return results; // invalid query
 		}
 	}
-	catch (const char* msg) {
-		if (msg == "Invalid") {
+	catch (QueryPreprocessorError& exception) {
+		if (exception.isSemanticError() && exception.isBooleanResultClause()) {
 			results.push_back("FALSE");
-			return results;
 		}
+
+		return results;
 	}
-	
 
 	ProcessedQuery processedQuery = queryPreprocessor.getProcessedQuery();
 	processedQuery.optimiseClauses();

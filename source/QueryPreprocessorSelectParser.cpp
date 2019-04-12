@@ -1,4 +1,5 @@
 #include "QueryPreprocessorDeclareParser.h"
+#include "QueryPreprocessorError.h"
 #include "QueryPreprocessorHelper.h"
 #include "QueryPreprocessorPatternParser.h"
 #include "QueryPreprocessorResultParser.h"
@@ -13,7 +14,7 @@ QueryPreprocessorSelectParser::QueryPreprocessorSelectParser(const string& state
 	: STATEMENT(statement), query(query) {}
 
 // Parse select clause.
-bool QueryPreprocessorSelectParser::parse() {
+void QueryPreprocessorSelectParser::parse() {
 	// remove "Select "
 	std::string selectCl = STATEMENT;
 	selectCl.erase(0, 7);
@@ -28,15 +29,11 @@ bool QueryPreprocessorSelectParser::parse() {
 	selectCl.erase(0, resultClSize + 1);
 	
 	QueryPreprocessorResultParser parseResultCl(resultCl, query);
-	bool status = parseResultCl.parse();
+	parseResultCl.parse();
 
-	if (!status) {
-		return false;
-	}
-
-	if (selectCl.size() == 0 && status) {
+	if (selectCl.size() == 0) {
 		// case 0: there is only a result clause
-		return true;
+		return;
 	}
 
 	// case 1: there exist other clauses
@@ -63,7 +60,7 @@ bool QueryPreprocessorSelectParser::parse() {
 			type = "and";
 		}
 		else {
-			return false;
+			throw QueryPreprocessorError(ErrorType::SYNTACTIC);
 		}
 
 		typeSize = type.size() + 1;
@@ -80,18 +77,17 @@ bool QueryPreprocessorSelectParser::parse() {
 			selectCl.erase(0, clauseEndPos + 1);
 		}
 
-		bool status;
 		if (type == "such that") {
 			QueryPreprocessorSuchThatParser parseSuchThatCl(clause, query);
-			status = parseSuchThatCl.parse();
+			parseSuchThatCl.parse();
 		}
 		else if (type == "pattern") {
 			QueryPreprocessorPatternParser parsePatternCl(clause, query);
-			status = parsePatternCl.parse();
+			parsePatternCl.parse();
 		}
 		else if (type == "with") {
 			QueryPreprocessorWithParser parseWithCl(clause, query);
-			status = parseWithCl.parse();
+			parseWithCl.parse();
 		}
 		else {
 			// Clauses should be in the form of rel(...)
@@ -102,25 +98,19 @@ bool QueryPreprocessorSelectParser::parse() {
 				// rel is a declared synonym
 				// pattern clause
 				QueryPreprocessorPatternParser parsePatternCl(clause, query);
-				status = parsePatternCl.parse();
+				parsePatternCl.parse();
 			}
 			else if (clause.find('=') != std::string::npos && clauseType == ClauseType::WITH) {
 				QueryPreprocessorWithParser parseWithCl(clause, query);
-				status = parseWithCl.parse();
+				parseWithCl.parse();
 			}
 			else if (clauseType == ClauseType::SUCH_THAT) {
 				QueryPreprocessorSuchThatParser parseSuchThatCl(clause, query);
-				status = parseSuchThatCl.parse();
+				parseSuchThatCl.parse();
 			}
 			else {
-				return false;
+				throw QueryPreprocessorError(ErrorType::SYNTACTIC);;
 			}
 		}
-
-		if (!status) {
-			return false;
-		}
 	}
-
-	return true;
 }

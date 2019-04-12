@@ -293,7 +293,7 @@ procedure BOOLEAN, p; constant c, c1; prog_line n; read r; variable v; print pt;
 Select BOOLEAN with r.varName = p.procName
 none
 5000
-59 - To be filled - TO BE VERIFIED: Implement or not?
+59 - Synonym "p" is not declared, BOOLEAN treated as BOOLEAN (TRUE/FALSE) - TO BE VERIFIED: Implement or not?
 procedure BOOLEAN; constant c, c1; prog_line n; read r; variable v; print pt; call cl;
 Select BOOLEAN with cl.procName = p.procName
 P, Q
@@ -318,7 +318,7 @@ procedure p; constant c, c1; prog_line n; read r; variable v; print pt; call cl;
 Select BOOLEAN with pt.varName = n
 FALSE
 5000
-64 - To be filled - TO BE VERIFIED: Implement or not?
+64 - No ambiguity here since "BOOLEAN" is in tuple and therefore has to be a synonym - TO BE VERIFIED: Implement or not?
 procedure BOOLEAN; constant c, c1; prog_line n; read r; variable v; print pt; call cl;
 Select <BOOLEAN> with pt.varName = pt.varName
 FALSE
