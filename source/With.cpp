@@ -25,11 +25,10 @@ RefIdentity With::determineRefIdentity(DesignEntity& ref) {
 
 Result With::evaluate(const PKB& pkb) {
 	this->pkb = pkb;
-	Result* result;
+	Result result;
 
 	if (refOneIdentity == INVALID_REF || refTwoIdentity == INVALID_REF) {
-		result = new Result();
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 
 	string refOneValue = paraOne.getValue();
@@ -53,8 +52,7 @@ Result With::evaluate(const PKB& pkb) {
 			result = evaulateIntSyn(refOneValue, refTwoValue);
 		}
 		else {
-			result = new Result();
-			result->setPassed(false);
+			result.setPassed(false);
 		}
 	} 
 	else if (refOneIdentity == ATTR_REF_INT) {
@@ -71,8 +69,7 @@ Result With::evaluate(const PKB& pkb) {
 			result = evaulateAttrRefIntSyn(refOneValue, refOneType, refTwoValue);
 		}
 		else {
-			result = new Result();
-			result->setPassed(false);
+			result.setPassed(false);
 		}
 	}
 	else if (refOneIdentity == STRING) {
@@ -83,8 +80,7 @@ Result With::evaluate(const PKB& pkb) {
 			result = evaluateStrAttrRefStr(refOneValue, refTwoValue, refTwoType);
 		}
 		else {
-			result = new Result();
-			result->setPassed(false);
+			result.setPassed(false);
 		}
 	}
 	else if (refOneIdentity == ATTR_REF_STRING) {
@@ -95,8 +91,7 @@ Result With::evaluate(const PKB& pkb) {
 			result = evaulateAttrRefStrAttrRefStr(refOneValue, refOneType, refTwoValue, refTwoType);
 		}
 		else {
-			result = new Result();
-			result->setPassed(false);
+			result.setPassed(false);
 		}
 	}
 	else if (refOneIdentity == CONSTANT_VALUE) {
@@ -113,8 +108,7 @@ Result With::evaluate(const PKB& pkb) {
 			result = evaulateConstValSyn(refOneValue, refTwoValue);
 		}
 		else {
-			result = new Result();
-			result->setPassed(false);
+			result.setPassed(false);
 		}
 	}
 	else if (refOneIdentity == SYNONYM) {
@@ -131,210 +125,208 @@ Result With::evaluate(const PKB& pkb) {
 			result = evaulateSynSyn(refOneValue, refTwoValue);
 		}
 		else {
-			result = new Result();
-			result->setPassed(false);
+			result.setPassed(false);
 		}
 	}
 	else {
-		result = new Result();
-		result->setPassed(false);
+		result.setPassed(false);
 	}
-	return *result;
+	return result;
 }
 
 // e.g. 12 = 15
-Result* With::evaulateIntInt(const string& numOne, const string& numTwo) {
+Result With::evaulateIntInt(const string& numOne, const string& numTwo) {
 	return evaluateStrStr(numOne, numTwo);
 } 
 
 // e.g. 12 = n
-Result* With::evaulateIntSyn(const string& num, const string& progLineSyn) {
-	Result* result = new Result();
+Result With::evaulateIntSyn(const string& num, const string& progLineSyn) {
+	Result result;
 	unsigned int progLineNum = stoi(num);
 	if (pkb.getAllStmts().size() >= progLineNum) {
-		result->setPassed(true);
-		result->setAnswer(progLineSyn, progLineNum);
+		result.setPassed(true);
+		result.setAnswer(progLineSyn, progLineNum);
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }
 
 // e.g. 12 = c.value
-Result* With::evaulateIntConstVal(const string& num, const string& constSyn) {
-	Result* result = new Result();
+Result With::evaulateIntConstVal(const string& num, const string& constSyn) {
+	Result result;
 	int constValue = stoi(num);
 	unordered_set<int> constants = pkb.getAllConstant();
 	if (constants.count(constValue)) {
-		result->setPassed(true);
-		result->setAnswer(constSyn, constValue);
+		result.setPassed(true);
+		result.setAnswer(constSyn, constValue);
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }
 
 // e.g. 12 = c.stmt#
-Result* With::evaulateIntAttrRefInt(const string& num, const string& synonym, const Type& type) {
-	Result* result = new Result();
+Result With::evaulateIntAttrRefInt(const string& num, const string& synonym, const Type& type) {
+	Result result;
 	int stmtNum = stoi(num);
 	unordered_set<int> validStatements = getValidStmts(type);
 	if (validStatements.count(stmtNum)) {
-		result->setPassed(true);
-		result->setAnswer(synonym, stmtNum);
+		result.setPassed(true);
+		result.setAnswer(synonym, stmtNum);
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }
 
 // e.g. "second" = "second"
-Result* With::evaluateStrStr(const string& stringOne, const string& stringTwo) {
-	Result* result = new Result();
-	result->setPassed(stringOne == stringTwo);
+Result With::evaluateStrStr(const string& stringOne, const string& stringTwo) {
+	Result result;
+	result.setPassed(stringOne == stringTwo);
 	return result;
 }
 
 // e.g. "main" = p.procName
-Result* With::evaluateStrAttrRefStr(const string& name, const string& synonym, const Type& type) {
-	Result* result = new Result();
+Result With::evaluateStrAttrRefStr(const string& name, const string& synonym, const Type& type) {
+	Result result;
 	unordered_set<string> validNames = getValidNames(type);
 	if (validNames.count(name)) {
-		result->setPassed(true);
+		result.setPassed(true);
 		if (type == PROCEDURE || type == VARIABLE) {
-			result->setAnswer(synonym, { name }, getIndexTable(type));
+			result.setAnswer(synonym, { name }, getIndexTable(type));
 		}
 		else { // type must be call or read or print
-			result->setAnswer(synonym, getStmtNums(type, name));
+			result.setAnswer(synonym, getStmtNums(type, name));
 		}
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }
 
 // e.g. c.value = n
-Result* With::evaulateConstValSyn(const string& constSyn, const string& progLineSyn) {
-	Result* result = new Result();
+Result With::evaulateConstValSyn(const string& constSyn, const string& progLineSyn) {
+	Result result;
 	unordered_set<int> allConstants = pkb.getAllConstant();
 	unordered_set<int> allProgLines = pkb.getAllStmts();
 	unordered_map<int, int> intersectionMap = getCommonValueMap(allConstants, allProgLines);
 	if (!intersectionMap.empty()) {
-		result->setPassed(true);
-		result->setAnswer(constSyn, progLineSyn, intersectionMap);
+		result.setPassed(true);
+		result.setAnswer(constSyn, progLineSyn, intersectionMap);
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }
 
 // e.g. c.value = c1.value
-Result* With::evaulateConstValConstVal(const string& constSynOne, const string& constSynTwo) {
-	Result* result = new Result();
+Result With::evaulateConstValConstVal(const string& constSynOne, const string& constSynTwo) {
+	Result result;
 	unordered_set<int> allConstants = pkb.getAllConstant();
 	if (!allConstants.empty()) {
-		result->setPassed(true);
-		result->setAnswer(constSynOne, constSynTwo, getCommonValueMap(allConstants, allConstants));
+		result.setPassed(true);
+		result.setAnswer(constSynOne, constSynTwo, getCommonValueMap(allConstants, allConstants));
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }
 
 // e.g. n = n1
-Result* With::evaulateSynSyn(const string& progLineSynOne, const string& progLineSynTwo) {
-	Result* result = new Result();
+Result With::evaulateSynSyn(const string& progLineSynOne, const string& progLineSynTwo) {
+	Result result;
 	unordered_set<int> allProgLines = pkb.getAllStmts();
-	result->setPassed(true); // program must contain at least one statement / program line. Hence n = n1 is always true!
-	result->setAnswer(progLineSynOne, progLineSynTwo, getCommonValueMap(allProgLines, allProgLines));
+	result.setPassed(true); // program must contain at least one statement / program line. Hence n = n1 is always true!
+	result.setAnswer(progLineSynOne, progLineSynTwo, getCommonValueMap(allProgLines, allProgLines));
 	return result;
 }
 
 // e.g. w.stmt# = n
-Result* With::evaulateAttrRefIntSyn(const string& synonym, const Type& type, const string& progLineSyn) {
-	Result* result = new Result();
+Result With::evaulateAttrRefIntSyn(const string& synonym, const Type& type, const string& progLineSyn) {
+	Result result;
 	unordered_set<int> validStatements = getValidStmts(type);
 	if (!validStatements.empty()) {
-		result->setPassed(true); // validStatements is subset of n. Hence, intersection is simply validStatements.
-		result->setAnswer(synonym, progLineSyn, getCommonValueMap(validStatements, validStatements)); 
+		result.setPassed(true); // validStatements is subset of n. Hence, intersection is simply validStatements.
+		result.setAnswer(synonym, progLineSyn, getCommonValueMap(validStatements, validStatements)); 
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }
 
 // e.g. a.stmt# = c.value
-Result* With::evaulateAttrRefIntConstVal(const string& synonym, const Type& type, const string& constSyn) {
-	Result* result = new Result();
+Result With::evaulateAttrRefIntConstVal(const string& synonym, const Type& type, const string& constSyn) {
+	Result result;
 	unordered_set<int> validStatements = getValidStmts(type);
 	unordered_set<int> allConstants = pkb.getAllConstant();
 	unordered_map<int, int> intersectionMap = getCommonValueMap(allConstants, validStatements);
 	if (!intersectionMap.empty()) {
-		result->setPassed(true); 
-		result->setAnswer(synonym, constSyn, intersectionMap);
+		result.setPassed(true); 
+		result.setAnswer(synonym, constSyn, intersectionMap);
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }
 
 // e.g. s.stmt# = w.stmt#
-Result* With::evaulateAttrRefIntAttrRefInt(const string& synOne, const Type& typeOne, const string& synTwo, const Type& typeTwo) {
-	Result* result = new Result();
+Result With::evaulateAttrRefIntAttrRefInt(const string& synOne, const Type& typeOne, const string& synTwo, const Type& typeTwo) {
+	Result result;
 
 	if (typeOne == STATEMENT || typeTwo == STATEMENT || typeOne == typeTwo) { 
 		unordered_set<int> validStmtsOne = getValidStmts(typeOne);
 		unordered_set<int> validStmtsTwo = getValidStmts(typeTwo);
 		unordered_map<int, int> intersectionMap = getCommonValueMap(validStmtsOne, validStmtsTwo);
 		if (!intersectionMap.empty()) {
-			result->setPassed(true);
-			result->setAnswer(synOne, synTwo, intersectionMap);
+			result.setPassed(true);
+			result.setAnswer(synOne, synTwo, intersectionMap);
 		}
 		else {
-			result->setPassed(false);
+			result.setPassed(false);
 		}
 	}
 	else { // impossible for a statement to have 2 different types
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }
 
 // e.g. v.varName = p.procName
-Result* With::evaulateAttrRefStrAttrRefStr(const string& synOne, const Type& typeOne, const string& synTwo, const Type& typeTwo) {
-	Result* result = new Result();
+Result With::evaulateAttrRefStrAttrRefStr(const string& synOne, const Type& typeOne, const string& synTwo, const Type& typeTwo) {
+	Result result;
 	unordered_set<string> validNamesOne = getValidNames(typeOne);
 	unordered_set<string> validNamesTwo = getValidNames(typeTwo);
 	unordered_set<string> commonString = getCommonString(validNamesOne, validNamesTwo);
 
 	if (!commonString.empty()) {
-		result->setPassed(true);
+		result.setPassed(true);
 		bool oneIsStringTyped = (typeOne == PROCEDURE || typeOne == VARIABLE);
 		bool twoIsStringTyped = (typeTwo == PROCEDURE || typeTwo == VARIABLE);
 
 		if (oneIsStringTyped && twoIsStringTyped) { // e.g. proc.procName = var.varName, proc is string typed and var is string typed
-			result->setAnswer(synOne, synTwo, getStrStrPairWithCommonStr(commonString), getIndexTable(typeOne), getIndexTable(typeTwo));
+			result.setAnswer(synOne, synTwo, getStrStrPairWithCommonStr(commonString), getIndexTable(typeOne), getIndexTable(typeTwo));
 		}
 		else if (!oneIsStringTyped && !twoIsStringTyped) { // e.g. call.procName = read.varName, call is int typed and read is int typed
-			result->setAnswer(synOne, synTwo, getIntIntPairWithCommonStr(commonString, typeOne, typeTwo));
+			result.setAnswer(synOne, synTwo, getIntIntPairWithCommonStr(commonString, typeOne, typeTwo));
 		}
 		else if (oneIsStringTyped && !twoIsStringTyped) { // // e.g. var.varName = print.varName, var is string typed and print is int typed
-			result->setAnswer(synOne, synTwo, getStrIntPairWithCommonStr(commonString, typeTwo), getIndexTable(typeOne));
+			result.setAnswer(synOne, synTwo, getStrIntPairWithCommonStr(commonString, typeTwo), getIndexTable(typeOne));
 		}
 		else { // // e.g. read.varName = proc.procName, read is int typed and proc is string typed
-			result->setAnswer(synTwo, synOne, getStrIntPairWithCommonStr(commonString, typeOne), getIndexTable(typeTwo));
+			result.setAnswer(synTwo, synOne, getStrIntPairWithCommonStr(commonString, typeOne), getIndexTable(typeTwo));
 		}
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }

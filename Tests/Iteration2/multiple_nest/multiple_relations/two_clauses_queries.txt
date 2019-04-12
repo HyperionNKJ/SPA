@@ -1,0 +1,20 @@
+1 - Select assign that is followed by assign and modifies variable
+assign a1; stmt s2; variable v;
+Select a1 such that Follows (a1, s2) and Modifies (s2, v) with v.varName = "a"
+13,26,36,7,9
+5000
+2 - Select assign that is followed by assign and modifies variable
+assign a; variable v;
+Select a such that Modifies (a, v) such that Uses (a, v) pattern a (_, _"a"_)
+12,18,23,33,6,7,8
+5000
+3 - Select procedure that uses given variable and call given procedure
+procedure p, q;
+Select p.procName such that Uses (p, "a") and Calls (p, q) with q.procName = "Q"
+P, main
+5000
+4 - Select Next* in same stmtlist past large chain of if/else statements
+assign a; call c;
+Select a such that Next*(a, c) and Follows*(a, c)
+6, 7, 8, 9
+5000

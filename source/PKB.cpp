@@ -913,23 +913,32 @@ bool PKB::isNext(int prevLineNum, int nextLineNum) {
 }
 
 bool PKB::isNextT(int firstLine, int secondLine) {
-	unordered_set<int> visitedLines;
-	unordered_set<int> currentNextLines;
+	unordered_set<int> visitedLines = {};
+	return isNextT(firstLine, secondLine, &visitedLines);
+}
+
+bool PKB::isNextT(int firstLine, int secondLine, unordered_set<int>* visitedLines) {
 	int toExplore = firstLine;
 	bool found = false;
 	while (!found) {
+		if (visitedLines->count(toExplore) > 0) {
+			return false;
+		}
+		visitedLines->insert(toExplore);
 		if (nextMap.count(toExplore) > 0) {
-			int nextExplore = -1;
-			currentNextLines = nextMap[toExplore];
-			//if there are 2 possible next, it is an if or for
-			//then look for which branch it must be in to speedup
+			unordered_set<int> currentNextLines = nextMap[toExplore];
+			//if there are 2 possible next, it is an if or while
 			if (currentNextLines.size() > 1) {
 				for (auto &elem : currentNextLines) {
-					if (elem > nextExplore && elem <= secondLine) {
-						nextExplore = elem;
+					if (elem == secondLine) {
+						return true;
+					}
+					if (isNextT(elem, secondLine, visitedLines)) {
+						return true;
 					}
 				}
-				toExplore = nextExplore;
+				//failed to find second line in either search, return false
+				return false;
 			}
 			else
 			{
@@ -937,14 +946,14 @@ bool PKB::isNextT(int firstLine, int secondLine) {
 				for (auto &elem : currentNextLines) toExplore = elem;
 			}
 			if (toExplore == secondLine) {
-				found = true;
+				return true;
 			}
 		}
 		else {
 			break;
 		}
 	}
-	return found;
+	return false;
 }
 
 bool PKB::hasNext(int prevLineNum) {

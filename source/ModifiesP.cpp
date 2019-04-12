@@ -16,7 +16,7 @@ Result ModifiesP::evaluate(const PKB& pkb) {
 	string paraOneValue = paraOne.getValue();
 	string paraTwoValue = paraTwo.getValue();
 
-	Result* result;
+	Result result;
 
 	if (paraOneType == FIXED) {
 		if (paraTwoType == VARIABLE) {
@@ -29,8 +29,7 @@ Result ModifiesP::evaluate(const PKB& pkb) {
 			result = this->evaluateFixedFixed(paraOneValue, paraTwoValue);
 		}
 		else {
-			result = new Result();
-			result->setPassed(false);
+			result.setPassed(false);
 		}
 	}
 	else if (paraOneType == PROCEDURE) {
@@ -44,83 +43,81 @@ Result ModifiesP::evaluate(const PKB& pkb) {
 			result = this->evaluateSynonymFixed(paraOneValue, paraTwoValue);
 		}
 		else {
-			result = new Result();
-			result->setPassed(false);
+			result.setPassed(false);
 		}
 	}
 	else {
-		result = new Result();
-		result->setPassed(false);
+		result.setPassed(false);
 	}
-	return *result;
+	return result;
 }
 
 // case Modifies("main", v)
-Result* ModifiesP::evaluateFixedVariable(const string& procName, const string& variableSynonym) {
-	Result* result = new Result();
+Result ModifiesP::evaluateFixedVariable(const string& procName, const string& variableSynonym) {
+	Result result;
 	unordered_set<string> answer = pkb.getVarModifiedByProc(procName);
 	if (!answer.empty()) {
-		result->setPassed(true);
-		result->setAnswer(variableSynonym, answer, pkb.getVarTable());
+		result.setPassed(true);
+		result.setAnswer(variableSynonym, answer, pkb.getVarTable());
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }
 
 // case Modifies("main", _)
-Result* ModifiesP::evaluateFixedUnderscore(const string& procName) {
-	Result* result = new Result();
-	result->setPassed(pkb.doesProcModifies(procName));
+Result ModifiesP::evaluateFixedUnderscore(const string& procName) {
+	Result result;
+	result.setPassed(pkb.doesProcModifies(procName));
 	return result;
 }
 
 // case Modifies("main", "count")
-Result* ModifiesP::evaluateFixedFixed(const string& procName, const string& varName) {
-	Result* result = new Result();
-	result->setPassed(pkb.isProcModifies(procName, varName));
+Result ModifiesP::evaluateFixedFixed(const string& procName, const string& varName) {
+	Result result;
+	result.setPassed(pkb.isProcModifies(procName, varName));
 	return result;
 }
 
 // case Modifies(p, v)
-Result* ModifiesP::evaluateSynonymVariable(const string& procSynonym, const string& variableSynonym) {
-	Result* result = new Result();
+Result ModifiesP::evaluateSynonymVariable(const string& procSynonym, const string& variableSynonym) {
+	Result result;
 	unordered_map<string, unordered_set<string>> answer = pkb.getModifiesProcVarPairs();
 	if (!answer.empty()) {
-		result->setPassed(true);
-		result->setAnswer(procSynonym, variableSynonym, answer, pkb.getProcTable(), pkb.getVarTable());
+		result.setPassed(true);
+		result.setAnswer(procSynonym, variableSynonym, answer, pkb.getProcTable(), pkb.getVarTable());
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }
 
 // case Modifies(p, _)
-Result* ModifiesP::evaluateSynonymUnderscore(const string& procSynonym) {
-	Result* result = new Result();
+Result ModifiesP::evaluateSynonymUnderscore(const string& procSynonym) {
+	Result result;
 	unordered_set<string> answer = pkb.getProcThatModifiesVar();
 	if (!answer.empty()) {
-		result->setPassed(true);
-		result->setAnswer(procSynonym, answer, pkb.getProcTable());
+		result.setPassed(true);
+		result.setAnswer(procSynonym, answer, pkb.getProcTable());
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }
 
 // case Modifies(p, "count")
-Result* ModifiesP::evaluateSynonymFixed(const string& procSynonym, const string& varName) {
-	Result* result = new Result();
+Result ModifiesP::evaluateSynonymFixed(const string& procSynonym, const string& varName) {
+	Result result;
 	unordered_set<string> answer = pkb.getProcThatModifiesVar(varName);
 	if (!answer.empty()) {
-		result->setPassed(true);
-		result->setAnswer(procSynonym, answer, pkb.getProcTable());
+		result.setPassed(true);
+		result.setAnswer(procSynonym, answer, pkb.getProcTable());
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }

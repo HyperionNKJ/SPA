@@ -1,0 +1,470 @@
+1 - Find statements that with stmt and stmt (same)
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select s such that Follows (s, s)
+none
+5000
+2 - Find statements that with stmt and stmt (diff)
+stmt s, s1; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select s such that Follows (s, s1)
+1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 20
+5000
+3 - Find statements that with stmt and assign
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select s such that Follows (s, a)
+5, 7, 8, 10, 14, 15, 16, 17, 18, 19
+5000
+4 - Find statements that with stmt and call
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select s such that Follows (s, cl)
+3, 9, 12
+5000
+5 - Find statements that with stmt and print
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select s such that Follows (s, p)
+6, 11, 20
+5000
+6 - Find statements that with stmt and read
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select s such that Follows (s, r)
+1, 2
+5000
+7 - Find statements that with stmt and progline
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select s such that Follows (s, n)
+1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 20
+5000
+8 - Find statements that with stmt and while
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select s such that Follows (s, w)
+none
+5000
+9 - Find statements that with stmt and if
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select s such that Follows (s, ifs)
+none
+5000
+10 - Find statements that with assign and stmt
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select a such that Follows (a, s)
+5, 6, 8, 9, 11, 15, 16, 17, 18, 19, 20
+5000
+11 - Find statements that with assign and assign (same)
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select a such that Follows (a, a)
+none
+5000
+12 - Find statements that with assign and assign (diff)
+stmt s; assign a, a1; call cl; print p; read r; prog_line n; while w; if ifs;
+Select a such that Follows (a, a1)
+5, 8, 15, 16, 17, 18, 19
+5000
+13 - Find statements that with assign and call
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select a such that Follows (a, cl)
+9
+5000
+14 - Find statements that with assign and print
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select a such that Follows (a, p)
+6, 11, 20
+5000
+15 - Find statements that with assign and read
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select a such that Follows (a, r)
+none
+5000
+16 - Find statements that with assign and progline
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select a such that Follows (a, n)
+5, 6, 8, 9, 11, 15, 16, 17, 18, 19, 20
+5000
+17 - Find statements that with assign and while
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select a such that Follows (a, w)
+none
+5000
+18 - Find statements that with assign and if
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select a such that Follows (a, ifs)
+none
+5000
+19 - Find statements that with call and stmt
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select cl such that Follows (cl, s)
+10
+5000
+20 - Find statements that with call and assign
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select cl such that Follows (cl, a)
+10
+5000
+21 - Find statements that with call and call (same)
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select cl such that Follows (cl, cl)
+none
+5000
+22 - Find statements that with call and call (diff)
+stmt s; assign a; call cl, cl1; print p; read r; prog_line n; while w; if ifs;
+Select cl such that Follows (cl, cl1)
+none
+5000
+23 - Find statements that with call and print
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select cl such that Follows (cl, p)
+none
+5000
+24 - Find statements that with call and read
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select cl such that Follows (cl, r)
+none
+5000
+25 - Find statements that with call and progline
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select cl such that Follows (cl, n)
+10
+5000
+26 - Find statements that with call and while
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select cl such that Follows (cl, w)
+none
+5000
+27 - Find statements that with call and ifs
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select cl such that Follows (cl, ifs)
+none
+5000
+28 - Find statements that with print and stmt
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select p such that Follows (p, s)
+7, 12
+5000
+29 - Find statements that with print and assign
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select p such that Follows (p, a)
+7
+5000
+30 - Find statements that with print and call
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select p such that Follows (p, cl)
+12
+5000
+31 - Find statements that with print and print (same)
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select p such that Follows (p, p)
+none
+5000
+32 - Find statements that with print and print (diff)
+stmt s; assign a; call cl; print p, p1; read r; prog_line n; while w; if ifs;
+Select p such that Follows (p, p1)
+none
+5000
+33 - Find statements that with print and read
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select p such that Follows (p, r)
+none
+5000
+34 - Find statements that with print and progline
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select p such that Follows (p, n)
+7, 12
+5000
+35 - Find statements that with print and while
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select p such that Follows (p, w)
+none
+5000
+36 - Find statements that with print and ifs
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select p such that Follows (p, ifs)
+none
+5000
+37 - Find statements that with read and stmt
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select r such that Follows (r, s)
+1, 2, 3, 14
+5000
+38 - Find statements that with read and assign
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select r such that Follows (r, a)
+14
+5000
+39 - Find statements that with read and call
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select r such that Follows (r, cl)
+3
+5000
+40 - Find statements that with read and print
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select r such that Follows (r, p)
+none
+5000
+41 - Find statements that with read and read (same)
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select r such that Follows (r, r)
+none
+5000
+42 - Find statements that with read and read (diff)
+stmt s; assign a; call cl; print p; read r,r1; prog_line n; while w; if ifs;
+Select r such that Follows (r, r1)
+1, 2
+5000
+43 - Find statements that with read and progline
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select r such that Follows (r, n)
+1, 2, 3, 14
+5000
+44 - Find statements that with read and while
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select r such that Follows (r, w)
+none
+5000
+45 - Find statements that with read and if
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select r such that Follows (r, ifs)
+none
+5000
+46 - Find statements that with progline and stmt
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select n such that Follows (n, s)
+1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 20
+5000
+47 - Find statements that with progline and assign
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select n such that Follows (n, a)
+5, 7, 8, 10, 14, 15, 16, 17, 18, 19
+5000
+48 - Find statements that with progline and call
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select n such that Follows (n, cl)
+3, 9, 12
+5000
+49 - Find statements that with progline and print
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select n such that Follows (n, p)
+6, 11, 20
+5000
+50 - Find statements that with progline and read
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select n such that Follows (n, r)
+1, 2
+5000
+51 - Find statements that with progline and progline (same)
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select n such that Follows (n, n)
+none
+5000
+52 - Find statements that with progline and progline (diff)
+stmt s; assign a; call cl; print p; read r; prog_line n,n1; while w; if ifs;
+Select n such that Follows (n, n1)
+1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 20
+5000
+53 - Find statements that with while and stmt
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select w such that Follows (w, s)
+none
+5000
+54 - Find statements that with ifs and assign
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select ifs such that Follows (ifs, a)
+none
+5000
+55 - Find statements that with stmt and underscore
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select s such that Follows (s, _)
+1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 20
+5000
+56 - Find statements that with assign and underscore
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select a such that Follows (a, _)
+5, 6, 8, 9, 11, 15, 16, 17, 18, 19, 20
+5000
+57 - Find statements that with call and underscore
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select cl such that Follows (cl, _)
+10
+5000
+58 - Find statements that with print and underscore
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select p such that Follows (p, _)
+7, 12
+5000
+59 - Find statements that with read and underscore
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select r such that Follows (r, _)
+1, 2, 3, 14
+5000
+60 - Find statements that with progline and underscore
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select n such that Follows (n, _)
+1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 20
+5000
+61 - Find statements that with while and underscore
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select w such that Follows (w, _)
+none
+5000
+62 - Find statements that with if and underscore
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select ifs such that Follows (ifs, _)
+none
+5000
+63 - Find statements that with stmt and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select s such that Follows (s, 9)
+8
+5000
+64 - Find statements that with assign and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select a such that Follows (a, 9)
+8
+5000
+65 - Find statements that with call and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select cl such that Follows (cl, 11)
+10
+5000
+66 - Find statements that with print and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select p such that Follows (p, 8)
+7
+5000
+67 - Find statements that with read and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select r such that Follows (r, 4)
+3
+5000
+68 - Find statements that with progline and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select n such that Follows (n, 9)
+8
+5000
+69 - Find statements that with underscore and stmt
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select s such that Follows (_, s)
+2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19, 20, 21
+5000
+70 - Find statements that with underscore and assign
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select a such that Follows (_, a)
+6, 8, 9, 11, 15, 16, 17, 18, 19, 20
+5000
+71 - Find statements that with underscore and call
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select cl such that Follows (_, cl)
+4, 10, 13
+5000
+72 - Find statements that with underscore and print
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select p such that Follows (_, p)
+7, 12, 21
+5000
+73 - Find statements that with underscore and read
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select r such that Follows (_, r)
+2, 3
+5000
+74 - Find statements that with underscore and progline
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select n such that Follows (_, n)
+2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19, 20, 21
+5000
+75 - Find statements that with underscore and while
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select s such that Follows (_, w)
+none
+5000
+76 - Find statements that with underscore and if
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select s such that Follows (_, ifs)
+none
+5000
+77 - Find statements that with underscore and underscore
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select s such that Follows (_, _)
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21
+5000
+78 - Find statements that with underscore and fixed (first stmt)
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select r such that Follows (_, 5)
+none
+5000
+79 - Find statements that with underscore and fixed (last stmt)
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select r such that Follows (_, 4)
+1, 2, 3, 14
+5000
+80 - Find statements that with fixed and stmt (first stmt)
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select s such that Follows (1, s)
+2
+5000
+81 - Find statements that with fixed and stmt (last stmt)
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select s such that Follows (4, s)
+none
+5000
+82 - Find statements that with fixed and assign
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select a such that Follows (8, a)
+9
+5000
+83 - Find statements that with fixed and call
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select cl such that Follows (9, cl)
+10
+5000
+84 - Find statements that with fixed and print
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select p such that Follows (8, p)
+none
+5000
+85 - Find statements that with fixed and read
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select r such that Follows (2, r)
+3
+5000
+86 - Find statements that with fixed and progline
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select n such that Follows (8, n)
+9
+5000
+87 - Find statements that with fixed and while
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select w such that Follows (8, w)
+none
+5000
+88 - Find statements that with fixed and if
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select ifs such that Follows (8, ifs)
+none
+5000
+89 - Find statements that with fixed and underscore
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select r such that Follows (8, _)
+1, 2, 3, 14
+5000
+90 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select r such that Follows (8, 9)
+1, 2, 3, 14
+5000
+91 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select r such that Follows (8, 13)
+none
+5000
+92 - Find statements that with fixed and fixed (same)
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select r such that Follows (8, 8)
+none
+5000
+93 - Select stmt that follows anything
+stmt s1; stmt s2;
+Select s2 such that Follows (s1, s2)
+2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19, 20, 21
+5000
+94 - Select stmt that is followed by assignment with pattern
+stmt s; assign a;
+Select s such that Follows (s, a) pattern a (_, _"a-b"_)
+5, 7, 16
+5000

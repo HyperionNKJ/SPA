@@ -1,0 +1,145 @@
+1 - Select procedures with params synonym and synonym
+procedure p, q;
+Select q such that Calls (p, q)
+P, Q
+5000
+2 - Select procedures with params synonym and underscore
+procedure p, q;
+Select p such that Calls (p, _)
+main, P
+5000
+3 - Select procedures with params synonym and fixed (exist)
+procedure p, q;
+Select p such that Calls (p, "Q")
+P
+5000
+4 - Select procedures with params synonym and fixed (does not exist)
+procedure p, q;
+Select p such that Calls (p, "R")
+none
+5000
+5 - Select procedures with params underscore and synonym
+procedure p, q;
+Select p such that Calls (_, p)
+P, Q
+5000
+6 - Select procedures with params underscore and underscore
+procedure p, q;
+Select p such that Calls (_, _)
+main, P, Q
+5000
+7 - Select procedures with params underscore and fixed (exist)
+procedure p, q;
+Select p such that Calls (_, "main")
+none
+5000
+8 - Select procedures with params underscore and fixed (does not exist)
+procedure p, q;
+Select p such that Calls (_, "procedure")
+none
+5000
+9 - Select procedures with params fixed and synonym
+procedure p, q;
+Select p such that Calls ("P", p)
+Q
+5000
+10 - Select procedures with params fixed and underscore
+procedure p, q;
+Select p such that Calls ("main", _)
+P, Q, main
+5000
+11 - Select procedures with params fixed and fixed (exist)
+procedure p, q;
+Select p such that Calls ("P", "Q")
+main, P, Q
+5000
+12 - Select procedures with params fixed and fixed (exist)
+procedure p, q;
+Select p such that Calls ("P", "main")
+none
+5000
+13 - Select procedures that calls itself
+procedure p, q;
+Select p such that Calls (p, p)
+none
+5000
+14 - Select procedures with params synonym and synonym
+procedure p, q;
+Select q such that Calls* (p, q)
+P, Q
+5000
+15 - Select procedures with params synonym and underscore
+procedure p, q;
+Select p such that Calls* (p, _)
+main, P
+5000
+16 - Select procedures with params synonym and fixed (exist)
+procedure p, q;
+Select p such that Calls* (p, "Q")
+P, main
+5000
+17 - Select procedures with params synonym and fixed (does not exist)
+procedure p, q;
+Select p such that Calls* (p, "R")
+none
+5000
+18 - Select procedures with params underscore and synonym
+procedure p, q;
+Select p such that Calls* (_, p)
+P, Q
+5000
+19 - Select procedures with params underscore and underscore
+procedure p, q;
+Select p such that Calls* (_, _)
+main, P, Q
+5000
+20 - Select procedures with params underscore and fixed (exist)
+procedure p, q;
+Select p such that Calls* (_, "main")
+none
+5000
+21 - Select procedures with params underscore and fixed (does not exist)
+procedure p, q;
+Select p such that Calls* (_, "procedure")
+none
+5000
+22 - Select procedures with params fixed and synonym
+procedure p, q;
+Select p such that Calls* ("P", p)
+Q
+5000
+23 - Select procedures with params fixed and underscore
+procedure p, q;
+Select p such that Calls* ("main", _)
+P, Q, main
+5000
+24 - Select procedures with params fixed and fixed (exist)
+procedure p, q;
+Select p such that Calls* ("P", "Q")
+main, P, Q
+5000
+25 - Select procedures with params fixed and fixed (exist)
+procedure p, q;
+Select p such that Calls* ("P", "main")
+none
+5000
+26 - Select procedures that calls itself
+procedure p, q;
+Select p such that Calls* (p, p)
+none
+5000
+27 - Select all procedures called by main
+procedure p;
+Select p.procName such that Calls* ("main", p)
+P, Q
+5000
+28 - Select procedure tuples that calls another procedure
+procedure p, q;
+Select <p, q> such that Calls* (p, q)
+main P, main Q, P Q
+5000
+29 - Select procedures that calls a procedure that calls Q
+procedure p, q;
+Select p such that Calls* (p, q) and Calls (q, "Q")
+main
+5000

@@ -147,6 +147,12 @@
     <ClCompile Include="..\source\ResultCache.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\QueryPreprocessorError.cpp">
+      <Filter>Source Files\QueryPreprocessor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\SPA.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\DesignEntity.h">
@@ -167,13 +173,7 @@
     <ClInclude Include="..\source\QueryEvaluator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\QueryParser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\QueryProcessor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\QueryTokenizer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\ResultProjector.h">
@@ -285,6 +285,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\CacheType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\QueryPreprocessorError.h">
+      <Filter>Header Files\QueryPreprocessor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\SPA.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

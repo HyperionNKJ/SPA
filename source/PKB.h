@@ -178,6 +178,7 @@ public:
 
 	bool isNext(int prevLineNum, int nextLineNum);
 	bool isNextT(int prevLineNum, int nextLineNum);
+	bool isNextT(int prevLineNum, int nextLineNum, unordered_set<int>* visitedLines);
 	bool hasNext(int prevLineNum);
 	bool hasPrevious(int nextLineNum);
 	bool hasNextT();

@@ -41,6 +41,7 @@
     <ClCompile Include="..\source\QueryPreprocessorPatternParser.cpp" />
     <ClCompile Include="..\source\QueryPreprocessorResultParser.cpp" />
     <ClCompile Include="..\source\QueryPreprocessorSelectParser.cpp" />
+    <ClCompile Include="..\source\QueryPreprocessorError.cpp" />
     <ClCompile Include="..\source\QueryPreprocessorSuchThatParser.cpp" />
     <ClCompile Include="..\source\QueryPreprocessorTokenizer.cpp" />
     <ClCompile Include="..\source\QueryPreprocessorWithParser.cpp" />
@@ -48,6 +49,7 @@
     <ClCompile Include="..\source\Result.cpp" />
     <ClCompile Include="..\source\ResultCache.cpp" />
     <ClCompile Include="..\source\ResultProjector.cpp" />
+    <ClCompile Include="..\source\SPA.cpp" />
     <ClCompile Include="..\source\UsesP.cpp" />
     <ClCompile Include="..\source\UsesS.cpp" />
     <ClCompile Include="..\source\With.cpp" />
@@ -78,7 +80,6 @@
     <ClInclude Include="..\source\PKB.h" />
     <ClInclude Include="..\source\ProcessedQuery.h" />
     <ClInclude Include="..\source\QueryEvaluator.h" />
-    <ClInclude Include="..\source\QueryParser.h" />
     <ClInclude Include="..\source\QueryPreprocessor.h" />
     <ClInclude Include="..\source\QueryPreprocessorDeclareParser.h" />
     <ClInclude Include="..\source\QueryPreprocessorFormatter.h" />
@@ -87,14 +88,15 @@
     <ClInclude Include="..\source\QueryPreprocessorPatternParser.h" />
     <ClInclude Include="..\source\QueryPreprocessorResultParser.h" />
     <ClInclude Include="..\source\QueryPreprocessorSelectParser.h" />
+    <ClInclude Include="..\source\QueryPreprocessorError.h" />
     <ClInclude Include="..\source\QueryPreprocessorSuchThatParser.h" />
     <ClInclude Include="..\source\QueryPreprocessorTokenizer.h" />
     <ClInclude Include="..\source\QueryPreprocessorWithParser.h" />
     <ClInclude Include="..\source\QueryProcessor.h" />
-    <ClInclude Include="..\source\QueryTokenizer.h" />
     <ClInclude Include="..\source\Result.h" />
     <ClInclude Include="..\source\ResultCache.h" />
     <ClInclude Include="..\source\ResultProjector.h" />
+    <ClInclude Include="..\source\SPA.h" />
     <ClInclude Include="..\source\Type.h" />
     <ClInclude Include="..\source\UsesP.h" />
     <ClInclude Include="..\source\UsesS.h" />

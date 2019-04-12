@@ -229,13 +229,13 @@ void ResultCache::storeInCache(Clause* clause,  unordered_set<int>& result) {
 
 bool ResultCache::isStmtType(Type type) {
 	return  type == Type::STATEMENT || type == Type::PROGLINE || type == Type::READ || type == Type::PRINT || type == Type::CALL ||
-		type == Type::WHILE || type == Type::IF || type == Type::ASSIGN;
+		type == Type::WHILE || type == Type::IF || type == Type::ASSIGN || type == Type::SWITCH;
 }
 
 
 CacheType ResultCache::convertToCacheType(Type type1, Type type2) {
 	CacheType cacheType;
-	//STATEMENT, PROGLINE, READ, PRINT, CALL, WHILE, IF, ASSIGN
+	//STATEMENT, PROGLINE, READ, PRINT, CALL, WHILE, IF, ASSIGN, SWITCH
 	switch (type1) {
 		case Type::STATEMENT:
 			cacheType = startWithStatement(type2);
@@ -260,6 +260,9 @@ CacheType ResultCache::convertToCacheType(Type type1, Type type2) {
 			break;
 		case Type::ASSIGN:
 			cacheType = startWithAssign(type2);
+			break;
+		case Type::SWITCH:
+			cacheType = startWithSwitch(type2);
 			break;
 	}
 	return cacheType;
@@ -293,6 +296,9 @@ CacheType ResultCache::startWithStatement(Type type2) {
 	case Type::ASSIGN:
 		cacheType = CacheType::STMT_ASSIGN;
 		break;
+	case Type::SWITCH:
+		cacheType = CacheType::STMT_SWITCH;
+		break;
 	}
 	return cacheType;
 }
@@ -324,6 +330,9 @@ CacheType ResultCache::startWithProgline(Type type2) {
 		break;
 	case Type::ASSIGN:
 		cacheType = CacheType::PROGLINE_ASSIGN;
+		break;
+	case Type::SWITCH:
+		cacheType = CacheType::PROGLINE_SWITCH;
 		break;
 	}
 	return cacheType;
@@ -357,6 +366,9 @@ CacheType ResultCache::startWithRead(Type type2) {
 	case Type::ASSIGN:
 		cacheType = CacheType::READ_ASSIGN;
 		break;
+	case Type::SWITCH:
+		cacheType = CacheType::READ_SWITCH;
+		break;
 	}
 	return cacheType;
 }
@@ -388,6 +400,9 @@ CacheType ResultCache::startWithPrint(Type type2) {
 		break;
 	case Type::ASSIGN:
 		cacheType = CacheType::PRINT_ASSIGN;
+		break;
+	case Type::SWITCH:
+		cacheType = CacheType::PRINT_SWITCH;
 		break;
 	}
 	return cacheType;
@@ -421,6 +436,9 @@ CacheType ResultCache::startWithCall(Type type2) {
 	case Type::ASSIGN:
 		cacheType = CacheType::CALL_ASSIGN;
 		break;
+	case Type::SWITCH:
+		cacheType = CacheType::CALL_SWITCH;
+		break;
 	}
 	return cacheType;
 }
@@ -452,6 +470,9 @@ CacheType ResultCache::startWithWhile(Type type2) {
 		break;
 	case Type::ASSIGN:
 		cacheType = CacheType::WHILE_ASSIGN;
+		break;
+	case Type::SWITCH:
+		cacheType = CacheType::WHILE_SWITCH;
 		break;
 	}
 	return cacheType;
@@ -485,6 +506,9 @@ CacheType ResultCache::startWithIf(Type type2) {
 	case Type::ASSIGN:
 		cacheType = CacheType::IF_ASSIGN;
 		break;
+	case Type::SWITCH:
+		cacheType = CacheType::IF_SWITCH;
+		break;
 	}
 	return cacheType;
 }
@@ -516,6 +540,44 @@ CacheType ResultCache::startWithAssign(Type type2) {
 		break;
 	case Type::ASSIGN:
 		cacheType = CacheType::ASSIGN_ASSIGN;
+		break;
+	case Type::SWITCH:
+		cacheType = CacheType::ASSIGN_SWITCH;
+		break;
+	}
+	return cacheType;
+}
+
+CacheType ResultCache::startWithSwitch(Type type2) {
+	CacheType cacheType;
+
+	switch (type2) {
+	case Type::STATEMENT:
+		cacheType = CacheType::SWITCH_STMT;
+		break;
+	case Type::PROGLINE:
+		cacheType = CacheType::SWITCH_PROGLINE;
+		break;
+	case Type::READ:
+		cacheType = CacheType::SWITCH_READ;
+		break;
+	case Type::PRINT:
+		cacheType = CacheType::SWITCH_PRINT;
+		break;
+	case Type::CALL:
+		cacheType = CacheType::SWITCH_CALL;
+		break;
+	case Type::WHILE:
+		cacheType = CacheType::SWITCH_WHILE;
+		break;
+	case Type::IF:
+		cacheType = CacheType::SWITCH_IF;
+		break;
+	case Type::ASSIGN:
+		cacheType = CacheType::SWITCH_ASSIGN;
+		break;
+	case Type::SWITCH:
+		cacheType = CacheType::SWITCH_SWITCH;
 		break;
 	}
 	return cacheType;

@@ -5,9 +5,11 @@
 class QueryPreprocessorResultParser {
 public:
 	QueryPreprocessorResultParser(const std::string& clause, ProcessedQuery& query);
-	bool parse();
+	void parse();
 private:
+	static const std::vector<Type> VALID_TYPES;
+
 	const std::string& CLAUSE;
 	ProcessedQuery& query;
-	bool addElement(const std::string& elem);
+	void addElement(const std::string& elem);
 };

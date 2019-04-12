@@ -32,18 +32,17 @@ int Parser::parse(string fileName, PKB& p) {
 		}
 		else {
 			if (!withinProcedure) {
-				errorMessage = "All statements should be contained within procedures. Error at line " + statementNumber;
+				errorMessage = "All statements should be contained within procedures. Error at line "  + to_string(statementNumber);
 				return false;
 			}
 			else {
 				if (expectElse && intent != KEY_ELSE) {
-					errorMessage = "Expected an else statement at line " + statementNumber;
+					errorMessage = "Expected an else statement at line "  + to_string(statementNumber);
 					result = -1;
 				}
 				else {
 					if (intent == KEY_ASSIGN) {
 						result = handleAssignment(sourceCode[i]);
-						emptyProcedure = false;
 						statementNumber++;
 					}
 					else if (intent == KEY_CLOSE_BRACKET) {
@@ -51,45 +50,44 @@ int Parser::parse(string fileName, PKB& p) {
 					}
 					else if (intent == KEY_IF) {
 						result = handleIf(sourceCode[i]);
-						emptyProcedure = false;
 						statementNumber++;
 					}
 					else if (intent == KEY_WHILE) {
 						result = handleWhile(sourceCode[i]);
-						emptyProcedure = false;
 						statementNumber++;
 					}
 					else if (intent == KEY_PRINT) {
 						result = handlePrint(sourceCode[i]);
-						emptyProcedure = false;
 						statementNumber++;
 					}
 					else if (intent == KEY_READ) {
 						result = handleRead(sourceCode[i]);
-						emptyProcedure = false;
 						statementNumber++;
 					}
 					else if (intent == KEY_ELSE && expectElse == true) {
 						result = handleElse(sourceCode[i]);
 					}
 					else if (intent == KEY_ELSE && expectElse == false) {
-						errorMessage = "Else statement without accompanying if found just before line " + statementNumber;
+						errorMessage = "Else statement without accompanying if found just before line " + to_string(statementNumber);
 					}
 					else if (intent == KEY_CALL) {
 						result = handleCall(sourceCode[i]);
 						statementNumber++;
-						emptyProcedure = false;
 					}
 					else if (intent == KEY_SWITCH) {
+						result = handleSwitch(sourceCode[i]);
 						statementNumber++;
 					}
 					else if (intent == KEY_SWITCHCASE) {
+						result = handleSwitchCase(sourceCode[i]);
 						statementNumber++;
 					}
 					else {
-						errorMessage = "Statement of unknown type encountered at line " + statementNumber;
+						errorMessage = "Statement of unknown type encountered at line "  + to_string(statementNumber);
 						result = -1;
 					}
+					emptyProcedure = false;
+					expectStatement = false;
 				}
 			}
 		}
@@ -160,6 +158,10 @@ bool Parser::checkProcedure(string procLine) {
 		errorMessage = "Procedure statement is invalid";
 		return false;
 	}
+	if (withinProcedure) {
+		errorMessage = "Procedure statements cannot be nested within each other. Error at line "  + to_string(statementNumber);
+		return false;
+	}
 	size_t startPos = procLine.find("procedure");
 	size_t endPos = procLine.find_first_of("{");
 	string procedureName = procLine.substr(startPos + 9, endPos - startPos - 9);
@@ -199,11 +201,11 @@ bool Parser::checkAssignment(string assignmentLine) {
 	string lhsLine = assignmentLine.substr(0, equalPos);
 	string rhsLine = assignmentLine.substr(equalPos + 1, string::npos);
 	if (!isValidVarName(lhsLine)) {
-		errorMessage = "Error in left hand side of assignment statement at line" + statementNumber;
+		errorMessage = "Error in left hand side of assignment statement at line"  + to_string(statementNumber);
 		return false;
 	}
 	if (!checkExpr(rhsLine)) {
-		errorMessage = "Error in right hand side of assignment statement at line " + statementNumber;
+		errorMessage = "Error in right hand side of assignment statement at line "  + to_string(statementNumber);
 		return false;
 	}
 	return true;
@@ -227,12 +229,12 @@ bool Parser::checkExpr(string expr) {
 			}
 		}
 		else if (bracketTracker < 0) {
-			errorMessage = "Extra mismatched ( bracket encountered in assignment statement at line " + statementNumber;
+			errorMessage = "Extra mismatched ( bracket encountered in assignment statement at line "  + to_string(statementNumber);
 			return false;
 		}
 	}
 	if (bracketTracker > 0) {
-		errorMessage = "Extra mismatched ) bracket encountered in assignment statement at line " + statementNumber;
+		errorMessage = "Extra mismatched ) bracket encountered in assignment statement at line "  + to_string(statementNumber);
 		return false;
 	}
 	//reach the end with no + or -, check for single term
@@ -258,7 +260,7 @@ bool Parser::checkTerm(string term) {
 			}
 		}
 		else if (bracketTracker < 0) {
-			errorMessage = "Extra mismatched ( bracket encountered in assignment statement at line " + statementNumber;
+			errorMessage = "Extra mismatched ( bracket encountered in assignment statement at line "  + to_string(statementNumber);
 			return false;
 		}
 	}
@@ -279,7 +281,7 @@ bool Parser::checkFactor(string factor) {
 	if (openBracketPos == 0 && closeBracketPos == factor.length()-1) {
 		return checkExpr(factor.substr(openBracketPos+1, closeBracketPos - openBracketPos - 1));
 	}
-	errorMessage = "Failed in parsing a Factor in statement at line " + statementNumber;
+	errorMessage = "Failed in parsing a Factor in statement at line "  + to_string(statementNumber);
 	return false;
 }
 
@@ -338,7 +340,7 @@ int Parser::handleAssignment(string assignmentLine) {
 			opStack.pop_back();
 		}
 		else if (assignTokens[i] == "+" || assignTokens[i] == "-") {
-			while (opStack.size() > 0 && (opStack.back() == "+" || opStack.back() == "-")) {
+			while (opStack.size() > 0 && (opStack.back() != "(")) {
 				postfixRHS.push_back(opStack.back());
 				opStack.pop_back();
 			}
@@ -414,7 +416,7 @@ bool Parser::checkRead(string readLine) {
 	string readRegexString = spaceRegex + "read" + spaceRegex + varNameRegex + spaceRegex + ";" + spaceRegex;
 	regex readRegex(readRegexString);
 	if (!regex_match(readLine, readRegex)) {
-		errorMessage = "Read statement is invalid at line " + statementNumber;
+		errorMessage = "Read statement is invalid at line "  + to_string(statementNumber);
 		return false;
 	}
 	return true;
@@ -446,7 +448,7 @@ bool Parser::checkPrint(string printLine) {
 	string printRegexString = spaceRegex + "print" + spaceRegex + varNameRegex + spaceRegex + ";" + spaceRegex;
 	regex printRegex(printRegexString);
 	if (!regex_match(printLine, printRegex)) {
-		errorMessage = "Print statement is invalid at line " + statementNumber;
+		errorMessage = "Print statement is invalid at line "  + to_string(statementNumber);
 		return false;
 	}
 	return true;
@@ -480,7 +482,7 @@ bool Parser::checkWhile(string whileLine) {
 	size_t firstOpenBracket = whileLine.find_first_of("(");
 	size_t lastCloseBracket = whileLine.find_last_of(")");
 	if (firstOpenBracket == string::npos || lastCloseBracket == string::npos) {
-		errorMessage = "Missing ( and ) brackets around the conditional expession at line " + statementNumber;
+		errorMessage = "Missing ( and ) brackets around the conditional expession at line "  + to_string(statementNumber);
 		return false;
 	}
 	string truncWhileLine = whileLine.substr(0, firstOpenBracket) + whileLine.substr(lastCloseBracket+1, string::npos);
@@ -488,7 +490,7 @@ bool Parser::checkWhile(string whileLine) {
 	string whileRegexString = spaceRegex + "while" + spaceRegex + openCurlyRegex + spaceRegex;
 	regex whileRegex(whileRegexString);
 	if (!regex_match(truncWhileLine, whileRegex)) {
-		errorMessage = "Unexpected tokens in the while statement at line " + statementNumber;
+		errorMessage = "Unexpected tokens in the while statement at line "  + to_string(statementNumber);
 		return false;
 	}
 	return checkCondExpr(condExprLine);
@@ -516,7 +518,7 @@ int Parser::handleWhile(string whileLine) {
 	size_t openBracketPos = whileLine.find_first_of("(");
 	size_t closeBracketPos = whileLine.find_last_of(")");
 	string condExpr = whileLine.substr(openBracketPos + 1, closeBracketPos - openBracketPos - 1);
-	vector<string> tokens = tokeniseString(condExpr, " \t&|()!");
+	vector<string> tokens = tokeniseString(condExpr, " \t&|()!+-*/%");
 	for (unsigned int i = 0; i < tokens.size(); i++) {
 		if (isValidVarName(tokens[i])) {
 			pkb->insertVar(tokens[i]);
@@ -532,11 +534,11 @@ int Parser::handleWhile(string whileLine) {
 
 bool Parser::checkIf(string ifLine) {
 	//check for brackets, then check the cond_expr
-	//practically the same as while
+
 	size_t firstOpenBracket = ifLine.find_first_of("(");
 	size_t lastCloseBracket = ifLine.find_last_of(")");
 	if (firstOpenBracket == string::npos || lastCloseBracket == string::npos) {
-		errorMessage = "Missing ( and ) brackets around the conditional expression at line " + statementNumber;
+		errorMessage = "Missing ( and ) brackets around the conditional expression at line "  + to_string(statementNumber);
 		return false;
 	}
 	string truncIfLine = ifLine.substr(0, firstOpenBracket) + ifLine.substr(lastCloseBracket+1, string::npos);
@@ -544,7 +546,7 @@ bool Parser::checkIf(string ifLine) {
 	string ifRegexString = spaceRegex + "if" + spaceRegex + "then" + spaceRegex + openCurlyRegex + spaceRegex;
 	regex ifRegex(ifRegexString);
 	if (!regex_match(truncIfLine, ifRegex)) {
-		errorMessage = "Unexpected tokens in the if statement at line " + statementNumber;
+		errorMessage = "Unexpected tokens in the if statement at line "  + to_string(statementNumber);
 		return false;
 	}
 	return checkCondExpr(condExprLine);
@@ -572,7 +574,7 @@ int Parser::handleIf(string ifLine) {
 	size_t openBracketPos = ifLine.find_first_of("(");
 	size_t closeBracketPos = ifLine.find_last_of(")");
 	string condExpr = ifLine.substr(openBracketPos + 1, closeBracketPos - openBracketPos - 1);
-	vector<string> tokens = tokeniseString(condExpr, " \t&|()!");
+	vector<string> tokens = tokeniseString(condExpr, " \t&|()!+-*/%");
 	for (unsigned int i = 0; i < tokens.size(); i++) {
 		if (isValidVarName(tokens[i])) {
 			pkb->insertVar(tokens[i]);
@@ -590,7 +592,7 @@ bool Parser::checkElse(string elseLine) {
 	string elseRegexString = spaceRegex + "else" + spaceRegex + openCurlyRegex;
 	regex elseRegex(elseRegexString);
 	if (!regex_match(elseLine, elseRegex)) {
-		errorMessage = "Else statement has unexpected tokens just before line " + statementNumber;
+		errorMessage = "Else statement has unexpected tokens just before line "  + to_string(statementNumber);
 		return false;
 	}
 	return true;
@@ -600,9 +602,7 @@ int Parser::handleElse(string elseLine) {
 	if (!checkElse(elseLine)) {
 		return -1;
 	}
-	//reset booleans
-	//reset follow tracker
-	//set container tracker
+	//reset booleans, reset follow tracker, set container tracker
 	expectElse = false;
 	firstInElse = true;
 	containerTracker.push_back(ELSEC);
@@ -621,7 +621,7 @@ bool Parser::checkCondExpr(string condExpr) {
 	condExpr = cleanedCondExpr;
 	//check that brackets wrap the expression, without unexpected tokens
 	if (condExpr.find_first_of("(") != 0 || condExpr.find_last_of(")") != (condExpr.length() - 1)) {
-		errorMessage = "Found unexpected token when expecting ( and ) around conditional expression at line " + statementNumber;
+		errorMessage = "Found unexpected token when expecting ( and ) around conditional expression at line "  + to_string(statementNumber);
 		return false;
 	}
 	//remove external brackets
@@ -655,10 +655,6 @@ bool Parser::checkCondExpr(string condExpr) {
 				string secondCondExpr = condExpr.substr(pos + 2, string::npos);
 				return checkCondExpr(firstCondExpr) & checkCondExpr(secondCondExpr);
 			}
-			else {
-				errorMessage = "Could not successfully parse conditional expression, missing and/or operator at line " + statementNumber;
-				return false;
-			}
 		}
 		else {
 			if (condExpr[pos] == '(') {
@@ -674,11 +670,11 @@ bool Parser::checkCondExpr(string condExpr) {
 		}
 	}
 	if (bracketCount > 0) {
-		errorMessage = "Mismatch in number of ( and ) brackets in conditional expression at line " + statementNumber;
+		errorMessage = "Mismatch in number of ( and ) brackets in conditional expression at line "  + to_string(statementNumber);
 		return false;
 	}
-	errorMessage = "Could not successfully parse the conditional expression at line " + statementNumber;
-	return false;
+	//finally just attempt to parse as a rel expr
+	return checkRelExpr(condExpr);
 }																
 
 bool Parser::checkRelExpr(string relExpr) {
@@ -699,7 +695,7 @@ bool Parser::checkRelExpr(string relExpr) {
 		string secondRelFactor = relExpr.substr(relOpPos + offset, string::npos);
 		return checkRelFactor(firstRelFactor) & checkRelFactor(secondRelFactor);
 	}
-	errorMessage = "Could not find a relational operator at line " + statementNumber;
+	errorMessage = "Could not find a relational operator at line "  + to_string(statementNumber);
 	return false;
 }
 
@@ -734,17 +730,17 @@ int Parser::handleCloseBracket(string closeBracket) {
 		return 0;
 	}
 	else {
-		//pop from parent stack, pop from stack of follow vectors for while, else
+		//pop from parent stack, pop from stack of follow vectors for while, else, switch
 		//clear follow vector
 		//set else checker and container for if
 		currentFollowVector.clear();
-		if (containerTracker.back() == WHILEC || containerTracker.back() == ELSEC) {
+		if (containerTracker.back() == WHILEC || containerTracker.back() == ELSEC || containerTracker.back() == SWITCHC) {
 			if (parentVector.size() == 0) {
-				errorMessage = "Unexpected error when parsing end of container statement. Parent vector is empty. At line " + statementNumber;
+				errorMessage = "Unexpected error when parsing end of container statement. Parent vector is empty. At line "  + to_string(statementNumber);
 				return -1;
 			}
 			if (allFollowStack.size() == 0) {
-				errorMessage = "Unexpected error when parsing end of container statement. Follow stack is empty. At line " + statementNumber;
+				errorMessage = "Unexpected error when parsing end of container statement. Follow stack is empty. At line "  + to_string(statementNumber);
 				return -1;
 			}
 			setNext(statementNumber, containerTracker.back());
@@ -756,10 +752,12 @@ int Parser::handleCloseBracket(string closeBracket) {
 			expectElse = true;
 			lastInIfElseTracker.push_back(make_pair(lastStmtInFlow, parentVector.back()));
 
-			//to update parent when tracking for Next
+			//to update parent when tracking for Next - if we close consecutively, need to update parent to track how far to hold on to the previous
+			//statements
 			for (int i = lastInIfElseTracker.size()-1; i >= 0; i--) {
-				if (parentVector.size() > 0 && lastInIfElseTracker.back().second >= parentVector.back())
+				if (parentVector.size() > 0 && lastInIfElseTracker.back().second > parentVector.back()) {
 					lastInIfElseTracker[i].second = parentVector.back();
+				}
 			}
 		}
 		containerTracker.pop_back();
@@ -772,7 +770,7 @@ bool Parser::checkCall(string callLine) {
 	string callRegexString = spaceRegex + "call" + spaceRegex + varNameRegex + spaceRegex + ";" + spaceRegex;
 	regex callRegex(callRegexString);
 	if (!regex_match(callLine, callRegex)) {
-		errorMessage = "Call statement is invalid at line " + statementNumber;
+		errorMessage = "Call statement is invalid at line "  + to_string(statementNumber);
 		return false;
 	}
 	return true;
@@ -796,27 +794,20 @@ int Parser::handleCall(string callLine) {
 	currentFollowVector.push_back(statementNumber);
 	
 	procCalledByTable.insert({ statementNumber, calledProcName });
+	callParentTable.insert({ statementNumber, parentVector });
 	setCalls(currProcedure, calledProcName);
 	return 0;
 }
 
 bool Parser::checkSwitch(string switchLine) {
-	size_t firstOpenBracket = switchLine.find_first_of("(");
-	size_t lastCloseBracket = switchLine.find_last_of(")");
-	if (firstOpenBracket == string::npos || lastCloseBracket == string::npos) {
-		errorMessage = "Missing ( and ) brackets around the variable name at line " + statementNumber;
-		return false;
-	}
-	string truncSwitchLine = switchLine.substr(0, firstOpenBracket) + switchLine.substr(lastCloseBracket + 1, string::npos);
-	string controlVar = switchLine.substr(firstOpenBracket, lastCloseBracket - firstOpenBracket + 1);
-	string switchRegexString = spaceRegex + "switch" + spaceRegex + openCurlyRegex + spaceRegex;
+	string switchRegexString = spaceRegex + "switch" + spaceRegex + "\\(" + spaceRegex + varNameRegex + spaceRegex + "\\)" + spaceRegex + openCurlyRegex + spaceRegex;
 	regex switchRegex(switchRegexString);
-	if (!regex_match(truncSwitchLine, switchRegex)) {
-		errorMessage = "Unexpected tokens in the switch statement at line " + statementNumber;
+	if (!regex_match(switchLine, switchRegex)) {
+		errorMessage = "Unexpected tokens in the switch statement at line "  + to_string(statementNumber);
 		return false;
 	}
-	if (!isValidVarName(controlVar)) {
-		errorMessage = "Variable expected within ( ) for switch statement at line " + statementNumber;
+	if (withinSwitch) {
+		errorMessage = "Nested switch statements are not allowed; at line " + to_string(statementNumber);
 		return false;
 	}
 	return true;
@@ -826,14 +817,48 @@ int Parser::handleSwitch(string switchLine) {
 	if (!checkSwitch(switchLine)) {
 		return -1;
 	}
+	withinSwitch = true;
+	//set follow, parent relationships
+	setParent(statementNumber);
+	setFollow(statementNumber);
+	setNext(statementNumber, NONEC);
+
+	//update parent, follow, container trackers
+	currentFollowVector.push_back(statementNumber);
+	parentVector.push_back(statementNumber);
+	containerTracker.push_back(SWITCHC);
+	allFollowStack.push_back(currentFollowVector);
+	currentFollowVector.clear();
+	
+	//pkb->insertStmtType(statementNumber, SWITCH);
+
+	//set uses relationships
+	size_t openBracketPos = switchLine.find_first_of("(");
+	size_t closeBracketPos = switchLine.find_last_of(")");
+	string controlVar = switchLine.substr(openBracketPos + 1, closeBracketPos - openBracketPos - 1);
+	controlVar = leftTrim(rightTrim(controlVar, " \t"), " \t");
+	pkb->insertVar(controlVar);
+	setUses(statementNumber, currProcedure, controlVar);
+	//pkb->insertSwitchControlVar(statementNumber, controlVar);
+
 	return 0;
 }
 
 bool Parser::checkSwitchCase(string switchCaseLine) {
-	string switchCaseRegexString = spaceRegex + "case" + spaceRegex + varNameRegex + spaceRegex + ":" + spaceRegex;
-	regex switchCaseRegex(switchCaseRegexString);
-	if (!regex_match(switchCaseLine, switchCaseRegex)) {
-		errorMessage = "Unexpected tokens in the switch case statement at line " + statementNumber;
+	string switchCaseVarRegexString = spaceRegex + "case" + spaceRegex + varNameRegex + spaceRegex + ":" + spaceRegex;
+	string switchCaseConstRegexString = spaceRegex + "case" + spaceRegex + constantRegex + spaceRegex + ":" + spaceRegex;
+	regex switchCaseVarRegex(switchCaseVarRegexString);
+	regex switchCaseConstRegex(switchCaseConstRegexString);
+	if (!(regex_match(switchCaseLine, switchCaseVarRegex) || regex_match(switchCaseLine, switchCaseConstRegex))) {
+		errorMessage = "Unexpected tokens in the switch case statement at line "  + to_string(statementNumber);
+		return false;
+	}
+	if (expectStatement) {
+		errorMessage = "Case statements in switch must be followed by at least 1 statement at line " + to_string(statementNumber);
+		return false;
+	}
+	if (!withinSwitch) {
+		errorMessage = "Case statement not within a switch container found at line " + to_string(statementNumber);
 		return false;
 	}
 	return true;
@@ -842,6 +867,25 @@ bool Parser::checkSwitchCase(string switchCaseLine) {
 int Parser::handleSwitchCase(string switchCaseLine) {
 	if (!checkSwitchCase(switchCaseLine)) {
 		return -1;
+	}
+
+	//Need to handle tracking for Next here as there is no close brackets for case statements
+	lastInIfElseTracker.push_back(make_pair(lastStmtInFlow, parentVector.back()));
+	//discard previous statement list for follows, prepare first statement in switch case for the next
+	currentFollowVector.clear();
+	firstInElse = true;
+	expectStatement = true;
+	//add constant to pkb
+	size_t casePos = switchCaseLine.find("case");
+	size_t colonPos = switchCaseLine.find_last_of(":");
+	string caseVar = switchCaseLine.substr(casePos + 1, colonPos - casePos - 1);
+	caseVar = leftTrim(rightTrim(caseVar, " \t"), " \t");
+	if (isValidConstant(caseVar)) {
+		pkb->insertConstant(stoi(caseVar));
+	}
+	if (isValidVarName(caseVar)) {
+		setUses(-1, currProcedure, caseVar);
+		//pkb->insertSwitchControlVar(parentVector.back(), caseVar);
 	}
 	return 0;
 }
@@ -967,7 +1011,9 @@ bool Parser::setUses(int currStatementNum, string currProc, string varName) {
 	for (unsigned int i = 0; i < parentVector.size(); i++) {
 		pkb->setUses(parentVector[i], varName);
 	}
-	pkb->setUses(currStatementNum, varName);
+	if (currStatementNum > 0) {
+		pkb->setUses(currStatementNum, varName);
+	}
 	de.insertProcUses(currProc, varName);
 	return true;
 }
@@ -991,6 +1037,7 @@ bool Parser::setNext(int stmtNum, Container closingType) {
 	//for case of close bracket involving while
 	if (closingType == WHILEC) {
 		int lastWhile = parentVector.back();
+		bool updatedNext = false;
 		if (lastInIfElseTracker.size() > 0) {
 			while (lastInIfElseTracker.size() > 0) {
 				bool foundInParent = false;
@@ -1006,10 +1053,11 @@ bool Parser::setNext(int stmtNum, Container closingType) {
 					pkb->setNext(lastInIfElseTracker.back().first, lastWhile);
 					pkb->setPrevious(lastInIfElseTracker.back().first, lastWhile);
 					lastInIfElseTracker.pop_back();
+					updatedNext = true;
 				}
 			}
 		}
-		else {
+		if (!updatedNext) {
 			pkb->setNext(lastStmtInFlow, lastWhile);
 			pkb->setPrevious(lastStmtInFlow, lastWhile);
 		}
@@ -1058,11 +1106,18 @@ bool Parser::setCallUsesModifies() {
 	for (const auto &elem : procCalledByTable) {
 		int stmtNum = elem.first;
 		string procName = elem.second;
-		for (const auto &elem : procModifiesTable[procName]) {
-			pkb->setModifies(stmtNum, elem);
+		vector<int> parentOfCall = callParentTable[stmtNum];
+		for (const auto &var : procModifiesTable[procName]) {
+			pkb->setModifies(stmtNum, var);
+			for (int i = 0; i < parentOfCall.size(); i++) {
+				pkb->setModifies(parentOfCall[i], var);
+			}
 		}
-		for (const auto &elem : procUsesTable[procName]) {
-			pkb->setUses(stmtNum, elem);
+		for (const auto &var : procUsesTable[procName]) {
+			pkb->setUses(stmtNum, var);
+			for (int i = 0; i < parentOfCall.size(); i++) {
+				pkb->setUses(parentOfCall[i], var);
+			}
 		}
 	}
 	return true;

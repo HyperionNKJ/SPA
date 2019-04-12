@@ -1,0 +1,25 @@
+1 - Find switch statement
+switch sw;
+Select sw
+2
+5000
+2 - Find switch statement with number
+switch sw;
+Select BOOLEAN with sw.stmt#=2
+TRUE
+5000
+3 - Find invalid switch statement with number
+switch sw;
+Select BOOLEAN with sw.stmt#=10
+FALSE
+5000
+4 - Switch pattern clause
+switch sw; variable v;
+Select v pattern sw (v, _)
+x, a, c
+5000
+5 - Invalid switch pattern clause
+switch sw;
+Select BOOLEAN pattern sw ("y", _)
+FALSE
+5000

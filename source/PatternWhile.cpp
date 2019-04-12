@@ -16,11 +16,10 @@ Result PatternWhile::evaluate(const PKB& pkb) {
 	string subjectValue = subject.getValue();
 	string paraOneValue = paraOne.getValue();
 
-	Result* result;
+	Result result;
 
 	if (subjectType != WHILE) {
-		result = new Result();
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 
 	if (paraOneType == VARIABLE) {
@@ -33,53 +32,52 @@ Result PatternWhile::evaluate(const PKB& pkb) {
 		result = this->evaluateFixed(paraOneValue, subjectValue);
 	}
 	else {
-		result = new Result();
-		result->setPassed(false);
+		result.setPassed(false);
 	}
-	return *result;
+	return result;
 }
 
 // case w(v, _)
-Result* PatternWhile::evaluateVariable(const string& controlVar, const string& whileSynonym) {
-	Result* result = new Result();
+Result PatternWhile::evaluateVariable(const string& controlVar, const string& whileSynonym) {
+	Result result;
 	unordered_map<int, unordered_set<string>> answer = pkb.getWhileControlVarPair();
 
 	if (!answer.empty()) {
-		result->setPassed(true);
-		result->setAnswer(whileSynonym, controlVar, answer, pkb.getVarTable());
+		result.setPassed(true);
+		result.setAnswer(whileSynonym, controlVar, answer, pkb.getVarTable());
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }
 
 // case w(_, _)
-Result* PatternWhile::evaluateUnderscore(const string& whileSynonym) {
-	Result* result = new Result();
+Result PatternWhile::evaluateUnderscore(const string& whileSynonym) {
+	Result result;
 	unordered_set<int> answer = pkb.getWhileWithControlVar();
 
 	if (!answer.empty()) {
-		result->setPassed(true);
-		result->setAnswer(whileSynonym, answer);
+		result.setPassed(true);
+		result.setAnswer(whileSynonym, answer);
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }
 
 // case w("count", _)
-Result* PatternWhile::evaluateFixed(const string& controlVar, const string& whileSynonym) {
-	Result* result = new Result();
+Result PatternWhile::evaluateFixed(const string& controlVar, const string& whileSynonym) {
+	Result result;
 	unordered_set<int> answer = pkb.getWhileWithControlVar(controlVar);
 
 	if (!answer.empty()) {
-		result->setPassed(true);
-		result->setAnswer(whileSynonym, answer);
+		result.setPassed(true);
+		result.setAnswer(whileSynonym, answer);
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }

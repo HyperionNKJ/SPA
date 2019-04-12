@@ -20,7 +20,7 @@ Result Next::evaluate(const PKB& pkb) {
 	string paraOneValue = paraOne.getValue();
 	string paraTwoValue = paraTwo.getValue();
 
-	Result* result;
+	Result result;
 
 	if (paraOneType == FIXED) {
 		if (paraTwoType == STATEMENT || paraTwoType == READ || paraTwoType == PRINT
@@ -34,8 +34,7 @@ Result Next::evaluate(const PKB& pkb) {
 			result = this->evaluateFixedFixed(paraOneValue, paraTwoValue);
 		}
 		else {
-			result = new Result();
-			result->setPassed(false);
+			result.setPassed(false);
 		}
 	}
 	else if (paraOneType == STATEMENT || paraOneType == READ || paraOneType == PRINT
@@ -51,8 +50,7 @@ Result Next::evaluate(const PKB& pkb) {
 			result = this->evaluateSynonymFixed(paraOneValue, paraTwoValue, paraOneType);
 		}
 		else {
-			result = new Result();
-			result->setPassed(false);
+			result.setPassed(false);
 		}
 	}
 	else if (paraOneType == UNDERSCORE) {
@@ -67,116 +65,114 @@ Result Next::evaluate(const PKB& pkb) {
 			result = this->evaluateUnderscoreFixed(paraTwoValue);
 		}
 		else {
-			result = new Result();
-			result->setPassed(false);
+			result.setPassed(false);
 		}
 	}
 	else {
-		result = new Result();
-		result->setPassed(false);
+		result.setPassed(false);
 	}
-	return *result;
+	return result;
 }
 
 // case Next(12, a)
-Result* Next::evaluateFixedSynonym(const string& previousLineNum, const string& nextSynonym, const Type& nextType) {
-	Result* result = new Result();
+Result Next::evaluateFixedSynonym(const string& previousLineNum, const string& nextSynonym, const Type& nextType) {
+	Result result;
 	unordered_set<int> answer = pkb.getNextOf(stoi(previousLineNum), nextType);
 	if (!answer.empty()) {
-		result->setPassed(true);
-		result->setAnswer(nextSynonym, answer);
+		result.setPassed(true);
+		result.setAnswer(nextSynonym, answer);
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }
 
 // case Next(12, _)
-Result* Next::evaluateFixedUnderscore(const string& previousLineNum) {
-	Result* result = new Result();
-	result->setPassed(pkb.hasNext(stoi(previousLineNum)));
+Result Next::evaluateFixedUnderscore(const string& previousLineNum) {
+	Result result;
+	result.setPassed(pkb.hasNext(stoi(previousLineNum)));
 	return result;
 }
 
 // case Next(12, 13)
-Result* Next::evaluateFixedFixed(const string& previousLineNum, const string& nextLineNum) {
-	Result* result = new Result();
-	result->setPassed(pkb.isNext(stoi(previousLineNum), stoi(nextLineNum)));
+Result Next::evaluateFixedFixed(const string& previousLineNum, const string& nextLineNum) {
+	Result result;
+	result.setPassed(pkb.isNext(stoi(previousLineNum), stoi(nextLineNum)));
 	return result;
 }
 
 // case Next(s, s1)
-Result* Next::evaluateSynonymSynonym(const string& previousSynonym, const string& nextSynonym, const Type& previousType, const Type& nextType) {
-	Result* result = new Result();
+Result Next::evaluateSynonymSynonym(const string& previousSynonym, const string& nextSynonym, const Type& previousType, const Type& nextType) {
+	Result result;
 	if (previousSynonym == nextSynonym) {
-		result->setPassed(false);
+		result.setPassed(false);
 		return result;
 	}
 	unordered_map<int, unordered_set<int>> answer = pkb.getPreviousNextPairs(previousType, nextType);
 	if (!answer.empty()) {
-		result->setPassed(true);
-		result->setAnswer(previousSynonym, nextSynonym, answer);
+		result.setPassed(true);
+		result.setAnswer(previousSynonym, nextSynonym, answer);
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }
 
 // case Next(w, _)
-Result* Next::evaluateSynonymUnderscore(const string& previousSynonym, const Type& previousType) {
-	Result* result = new Result();
+Result Next::evaluateSynonymUnderscore(const string& previousSynonym, const Type& previousType) {
+	Result result;
 	unordered_set<int> answer = pkb.getPreviousLines(previousType);
 	if (!answer.empty()) {
-		result->setPassed(true);
-		result->setAnswer(previousSynonym, answer);
+		result.setPassed(true);
+		result.setAnswer(previousSynonym, answer);
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }
 
 // case Next(s, 14)
-Result* Next::evaluateSynonymFixed(const string& previousSynonym, const string& nextLineNum, const Type& previousType) {
-	Result* result = new Result();
+Result Next::evaluateSynonymFixed(const string& previousSynonym, const string& nextLineNum, const Type& previousType) {
+	Result result;
 	unordered_set<int> answer = pkb.getPreviousOf(stoi(nextLineNum), previousType);
 	if (!answer.empty()) {
-		result->setPassed(true);
-		result->setAnswer(previousSynonym, answer);
+		result.setPassed(true);
+		result.setAnswer(previousSynonym, answer);
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }
 
 // case Next(_, pl)
-Result* Next::evaluateUnderscoreSynonym(const string& nextSynonym, const Type& nextType) {
-	Result* result = new Result();
+Result Next::evaluateUnderscoreSynonym(const string& nextSynonym, const Type& nextType) {
+	Result result;
 	unordered_set<int> answer = pkb.getNextLines(nextType);
 	if (!answer.empty()) {
-		result->setPassed(true);
-		result->setAnswer(nextSynonym, answer);
+		result.setPassed(true);
+		result.setAnswer(nextSynonym, answer);
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }
 
 // case Next(_, _)
-Result* Next::evaluateUnderscoreUnderscore() {
-	Result* result = new Result();
+Result Next::evaluateUnderscoreUnderscore() {
+	Result result;
 	unordered_set<int> previousLines = pkb.getPreviousLines(Type::PROGLINE);
-	result->setPassed(!previousLines.empty());
+	result.setPassed(!previousLines.empty());
 	return result;
 }
 
 // case Next(_, 23)
-Result* Next::evaluateUnderscoreFixed(const string& nextLineNum) {
-	Result* result = new Result();
-	result->setPassed(pkb.hasPrevious(stoi(nextLineNum)));
+Result Next::evaluateUnderscoreFixed(const string& nextLineNum) {
+	Result result;
+	result.setPassed(pkb.hasPrevious(stoi(nextLineNum)));
 	return result;
 }

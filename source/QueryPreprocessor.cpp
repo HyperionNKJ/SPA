@@ -6,7 +6,7 @@
 
 QueryPreprocessor::QueryPreprocessor(std::string& query) : query(query) {}
 
-bool QueryPreprocessor::parse() {
+ProcessedQuery QueryPreprocessor::parse() {
 	QueryPreprocessorFormatter formatter = QueryPreprocessorFormatter(query);
 	query = formatter.getFormattedQuery();
 
@@ -14,26 +14,15 @@ bool QueryPreprocessor::parse() {
 	// 1. there exist a statement that is not a select or delcare statement
 	// 2. select statement is not the last statement in the query
 	QueryPreprocessorTokenizer tokenizer = QueryPreprocessorTokenizer(query);
-	bool status = tokenizer.tokenize();
-
-	if (!status) {
-		return false;
-	}
+	tokenizer.tokenize();
 
 	// invalid when there exist a statement that cannot be parsed
 	std::vector<std::string> statements = tokenizer.getStatements();
 	QueryPreprocessorParser parser = QueryPreprocessorParser(statements);
-	status = parser.parse();
+	parser.parse();
 
-	if (!status) {
-		return false;
-	}
+	ProcessedQuery query = parser.getQuery();
+	query.optimiseClauses();
 
-	processedQuery = parser.getQuery();
-
-	return true;
-}
-
-ProcessedQuery QueryPreprocessor::getProcessedQuery() const {
-	return processedQuery;
+	return query;
 }

@@ -4,26 +4,24 @@
 #include <unordered_set>
 #include <map>
 
-// Commented out Affects, AffectsT, this line 39-47, 59 & 65
-
 list<string> QueryEvaluator::evaluate(ProcessedQuery& processedQuery, const PKB& pkb) {
 	ResultProjector resultProjector;
 	resultProjector.resetResults(); // Reset possible old query result
 
 	vector<Clause*>& booleanClauses = processedQuery.booleanClauses; // boolean clause refers to clause without synonym.
 	vector<Clause*>& sortedWithClauses = optimizationSort(processedQuery.withClauses); // all types of clauses below have synonyms. Hence optimization is required
+	vector<Clause*>& sortedNextTClauses = optimizationSort(processedQuery.nextTClauses);
 	vector<Clause*>& sortedAffectsClauses = optimizationSort(processedQuery.affectsClauses);
 	vector<Clause*>& sortedAffectsTClauses = optimizationSort(processedQuery.affectsTClauses);
-	vector<Clause*>& sortedNextTClauses = optimizationSort(processedQuery.nextTClauses);
 	vector<Clause*>& sortedOtherClauses = optimizationSort(processedQuery.otherClauses);
 
 	vector<Clause*> combinedClauses; // optimally combined with the following order
 	combinedClauses.insert(combinedClauses.end(), booleanClauses.begin(), booleanClauses.end());
 	combinedClauses.insert(combinedClauses.end(), sortedWithClauses.begin(), sortedWithClauses.end());
 	combinedClauses.insert(combinedClauses.end(), sortedOtherClauses.begin(), sortedOtherClauses.end());
+	combinedClauses.insert(combinedClauses.end(), sortedNextTClauses.begin(), sortedNextTClauses.end());
 	combinedClauses.insert(combinedClauses.end(), sortedAffectsClauses.begin(), sortedAffectsClauses.end());
 	combinedClauses.insert(combinedClauses.end(), sortedAffectsTClauses.begin(), sortedAffectsTClauses.end());
-	combinedClauses.insert(combinedClauses.end(), sortedNextTClauses.begin(), sortedNextTClauses.end());
 
 	for (auto clause : combinedClauses) {
 		ClauseType clauseType = clause->getClauseType();
@@ -43,7 +41,6 @@ list<string> QueryEvaluator::evaluate(ProcessedQuery& processedQuery, const PKB&
 				}
 				continue; // skip re-evaluation
 			}
-			
 		}
 
 		Result clauseResult = clause->evaluate(pkb);

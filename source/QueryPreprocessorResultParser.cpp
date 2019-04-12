@@ -2,6 +2,7 @@
 #include "PatternAssign.h"
 #include "PatternIf.h"
 #include "PatternWhile.h"
+#include "QueryPreprocessorError.h"
 #include "QueryPreprocessorHelper.h"
 #include "QueryPreprocessorResultParser.h"
 
@@ -11,19 +12,34 @@ constexpr char TUPLE_BRACKET_L = '<';
 constexpr char TUPLE_BRACKET_R = '>';
 constexpr char EMPTY[] = "";
 
+const std::vector<Type> QueryPreprocessorResultParser::VALID_TYPES = {
+		Type::ASSIGN,
+		Type::CALL,
+		Type::CONSTANT,
+		Type::IF,
+		Type::PRINT,
+		Type::PROCEDURE,
+		Type::PROGLINE,
+		Type::READ,
+		Type::STATEMENT,
+		Type::SWITCH,
+		Type::VARIABLE,
+		Type::WHILE
+};
+
 // Initializes a newly created QueryPreprocessorPatternParser.
 QueryPreprocessorResultParser::QueryPreprocessorResultParser(const string& clause, ProcessedQuery& query)
 	: CLAUSE(clause), query(query) {}
 
 // Parses the result clause.
 // Returns true if parsing is successful and false if unsucessful.
-bool QueryPreprocessorResultParser::parse() {
+void QueryPreprocessorResultParser::parse() {
 	// case 0: result clause is a boolean
-	if (CLAUSE == "BOOLEAN") {
+	if (CLAUSE == "BOOLEAN" && !query.hasSynonym("BOOLEAN")) {
 		DesignEntity element(EMPTY, Type::BOOLEAN);
 		query.addResultClElement(element);
 
-		return true;
+		return;
 	}
 
 	// case 1: result clause is a tuple of element
@@ -36,52 +52,25 @@ bool QueryPreprocessorResultParser::parse() {
 
 		// parse individual element
 		for (std::string elem : elemList) {
-			bool status = addElement(elem);
-			if (!status) {
-				return false;
-			}
+			addElement(elem);
 		}
 
-		return true;
+		return;
 	}
 
 	// case 2: result clause is a element
 	std::string elem = CLAUSE;
-	bool status = addElement(elem);
-	if (!status) {
-		return false;
-	}
-
-	return true;
+	addElement(elem);
 }
 
 // Adds the element to the result clause list in ProcessedQuery
 // Returns false if the element cannot be added
-bool QueryPreprocessorResultParser::addElement(const std::string& elem) {
+void QueryPreprocessorResultParser::addElement(const std::string& elem) {
 	DesignEntity element = QueryPreprocessorHelper::getParam(elem, query);
 
-	if (!query.hasSynonym(element.getValue())) {
-		return false;
+	if (!query.hasSynonym(element.getValue()) || !element.isAnyType(VALID_TYPES)) {
+		throw QueryPreprocessorError(ErrorType::SYNTACTIC);
 	}
 
-	std::vector<Type> validTypes = { 
-		Type::ASSIGN, 
-		Type::CALL,
-		Type::CONSTANT, 
-		Type::IF, 
-		Type::PRINT, 
-		Type::PROCEDURE, 
-		Type::PROGLINE, 
-		Type::READ, 
-		Type::STATEMENT, 
-		Type::VARIABLE, 
-		Type::WHILE 
-	};
-
-	if (element.isAnyType(validTypes)) {
-		query.addResultClElement(element);
-		return true;
-	}
-
-	return false;
+	query.addResultClElement(element);
 }

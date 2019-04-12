@@ -12,6 +12,7 @@
 #include "NextT.h"
 #include "Parent.h"
 #include "ParentT.h"
+#include "QueryPreprocessorError.h"
 #include "QueryPreprocessorHelper.h"
 #include "QueryPreprocessorSuchThatParser.h"
 #include "UsesP.h"
@@ -42,25 +43,25 @@ QueryPreprocessorSuchThatParser::QueryPreprocessorSuchThatParser(const string& c
 
 // Parses the such that clause.
 // Returns true if parsing is successful and false if unsucessful.
-bool QueryPreprocessorSuchThatParser::parse() {
+void QueryPreprocessorSuchThatParser::parse() {
 	size_t relSize = CLAUSE.find(BRACKET_LEFT);
 	size_t closeBracketPos = CLAUSE.find(BRACKET_RIGHT);
 
 	// close bracket should be the last character
 	if (closeBracketPos + 1 != CLAUSE.size()) {
-		return false;
+		throw QueryPreprocessorError(ErrorType::SYNTACTIC);
 	}
 
 	// open bracket should exist
 	if (relSize == std::string::npos) {
-		return false;
+		throw QueryPreprocessorError(ErrorType::SYNTACTIC);
 	}
 
 	// extract relRef and check that it is legal
 	std::string relRefString = CLAUSE.substr(0, relSize);
 	std::unordered_map<std::string, RelRef>::const_iterator result = STRING_TO_REL_REF.find(relRefString);
 	if (result == STRING_TO_REL_REF.end()) {
-		return false;
+		throw QueryPreprocessorError(ErrorType::SYNTACTIC);
 	}
 
 	RelRef relRef = result->second;
@@ -71,80 +72,54 @@ bool QueryPreprocessorSuchThatParser::parse() {
 	std::vector<string> parametersList = QueryPreprocessorHelper::split(parameters, COMMA);
 
 	if (parametersList.size() != 2) {
-		return false;
+		throw QueryPreprocessorError(ErrorType::SYNTACTIC);
 	}
 
 	DesignEntity paramOne = QueryPreprocessorHelper::getParam(parametersList[0], query);
 	DesignEntity paramTwo = QueryPreprocessorHelper::getParam(parametersList[1], query);
 
-	bool status = addClause(relRef, paramOne, paramTwo);
-	if (!status && query.resultClElemList[0].isType(Type::BOOLEAN)) {
-		throw "Invalid";
-	}
-
-	return status;
+	addClause(relRef, paramOne, paramTwo);
 }
 
-bool QueryPreprocessorSuchThatParser::addClause(const RelRef& relRef, const DesignEntity& paramOne, const DesignEntity& paramTwo) {
+void QueryPreprocessorSuchThatParser::addClause(const RelRef& relRef, const DesignEntity& paramOne, const DesignEntity& paramTwo) {
 	if (relRef == RelRef::AFFECTS) {
-		bool status = isValidAffectsParam(paramOne, paramTwo);
-		if (!status) {
-			return false;
-		}
+		isValidAffectsParam(paramOne, paramTwo);
 
-		//Affects* suchThatClause = new Affects(paramOne, paramTwo);
-		//query.addClause(suchThatClause, CLAUSE);
+		Affects* suchThatClause = new Affects(paramOne, paramTwo);
+		query.addClause(suchThatClause, CLAUSE);
 	}
 	else if (relRef == RelRef::AFFECTS_T) {
-		bool status = isValidAffectsParam(paramOne, paramTwo);
-		if (!status) {
-			return false;
-		}
+		isValidAffectsParam(paramOne, paramTwo);
 
-		//AffectsT* suchThatClause = new AffectsT(paramOne, paramTwo);
-		//query.addClause(suchThatClause, CLAUSE);
+		AffectsT* suchThatClause = new AffectsT(paramOne, paramTwo);
+		query.addClause(suchThatClause, CLAUSE);
 	}
 	else if (relRef == RelRef::CALLS) {
-		bool status = isValidCallsParam(paramOne, paramTwo);
-		if (!status) {
-			return false;
-		}
+		isValidCallsParam(paramOne, paramTwo);
 
 		Calls* suchThatClause = new Calls(paramOne, paramTwo);
 		query.addClause(suchThatClause, CLAUSE);
 	}
 	else if (relRef == RelRef::CALLS_T) {
-		bool status = isValidCallsParam(paramOne, paramTwo);
-		if (!status) {
-			return false;
-		}
+		isValidCallsParam(paramOne, paramTwo);
 
 		CallsT* suchThatClause = new CallsT(paramOne, paramTwo);
 		query.addClause(suchThatClause, CLAUSE);
 	}
 	else if (relRef == RelRef::FOLLOWS) {
-		bool status = isValidFollowsParam(paramOne, paramTwo);
-		if (!status) {
-			return false;
-		}
+		isValidFollowsParam(paramOne, paramTwo);
 
 		Follows* suchThatClause = new Follows(paramOne, paramTwo);
 		query.addClause(suchThatClause, CLAUSE);
 	}
 	else if (relRef == RelRef::FOLLOWS_T) {
-		bool status = isValidFollowsParam(paramOne, paramTwo);
-		if (!status) {
-			return false;
-		}
+		isValidFollowsParam(paramOne, paramTwo);
 
 		FollowsT* suchThatClause = new FollowsT(paramOne, paramTwo);
 		query.addClause(suchThatClause, CLAUSE);
 	}
 	else if (relRef == RelRef::MODIFIES) {
-		bool status = isValidModifiesParam(paramOne, paramTwo);
-		if (!status) {
-			return false;
-		}
+		isValidModifiesParam(paramOne, paramTwo);
 
 		if (paramOne.isType(Type::PROCEDURE) || paramOne.isVar()) {
 			ModifiesP* suchThatClause = new ModifiesP(paramOne, paramTwo);
@@ -156,46 +131,31 @@ bool QueryPreprocessorSuchThatParser::addClause(const RelRef& relRef, const Desi
 		}
 	}
 	else if (relRef == RelRef::NEXT) {
-		bool status = isValidNextParam(paramOne, paramTwo);
-		if (!status) {
-			return false;
-		}
+		isValidNextParam(paramOne, paramTwo);
 
 		Next* suchThatClause = new Next(paramOne, paramTwo);
 		query.addClause(suchThatClause, CLAUSE);
 	}
 	else if (relRef == RelRef::NEXT_T) {
-		bool status = isValidNextParam(paramOne, paramTwo);
-		if (!status) {
-			return false;
-		}
+		isValidNextParam(paramOne, paramTwo);
 
 		NextT* suchThatClause = new NextT(paramOne, paramTwo);
 		query.addClause(suchThatClause, CLAUSE);
 	}
 	else if (relRef == RelRef::PARENT) {
-		bool status = isValidParentParam(paramOne, paramTwo);
-		if (!status) {
-			return false;
-		}
+		isValidParentParam(paramOne, paramTwo);
 
 		Parent* suchThatClause = new Parent(paramOne, paramTwo);
 		query.addClause(suchThatClause, CLAUSE);
 	}
 	else if (relRef == RelRef::PARENT_T) {
-		bool status = isValidParentParam(paramOne, paramTwo);
-		if (!status) {
-			return false;
-		}
+		isValidParentParam(paramOne, paramTwo);
 
 		ParentT* suchThatClause = new ParentT(paramOne, paramTwo);
 		query.addClause(suchThatClause, CLAUSE);
 	}
 	else if (relRef == RelRef::USES) {
-		bool status = isValidUsesParam(paramOne, paramTwo);
-		if (!status) {
-			return false;
-		}
+		isValidUsesParam(paramOne, paramTwo);
 
 		if (paramOne.isType(Type::PROCEDURE) || paramOne.isVar()) {
 			UsesP* suchThatClause = new UsesP(paramOne, paramTwo);
@@ -206,29 +166,33 @@ bool QueryPreprocessorSuchThatParser::addClause(const RelRef& relRef, const Desi
 			query.addClause(suchThatClause, CLAUSE);
 		}
 	}
-
-	return true;
 }
 
-bool QueryPreprocessorSuchThatParser::isValidAffectsParam(const DesignEntity& paramOne, const DesignEntity& paramTwo) {
-	std::vector<Type> legalTypes = { Type::ASSIGN, Type::PROGLINE, Type::UNDERSCORE };
+void QueryPreprocessorSuchThatParser::isValidAffectsParam(const DesignEntity& paramOne, const DesignEntity& paramTwo) {
+	std::vector<Type> legalTypes = { Type::ASSIGN, Type::PROGLINE, Type::STATEMENT, Type::UNDERSCORE };
 	
 	bool isValidLHS = paramOne.isAnyType(legalTypes) || paramOne.isStmtNo();
 	bool isValidRHS = paramTwo.isAnyType(legalTypes) || paramTwo.isStmtNo();
 
-	return isValidLHS && isValidRHS;
+	bool isValid = isValidLHS && isValidRHS;
+	if (!isValid) {
+		throw QueryPreprocessorError(query, ErrorType::SEMANTIC);
+	}
 }
 
-bool QueryPreprocessorSuchThatParser::isValidCallsParam(const DesignEntity& paramOne, const DesignEntity& paramTwo) {
+void QueryPreprocessorSuchThatParser::isValidCallsParam(const DesignEntity& paramOne, const DesignEntity& paramTwo) {
 	std::vector<Type> legalTypes = { Type::PROCEDURE, Type::UNDERSCORE };
 
 	bool isValidLHS = paramOne.isAnyType(legalTypes) || paramOne.isVar();
 	bool isValidRHS = paramTwo.isAnyType(legalTypes) || paramTwo.isVar();
 
-	return isValidLHS && isValidRHS;
+	bool isValid = isValidLHS && isValidRHS;
+	if (!isValid) {
+		throw QueryPreprocessorError(query, ErrorType::SEMANTIC);
+	}
 }
 
-bool QueryPreprocessorSuchThatParser::isValidFollowsParam(const DesignEntity& paramOne, const DesignEntity& paramTwo) {
+void QueryPreprocessorSuchThatParser::isValidFollowsParam(const DesignEntity& paramOne, const DesignEntity& paramTwo) {
 	std::vector<Type> legalTypes = { 
 		Type::ASSIGN, 
 		Type::CALL, 
@@ -245,10 +209,13 @@ bool QueryPreprocessorSuchThatParser::isValidFollowsParam(const DesignEntity& pa
 	bool isValidLHS = paramOne.isAnyType(legalTypes) || paramOne.isStmtNo();
 	bool isValidRHS = paramTwo.isAnyType(legalTypes) || paramTwo.isStmtNo();
 
-	return isValidLHS && isValidRHS;
+	bool isValid = isValidLHS && isValidRHS;
+	if (!isValid) {
+		throw QueryPreprocessorError(query, ErrorType::SEMANTIC);
+	}
 }
 
-bool QueryPreprocessorSuchThatParser::isValidModifiesParam(const DesignEntity& paramOne, const DesignEntity& paramTwo) {
+void QueryPreprocessorSuchThatParser::isValidModifiesParam(const DesignEntity& paramOne, const DesignEntity& paramTwo) {
 	std::vector<Type> legalLHSTypes = { 
 		Type::ASSIGN, 
 		Type::CALL, 
@@ -267,14 +234,17 @@ bool QueryPreprocessorSuchThatParser::isValidModifiesParam(const DesignEntity& p
 	bool isValidLHS = paramOne.isAnyType(legalLHSTypes);
 	bool isValidRHS = paramTwo.isAnyType(legalRHSTypes) || paramTwo.isVar();
 
-	return isValidLHS && isValidRHS;
+	bool isValid = isValidLHS && isValidRHS;
+	if (!isValid) {
+		throw QueryPreprocessorError(query, ErrorType::SEMANTIC);
+	}
 }
 
-bool QueryPreprocessorSuchThatParser::isValidNextParam(const DesignEntity& paramOne, const DesignEntity& paramTwo) {
-	return isValidFollowsParam(paramOne, paramTwo);
+void QueryPreprocessorSuchThatParser::isValidNextParam(const DesignEntity& paramOne, const DesignEntity& paramTwo) {
+	isValidFollowsParam(paramOne, paramTwo);
 }
 
-bool QueryPreprocessorSuchThatParser::isValidParentParam(const DesignEntity& paramOne, const  DesignEntity& paramTwo) {
+void QueryPreprocessorSuchThatParser::isValidParentParam(const DesignEntity& paramOne, const  DesignEntity& paramTwo) {
 	std::vector<Type> legalLHSTypes = {
 		Type::STATEMENT,
 		Type::WHILE,
@@ -299,9 +269,12 @@ bool QueryPreprocessorSuchThatParser::isValidParentParam(const DesignEntity& par
 	bool isValidLHS = paramOne.isAnyType(legalLHSTypes) || paramOne.isStmtNo();
 	bool isValidRHS = paramTwo.isAnyType(legalRHSTypes) || paramTwo.isStmtNo();
 
-	return isValidLHS && isValidRHS;
+	bool isValid = isValidLHS && isValidRHS;
+	if (!isValid) {
+		throw QueryPreprocessorError(query, ErrorType::SEMANTIC);
+	}
 }
 
-bool QueryPreprocessorSuchThatParser::isValidUsesParam(const DesignEntity& paramOne, const DesignEntity& paramTwo) {
-	return isValidModifiesParam(paramOne, paramTwo);
+void QueryPreprocessorSuchThatParser::isValidUsesParam(const DesignEntity& paramOne, const DesignEntity& paramTwo) {
+	isValidModifiesParam(paramOne, paramTwo);
 }

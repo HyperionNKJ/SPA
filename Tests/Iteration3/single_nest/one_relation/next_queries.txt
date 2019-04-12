@@ -1,0 +1,15 @@
+1 - Select stmt next to given stmt number
+stmt s;
+Select s such that Next* (9, s)
+10, 11, 12, 13, 14, 15, 16
+5000
+2 - Select stmt next inside while loop
+stmt s;
+Select s such that Next (25, s)
+23
+5000
+3 - Select stmt next inside while loop
+stmt s;
+Select s such that Next* (15, s)
+13, 14, 15, 16
+5000

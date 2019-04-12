@@ -12,7 +12,7 @@
 #include "Type.h"
 #include "DesignExtractor.h"
 
-enum Container { WHILEC, IFC, ELSEC, NONEC };
+enum Container { WHILEC, IFC, ELSEC, NONEC, SWITCHC };
 enum Statement_Key {
 	KEY_PROCEDURE, KEY_ASSIGN, KEY_IF, KEY_ELSE, KEY_WHILE,
 	KEY_READ, KEY_PRINT, KEY_CLOSE_BRACKET, KEY_CALL, KEY_ERROR, KEY_SWITCH, KEY_SWITCHCASE
@@ -26,6 +26,8 @@ class Parser {
 	bool withinProcedure = false;
 	bool emptyProcedure = true;
 	bool expectElse = false;
+	bool withinSwitch = false;
+	bool expectStatement = false;
 	string currProcedure;
 	vector<string> sourceCode = vector<string>();
 	int statementNumber = 1;
@@ -39,6 +41,7 @@ class Parser {
 	
 	//trackers for calls
 	unordered_map<int, string> procCalledByTable;
+	unordered_map<int, vector<int>> callParentTable;
 	
 	//trackers for next
 	bool firstInProc = false;

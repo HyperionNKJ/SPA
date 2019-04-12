@@ -1,4 +1,3 @@
-/*
 #include "Affects.h"
 
 Affects::Affects(const DesignEntity& firstPara, const DesignEntity& secondPara) {
@@ -15,7 +14,7 @@ Result Affects::evaluate(const PKB& pkb) {
 	string paraOneValue = paraOne.getValue();
 	string paraTwoValue = paraTwo.getValue();
 
-	Result* result;
+	Result result;
 
 	if (paraOneType == FIXED) {
 		if (paraTwoType == STATEMENT || paraTwoType == ASSIGN || paraTwoType == PROGLINE) {
@@ -28,8 +27,7 @@ Result Affects::evaluate(const PKB& pkb) {
 			result = this->evaluateFixedFixed(paraOneValue, paraTwoValue);
 		}
 		else {
-			result = new Result();
-			result->setPassed(false);
+			result.setPassed(false);
 		}
 	}
 	else if (paraOneType == STATEMENT || paraOneType == ASSIGN || paraOneType == PROGLINE) {
@@ -43,8 +41,7 @@ Result Affects::evaluate(const PKB& pkb) {
 			result = this->evaluateSynonymFixed(paraOneValue, paraTwoValue);
 		}
 		else {
-			result = new Result();
-			result->setPassed(false);
+			result.setPassed(false);
 		}
 	}
 	else if (paraOneType == UNDERSCORE) {
@@ -58,20 +55,18 @@ Result Affects::evaluate(const PKB& pkb) {
 			result = this->evaluateUnderscoreFixed(paraTwoValue);
 		}
 		else {
-			result = new Result();
-			result->setPassed(false);
+			result.setPassed(false);
 		}
 	}
 	else {
-		result = new Result();
-		result->setPassed(false);
+		result.setPassed(false);
 	}
-	return *result;
+	return result;
 }
 
 // case Affects(5, a)
-Result* Affects::evaluateFixedSynonym(const string& modifierStmtNum, const string& userSynonym) {
-	Result* result = new Result();
+Result Affects::evaluateFixedSynonym(const string& modifierStmtNum, const string& userSynonym) {
+	Result result;
 	unordered_set<int> answer;
 	if (reducedDomain.count(userSynonym)) { 
 		unordered_set<int> possibleValues = reducedDomain.at(userSynonym);
@@ -86,32 +81,33 @@ Result* Affects::evaluateFixedSynonym(const string& modifierStmtNum, const strin
 	}
 
 	if (!answer.empty()) {
-		result->setPassed(true);
-		result->setAnswer(userSynonym, answer);
+		result.setPassed(true);
+		result.setAnswer(userSynonym, answer);
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }
 
 // Affects(6, _)
-Result* Affects::evaluateFixedUnderscore(const string& modifierStmtNum) {
-	Result* result = new Result();
-	result->setPassed(pkb.hasUser(stoi(modifierStmtNum)));
+Result Affects::evaluateFixedUnderscore(const string& modifierStmtNum) {
+	Result result;
+	result.setPassed(pkb.hasUser(stoi(modifierStmtNum)));
 	return result;
 }
 
 // case Affects(11, 15)
-Result* Affects::evaluateFixedFixed(const string& modifierStmtNum, const string& userStmtNum) {
-	Result* result = new Result();
-	result->setPassed(pkb.isAffects(stoi(modifierStmtNum), stoi(userStmtNum)));
+Result Affects::evaluateFixedFixed(const string& modifierStmtNum, const string& userStmtNum) {
+	Result result;
+	result.setPassed(pkb.isAffects(stoi(modifierStmtNum), stoi(userStmtNum)));
 	return result;
 }
 
 // case Affects(s, pl)
-Result* Affects::evaluateSynonymSynonym(const string& modifierSynonym, const string& userSynonym) {
-	Result* result = new Result();
+Result Affects::evaluateSynonymSynonym(const string& modifierSynonym, const string& userSynonym) {
+	Result result;
+	bool isSameSynonym = modifierSynonym == userSynonym;
 	bool hasDomainForModifierSyn = reducedDomain.count(modifierSynonym);
 	bool hasDomainForUserSyn = reducedDomain.count(userSynonym);
 	unordered_set<int> modifierSynPossibleValues;
@@ -126,44 +122,55 @@ Result* Affects::evaluateSynonymSynonym(const string& modifierSynonym, const str
 	}
 
 	unordered_map<int, unordered_set<int>> answer;
-	bool keyIsModifierSyn; // true if above answer's key represents the modifier while value represents all its users. false otherwise.
+	bool keyIsModifierSyn = false; // true if above answer's key represents the modifier while value represents all its users. false otherwise.
 
 	if (hasDomainForModifierSyn && hasDomainForUserSyn) { // if both synonyms exist in intermediate table
 		if (modifierSynPossibleValues.size() < userSynPossibleValues.size()) {
-			keyIsModifierSyn = evaluateSynSynFromModifier(modifierSynPossibleValues, pkb, answer);
+			keyIsModifierSyn = evaluateSynSynFromModifier(modifierSynPossibleValues, pkb, answer, isSameSynonym);
 		}
 		else {
-			keyIsModifierSyn = evaluateSynSynFromUser(userSynPossibleValues, pkb, answer);
+			keyIsModifierSyn = evaluateSynSynFromUser(userSynPossibleValues, pkb, answer, isSameSynonym);
 		}
 	}
 	else if (hasDomainForModifierSyn && !hasDomainForUserSyn) {
-		keyIsModifierSyn = evaluateSynSynFromModifier(modifierSynPossibleValues, pkb, answer);
+		keyIsModifierSyn = evaluateSynSynFromModifier(modifierSynPossibleValues, pkb, answer, isSameSynonym);
 	}
 	else if (!hasDomainForModifierSyn && hasDomainForUserSyn) {
-		keyIsModifierSyn = evaluateSynSynFromUser(userSynPossibleValues, pkb, answer);
+		keyIsModifierSyn = evaluateSynSynFromUser(userSynPossibleValues, pkb, answer, isSameSynonym);
 	}
 	else {
-		answer = pkb.getModifierUserPairs();
-		keyIsModifierSyn = true;
+		if (isSameSynonym) {
+			unordered_set<int> modifiers = pkb.getModifierStmts();
+			evaluateSameSynonym(modifiers, pkb, answer);
+		}
+		else {
+			answer = pkb.getModifierUserPairs();
+			keyIsModifierSyn = true;
+		}
 	}
 
 	if (!answer.empty()) {
-		result->setPassed(true);
+		result.setPassed(true);
 		if (keyIsModifierSyn) {
-			result->setAnswer(modifierSynonym, userSynonym, answer);
+			result.setAnswer(modifierSynonym, userSynonym, answer);
 		}
 		else {
-			result->setAnswer(userSynonym, modifierSynonym, answer);
+			result.setAnswer(userSynonym, modifierSynonym, answer);
 		}
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }
 
 // Helper method for evaluateSynonymSynonym()
-bool Affects::evaluateSynSynFromModifier(const unordered_set<int>& modifierSynPossibleValues, PKB& pkb, unordered_map<int, unordered_set<int>>& answer) {
+bool Affects::evaluateSynSynFromModifier(const unordered_set<int>& modifierSynPossibleValues, PKB& pkb, unordered_map<int, unordered_set<int>>& answer, const bool& isSameSynonym) {
+	if (isSameSynonym) {
+		evaluateSameSynonym(modifierSynPossibleValues, pkb, answer);
+		return true; // does not matter since same synonym
+	}
+
 	for (const auto& modifier : modifierSynPossibleValues) {
 		unordered_set<int> users = pkb.getUserOf(modifier);
 		if (!users.empty()) {
@@ -174,7 +181,12 @@ bool Affects::evaluateSynSynFromModifier(const unordered_set<int>& modifierSynPo
 }
 
 // Helper method for evaluateSynonymSynonym()
-bool Affects::evaluateSynSynFromUser(const unordered_set<int>& userSynPossibleValues, PKB& pkb, unordered_map<int, unordered_set<int>>& answer) {
+bool Affects::evaluateSynSynFromUser(const unordered_set<int>& userSynPossibleValues, PKB& pkb, unordered_map<int, unordered_set<int>>& answer, const bool& isSameSynonym) {
+	if (isSameSynonym) {
+		evaluateSameSynonym(userSynPossibleValues, pkb, answer);
+		return false; // does not matter since same synonym
+	}
+
 	for (auto user : userSynPossibleValues) {
 		unordered_set<int> modifiers = pkb.getModifierOf(user);
 		if (!modifiers.empty()) {
@@ -184,9 +196,17 @@ bool Affects::evaluateSynSynFromUser(const unordered_set<int>& userSynPossibleVa
 	return false; // false because answer's key is not modifier
 }
 
+void Affects::evaluateSameSynonym(const unordered_set<int>& possibleValues, PKB& pkb, unordered_map<int, unordered_set<int>>& answer) {
+	for (auto value : possibleValues) {
+		if (pkb.isAffects(value, value)) {
+			answer.insert({ value, {value} });
+		}
+	}
+}
+
 // case Affects(a, _)
-Result* Affects::evaluateSynonymUnderscore(const string& modifierSyn) {
-	Result* result = new Result();
+Result Affects::evaluateSynonymUnderscore(const string& modifierSyn) {
+	Result result;
 	unordered_set<int> answer;
 	if (reducedDomain.count(modifierSyn)) {
 		unordered_set<int> possibleValues = reducedDomain.at(modifierSyn);
@@ -201,18 +221,18 @@ Result* Affects::evaluateSynonymUnderscore(const string& modifierSyn) {
 	}
 
 	if (!answer.empty()) {
-		result->setPassed(true);
-		result->setAnswer(modifierSyn, answer);
+		result.setPassed(true);
+		result.setAnswer(modifierSyn, answer);
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }
 
 // case Affects(pl, 14)
-Result* Affects::evaluateSynonymFixed(const string& modifierSyn, const string& userStmtNum) {
-	Result* result = new Result();
+Result Affects::evaluateSynonymFixed(const string& modifierSyn, const string& userStmtNum) {
+	Result result;
 	unordered_set<int> answer;
 	if (reducedDomain.count(modifierSyn)) {
 		unordered_set<int> possibleValues = reducedDomain.at(modifierSyn);
@@ -226,18 +246,18 @@ Result* Affects::evaluateSynonymFixed(const string& modifierSyn, const string& u
 		answer = pkb.getModifierOf(stoi(userStmtNum));
 	}
 	if (!answer.empty()) {
-		result->setPassed(true);
-		result->setAnswer(modifierSyn, answer);
+		result.setPassed(true);
+		result.setAnswer(modifierSyn, answer);
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }
 
 // case Affects(_, s)
-Result* Affects::evaluateUnderscoreSynonym(const string& userSynonym) {
-	Result* result = new Result();
+Result Affects::evaluateUnderscoreSynonym(const string& userSynonym) {
+	Result result;
 	unordered_set<int> answer;
 	if (reducedDomain.count(userSynonym)) {
 		unordered_set<int> possibleValues = reducedDomain.at(userSynonym);
@@ -252,26 +272,25 @@ Result* Affects::evaluateUnderscoreSynonym(const string& userSynonym) {
 	}
 
 	if (!answer.empty()) {
-		result->setPassed(true);
-		result->setAnswer(userSynonym, answer);
+		result.setPassed(true);
+		result.setAnswer(userSynonym, answer);
 	}
 	else {
-		result->setPassed(false);
+		result.setPassed(false);
 	}
 	return result;
 }
 
 // case Affects(_, _)
-Result* Affects::evaluateUnderscoreUnderscore() {
-	Result* result = new Result();
-	result->setPassed(pkb.hasAffects());
+Result Affects::evaluateUnderscoreUnderscore() {
+	Result result;
+	result.setPassed(pkb.hasAffects());
 	return result;
 }
 
 // case Affects(_, 8)
-Result* Affects::evaluateUnderscoreFixed(const string& userStmtNum) {
-	Result* result = new Result();
-	result->setPassed(pkb.hasModifier(stoi(userStmtNum)));
+Result Affects::evaluateUnderscoreFixed(const string& userStmtNum) {
+	Result result;
+	result.setPassed(pkb.hasModifier(stoi(userStmtNum)));
 	return result;
 }
-*/

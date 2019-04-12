@@ -1,0 +1,75 @@
+1 - Select assign pattern (_, constant)
+assign a;
+Select a pattern a (_, _"16"_)
+13,24,34
+5000
+2 - Select assign pattern (_, _variable_)
+assign a;
+Select a pattern a (_, _"b"_)
+19,26,27,36,37,39,6,7,8,9
+5000
+3 - Select assign pattern (_, _variable_) does not exist
+assign a;
+Select BOOLEAN pattern a (_, _"salkfjask"_)
+FALSE
+5000
+4 - Select assign pattern (variable, _) and (_, variable)
+assign a;
+Select a pattern a ("b", _) and a (_, _"a"_)
+20,29,7
+5000
+5 - Select variable-variable tuple with pattern
+assign a1; assign a2;
+Select <a1, a2> pattern a1 ("a", _) and a2 ("b", _"a"_)
+18 20,18 29,18 7,19 20,19 29,19 7,23 20,23 29,23 7,27 20,27 29,27 7,37 20,37 29,37 7,6 20,6 29,6 7,8 20,8 29,8 7
+5000
+6 - Select assign pattern by expression
+assign a;
+Select a pattern a (_, _"x+a"_)
+12,33,39
+5000
+7 - Select assign pattern by expression
+assign a;
+Select a pattern a (_, _"a-b"_)
+36,7,8
+5000
+8 - Select assign pattern by expression not exist
+assign a;
+Select a pattern a (_, _"b+a"_)
+none
+5000
+9 - Select assign pattern by expression not exist
+assign a;
+Select a pattern a (_, _"a*b"_)
+none
+5000
+10 - Select variable in if pattern
+if ifs; variable v;
+Select v pattern ifs (v, _, _)
+a, b, c
+5000
+11 - Select variable in if pattern
+if ifs; variable v;
+Select v pattern ifs (v, _, _)
+a, b, c
+5000
+12 - Select variable in if pattern
+if ifs; variable v;
+Select ifs pattern ifs (_, _, _)
+10,14,15,16,17,21,31
+5000
+13 - Select while pattern
+while w;
+Select w pattern w ("b", _)
+25, 35
+5000
+14 - Select while pattern
+while w;
+Select w pattern w (_, _)
+11,25,32,35
+5000
+15 - Select while pattern
+while w; variable v;
+Select v pattern w (v, _)
+b,c,x
+5000
