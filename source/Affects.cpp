@@ -122,7 +122,7 @@ Result Affects::evaluateSynonymSynonym(const string& modifierSynonym, const stri
 	}
 
 	unordered_map<int, unordered_set<int>> answer;
-	bool keyIsModifierSyn; // true if above answer's key represents the modifier while value represents all its users. false otherwise.
+	bool keyIsModifierSyn = false; // true if above answer's key represents the modifier while value represents all its users. false otherwise.
 
 	if (hasDomainForModifierSyn && hasDomainForUserSyn) { // if both synonyms exist in intermediate table
 		if (modifierSynPossibleValues.size() < userSynPossibleValues.size()) {
