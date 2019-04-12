@@ -150,6 +150,9 @@
     <ClCompile Include="..\source\QueryPreprocessorError.cpp">
       <Filter>Source Files\QueryPreprocessor</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\SPA.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\DesignEntity.h">
@@ -286,6 +289,9 @@
     </ClInclude>
     <ClInclude Include="..\source\QueryPreprocessorError.h">
       <Filter>Header Files\QueryPreprocessor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\SPA.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

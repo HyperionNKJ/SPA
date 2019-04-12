@@ -49,6 +49,7 @@
     <ClCompile Include="..\source\Result.cpp" />
     <ClCompile Include="..\source\ResultCache.cpp" />
     <ClCompile Include="..\source\ResultProjector.cpp" />
+    <ClCompile Include="..\source\SPA.cpp" />
     <ClCompile Include="..\source\UsesP.cpp" />
     <ClCompile Include="..\source\UsesS.cpp" />
     <ClCompile Include="..\source\With.cpp" />
@@ -95,6 +96,7 @@
     <ClInclude Include="..\source\Result.h" />
     <ClInclude Include="..\source\ResultCache.h" />
     <ClInclude Include="..\source\ResultProjector.h" />
+    <ClInclude Include="..\source\SPA.h" />
     <ClInclude Include="..\source\Type.h" />
     <ClInclude Include="..\source\UsesP.h" />
     <ClInclude Include="..\source\UsesS.h" />
