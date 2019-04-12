@@ -30,6 +30,7 @@ private:
 	CacheType startWithWhile(Type type2);
 	CacheType startWithIf(Type type2);
 	CacheType startWithAssign(Type type2);
+	CacheType startWithSwitch(Type type2);
 
 
 public:

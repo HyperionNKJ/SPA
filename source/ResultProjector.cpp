@@ -196,6 +196,9 @@ unordered_set<string> ResultProjector::getAllResults(Type type, PKB pkb) {
 	case Type::PROCEDURE:
 		results = pkb.getAllProcedures();
 		break;
+	case Type::SWITCH:
+		//results = convertSetToString(pkb.getAllSwitchStmts()); // TODO
+		break;
 	}
 	return results;
 }
@@ -654,7 +657,7 @@ bool ResultProjector::combineCacheResults(Clause* clause) {
 
 bool ResultProjector::isStmtType(Type type) {
 	return  type == Type::STATEMENT || type == Type::PROGLINE || type == Type::READ || type == Type::PRINT || type == Type::CALL ||
-		type == Type::WHILE || type == Type::IF || type == Type::ASSIGN;
+		type == Type::WHILE || type == Type::IF || type == Type::ASSIGN || type == Type::SWITCH;
 }
 
 // For testing purposes
