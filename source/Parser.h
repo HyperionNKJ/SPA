@@ -39,6 +39,7 @@ class Parser {
 	
 	//trackers for calls
 	unordered_map<int, string> procCalledByTable;
+	unordered_map<int, vector<int>> callParentTable;
 	
 	//trackers for next
 	bool firstInProc = false;

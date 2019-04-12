@@ -1098,11 +1098,18 @@ bool Parser::setCallUsesModifies() {
 	for (const auto &elem : procCalledByTable) {
 		int stmtNum = elem.first;
 		string procName = elem.second;
-		for (const auto &elem : procModifiesTable[procName]) {
-			pkb->setModifies(stmtNum, elem);
+		vector<int> parentOfCall = callParentTable[stmtNum];
+		for (const auto &var : procModifiesTable[procName]) {
+			pkb->setModifies(stmtNum, var);
+			for (int i = 0; i < parentOfCall.size(); i++) {
+				pkb->setModifies(parentOfCall[i], var);
+			}
 		}
-		for (const auto &elem : procUsesTable[procName]) {
-			pkb->setUses(stmtNum, elem);
+		for (const auto &var : procUsesTable[procName]) {
+			pkb->setUses(stmtNum, var);
+			for (int i = 0; i < parentOfCall.size(); i++) {
+				pkb->setUses(parentOfCall[i], var);
+			}
 		}
 	}
 	return true;
