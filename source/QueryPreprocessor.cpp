@@ -6,7 +6,7 @@
 
 QueryPreprocessor::QueryPreprocessor(std::string& query) : query(query) {}
 
-ProcessedQuery QueryPreprocessor::parse() {
+bool QueryPreprocessor::parse() {
 	QueryPreprocessorFormatter formatter = QueryPreprocessorFormatter(query);
 	query = formatter.getFormattedQuery();
 
@@ -20,9 +20,11 @@ ProcessedQuery QueryPreprocessor::parse() {
 	std::vector<std::string> statements = tokenizer.getStatements();
 	QueryPreprocessorParser parser = QueryPreprocessorParser(statements);
 	parser.parse();
+	processedQuery = parser.getQuery();
 
-	ProcessedQuery query = parser.getQuery();
-	query.optimiseClauses();
+	return true;
+}
 
-	return query;
+ProcessedQuery QueryPreprocessor::getProcessedQuery() const {
+	return processedQuery;
 }

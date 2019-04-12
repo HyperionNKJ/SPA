@@ -7,8 +7,8 @@ constexpr char CHAR_CLOSE_BRACKET = ')';
 constexpr char STRING_SPACE[] = " ";
 
 constexpr char WHITESPACE[] = " \t\f\v\n\r";
-constexpr char LEADING_SPACE[] = "()>=,_;\"*+-/";
-constexpr char TRAILING_SPACE[] = "(<=,_;\"*+-/";
+constexpr char LEADING_SPACE[] = "()>=,_;\"";
+constexpr char TRAILING_SPACE[] = "(<=,_;\"";
 
 // Initializes a newly created QueryPreprocessorFormatter.
 QueryPreprocessorFormatter::QueryPreprocessorFormatter(std::string& query)
