@@ -21,7 +21,7 @@ void Clause::setSynonyms() {
 
 bool Clause::isSynonym(Type& type) {
 	return (type == STATEMENT || type == PROGLINE || type == READ || type == PRINT || type == CALL || type == WHILE || type == IF 
-		|| type == ASSIGN || type == VARIABLE || type == CONSTANT || type == PROCEDURE);
+		|| type == ASSIGN || type == VARIABLE || type == CONSTANT || type == PROCEDURE || type == SWITCH);
 }
 
 unordered_set<string> Clause::getSynonyms() {

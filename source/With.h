@@ -27,7 +27,8 @@ private:
 		{make_pair(CALL, STMT_NUM), ATTR_REF_INT},
 		{make_pair(WHILE, STMT_NUM), ATTR_REF_INT},
 		{make_pair(IF, STMT_NUM), ATTR_REF_INT},
-		{make_pair(ASSIGN, STMT_NUM), ATTR_REF_INT}
+		{make_pair(ASSIGN, STMT_NUM), ATTR_REF_INT},
+		{make_pair(SWITCH, STMT_NUM), ATTR_REF_INT} // extension
 	}; 
 
 	RefIdentity determineRefIdentity(DesignEntity&);
