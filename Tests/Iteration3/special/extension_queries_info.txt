@@ -1,0 +1,51 @@
+Variables: just, jus, t, ju, st, secret, message, smart, true, hisIQ, hardworking, impossible, kaijun, alex, alvin, while, if, else
+Procedures: alex, alvin, kaijun, xinler
+Constants: 123, 200, 6, 3, 15, 10, 4, 7, 5, 23, 99999999,
+Print: impossible 6 & 16, alex 9, true 11 & 12 & 44, alvin 39,
+Read: alex 5, impossible 23,
+Call: alvin 2, kaijun 7 & 13, xinler 41,
+If: alex & smart 15, alvin & true & hisIQ 22, if 32, else 36, alex & true & hisIQ 43
+While: secret & message 17, - 18, while 30, 
+Switch: alex 10, kaijun 24
+Assign: 
+1	just = jus + t;
+3	ju = just - st;
+4	secret = message * 123;
+8	just = secret;
+14	impossible = just + 200 * kaijun + 6;
+19	kaijun = kaijun + 3;
+20	alex = 15 + alex + 10;
+21	hisIQ = 200;
+25	secret = kaijun + 4 + 7
+26	message = kaijun + 5
+27	kaijun = alex + kaijun + alvin
+28	jus = just + st - t - st
+29	true = true 
+31	alex = 23 * (ju - st) + 99999999;
+33	if = if; 
+34	kaijun = 3 + kaijun;
+35	kaijun = kaijun + 3 * alex;
+37	else = else;
+38	else = else + 3;
+40      kaijun = if + else;
+42	if = kaijun + else;
+45	hisIQ = 200;
+
+AFFECTS PAIR:
+8, 14 - just
+19, 19 - kaijun
+20, 20 - alex
+31, 35 - alex
+33, 33 - if
+33, 40 - if
+34, 35 - kaijun
+35, 34 - kaijun
+37, 37 - else
+37, 40 - else
+37, 42 - else
+37, 38 - else
+38, 37 - else
+38, 38 - else
+38, 40 - else
+38, 42 - else
+40, 42 - kaijun

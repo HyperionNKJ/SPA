@@ -1,0 +1,75 @@
+procedure alex {
+	just = jus + t;
+	call alvin;
+	ju = just - st;
+	secret = message * 123;
+}
+procedure alvin {
+	read alex;
+	print impossible;
+	call kaijun;
+	just = secret;
+	print alex;
+	switch (alex) {
+		case smart:
+			print true;
+		case hardworking:
+			print true;
+		default:
+			call kaijun;
+	}
+	impossible = just + 200 * kaijun + 6;
+	if (alex != smart) then {
+		print impossible;
+		while (secret != message) {
+			while (12 == 12) {
+				kaijun = kaijun + 3;
+				alex = 15 + alex + 10;
+			}
+		}
+	} else {
+		hisIQ = 200;
+	}
+}
+procedure kaijun {
+	if (alvin == true && hisIQ != 200) then {
+	    read impossible;
+	    switch (kaijun) {
+		case secret:
+			secret = kaijun + 4 + 7;
+			message = kaijun + 5;
+		case impossible:
+			kaijun = alex + kaijun + alvin;
+		case alex:
+			jus = just + st - t - st;
+		default:
+			true = true;
+	    }
+	} else {
+	    while (while == while && while >= while) {
+		alex = 23 * (ju - st) + 99999999;
+		if (if != if) then {
+			if = if; 
+			kaijun = 3 + kaijun;
+			kaijun = kaijun + 3 * alex;
+		} else {
+			if (else == else && else >= else) {
+				else = else;
+			} else {
+				else = else + 3;
+			}
+		}
+	    }
+	}
+	print alvin;
+        kaijun = if + else;
+	call xinler;
+	if = kaijun + else;
+}
+procedure xinler {
+	if (alex == true && hisIQ == 200) {
+		print true;
+	} else {
+		hisIQ = 200;
+	}
+}
