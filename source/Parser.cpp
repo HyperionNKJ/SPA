@@ -73,7 +73,7 @@ int Parser::parse(string fileName, PKB& p) {
 						result = handleElse(sourceCode[i]);
 					}
 					else if (intent == KEY_ELSE && expectElse == false) {
-						errorMessage = "Else statement without accompanying if found just before line " + + to_string(statementNumber);
+						errorMessage = "Else statement without accompanying if found just before line " + to_string(statementNumber);
 					}
 					else if (intent == KEY_CALL) {
 						result = handleCall(sourceCode[i]);
@@ -660,10 +660,6 @@ bool Parser::checkCondExpr(string condExpr) {
 				string secondCondExpr = condExpr.substr(pos + 2, string::npos);
 				return checkCondExpr(firstCondExpr) & checkCondExpr(secondCondExpr);
 			}
-			else {
-				errorMessage = "Could not successfully parse conditional expression, missing and/or operator at line "  + to_string(statementNumber);
-				return false;
-			}
 		}
 		else {
 			if (condExpr[pos] == '(') {
@@ -682,8 +678,8 @@ bool Parser::checkCondExpr(string condExpr) {
 		errorMessage = "Mismatch in number of ( and ) brackets in conditional expression at line "  + to_string(statementNumber);
 		return false;
 	}
-	errorMessage = "Could not successfully parse the conditional expression at line "  + to_string(statementNumber);
-	return false;
+	//finally just attempt to parse as a rel expr
+	return checkRelExpr(condExpr);
 }																
 
 bool Parser::checkRelExpr(string relExpr) {
@@ -842,7 +838,7 @@ int Parser::handleSwitch(string switchLine) {
 	controlVar = leftTrim(rightTrim(controlVar, " \t"), " \t");
 	pkb->insertVar(controlVar);
 	setUses(statementNumber, currProcedure, controlVar);
-	//pkb->insertIfControlVar(statementNumber, controlVar);
+	//pkb->insertSwitchControlVar(statementNumber, controlVar);
 
 	return 0;
 }
