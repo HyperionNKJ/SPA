@@ -881,7 +881,7 @@ int Parser::handleSwitchCase(string switchCaseLine) {
 	size_t casePos = switchCaseLine.find("case");
 	size_t colonPos = switchCaseLine.find_last_of(":");
 	if (casePos != string::npos) {
-		string caseVar = switchCaseLine.substr(casePos + 4, colonPos - casePos - 5);
+		string caseVar = switchCaseLine.substr(casePos + 4, colonPos - casePos - 4);
 		caseVar = leftTrim(rightTrim(caseVar, " \t\n"), " \t\n");
 		if (isValidConstant(caseVar)) {
 			pkb->insertConstant(stoi(caseVar));
