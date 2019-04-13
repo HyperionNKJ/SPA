@@ -108,12 +108,14 @@ public:
 	void setCurrentFollowVector(vector<int>);
 	void setParentVector(vector<int>);
 	void setAllFollowStack(vector<vector<int>>);
+	void setWithinProcedure(bool);
 
 	int getStatementNumber();
 	vector<int> getParentVector();
 	vector<int> getCurrentFollowVector();
 	vector<vector<int>> getAllFollowStack();
 	string getCurrentProcedure();
+	unordered_set<string> getProcNames();
 	unordered_map<int, string> getProcCalledByTable();
 	string getErrorMessage();
 };
