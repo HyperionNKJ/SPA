@@ -82,7 +82,7 @@ namespace IntegrationTesting {
 			Assert::AreEqual(0, (int)vars.size(), L"incorrect", LINE_INFO());
 			Assert::AreEqual(0, (int)consts.size(), L"incorrect", LINE_INFO());
 
-			string testInput = "..\\Tests\\Iteration1Tests\\no_nest\\no_nest_source.txt";
+			string testInput = "..\\Tests\\Iteration1\\no_nest\\no_nest_source.txt";
 			parser.parse(testInput, pkb);
 			string correctVars[] = { "x", "xx", "x1", "xx1", "y", "z", "www" };
 			int correctConsts[] = { 0, 1, 10, 100 };
@@ -118,7 +118,7 @@ namespace IntegrationTesting {
 			Assert::AreEqual(0, (int)ifs.size(), L"incorrect", LINE_INFO());
 			Assert::AreEqual(0, (int)whiles.size(), L"incorrect", LINE_INFO());
 
-			string testInput = "..\\Tests\\Iteration1Tests\\single_nest\\single_nest_source.txt";
+			string testInput = "..\\Tests\\Iteration1\\single_nest\\single_nest_source.txt";
 			parser.parse(testInput, pkb);
 
 			string correctVars[] = { "x", "z", "i", "w", "p", "y" };
@@ -167,7 +167,7 @@ namespace IntegrationTesting {
 			Assert::AreEqual(0, (int)ifs.size(), L"incorrect", LINE_INFO());
 			Assert::AreEqual(0, (int)whiles.size(), L"incorrect", LINE_INFO());
 
-			string testInput = "..\\Tests\\Iteration1Tests\\double_nest\\double_nest_source.txt";
+			string testInput = "..\\Tests\\Iteration1\\double_nest\\double_nest_source.txt";
 			parser.parse(testInput, pkb);
 
 			string correctVars[] = { "a", "b", "c", "x", "k" };

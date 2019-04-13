@@ -69,14 +69,16 @@ void QueryPreprocessorSuchThatParser::parse() {
 	// extract parameters
 	// there should be exactly 2 parameters
 	std::string parameters = CLAUSE.substr(relSize + 1, closeBracketPos - relSize - 1);
-	std::vector<string> parametersList = QueryPreprocessorHelper::split(parameters, COMMA);
+	size_t paramOneSize = parameters.find_first_of(COMMA);
 
-	if (parametersList.size() != 2) {
+	if (paramOneSize == std::string::npos) {
 		throw QueryPreprocessorError(ErrorType::SYNTACTIC);
 	}
+	std::string paramOneString = parameters.substr(0, paramOneSize);
+	std::string paramTwoString = parameters.substr(paramOneSize + 1);
 
-	DesignEntity paramOne = QueryPreprocessorHelper::getParam(parametersList[0], query);
-	DesignEntity paramTwo = QueryPreprocessorHelper::getParam(parametersList[1], query);
+	DesignEntity paramOne = QueryPreprocessorHelper::getParam(paramOneString, query);
+	DesignEntity paramTwo = QueryPreprocessorHelper::getParam(paramTwoString, query);
 
 	addClause(relRef, paramOne, paramTwo);
 }
