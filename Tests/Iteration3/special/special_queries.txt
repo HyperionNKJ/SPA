@@ -296,12 +296,12 @@ kaijun
 59 - To be filled
 stmt s, s1; assign a, a1; while w, w1; if ifs; variable v, v1, v2; procedure p, q; constant c; prog_line n; call cl; read rd; print pt; switch sw;
 Select sw such that Modifies(sw, "kaijun")
-24
+24, 10
 5000
 60 - To be filled
 stmt s, s1; assign a, a1; while w, w1; if ifs; variable v, v1, v2; procedure p, q; constant c; prog_line n; call cl; read rd; print pt; switch sw;
 Select sw such that Modifies(sw, "true")
-24
+24, 10
 5000
 61 - To be filled
 stmt s, s1; assign a, a1; while w, w1; if ifs; variable v, v1, v2; procedure p, q; constant c; prog_line n; call cl; read rd; print pt; switch sw;
