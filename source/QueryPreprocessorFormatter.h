@@ -1,8 +1,6 @@
 #pragma once
 #include <string>
 
-using namespace std;
-
 class QueryPreprocessorFormatter {
 public:
 	QueryPreprocessorFormatter(std::string& query);
@@ -14,5 +12,4 @@ private:
 	void removeSpaces();
 	void removeLeadingSpace();
 	void removeTrailingSpace();
-	static bool isWhitespace();
 };

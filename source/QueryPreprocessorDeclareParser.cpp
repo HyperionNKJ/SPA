@@ -7,8 +7,8 @@ constexpr auto SPACE = ' ';
 constexpr auto DELIMITER = ',';
 
 // Initializes a newly created QueryPreprocessorDeclareParser.
-QueryPreprocessorDeclareParser::QueryPreprocessorDeclareParser(const std::string& statement, ProcessedQuery& query)
-	: STATEMENT(statement), query(query) {}
+QueryPreprocessorDeclareParser::QueryPreprocessorDeclareParser(const std::string& statement, ProcessedQuery& query, const std::string& selectCl)
+	: STATEMENT(statement), query(query), SELECT_CL(selectCl) {}
 
 // Parses synonyms in declarative statement and adds them to declarations.
 // Returns true if all the synonyms in the declarative statement can be added into declarations.
@@ -26,7 +26,13 @@ void QueryPreprocessorDeclareParser::parse() {
 		// insert synonym into declarations
 		bool status = query.insertDeclaration(synonym, designEntity);
 		if (!status) {
-			throw QueryPreprocessorError(ErrorType::SYNTACTIC);
+			ProcessedQuery query;
+
+			if (SELECT_CL.find("Select BOOLEAN") == 0) {
+				query.addResultClElement(DesignEntity("", Type::BOOLEAN));
+			}
+
+			throw QueryPreprocessorError(query, ErrorType::SEMANTIC);
 		}
 	}
 }

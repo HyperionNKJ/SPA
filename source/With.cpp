@@ -143,7 +143,7 @@ Result With::evaulateIntInt(const string& numOne, const string& numTwo) {
 Result With::evaulateIntSyn(const string& num, const string& progLineSyn) {
 	Result result;
 	unsigned int progLineNum = stoi(num);
-	if (pkb.getAllStmts().size() >= progLineNum) {
+	if (pkb.getAllStmts().size() >= progLineNum && progLineNum > 0 ) {
 		result.setPassed(true);
 		result.setAnswer(progLineSyn, progLineNum);
 	}
@@ -376,7 +376,7 @@ unordered_set<int> With::getValidStmts(const Type& type) {
 	case IF:
 		return pkb.getIfStmts();
 	case SWITCH:
-		//return pkb.getSwitchStmts(); // extension
+		return pkb.getSwitchStmts(); // extension
 	case ASSIGN:
 		return pkb.getAssignStmts();
 	default:

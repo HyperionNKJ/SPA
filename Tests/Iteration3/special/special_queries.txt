@@ -196,7 +196,7 @@ TRUE
 40 - To be filled
 stmt s, s1; assign a, a1; while w; if ifs; variable v, v1; procedure p, q; constant c; prog_line n; call cl; read rd; print pt; switch sw;
 Select n with n = c.value
-6, 3, 15, 10, 4, 7, 5, 23
+6, 3, 15, 10, 4, 7, 5, 23, 12
 5000
 41 - To be filled
 stmt s, s1; assign a, a1; while w; if ifs; variable v, v1; procedure p, q; constant c; prog_line n; call cl; read rd; print pt; switch sw;
@@ -215,12 +215,12 @@ none
 5000
 44 - To be filled
 stmt s, s1; assign a, a1; while w; if ifs; variable v, v1; procedure p, q; constant c; prog_line n; call cl; read rd; print pt; switch sw;
-Select <w.stmt#, v> such that Parent*(15, w) and pattern w(v, _)
+Select <w.stmt#, v> such that Parent*(15, w) pattern w(v, _)
 17 secret, 17 message
 5000
 45 - To be filled
 stmt s, s1; assign a, a1; while w, w1; if ifs; variable v, v1; procedure p, q; constant c; prog_line n; call cl; read rd; print pt; switch sw;
-Select <w1.stmt#> such that Follow(pn, w) with pn.varName = "impossible" such that Parent*(w, w1)
+Select <w1.stmt#> such that Follows(pt, w) with pt.varName = "impossible" such that Parent*(w, w1)
 18
 5000
 46 - To be filled
@@ -290,18 +290,18 @@ TRUE
 5000
 58 - To be filled
 stmt s, s1; assign a, a1; while w, w1; if ifs; variable v, v1, v2; procedure p, q; constant c; prog_line n; call cl; read rd; print pt; switch sw;
-Select cl.procName with sw.stmt# = 10 such that Parent(sw, cl) and Follow(25, 26)
+Select cl.procName with sw.stmt# = 10 such that Parent(sw, cl) and Follows(25, 26)
 kaijun
 5000
 59 - To be filled
 stmt s, s1; assign a, a1; while w, w1; if ifs; variable v, v1, v2; procedure p, q; constant c; prog_line n; call cl; read rd; print pt; switch sw;
 Select sw such that Modifies(sw, "kaijun")
-24
+24, 10
 5000
 60 - To be filled
 stmt s, s1; assign a, a1; while w, w1; if ifs; variable v, v1, v2; procedure p, q; constant c; prog_line n; call cl; read rd; print pt; switch sw;
 Select sw such that Modifies(sw, "true")
-24
+24, 10
 5000
 61 - To be filled
 stmt s, s1; assign a, a1; while w, w1; if ifs; variable v, v1, v2; procedure p, q; constant c; prog_line n; call cl; read rd; print pt; switch sw;
@@ -331,17 +331,17 @@ none
 66 - To be filled
 stmt s, s1; assign a, a1; while w, w1; if ifs; variable v, v1, v2; procedure p, q; constant c; prog_line n; call cl; read rd; print pt; switch sw;
 Select a such that Affects(a, a)
-19, 29, 33, 37, 38
+19, 20, 33, 37, 38
 5000
 67 - To be filled
 stmt s, s1; assign a, a1; while w, w1; if ifs; variable v, v1, v2; procedure p, q; constant c; prog_line n; call cl; read rd; print pt; switch sw;
-Select s such that Affect(s, s)
-19, 29, 33, 37, 38
+Select s such that Affects(s, s)
+19, 20, 33, 37, 38
 5000
 68 - To be filled
 stmt s, s1; assign a, a1; while w, w1; if ifs; variable v, v1, v2; procedure p, q; constant c; prog_line n; call cl; read rd; print pt; switch sw;
 Select n such that Affects(n, n)
-19, 29, 33, 37, 38
+19, 20, 33, 37, 38
 5000
 69 - To be filled
 stmt s, s1; assign a, a1; while w, w1; if ifs; variable v, v1, v2; procedure p, q; constant c; prog_line n; call cl; read rd; print pt; switch sw;
@@ -391,12 +391,12 @@ Select <a.stmt#, s> such that Affects*(a, s) and Affects*(a1, s1) and Affects*(a
 78 - To be filled
 stmt s, s1, s2, s3; assign a, a1, a2, a3; while w, w1; if ifs; variable v, v1, v2; procedure p, q; constant c; prog_line n; call cl; read rd; print pt; switch sw;
 Select BOOLEAN with 12 = 13 such that Next*(s, s1) and Next*(a, a1) and Next*(w, s2) and Affects*(s1, a) and Affects*(a1, s) and Affects*(a3, s3) and Next*(rd, sw)
-false
+FALSE
 5000
 79 - To be filled
 stmt s, s1, s2, s3; assign a, a1, a2, a3; while w, w1; if ifs; variable v, v1, v2; procedure p, q; constant c; prog_line n; call cl; read rd; print pt; switch sw;
 Select BOOLEAN with 12 = 13 such that Next*(s, s1) and Next*(a, a1) and Next*(w, s2) and Affects*(s1, a) and Affects*(a1, s) and Affects*(a3, s3) and Next*(rd, sw)
-false
+FALSE
 5000
 80 - To be filled
 stmt s, s1, s2, s3; assign a, a1, a2, a3; while w, w1; if ifs; variable v, v1, v2; procedure p, q; constant c; prog_line n; call cl; read rd; print pt; switch sw;

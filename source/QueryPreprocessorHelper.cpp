@@ -177,6 +177,9 @@ DesignEntity QueryPreprocessorHelper::getParam(const std::string& param, Process
 		}
 		else if (isInt(param)) {
 			// param is a statement number
+			if (param == "0") {
+				throw QueryPreprocessorError(query, ErrorType::SEMANTIC);
+			}
 			return DesignEntity(param, Type::FIXED);
 		}
 		else if (param.front() == '"' && param.back() == '"') {
@@ -234,6 +237,7 @@ DesignEntity QueryPreprocessorHelper::getParam(const std::string& param, Process
 					|| designEntity == Type::PRINT
 					|| designEntity == Type::READ
 					|| designEntity == Type::STATEMENT
+					|| designEntity == Type::SWITCH
 					|| designEntity == Type::WHILE)) {
 				return DesignEntity(synonym, designEntity, AttrRef::STMT_NUM);
 			}

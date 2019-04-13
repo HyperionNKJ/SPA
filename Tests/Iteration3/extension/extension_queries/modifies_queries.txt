@@ -1,0 +1,10 @@
+1 - Procedure modifies variable inside switch statement 
+variable v;
+Select v such that Modifies ("main", v)
+x, y, z
+5000
+2 - variables modified by switch statement 
+switch sw; variable v;
+Select v such that Modifies (sw, v)
+y, x, z
+5000

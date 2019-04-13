@@ -1,12 +1,10 @@
 #include "ResultProjector.h"
 
-using namespace std;
-
 ResultCache affectsCache;
 ResultCache affectsTCache;
 ResultCache nextTCache;
-static unordered_map<string, int> synonymTable;
-static unordered_map<int, list<unordered_map<string, int>>> synonymResults;
+static std::unordered_map<std::string, int> synonymTable;
+static std::unordered_map<int, std::list<std::unordered_map<std::string, int>>> synonymResults;
 static int index;
 
 // Reset tables for new query
@@ -20,9 +18,9 @@ void ResultProjector::resetResults()
 	index = 0;
 }
 
-list<string> ResultProjector::getResults(vector<DesignEntity> selectedSynonyms, PKB pkb) {
+std::list<std::string> ResultProjector::getResults(std::vector<DesignEntity> selectedSynonyms, PKB pkb) {
 
-	list<string> projectedResults;
+	std::list<std::string> projectedResults;
 
 	// early return if it's BOOLEAN. Just put in case.
 	// actually if no common results, should be return false and break out of loop in QueryEvaluator and return FALSE already.
@@ -34,37 +32,37 @@ list<string> ResultProjector::getResults(vector<DesignEntity> selectedSynonyms, 
 		}
 	}
 
-	unordered_map<int, list<DesignEntity>> selectedSynonymTableMap;
-	unordered_map<string, list<DesignEntity>> selectedSynNotInTableMap;
+	std::unordered_map<int, std::list<DesignEntity>> selectedSynonymTableMap;
+	std::unordered_map<std::string, std::list<DesignEntity>> selectedSynNotInTableMap;
 
 	// 1. Loop through all selected synonyms and get their table numbers
 	for (auto selectedSynonym : selectedSynonyms) {
-		string synonym = selectedSynonym.getValue();
+		std::string synonym = selectedSynonym.getValue();
 		if (synonymExists(synonym)) {
 			int tableNum = synonymTable[selectedSynonym.getValue()];
 			selectedSynonymTableMap[tableNum].push_back(selectedSynonym);
 		}
 		else {
-			string synonym = selectedSynonym.getValue();
+			std::string synonym = selectedSynonym.getValue();
 			selectedSynNotInTableMap[synonym].push_back(selectedSynonym);
 		}
 	}
 
 	// 2. For each tableNum, put selected results in an unordered_map
-	vector<list<unordered_map<string, string>>> allTableResults;
+	std::vector<std::list<std::unordered_map<std::string, std::string>>> allTableResults;
 	// 2a. Results not in table
 	for (auto selectedSynonym : selectedSynNotInTableMap) {
-		list<unordered_map<string, string>> selectedResults;
+		std::list<std::unordered_map<std::string, std::string>> selectedResults;
 		if (selectedSynonym.second.size() != 0) {
 			DesignEntity firstSynonymEntity = *(selectedSynonym.second.begin());
 			Type type = firstSynonymEntity.getType();
-			unordered_set<string> results = getAllResults(type, pkb);
+			std::unordered_set<std::string> results = getAllResults(type, pkb);
 
-			unordered_map<string, string> rowResult;
-			for (string result : results) {
+			std::unordered_map<std::string, std::string> rowResult;
+			for (std::string result : results) {
 				for (DesignEntity selectedSyn : selectedSynonym.second) {
 					if (selectedSyn.getType() == Type::READ || selectedSyn.getType() == Type::PRINT || selectedSyn.getType() == Type::CALL) {
-						string key = selectedSyn.getValue() + to_string(selectedSyn.getAttrRef());
+						std::string key = selectedSyn.getValue() + to_string(selectedSyn.getAttrRef());
 						rowResult[key] = convertSynonymResultToRequired(type, result, selectedSyn.getAttrRef(), pkb);
 					}
 					else {
@@ -79,16 +77,16 @@ list<string> ResultProjector::getResults(vector<DesignEntity> selectedSynonyms, 
 
 	// 2b. Results in table
 	for (auto tableMap : selectedSynonymTableMap) {
-		list<unordered_map<string, string>> selectedResults;
-		unordered_set<string> testForDuplicatesSet;
-		list<unordered_map<string, int>> results = synonymResults[tableMap.first];
+		std::list<std::unordered_map<std::string, std::string>> selectedResults;
+		std::unordered_set<std::string> testForDuplicatesSet;
+		std::list<std::unordered_map<std::string, int>> results = synonymResults[tableMap.first];
 		for (auto result : results) {
-			string testForDuplicates = "";
-			unordered_map<string, string> rowResult;
+			std::string testForDuplicates = "";
+			std::unordered_map<std::string, std::string> rowResult;
 			for (auto selectedSyn : tableMap.second) {
-				string convertedResult = convertSynonymResultToRequired(selectedSyn.getType(), result.at(selectedSyn.getValue()), selectedSyn.getAttrRef(), pkb);
+				std::string convertedResult = convertSynonymResultToRequired(selectedSyn.getType(), result.at(selectedSyn.getValue()), selectedSyn.getAttrRef(), pkb);
 				if (selectedSyn.getType() == Type::READ || selectedSyn.getType() == Type::PRINT || selectedSyn.getType() == Type::CALL) {
-					string key = selectedSyn.getValue() + to_string(selectedSyn.getAttrRef());
+					std::string key = selectedSyn.getValue() + to_string(selectedSyn.getAttrRef());
 					rowResult[key] = convertedResult;
 				}
 				else {
@@ -105,11 +103,11 @@ list<string> ResultProjector::getResults(vector<DesignEntity> selectedSynonyms, 
 	}
 
 	// 3. Cross product all maps
-	list<unordered_map<string, string>> finalMaps;
+	std::list<std::unordered_map<std::string, std::string>> finalMaps;
 	if (!allTableResults.empty()) {
 		finalMaps = allTableResults.at(0);
 		for (size_t i = 1; i < allTableResults.size(); i++) {
-			list<unordered_map<string, string>> tableResults = allTableResults.at(i);
+			std::list<std::unordered_map<std::string, std::string>> tableResults = allTableResults.at(i);
 
 			int size = finalMaps.size();
 			int count = 0; // for early break, no need loop through all that just added
@@ -119,7 +117,7 @@ list<string> ResultProjector::getResults(vector<DesignEntity> selectedSynonyms, 
 					break;
 				}
 				for (auto tableResult : tableResults) {
-					unordered_map<string, string> newResult = (*itr); // merge 2 maps together
+					std::unordered_map<std::string, std::string> newResult = (*itr); // merge 2 maps together
 					newResult.insert(tableResult.begin(), tableResult.end());
 					finalMaps.push_back(newResult);
 				}
@@ -132,11 +130,11 @@ list<string> ResultProjector::getResults(vector<DesignEntity> selectedSynonyms, 
 	// 4. Convert to required format
 	if (!selectedSynonyms.empty()) {
 		for (auto finalMap : finalMaps) {
-			string resultString;
+			std::string resultString;
 
 			DesignEntity firstSelectedSyn = selectedSynonyms.at(0);
 			if (firstSelectedSyn.getType() == Type::READ || firstSelectedSyn.getType() == Type::PRINT || firstSelectedSyn.getType() == Type::CALL) {
-				string key = firstSelectedSyn.getValue() + to_string(firstSelectedSyn.getAttrRef());
+				std::string key = firstSelectedSyn.getValue() + to_string(firstSelectedSyn.getAttrRef());
 				resultString = finalMap[key];
 			}
 			else {
@@ -146,7 +144,7 @@ list<string> ResultProjector::getResults(vector<DesignEntity> selectedSynonyms, 
 			for (size_t i = 1; i < selectedSynonyms.size(); i++) {
 				Type selectedSynType = selectedSynonyms.at(i).getType();
 				if (selectedSynType == Type::READ || selectedSynType == Type::PRINT || selectedSynType == Type::CALL) {
-					string key = selectedSynonyms.at(i).getValue() + to_string(selectedSynonyms.at(i).getAttrRef());
+					std::string key = selectedSynonyms.at(i).getValue() + to_string(selectedSynonyms.at(i).getAttrRef());
 					resultString += " " + finalMap[key];
 				}
 				else {
@@ -159,8 +157,8 @@ list<string> ResultProjector::getResults(vector<DesignEntity> selectedSynonyms, 
 	return projectedResults;
 }
 
-unordered_set<string> ResultProjector::getAllResults(Type type, PKB pkb) {
-	unordered_set<string> results;
+std::unordered_set<std::string> ResultProjector::getAllResults(Type type, PKB pkb) {
+	std::unordered_set<std::string> results;
 
 	switch (type) {
 	case Type::STATEMENT:
@@ -197,23 +195,24 @@ unordered_set<string> ResultProjector::getAllResults(Type type, PKB pkb) {
 		results = pkb.getAllProcedures();
 		break;
 	case Type::SWITCH:
-		//results = convertSetToString(pkb.getAllSwitchStmts()); // TODO
+		results = convertSetToString(pkb.getSwitchStmts());
 		break;
 	}
 	return results;
 }
 
-unordered_set<string> ResultProjector::convertSetToString(unordered_set<int> resultSet) {
-	unordered_set<string> convertedSet;
+std::unordered_set<std::string> ResultProjector::convertSetToString(std::unordered_set<int> resultSet) {
+	std::unordered_set<std::string> convertedSet;
 	for (int result : resultSet) {
 		convertedSet.insert(to_string(result));
 	}
 	return convertedSet;
 }
 
-string ResultProjector::convertSynonymResultToRequired(Type type, string result, AttrRef attrRef, PKB pkb) {
+std::string ResultProjector::convertSynonymResultToRequired(Type type, std::string result, AttrRef attrRef, PKB pkb) {
 	int resultInt = stoi(result);
-	string convertedResult;
+	std::string convertedResult;
+	
 	switch (type) {
 	case Type::CALL:
 		if (attrRef == AttrRef::PROC_NAME) {
@@ -246,8 +245,8 @@ string ResultProjector::convertSynonymResultToRequired(Type type, string result,
 	return convertedResult;
 }
 
-string ResultProjector::convertSynonymResultToRequired(Type type, int result, AttrRef attrRef, PKB pkb) {
-	string convertedResult;
+std::string ResultProjector::convertSynonymResultToRequired(Type type, int result, AttrRef attrRef, PKB pkb) {
+	std::string convertedResult;
 	switch (type) {
 	case Type::VARIABLE:
 		convertedResult = pkb.getVarAtIdx(result);
@@ -286,7 +285,7 @@ string ResultProjector::convertSynonymResultToRequired(Type type, int result, At
 	return convertedResult;
 }
 
-bool ResultProjector::combineResults(unordered_set<int> queryResultsOneSynonym, vector<string> synonyms) { // one synonym
+bool ResultProjector::combineResults(std::unordered_set<int> queryResultsOneSynonym, std::vector<std::string> synonyms) { // one synonym
 	// check if empty result is passed in
 	if (queryResultsOneSynonym.empty() || synonyms.size() != 1) {
 		return false;
@@ -300,7 +299,7 @@ bool ResultProjector::combineResults(unordered_set<int> queryResultsOneSynonym, 
 	return false; // no more common combined results
 }
 
-bool ResultProjector::combineResults(unordered_map<int, unordered_set<int>> queryResultsTwoSynonyms, vector<string> synonyms) { // two synonyms
+bool ResultProjector::combineResults(std::unordered_map<int, std::unordered_set<int>> queryResultsTwoSynonyms, std::vector<std::string> synonyms) { // two synonyms
 	// check if empty result is passed in
 	if (queryResultsTwoSynonyms.empty() || synonyms.size() != 2) {
 		return false;
@@ -314,8 +313,8 @@ bool ResultProjector::combineResults(unordered_map<int, unordered_set<int>> quer
 	return false; // no more common combined results
 }
 
-void ResultProjector::combineOneSynonym(unordered_set<int> queryResults, vector<string> synonyms) {
-	string key = synonyms.at(0);
+void ResultProjector::combineOneSynonym(std::unordered_set<int> queryResults, std::vector<std::string> synonyms) {
+	std::string key = synonyms.at(0);
 
 	if (synonymExists(key)) { // 1 common synonym
 		filterOneSynInTable(key, queryResults);
@@ -325,9 +324,9 @@ void ResultProjector::combineOneSynonym(unordered_set<int> queryResults, vector<
 	}
 }
 
-void ResultProjector::combineTwoSynonyms(unordered_map<int, unordered_set<int>> queryResults, vector<string> synonyms) {
-	string key1 = synonyms.at(0);
-	string key2 = synonyms.at(1);
+void ResultProjector::combineTwoSynonyms(std::unordered_map<int, std::unordered_set<int>> queryResults, std::vector<std::string> synonyms) {
+	std::string key1 = synonyms.at(0);
+	std::string key2 = synonyms.at(1);
 	bool key1Exists = synonymExists(key1);
 	bool key2Exists = synonymExists(key2);
 
@@ -345,7 +344,7 @@ void ResultProjector::combineTwoSynonyms(unordered_map<int, unordered_set<int>> 
 			mergeOneSyn(key1, key2, queryResults);
 		}
 		else {
-			unordered_map<int, unordered_set<int>> invertedQueryResults = invertResults(queryResults);
+			std::unordered_map<int, std::unordered_set<int>> invertedQueryResults = invertResults(queryResults);
 			mergeOneSyn(key2, key1, invertedQueryResults);
 		}
 	}
@@ -354,7 +353,7 @@ void ResultProjector::combineTwoSynonyms(unordered_map<int, unordered_set<int>> 
 	}
 }
 
-bool ResultProjector::synonymExists(string synonym) {
+bool ResultProjector::synonymExists(std::string synonym) {
 	if (!synonymTable.empty()) {
 		if (synonymTable.find(synonym) != synonymTable.end()) {
 			return true;
@@ -363,12 +362,12 @@ bool ResultProjector::synonymExists(string synonym) {
 	return false;
 }
 
-unordered_set<int> ResultProjector::getPossibleValues(string synonym) {
-	unordered_set<int> possibleValues;
+std::unordered_set<int> ResultProjector::getPossibleValues(std::string synonym) {
+	std::unordered_set<int> possibleValues;
 
 	if (synonymExists(synonym)) {
 		int tableNum = synonymTable.at(synonym);
-		list<unordered_map<string, int>> resultTable = synonymResults.at(tableNum);
+		std::list<std::unordered_map<std::string, int>> resultTable = synonymResults.at(tableNum);
 		for (auto result : resultTable) {
 			possibleValues.insert(result.at(synonym));
 		}
@@ -376,11 +375,11 @@ unordered_set<int> ResultProjector::getPossibleValues(string synonym) {
 	return possibleValues;
 }
 
-void ResultProjector::addOneSyn(string key, unordered_set<int> results) {
+void ResultProjector::addOneSyn(std::string key, std::unordered_set<int> results) {
 	synonymTable[key] = index;
 
-	list<unordered_map<string, int>> newSet;
-	unordered_map<string, int> newSetEntry;
+	std::list<std::unordered_map<std::string, int>> newSet;
+	std::unordered_map<std::string, int> newSetEntry;
 	for (const auto result : results) {
 		newSetEntry[key] = result;
 		newSet.push_back(newSetEntry);
@@ -390,12 +389,12 @@ void ResultProjector::addOneSyn(string key, unordered_set<int> results) {
 	index++;
 }
 
-void ResultProjector::addTwoSyn(string key1, string key2, unordered_map<int, unordered_set<int>> results) {
+void ResultProjector::addTwoSyn(std::string key1, std::string key2, std::unordered_map<int, std::unordered_set<int>> results) {
 	synonymTable[key1] = index;
 	synonymTable[key2] = index;
 
-	list<unordered_map<string, int>> newSet;
-	unordered_map<string, int> newSetEntry;
+	std::list<std::unordered_map<std::string, int>> newSet;
+	std::unordered_map<std::string, int> newSetEntry;
 	for (const auto result : results) {
 		newSetEntry[key1] = result.first;
 		for (const auto key2Results : result.second) {
@@ -409,9 +408,9 @@ void ResultProjector::addTwoSyn(string key1, string key2, unordered_map<int, uno
 }
 
 // Filters the synonym's results such that only overlapped results remains
-void ResultProjector::filterOneSynInTable(string key, unordered_set<int> queryResults) {
+void ResultProjector::filterOneSynInTable(std::string key, std::unordered_set<int> queryResults) {
 	int tableNum = synonymTable[key];
-	list<unordered_map<string, int>>& prevResults = synonymResults[tableNum];
+	std::list<std::unordered_map<std::string, int>>& prevResults = synonymResults[tableNum];
 
 	for (auto itr = prevResults.begin(); itr != prevResults.end();) {
 		int prevKeyValue = (*itr).at(key);
@@ -426,9 +425,9 @@ void ResultProjector::filterOneSynInTable(string key, unordered_set<int> queryRe
 }
 
 // Filters two synonyms results such that only overlapped results remains
-void ResultProjector::filterTwoSynInSameTable(string key1, string key2, unordered_map<int, unordered_set<int>> queryResults) {
+void ResultProjector::filterTwoSynInSameTable(std::string key1, std::string key2, std::unordered_map<int, std::unordered_set<int>> queryResults) {
 	int tableNum = synonymTable[key1];
-	list<unordered_map<string, int>>& prevResults = synonymResults[tableNum];
+	std::list<std::unordered_map<std::string, int>>& prevResults = synonymResults[tableNum];
 
 	for (auto itr = prevResults.begin(); itr != prevResults.end();) {
 		int prevKey1Value = (*itr).at(key1);
@@ -450,16 +449,16 @@ void ResultProjector::filterTwoSynInSameTable(string key1, string key2, unordere
 	cleanUpTables(key2);
 }
 
-void ResultProjector::mergeOneSyn(string existKey, string newKey, unordered_map<int, unordered_set<int>> queryResults) {
+void ResultProjector::mergeOneSyn(std::string existKey, std::string newKey, std::unordered_map<int, std::unordered_set<int>> queryResults) {
 	int tableNum = synonymTable[existKey];
-	list<unordered_map<string, int>>& prevResults = synonymResults[tableNum];
+	std::list<std::unordered_map<std::string, int>>& prevResults = synonymResults[tableNum];
 
 	for (auto itr = prevResults.begin(); itr != prevResults.end();) {
 		int prevKey1Value = (*itr).at(existKey);
 
 		if (existInMap(prevKey1Value, queryResults)) { // results overlap
 			if (!existInMap(newKey, (*itr))) { // dependent result not added before (for when iterating to end of map when adding duplicated results)
-				unordered_map<string, int> currRow = (*itr); // get a copy of current row result
+				std::unordered_map<std::string, int> currRow = (*itr); // get a copy of current row result
 				for (auto dependentResult : queryResults.at(prevKey1Value)) { // duplicate rows
 					currRow[newKey] = dependentResult;
 					prevResults.push_back(currRow);
@@ -481,13 +480,13 @@ void ResultProjector::mergeOneSyn(string existKey, string newKey, unordered_map<
 	}
 }
 
-void ResultProjector::mergeTables(string key1, string key2, unordered_map<int, unordered_set<int>> queryResults) {
+void ResultProjector::mergeTables(std::string key1, std::string key2, std::unordered_map<int, std::unordered_set<int>> queryResults) {
 	int key1InitialTableNum = synonymTable[key1];
 	int key2InitialTableNum = synonymTable[key2];
 
-	list<unordered_map<string, int>> key1PrevResults = synonymResults[key1InitialTableNum];
-	list<unordered_map<string, int>> key2PrevResults = synonymResults[key2InitialTableNum];
-	list<unordered_map<string, int>> newResultsSet;
+	std::list<std::unordered_map<std::string, int>> key1PrevResults = synonymResults[key1InitialTableNum];
+	std::list<std::unordered_map<std::string, int>> key2PrevResults = synonymResults[key2InitialTableNum];
+	std::list<std::unordered_map<std::string, int>> newResultsSet;
 
 	for (auto key1PrevResult : key1PrevResults) {
 		int prevKey1Value = key1PrevResult[key1];
@@ -495,7 +494,7 @@ void ResultProjector::mergeTables(string key1, string key2, unordered_map<int, u
 			for (auto key2PrevResult : key2PrevResults) {
 				int prevKey2Value = key2PrevResult[key2];
 				if (existInSet(prevKey2Value, queryResults[prevKey1Value])) { // results overlap for key2
-					unordered_map<string, int> newResult = key1PrevResult; // merge 2 maps together
+					std::unordered_map<std::string, int> newResult = key1PrevResult; // merge 2 maps together
 					newResult.insert(key2PrevResult.begin(), key2PrevResult.end());
 					newResultsSet.push_back(newResult);
 				}
@@ -508,7 +507,7 @@ void ResultProjector::mergeTables(string key1, string key2, unordered_map<int, u
 	synonymResults.erase(key2InitialTableNum);
 
 	// update synonymTable indexes
-	unordered_map<string, int> synTable = synonymTable; // cannot just iterate using synonymTable, error when erasing
+	std::unordered_map<std::string, int> synTable = synonymTable; // cannot just iterate using synonymTable, error when erasing
 	for (auto synonym : synTable) {
 		if (synonym.second == key1InitialTableNum || synonym.second == key2InitialTableNum) {
 			if (newResultsSet.size() != 0) { // update to new table
@@ -526,7 +525,7 @@ void ResultProjector::mergeTables(string key1, string key2, unordered_map<int, u
 	}
 }
 
-bool ResultProjector::existInMap(int key, unordered_map<int, unordered_set<int>> umap) {
+bool ResultProjector::existInMap(int key, std::unordered_map<int, std::unordered_set<int>> umap) {
 	if (!umap.empty()) {
 		if (umap.find(key) != umap.end()) {
 			return true;
@@ -535,7 +534,7 @@ bool ResultProjector::existInMap(int key, unordered_map<int, unordered_set<int>>
 	return false;
 }
 
-bool ResultProjector::existInMap(string key, unordered_map<string, int> umap) {
+bool ResultProjector::existInMap(std::string key, std::unordered_map<std::string, int> umap) {
 	if (!umap.empty()) {
 		if (umap.find(key) != umap.end()) {
 			return true;
@@ -544,7 +543,7 @@ bool ResultProjector::existInMap(string key, unordered_map<string, int> umap) {
 	return false;
 }
 
-bool ResultProjector::existInSet(int key, unordered_set<int> uset) {
+bool ResultProjector::existInSet(int key, std::unordered_set<int> uset) {
 	if (!uset.empty()) {
 		if (uset.find(key) != uset.end()) {
 			return true;
@@ -553,7 +552,7 @@ bool ResultProjector::existInSet(int key, unordered_set<int> uset) {
 	return false;
 }
 
-void ResultProjector::cleanUpTables(string key) {
+void ResultProjector::cleanUpTables(std::string key) {
 	if (synonymTable.empty() || synonymResults.empty()) {
 		return;
 	}
@@ -570,7 +569,7 @@ void ResultProjector::cleanUpTables(string key) {
 
 	// erase all synonyms associated with the table with no entries
 	if (tableDeleted) {
-		unordered_map<string, int> synTable = synonymTable; // cannot just iterate using synonymTable, error when erasing
+		std::unordered_map<std::string, int> synTable = synonymTable; // cannot just iterate using synonymTable, error when erasing
 		for (auto synonym : synTable) {
 			if (synonym.second == tableNum) {
 				synonymTable.erase(synonym.first);
@@ -579,12 +578,12 @@ void ResultProjector::cleanUpTables(string key) {
 	}
 }
 
-unordered_map<int, unordered_set<int>> ResultProjector::invertResults(unordered_map<int, unordered_set<int>> queryResults) {
-	unordered_map<int, unordered_set<int>> newResults;
+std::unordered_map<int, std::unordered_set<int>> ResultProjector::invertResults(std::unordered_map<int, std::unordered_set<int>> queryResults) {
+	std::unordered_map<int, std::unordered_set<int>> newResults;
 
 	for (auto queryResult : queryResults) {
 		int key = queryResult.first;
-		unordered_set<int> values = queryResult.second;
+		std::unordered_set<int> values = queryResult.second;
 
 		for (auto value : values) {
 			newResults[value].insert(key);
@@ -617,12 +616,12 @@ bool ResultProjector::cacheExists(Clause* clause) {
 	return resultCache->cacheExists(clause);
 }
 
-void ResultProjector::storeInCache(Clause* clause, unordered_set<int> queryResultsOneSynonym) {
+void ResultProjector::storeInCache(Clause* clause, std::unordered_set<int> queryResultsOneSynonym) {
 	ResultCache* resultCache = getCacheType(clause);
 	resultCache->storeInCache(clause, queryResultsOneSynonym);
 }
 
-void ResultProjector::storeInCache(Clause* clause, unordered_map<int, unordered_set<int>> queryResultsTwoSynonyms) {
+void ResultProjector::storeInCache(Clause* clause, std::unordered_map<int, std::unordered_set<int>> queryResultsTwoSynonyms) {
 	ResultCache* resultCache = getCacheType(clause);
 	resultCache->storeInCache(clause, queryResultsTwoSynonyms);
 }
@@ -633,11 +632,11 @@ bool ResultProjector::combineCacheResults(Clause* clause) {
 	Type paraOneType = paraOne.getType();
 	Type paraTwoType = paraTwo.getType();
 
-	vector<string> synonyms;
+	std::vector<std::string> synonyms;
 	ResultCache* resultCache = getCacheType(clause);
 
 	if (isStmtType(paraOneType) && isStmtType(paraTwoType)) {
-		unordered_map<int, unordered_set<int>> cacheResult = resultCache->getTwoSynCacheResult();
+		std::unordered_map<int, std::unordered_set<int>> cacheResult = resultCache->getTwoSynCacheResult();
 		synonyms.push_back(paraOne.getValue());
 		synonyms.push_back(paraTwo.getValue());
 
@@ -650,7 +649,7 @@ bool ResultProjector::combineCacheResults(Clause* clause) {
 		else if (isStmtType(paraTwoType)) {
 			synonyms.push_back(paraTwo.getValue());
 		}
-		unordered_set<int> cacheResult = resultCache->getOneSynCacheResult();
+		std::unordered_set<int> cacheResult = resultCache->getOneSynCacheResult();
 		return combineResults(cacheResult, synonyms);
 	}
 }
@@ -661,19 +660,19 @@ bool ResultProjector::isStmtType(Type type) {
 }
 
 // For testing purposes
-unordered_map<string, int> ResultProjector::getSynonymTable() {
+std::unordered_map<std::string, int> ResultProjector::getSynonymTable() {
 	return synonymTable;
 }
 
-void ResultProjector::setSynonymTable(unordered_map<string, int> synTable) {
+void ResultProjector::setSynonymTable(std::unordered_map<std::string, int> synTable) {
 	synonymTable = synTable;
 }
 
-unordered_map<int, list<unordered_map<string, int>>> ResultProjector::getSynonymResults() {
+std::unordered_map<int, std::list<std::unordered_map<std::string, int>>> ResultProjector::getSynonymResults() {
 	return synonymResults;
 }
 
-void ResultProjector::setSynonymResults(unordered_map<int, list<unordered_map<string, int>>> synResults) {
+void ResultProjector::setSynonymResults(std::unordered_map<int, std::list<std::unordered_map<std::string, int>>> synResults) {
 	synonymResults = synResults;
 }
 
@@ -687,23 +686,4 @@ ResultCache ResultProjector::getAffectsTCache() {
 
 ResultCache ResultProjector::getNextTCache() {
 	return nextTCache;
-}
-
-// For debugging purposes
-void ResultProjector::printTables() {
-	cout << "SynonymTable: " << endl;
-	for (auto x : synonymTable) {
-		cout << x.first << " " << std::to_string(x.second) << endl;
-	}
-	cout << "SynonymResults: " << endl;
-	for (auto x : synonymResults) {
-		cout << "Table " << x.first << "-- ";
-		for (auto results : x.second) {
-			for (auto result : results) {
-				std::cout << result.first << ": " << result.second << ", ";
-			}
-		}
-		cout << "------------------------------ " << endl;
-	}
-	cout << endl;
 }

@@ -1,7 +1,5 @@
 #include "ResultCache.h"
 
-using namespace std;
-
 void ResultCache::resetCache() {
 	SynSynSame.clear();
 	SynSynDiff.clear();
@@ -151,15 +149,15 @@ bool ResultCache::cacheExists(Clause* clause) {
 	return false;
 }
 
-unordered_map<int, unordered_set<int>> ResultCache::getTwoSynCacheResult() {
+std::unordered_map<int, std::unordered_set<int>> ResultCache::getTwoSynCacheResult() {
 	return twoSynCacheResult;
 }
 
-unordered_set<int> ResultCache::getOneSynCacheResult() {
+std::unordered_set<int> ResultCache::getOneSynCacheResult() {
 	return oneSynCacheResult;
 }
 
-void ResultCache::storeInCache(Clause* clause, unordered_map<int, unordered_set<int>>& result) {
+void ResultCache::storeInCache(Clause* clause, std::unordered_map<int, std::unordered_set<int>>& result) {
 	ClauseType clauseType = clause->getClauseType();
 	DesignEntity paraOne = clause->getParaOne();
 	DesignEntity paraTwo = clause->getParaTwo();
@@ -188,7 +186,7 @@ void ResultCache::storeInCache(Clause* clause, unordered_map<int, unordered_set<
 	}
 }
 
-void ResultCache::storeInCache(Clause* clause,  unordered_set<int>& result) {
+void ResultCache::storeInCache(Clause* clause, std::unordered_set<int>& result) {
 	ClauseType clauseType = clause->getClauseType();
 	Type paraOneType = clause->getParaOne().getType();
 	Type paraTwoType = clause->getParaTwo().getType();
@@ -584,47 +582,47 @@ CacheType ResultCache::startWithSwitch(Type type2) {
 }
 
 // For testing purposes
-void ResultCache::setSynSynSame(unordered_map<CacheType, unordered_map<int, unordered_set<int>>> result) {
+void ResultCache::setSynSynSame(std::unordered_map<CacheType, std::unordered_map<int, std::unordered_set<int>>> result) {
 	SynSynSame = result;
 }
 
-void ResultCache::setSynSynDiff(unordered_map<CacheType, unordered_map<int, unordered_set<int>>> result) {
+void ResultCache::setSynSynDiff(std::unordered_map<CacheType, std::unordered_map<int, std::unordered_set<int>>> result) {
 	SynSynDiff = result;
 }
 
-void ResultCache::setSynUnderscore(unordered_map<Type, unordered_set<int>> result) {
+void ResultCache::setSynUnderscore(std::unordered_map<Type, std::unordered_set<int>> result) {
 	SynUnderscore = result;
 }
 
-void ResultCache::setUnderscoreSyn(unordered_map<Type, unordered_set<int>> result) {
+void ResultCache::setUnderscoreSyn(std::unordered_map<Type, std::unordered_set<int>> result) {
 	UnderscoreSyn = result;
 }
 
-void ResultCache::setSynFixed(unordered_map<Type, unordered_map<int, unordered_set<int>>> result) {
+void ResultCache::setSynFixed(std::unordered_map<Type, std::unordered_map<int, std::unordered_set<int>>> result) {
 	SynFixed = result;
 }
 
-void ResultCache::setFixedSyn(unordered_map<Type, unordered_map<int, unordered_set<int>>> result) {
+void ResultCache::setFixedSyn(std::unordered_map<Type, std::unordered_map<int, std::unordered_set<int>>> result) {
 	FixedSyn = result;
 }
 
-unordered_map<CacheType, unordered_map<int, unordered_set<int>>> ResultCache::getSynSynSame() {
+std::unordered_map<CacheType, std::unordered_map<int, std::unordered_set<int>>> ResultCache::getSynSynSame() {
 	return SynSynSame;
 }
 
-unordered_map<CacheType, unordered_map<int, unordered_set<int>>> ResultCache::getSynSynDiff() {
+std::unordered_map<CacheType, std::unordered_map<int, std::unordered_set<int>>> ResultCache::getSynSynDiff() {
 	return SynSynDiff;
 }
-unordered_map<Type, unordered_set<int>> ResultCache::getSynUnderscore() {
+std::unordered_map<Type, std::unordered_set<int>> ResultCache::getSynUnderscore() {
 	return SynUnderscore;
 }
-unordered_map<Type, unordered_set<int>> ResultCache::getUnderscoreSyn() {
+std::unordered_map<Type, std::unordered_set<int>> ResultCache::getUnderscoreSyn() {
 	return UnderscoreSyn;
 }
-unordered_map<Type, unordered_map<int, unordered_set<int>>> ResultCache::getSynFixed() {
+std::unordered_map<Type, std::unordered_map<int, std::unordered_set<int>>> ResultCache::getSynFixed() {
 	return SynFixed;
 }
-unordered_map<Type, unordered_map<int, unordered_set<int>>> ResultCache::getFixedSyn() {
+std::unordered_map<Type, std::unordered_map<int, std::unordered_set<int>>> ResultCache::getFixedSyn() {
 	return FixedSyn;
 }
 
