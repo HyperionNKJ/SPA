@@ -1247,7 +1247,7 @@ unordered_map<int, unordered_set<int>> PKB::getAffectsMap(bool isTransitive, boo
 		} else if (isCallStmt(currLine)) {
 			varsModified = getVarModifiedByProc(getCallAtStmtNum(currLine));
 			for (const auto &variableModified : varsModified) {
-				currModMap->erase(varModified);
+				currModMap->erase(variableModified);
 			}
 		} else if(isWhileStmt(currLine)) {
 				prevModMap[currLine] = *currModMap;
@@ -1306,9 +1306,15 @@ bool PKB::getAffectsBoolean(bool isTransitive, int modifierStmtNum, int userStmt
 
 	// Navigation of nextMap
 	if (allStmts.size() == 0)
-		return {};
-	toBeVisited.insert(modifierStmtNum);
-	visitedLines.insert(modifierStmtNum);
+		return false;
+	if (modifierStmtNum != -1) {
+		toBeVisited.insert(modifierStmtNum);
+		visitedLines.insert(modifierStmtNum);
+	}
+	else {
+		toBeVisited.insert(1);
+		visitedLines.insert(1);
+	}
 	while (visitedLines.size() != allStmts.size()) {
 		// For moving on to the next proc in the code
 		if (toBeVisited.size() == 0) {
@@ -1383,6 +1389,8 @@ bool PKB::getAffectsBoolean(bool isTransitive, int modifierStmtNum, int userStmt
 						} else if (modifierStmtNum == -1 && userStmtNum != -1) {
 							if (currLine == userStmtNum)
 								return true;
+						} else {
+							return true;
 						}
 					}
 				}
@@ -1396,7 +1404,7 @@ bool PKB::getAffectsBoolean(bool isTransitive, int modifierStmtNum, int userStmt
 		} else if (isCallStmt(currLine)) {
 			varsModified = getVarModifiedByProc(getCallAtStmtNum(currLine));
 			for (const auto &variableModified : varsModified) {
-				currModMap->erase(varModified);
+				currModMap->erase(variableModified);
 			}
 		} else if(isWhileStmt(currLine)) {
 				prevModMap[currLine] = *currModMap;
@@ -1464,17 +1472,17 @@ unordered_set<int> PKB::getUserStmts() {
 }
 
 unordered_set<int> PKB::getModifierOf(int userStmtNum) {
-	return getAffectsSet(true, false, -1, userStmtNum);
+	return getAffectsSet(false, false, -1, userStmtNum);
 }
 
 unordered_set<int> PKB::getModifierTOf(int userStmtNum) {
-	return getAffectsSet(true, true, -1, userStmtNum);
+	return getAffectsSet(false, true, -1, userStmtNum);
 }
 
 unordered_set<int> PKB::getUserOf(int modifierStmtNum) {
-	return getAffectsSet(false, false, modifierStmtNum, -1);
+	return getAffectsSet(true, false, modifierStmtNum, -1);
 }
 
 unordered_set<int> PKB::getUserTOf(int modifierStmtNum) {
-	return getAffectsSet(false, true, modifierStmtNum, -1);
+	return getAffectsSet(true, true, modifierStmtNum, -1);
 }

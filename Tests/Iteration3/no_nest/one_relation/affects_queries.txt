@@ -46,7 +46,7 @@ none
 10 - Find statements that with assign and stmt
 stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
 Select s such that Affects (a, s)
-6, 8, 9, 11, 18, 19, 20
+6, 8, 9, 18, 19, 20
 5000
 11 - Find statements that with assign and assign (same)
 stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
@@ -166,7 +166,7 @@ none
 34 - Find statements that with print and progline
 stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
 Select p such that Affects (p, n)
-7, 12
+none
 5000
 35 - Find statements that with print and while
 stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
@@ -231,7 +231,7 @@ Select n such that Affects (n, s)
 47 - Find statements that with progline and assign
 stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
 Select a such that Affects (n, a)
-6, 8, 9, 11, 18, 19, 20
+6, 8, 9, 18, 19, 20
 5000
 48 - Find statements that with progline and call
 stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
@@ -341,12 +341,12 @@ Select n such that Affects (n, 20)
 69 - Find statements that with underscore and stmt
 stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
 Select s such that Affects (_, s)
-6, 8, 9, 11, 18, 19, 20
+6, 8, 9, 18, 19, 20
 5000
 70 - Find statements that with underscore and assign
 stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
 Select a such that Affects (_, a)
-6, 8, 9, 11, 18, 19, 20
+6, 8, 9, 18, 19, 20
 5000
 71 - Find statements that with underscore and call
 stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
@@ -366,7 +366,7 @@ none
 74 - Find statements that with underscore and progline
 stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
 Select n such that Affects (_, n)
-6, 8, 9, 11, 18, 19, 20
+6, 8, 9, 18, 19, 20
 5000
 75 - Find statements that with underscore and while
 stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
