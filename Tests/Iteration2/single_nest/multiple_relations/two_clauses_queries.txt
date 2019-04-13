@@ -236,7 +236,7 @@ none
 48 - To be filled
 stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
 Select BOOLEAN such that Parent(ifs, a) and Next*(ifs, a)
-FALSE
+TRUE
 5000
 49 - To be filled
 stmt s; assign a; call cl; print pt; read r; prog_line n; while w; if ifs; variable v; procedure p; constant c;
