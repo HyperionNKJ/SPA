@@ -80,7 +80,6 @@ int Parser::parse(string fileName, PKB& p) {
 					}
 					else if (intent == KEY_SWITCHCASE) {
 						result = handleSwitchCase(sourceCode[i]);
-						statementNumber++;
 					}
 					else {
 						errorMessage = "Statement of unknown type encountered at line "  + to_string(statementNumber);
@@ -144,7 +143,7 @@ Statement_Key Parser::getStatementIntent(string line) {
 	if (tokenLine[0] == "switch") {
 		return KEY_SWITCH;
 	}
-	if (tokenLine[0] == "case") {
+	if (tokenLine[0] == "case" || tokenLine[0] == "default") {
 		return KEY_SWITCHCASE;
 	}
 	return KEY_ERROR;
@@ -520,7 +519,6 @@ int Parser::handleWhile(string whileLine) {
 	string condExpr = whileLine.substr(openBracketPos + 1, closeBracketPos - openBracketPos - 1);
 	vector<string> tokens = tokeniseString(condExpr, " \t\n&|()!><=+-*/%");
 	for (unsigned int i = 0; i < tokens.size(); i++) {
-		cout << tokens[i] << endl;
 		if (isValidVarName(tokens[i])) {
 			pkb->insertVar(tokens[i]);
 			setUses(statementNumber, currProcedure, tokens[i]);
@@ -577,7 +575,6 @@ int Parser::handleIf(string ifLine) {
 	string condExpr = ifLine.substr(openBracketPos + 1, closeBracketPos - openBracketPos - 1);
 	vector<string> tokens = tokeniseString(condExpr, " \t\n&|()!><=+-*/%");
 	for (unsigned int i = 0; i < tokens.size(); i++) {
-		cout << tokens[i] << endl;
 		if (isValidVarName(tokens[i])) {
 			pkb->insertVar(tokens[i]);
 			setUses(statementNumber, currProcedure, tokens[i]);
