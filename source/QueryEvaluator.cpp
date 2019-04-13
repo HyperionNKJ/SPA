@@ -9,7 +9,10 @@ list<string> QueryEvaluator::evaluate(ProcessedQuery& processedQuery, const PKB&
 	resultProjector.resetResults(); // Reset possible old query result
 
 	vector<Clause*>& booleanClauses = processedQuery.booleanClauses; // boolean clause refers to clause without synonym.
-	vector<Clause*>& expensiveBooleanClauses = extractExpensiveClauses(booleanClauses); // function extracts expensive Next* / Affects / Affects* boolean clauses
+	vector<Clause*> expensiveBooleanClauses; // i.e. Next* / Affects / Affects* boolean clauses
+	vector<Clause*> regularBooleanClauses; // other boolean clauses
+	sortBooleanClauses(booleanClauses, expensiveBooleanClauses, regularBooleanClauses); 
+
 	vector<Clause*>& sortedWithClauses = optimizationSort(processedQuery.withClauses); // all types of clauses below have synonyms. Hence optimization is required
 	vector<Clause*>& sortedNextTClauses = optimizationSort(processedQuery.nextTClauses);
 	vector<Clause*>& sortedAffectsClauses = optimizationSort(processedQuery.affectsClauses);
@@ -17,7 +20,7 @@ list<string> QueryEvaluator::evaluate(ProcessedQuery& processedQuery, const PKB&
 	vector<Clause*>& sortedOtherClauses = optimizationSort(processedQuery.otherClauses);
 
 	vector<Clause*> combinedClauses; // optimally combined with the following order
-	combinedClauses.insert(combinedClauses.end(), booleanClauses.begin(), booleanClauses.end());
+	combinedClauses.insert(combinedClauses.end(), regularBooleanClauses.begin(), regularBooleanClauses.end());
 	combinedClauses.insert(combinedClauses.end(), sortedWithClauses.begin(), sortedWithClauses.end());
 	combinedClauses.insert(combinedClauses.end(), sortedOtherClauses.begin(), sortedOtherClauses.end());
 	combinedClauses.insert(combinedClauses.end(), expensiveBooleanClauses.begin(), expensiveBooleanClauses.end());
@@ -187,15 +190,14 @@ vector<Clause*> QueryEvaluator::combineClauses(vector<pair<unordered_set<string>
 	return combinedClauses;
 }
 
-vector<Clause*> QueryEvaluator::extractExpensiveClauses(vector<Clause*>& booleanClauses) {
-	vector<Clause*> expensiveClauses;
-	for (auto& itr = booleanClauses.begin(); itr != booleanClauses.end(); ++itr) {
-		Clause* clause = *itr;
+void QueryEvaluator::sortBooleanClauses(const vector<Clause*>& booleanClauses, vector<Clause*>& expensiveBooleanClauses, vector<Clause*>& regularBooleanClauses) {
+	for (const auto& clause : booleanClauses) {
 		ClauseType clauseType = clause->getClauseType();
 		if (clauseType == NEXT_T || clauseType == AFFECTS || clauseType == AFFECTS_T) {
-			expensiveClauses.push_back(clause);
-			booleanClauses.erase(itr);
+			expensiveBooleanClauses.push_back(clause);
+		}
+		else {
+			regularBooleanClauses.push_back(clause);
 		}
 	}
-	return expensiveClauses;
 }
