@@ -14,7 +14,7 @@ private:
 	const std::string& QUERY;
 	std::vector<std::string> statements;
 	void split();
-	bool validateStatement() const;
+	void validateStatement() const;
 	static void isDeclareStatement(const std::string& statement);
 	static void isSelectStatement(const std::string& statement);
 };

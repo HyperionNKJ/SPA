@@ -113,7 +113,7 @@ std::string QueryPreprocessorHelper::getPostFix(const std::string& infix) {
 			opStack.pop_back();
 		}
 		else if (assignTokens[index] == "+" || assignTokens[index] == "-") {
-			while (opStack.size() > 0 && (opStack.back() == "+" || opStack.back() == "-")) {
+			while (opStack.size() > 0 && opStack.back() != "(") {
 				postfix.push_back(opStack.back());
 				opStack.pop_back();
 			}

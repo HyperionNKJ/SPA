@@ -67,7 +67,7 @@ void QueryPreprocessorSelectParser::parse() {
 
 		std::string clause;
 
-		size_t clauseEndPos = selectCl.find(SPACE, typeSize + 6);
+		size_t clauseEndPos = selectCl.find(SPACE, typeSize + 3);
 		if (clauseEndPos == std::string::npos) {
 			clause = selectCl.substr(typeSize);
 			selectCl = "";
