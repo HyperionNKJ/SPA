@@ -53,18 +53,58 @@ assign a, a1, a2; stmt s; procedure p, q; variable v;
 Select <a, p> such that Next* (a, s) and Follows* (a1, s) and Modifies (p, "a") and Next (5, a) and Calls* (p, q) and Uses (a, v)
 6 main, 6 P
 5000
-12 - Multiple Next*
+12 - [Follows*] [Affects, Next, Next*, Affects*]
+stmt s, s1, s2, s3, s4, s5;
+Select s1 such that Follows* (s, s1) and Affects (s2, s3) and Next (s2, s3) and Next* (s3, s4) and Affects* (s4, s5)
+10,11,12,13,15,16,17,18,19,2,20,21,3,4,6,7,8,9
+5000
+13 - [Follows*, Affects] [Next, Next*, Affects*]
+stmt s, s1, s2, s3, s4, s5;
+Select s4 such that Follows* (s, s1) and Affects (s, s1) and Next (s2, s3) and Next* (s4, s5) and Affects* (s4, s5)
+17,18,19,5,6,8
+5000
+14 - [Follows*, Affects, Next] [Next*, Affects*]
+stmt s, s1, s2, s3, s4, s5;
+Select s such that Follows* (s, s1) and Affects (s, s1) and Next (s2, s1) and Next* (s3, s4) and Affects* (s4, s5)
+17,18,19,5,6,8
+5000
+15 - [Follows*, Affects, Next, Next*] [Affects*]
+stmt s, s1, s2, s3, s4, s5;
+Select s such that Follows* (s, s1) and Affects (s, s1) and Next (s2, s1) and Next* (s2, s3) and Affects* (s3, s4)
+17,5,6
+5000
+16 - [Follows*, Affects, Next, Next*, Affects*]
+stmt s, s1, s2, s3, s4, s5;
+Select s such that Follows* (s, s1) and Affects (s1, s2) and Next (s2, s3) and Next* (s1, s2) and Affects* (s2, s3)
+14,15,16,5
+5000
+17 - Multiple Next*
 stmt s, s1, s2, s3, s4, s5;
 Select s such that Next* (s, s1) and Next* (s2, s3) and Next* (s4, s5)
 1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 20
 5000
-13 - Multiple Next*
+18 - Multiple Next*
 stmt s, s1, s2, s3, s4, s5;
 Select s such that Next* (s, s1) and Next* (s1, s2)
 1, 2, 5, 6, 7, 8, 9, 10, 11, 14, 15, 16, 17, 18, 19
 5000
-14 - Multiple Next*
+19 - Multiple Next*
 stmt s, s1, s2, s3, s4, s5;
 Select s such that Next* (s, s1) and Next* (s1, s2) and Next* (s1, s3)
 1, 2, 5, 6, 7, 8, 9, 10, 11, 14, 15, 16, 17, 18, 19
+5000
+20 - Multiple Affects*
+stmt s, s1, s2, s3, s4, s5;
+Select s such that Affects* (s, s1) and Affects* (s2, s3) and Affects* (s4, s5)
+5, 6, 8, 17, 18, 19
+5000
+21 - Multiple Affects*
+stmt s, s1, s2, s3, s4, s5;
+Select s such that Affects* (s, s1) and Affects* (s1, s2)
+5, 6, 17
+5000
+22 - Multiple Affects*
+stmt s, s1, s2, s3, s4, s5;
+Select s such that Affects* (s, s1) and Affects* (s1, s2) and Affects* (s1, s3)
+5, 6, 17
 5000
