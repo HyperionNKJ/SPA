@@ -248,7 +248,6 @@ public:
 	}
 
 	TEST_METHOD(TestSelect) {
-		//string query = "assign a; variable v;  Select a such that Parent(1, 2) pattern a(_, \"if\")";
 		string query = "assign a; Select a";
 		actualResults = queryProcessor.evaluate(query, pkb);
 
@@ -257,7 +256,6 @@ public:
 	}
 
 	TEST_METHOD(TestTuple) {
-		//string query = "assign a; variable v;  Select a such that Parent(1, 2) pattern a(_, \"if\")";
 		string query = "read r; print pn; Select <r, r.varName, pn>";
 		actualResults = queryProcessor.evaluate(query, pkb);
 
