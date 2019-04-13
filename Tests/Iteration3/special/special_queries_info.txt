@@ -1,6 +1,6 @@
 Variables: just, jus, t, ju, st, secret, message, smart, true, hisIQ, hardworking, impossible, kaijun, alex, alvin, while, if, else
 Procedures: alex, alvin, kaijun, xinler
-Constants: 123, 200, 6, 3, 15, 10, 4, 7, 5, 23, 99999999,
+Constants: 123, 200, 6, 3, 15, 10, 4, 7, 5, 23, 99999999, 12
 Print: impossible 6 & 16, alex 9, true 11 & 12 & 44, alvin 39,
 Read: alex 5, impossible 23,
 Call: alvin 2, kaijun 7 & 13, xinler 41,

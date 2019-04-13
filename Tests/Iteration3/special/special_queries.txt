@@ -11,7 +11,7 @@ alex, alvin, kaijun, xinler
 3 - Select all constants
 stmt s, s1; assign a, a1; while w; if ifs; variable v, v1; procedure p, q; constant c; prog_line n; call cl; read rd; print pt;
 Select c
-123, 200, 6, 3, 15, 10, 4, 7, 5, 23, 99999999
+123, 200, 6, 3, 15, 10, 4, 7, 5, 12, 23, 99999999
 5000
 4 - Select all print varName
 stmt s, s1; assign a, a1; while w; if ifs; variable v, v1; procedure p, q; constant c; prog_line n; call cl; read rd; print pt;
@@ -25,12 +25,12 @@ alex, impossible
 5000
 6 - Select all call procname
 stmt s, s1; assign a, a1; while w; if ifs; variable v, v1; procedure p, q; constant c; prog_line n; call cl; read rd; print pt;
-Select cl.varName
+Select cl.procName
 alvin, kaijun, xinler
 5000
 7 - Select all print statement
 stmt s, s1; assign a, a1; while w; if ifs; variable v, v1; procedure p, q; constant c; prog_line n; call cl; read rd; print pt;
-Select pn.stmt#
+Select pt.stmt#
 6, 16, 9, 11, 12, 44, 39
 5000
 8 - Select all read statement
@@ -46,17 +46,17 @@ Select cl
 10 - To be filled
 stmt s, s1; assign a, a1; while w; if ifs; variable v, v1; procedure p, q; constant c; prog_line n; call cl; read rd; print pt;
 Select pt.varName with pt.varName = rd.varName
-impossible
+impossible, alex
 5000
 11 - To be filled
 stmt s, s1; assign a, a1; while w; if ifs; variable v, v1; procedure p, q; constant c; prog_line n; call cl; read rd; print pt;
 Select pt.stmt# with pt.varName = rd.varName
-6, 16
+6, 16, 9
 5000
 12 - To be filled
 stmt s, s1; assign a, a1; while w; if ifs; variable v, v1; procedure p, q; constant c; prog_line n; call cl; read rd; print pt;
 Select <pt, rd.varName> with pt.varName = rd.varName
-6 impossible, 16 impossible
+6 impossible, 16 impossible, 9 alex
 5000
 13 - To be filled
 stmt s, s1; assign a, a1; while w; if ifs; variable v, v1; procedure p, q; constant c; prog_line n; call cl; read rd; print pt;
@@ -71,7 +71,7 @@ impossible 6, impossible 16, alex 9
 15 - To be filled
 stmt s, s1; assign a, a1; while w; if ifs; variable v, v1; procedure p, q; constant c; prog_line n; call cl; read rd; print pt;
 Select <c> with pt.stmt# = c.value
-6
+6, 12
 5000
 16 - To be filled
 stmt s, s1; assign a, a1; while w; if ifs; variable v, v1; procedure p, q; constant c; prog_line n; call cl; read rd; print pt;
@@ -85,7 +85,7 @@ Select <cl.stmt#, cl.procName, c> with cl.stmt# = c.value
 5000
 18 - To be filled
 stmt s, s1; assign a, a1; while w; if ifs; variable v, v1; procedure p, q; constant c; prog_line n; call cl; read rd; print pt;
-Select <ifs.stmt#, c, v> with ifs.stmt# = c.value pattern ifs(v, _)
+Select <ifs.stmt#, c, v> with ifs.stmt# = c.value pattern ifs(v, _, _)
 15 15 alex, 15 15 smart
 5000
 19 - To be filled
