@@ -1,0 +1,25 @@
+1 - Next between statemetns within case container
+stmt s;
+Select s such that Next (3, 4)
+TRUE
+5000
+2 - Next between statemetns within case container
+stmt s;
+Select s such that Next (9, 11)
+FALSE
+5000
+3 - Next between statemetns within case container
+stmt s;
+Select s such that Next* (9, 11)
+TRUE
+5000
+4 - Next between statemetns before and after switch statement
+stmt s;
+Select s such that Next (1, 12)
+TRUE
+5000
+5 - Next between statemetns in different case containers
+stmt s;
+Select s such that Next (3, 10)
+FALSE
+5000

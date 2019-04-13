@@ -1,0 +1,30 @@
+1 - TMI
+stmt s;
+Select BOOLEAN such that Affects (6, 8)
+TRUE
+5000
+2 - TMI
+stmt s;
+Select BOOLEAN such that Affects (6, 29)
+FALSE
+5000
+3 - TMI
+stmt s;
+Select BOOLEAN such that Affects (19, 18)
+TRUE
+5000
+4 - TMI
+stmt s;
+Select BOOLEAN such that Affects (22, 12)
+TRUE
+5000
+5 - TMI
+stmt s;
+Select BOOLEAN such that Affects (26, 13)
+FALSE
+5000
+6 - TMI
+stmt s;
+Select BOOLEAN such that Affects (13, 26)
+TRUE
+5000
