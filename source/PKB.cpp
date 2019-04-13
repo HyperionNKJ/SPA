@@ -993,7 +993,7 @@ unordered_map<int, unordered_set<int>> PKB::getPreviousNextPairs(Type previousTy
 unordered_map<int, unordered_set<int>> PKB::getPreviousNextTPairs(Type firstStmtType, Type secondStmtType) {
 	unordered_map<int, unordered_set<int>> resultMap;
 	unordered_set<int> *typedStmtSet = getTypedStmtSet(firstStmtType);
-	for (auto &elem : *typedStmtSet) {
+	for (const auto &elem : *typedStmtSet) {
 		unordered_set<int> resultSet = getNextTOf(elem, secondStmtType);
 		resultMap[elem] = resultSet;
 	}
