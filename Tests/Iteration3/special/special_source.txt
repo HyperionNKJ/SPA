@@ -32,7 +32,7 @@ procedure alvin {
 	}
 }
 procedure kaijun {
-	if (alvin == true && hisIQ != 200) then {
+	if ((alvin == true) && (hisIQ != 200)) then {
 	    read impossible;
 	    switch (kaijun) {
 		case secret:
@@ -46,14 +46,14 @@ procedure kaijun {
 			true = true;
 	    }
 	} else {
-	    while (while == while && while >= while) {
+	    while ((while == while) && (while >= while)) {
 		alex = 23 * (ju - st) + 99999999;
 		if (if != if) then {
 			if = if; 
 			kaijun = 3 + kaijun;
 			kaijun = kaijun + 3 * alex;
 		} else {
-			if (else == else && else >= else) {
+			if ((else == else) && (else >= else)) then {
 				else = else;
 			} else {
 				else = else + 3;
@@ -67,7 +67,7 @@ procedure kaijun {
 	if = kaijun + else;
 }
 procedure xinler {
-	if (alex == true && hisIQ == 200) {
+	if ((alex == true) && (hisIQ == 200)) then {
 		print true;
 	} else {
 		hisIQ = 200;
