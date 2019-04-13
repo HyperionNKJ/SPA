@@ -234,6 +234,7 @@ DesignEntity QueryPreprocessorHelper::getParam(const std::string& param, Process
 					|| designEntity == Type::PRINT
 					|| designEntity == Type::READ
 					|| designEntity == Type::STATEMENT
+					|| designEntity == Type::SWITCH
 					|| designEntity == Type::WHILE)) {
 				return DesignEntity(synonym, designEntity, AttrRef::STMT_NUM);
 			}
