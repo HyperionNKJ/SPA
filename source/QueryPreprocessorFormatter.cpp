@@ -80,7 +80,63 @@ void QueryPreprocessorFormatter::removeLeadingSpace() {
 			&& query[index - 3] == 't'
 			&& query[index - 2] == 'h'
 			&& query[index - 1] == ' ') {
+			int i = 0;
+		}
+		else if (index > 6
+			&& query[index] == '*'
+			&& query[index - 8] == 'F'
+			&& query[index - 7] == 'o'
+			&& query[index - 6] == 'l'
+			&& query[index - 5] == 'l'
+			&& query[index - 4] == 'o'
+			&& query[index - 3] == 'w'
+			&& query[index - 2] == 's'
+			&& query[index - 1] == ' ') {
 			// do nothing
+			int i = 0;
+		}
+		else if (index > 3
+			&& query[index] == '*'
+			&& query[index - 5] == 'U'
+			&& query[index - 4] == 's'
+			&& query[index - 3] == 'e'
+			&& query[index - 2] == 's'
+			&& query[index - 1] == ' ') {
+			// do nothing
+			int i = 0;
+		}
+		else if (index > 3
+			&& query[index] == '*'
+			&& query[index - 5] == 'N'
+			&& query[index - 4] == 'e'
+			&& query[index - 3] == 'x'
+			&& query[index - 2] == 't'
+			&& query[index - 1] == ' ') {
+			// do nothing
+			int i = 0;
+		}
+		else if (index > 4
+			&& query[index] == '*'
+			&& query[index - 6] == 'C'
+			&& query[index - 5] == 'a'
+			&& query[index - 4] == 'l'
+			&& query[index - 3] == 'l'
+			&& query[index - 2] == 's'
+			&& query[index - 1] == ' ') {
+			// do nothing
+			int i = 0;
+		}
+		else if (index > 5
+			&& query[index] == '*'
+			&& query[index - 7] == 'P'
+			&& query[index - 6] == 'a'
+			&& query[index - 5] == 'r'
+			&& query[index - 4] == 'e'
+			&& query[index - 3] == 'n'
+			&& query[index - 2] == 't'
+			&& query[index - 1] == ' ') {
+			// do nothing
+			int i = 0;
 		}
 		else if (query[index - 1] == CHAR_SPACE) {
 			query.erase(index - 1, 1);
