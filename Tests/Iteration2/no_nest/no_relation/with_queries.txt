@@ -60,8 +60,8 @@ FALSE
 5000
 13 - Identifier with Constant
 assign a;
-Select a with "x" = 2
-none
+Select BOOLEAN with "x" = 2
+FALSE
 5000
 14 - Identifier with Progline
 prog_line n;
@@ -85,13 +85,13 @@ none
 5000
 18 - Constant with Constant (same)
 read r;
-Select r with 1 = 12
-none
+Select r with 12 = 12
+1, 2, 3, 14
 5000
 19 - Constant with Constant (diff)
 read r;
-Select r with 12 = 12
-1, 2, 3, 14
+Select r with 12 = 1
+none
 5000
 20 - Constant with Progline
 prog_line n;
@@ -105,8 +105,8 @@ Select pt with 12 = pt.stmt#
 5000
 22 - Constant with AttrRef (diff type)
 print pt;
-Select pt with 12 = pt.varName
-none
+Select BOOLEAN with 12 = pt.varName
+FALSE
 5000
 23 - Progline with String
 prog_line n;
@@ -150,8 +150,8 @@ Select pt with pt.varName = "b"
 5000
 31 - AttrRef with String (diff type)
 print pt;
-Select pt with pt.stmt# = "b"
-none
+Select BOOLEAN with pt.stmt# = "b"
+FALSE
 5000
 32 - AttrRef with Const (same type)
 print pt;
@@ -160,8 +160,8 @@ Select pt with pt.stmt# = 21
 5000
 33 - AttrRef with Const (diff type)
 print pt;
-Select pt with pt.varName = 21
-none
+Select BOOLEAN with pt.varName = 21
+FALSE
 5000
 34 - AttrRef with Progline (same type)
 print pt; prog_line n;
@@ -180,8 +180,8 @@ Select pt with pt.varName = rd.varName
 5000
 37 - AttrRef with AttrRef (diff type)
 print pt;
-Select pt with pt.varName = pt.stmt#
-none
+Select BOOLEAN with pt.varName = pt.stmt#
+FALSE
 5000
 38 - AttrRef with AttrRef (diff type)
 print pt; const c;
