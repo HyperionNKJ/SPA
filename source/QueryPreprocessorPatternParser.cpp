@@ -80,7 +80,7 @@ void QueryPreprocessorPatternParser::parse() {
 	}
 	else if (designEntity == Type::IF && paramTwoString == "_,_") {
 		// if pattern
-		PatternSwitch* pattern = new PatternSwitch(target, paramOne);
+		PatternIf* pattern = new PatternIf(target, paramOne);
 		query.addClause(pattern, CLAUSE);
 	}
 	else if (designEntity == Type::SWITCH && paramTwoString == "_") {
