@@ -36,7 +36,7 @@ procedure kaijun {
 	    read impossible;
 	    switch (kaijun) {
 		case secret:
-			secret = kaijun + 4 + 7;
+			secret = 4 + 7 + kaijun;
 			message = kaijun + 5;
 		case impossible:
 			kaijun = alex + kaijun + alvin;
