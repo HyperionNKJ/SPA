@@ -165,8 +165,8 @@ bool Parser::checkProcedure(string procLine) {
 	size_t startPos = procLine.find("procedure");
 	size_t endPos = procLine.find_first_of("{");
 	string procedureName = procLine.substr(startPos + 9, endPos - startPos - 9);
-	procedureName = leftTrim(procedureName, " \t");
-	procedureName = rightTrim(procedureName, " \t");
+	procedureName = leftTrim(procedureName, " \t\n");
+	procedureName = rightTrim(procedureName, " \t\n");
 	if (procNames.count(procedureName) > 0) {
 		errorMessage = "Two procedures with the same name have been found: " + procedureName;
 		return false;
@@ -181,8 +181,8 @@ int Parser::handleProcedure(string procLine) {
 	size_t startPos = procLine.find("procedure");
 	size_t endPos = procLine.find_first_of("{");
 	string procedureName = procLine.substr(startPos + 9, endPos - startPos - 9);
-	procedureName = leftTrim(procedureName, " \t");
-	procedureName = rightTrim(procedureName, " \t");
+	procedureName = leftTrim(procedureName, " \t\n");
+	procedureName = rightTrim(procedureName, " \t\n");
 
 	bool result;
 	result = pkb->insertProc(procedureName);
@@ -430,8 +430,8 @@ int Parser::handleRead(string readLine) {
 	size_t startPos = readLine.find_first_of("read");
 	size_t endPos = readLine.find_first_of(";");
 	string varName = readLine.substr(startPos + 4, endPos - startPos - 4);
-	varName = leftTrim(varName, " \t");
-	varName = rightTrim(varName, " \t");
+	varName = leftTrim(varName, " \t\n");
+	varName = rightTrim(varName, " \t\n");
 
 	setParent(statementNumber);
 	setFollow(statementNumber);
@@ -462,8 +462,8 @@ int Parser::handlePrint(string printLine) {
 	size_t startPos = printLine.find_first_of("read");
 	size_t endPos = printLine.find_first_of(";");
 	string varName = printLine.substr(startPos + 5, endPos - startPos - 5);
-	varName = leftTrim(varName, " \t");
-	varName = rightTrim(varName, " \t");
+	varName = leftTrim(varName, " \t\n");
+	varName = rightTrim(varName, " \t\n");
 
 	setParent(statementNumber);
 	setFollow(statementNumber);
@@ -518,8 +518,9 @@ int Parser::handleWhile(string whileLine) {
 	size_t openBracketPos = whileLine.find_first_of("(");
 	size_t closeBracketPos = whileLine.find_last_of(")");
 	string condExpr = whileLine.substr(openBracketPos + 1, closeBracketPos - openBracketPos - 1);
-	vector<string> tokens = tokeniseString(condExpr, " \t&|()!+-*/%");
+	vector<string> tokens = tokeniseString(condExpr, " \t\n&|()!><=+-*/%");
 	for (unsigned int i = 0; i < tokens.size(); i++) {
+		cout << tokens[i] << endl;
 		if (isValidVarName(tokens[i])) {
 			pkb->insertVar(tokens[i]);
 			setUses(statementNumber, currProcedure, tokens[i]);
@@ -574,8 +575,9 @@ int Parser::handleIf(string ifLine) {
 	size_t openBracketPos = ifLine.find_first_of("(");
 	size_t closeBracketPos = ifLine.find_last_of(")");
 	string condExpr = ifLine.substr(openBracketPos + 1, closeBracketPos - openBracketPos - 1);
-	vector<string> tokens = tokeniseString(condExpr, " \t&|()!+-*/%");
+	vector<string> tokens = tokeniseString(condExpr, " \t\n&|()!><=+-*/%");
 	for (unsigned int i = 0; i < tokens.size(); i++) {
+		cout << tokens[i] << endl;
 		if (isValidVarName(tokens[i])) {
 			pkb->insertVar(tokens[i]);
 			setUses(statementNumber, currProcedure, tokens[i]);
@@ -700,7 +702,7 @@ bool Parser::checkRelExpr(string relExpr) {
 }
 
 bool Parser::checkRelFactor(string relFactor) {
-	relFactor = leftTrim(rightTrim(relFactor, " \t\n"), " \t");
+	relFactor = leftTrim(rightTrim(relFactor, " \t\n"), " \t\n");
 	if (isValidVarName(relFactor)) {
 		return true;
 	}
@@ -784,8 +786,8 @@ int Parser::handleCall(string callLine) {
 	size_t startPos = callLine.find_first_of("call");
 	size_t endPos = callLine.find_first_of(";");
 	string calledProcName = callLine.substr(startPos + 4, endPos - startPos - 4);
-	calledProcName = leftTrim(calledProcName, " \t");
-	calledProcName = rightTrim(calledProcName, " \t");
+	calledProcName = leftTrim(calledProcName, " \t\n");
+	calledProcName = rightTrim(calledProcName, " \t\n");
 
 	setParent(statementNumber);
 	setFollow(statementNumber);
@@ -836,7 +838,7 @@ int Parser::handleSwitch(string switchLine) {
 	size_t openBracketPos = switchLine.find_first_of("(");
 	size_t closeBracketPos = switchLine.find_last_of(")");
 	string controlVar = switchLine.substr(openBracketPos + 1, closeBracketPos - openBracketPos - 1);
-	controlVar = leftTrim(rightTrim(controlVar, " \t"), " \t");
+	controlVar = leftTrim(rightTrim(controlVar, " \t\n"), " \t\n");
 	pkb->insertVar(controlVar);
 	setUses(statementNumber, currProcedure, controlVar);
 	//pkb->insertSwitchControlVar(statementNumber, controlVar);
@@ -879,7 +881,7 @@ int Parser::handleSwitchCase(string switchCaseLine) {
 	size_t casePos = switchCaseLine.find("case");
 	size_t colonPos = switchCaseLine.find_last_of(":");
 	string caseVar = switchCaseLine.substr(casePos + 1, colonPos - casePos - 1);
-	caseVar = leftTrim(rightTrim(caseVar, " \t"), " \t");
+	caseVar = leftTrim(rightTrim(caseVar, " \t\n"), " \t\n");
 	if (isValidConstant(caseVar)) {
 		pkb->insertConstant(stoi(caseVar));
 	}
