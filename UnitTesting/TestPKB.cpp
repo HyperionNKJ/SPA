@@ -144,6 +144,8 @@ namespace UnitTesting {
 			Assert::IsTrue(result);
 			result = pkb.insertStmtType(15, PRINT);
 			Assert::IsTrue(result);
+			result = pkb.insertStmtType(16, SWITCH);
+			Assert::IsTrue(result);
 
 			result = pkb.insertStmtType(10, STATEMENT);
 			Assert::IsFalse(result);
@@ -156,6 +158,8 @@ namespace UnitTesting {
 			result = pkb.insertStmtType(14, ASSIGN);
 			Assert::IsFalse(result);
 			result = pkb.insertStmtType(15, PRINT);
+			Assert::IsFalse(result);
+			result = pkb.insertStmtType(16, SWITCH);
 			Assert::IsFalse(result);
 
 			result = pkb.insertStmtType(16, CALL);
@@ -214,6 +218,15 @@ namespace UnitTesting {
 			result = pkb.insertWhileControlVar(32, "y");
 			Assert::IsTrue(result);
 			result = pkb.insertWhileControlVar(32, "x");
+			Assert::IsFalse(result);
+		}
+
+		TEST_METHOD(TestInsertSwitchControlVar) {
+			result = pkb.insertSwitchControlVar(32, "x");
+			Assert::IsTrue(result);
+			result = pkb.insertSwitchControlVar(33, "y");
+			Assert::IsTrue(result);
+			result = pkb.insertSwitchControlVar(32, "x");
 			Assert::IsFalse(result);
 		}
 

@@ -66,6 +66,9 @@ unordered_set<int>* PKB::getTypedStmtSet(Type type) {
 	case CALL:
 		typedStmtSet = &callStmts;
 		break;
+	case SWITCH:
+		typedStmtSet = &switchStmts;
+		break;
 	}
 
 	return typedStmtSet;
@@ -90,6 +93,9 @@ bool PKB::insertStmtType(int stmtNum, Type type) {
 		break;
 	case PRINT:
 		typedStmtSet = &printStmts;
+		break;
+	case SWITCH:
+		typedStmtSet = &switchStmts;
 		break;
 	// wrong type
 	default:
@@ -168,6 +174,12 @@ bool PKB::insertWhileControlVar(int whileStmtNum, string varName) {
 	whileControlStmtSet.insert(whileStmtNum);
 	whileControlVarMap[varName].insert(whileStmtNum);
 	return whileControlStmtMap[whileStmtNum].insert(varName).second;
+}
+
+bool PKB::insertSwitchControlVar(int switchStmtNum, string varName) {
+	switchControlStmtSet.insert(switchStmtNum);
+	switchControlVarMap[varName].insert(switchStmtNum);
+	return switchControlStmtMap.insert({switchStmtNum, varName}).second;
 }
 
 bool PKB::setFollows(int leader, int follower) {
@@ -1485,4 +1497,22 @@ unordered_set<int> PKB::getUserOf(int modifierStmtNum) {
 
 unordered_set<int> PKB::getUserTOf(int modifierStmtNum) {
 	return getAffectsSet(true, true, modifierStmtNum, -1);
+}
+
+unordered_set<int> PKB::getSwitchStmts() {
+	return switchStmts;
+}
+
+bool PKB::isSwitchStmt(int stmtNum) {
+	if (switchStmts.count(stmtNum))
+		return true;
+	return false;
+}
+
+unordered_map<int, string> PKB::getSwitchControlVarPair() {
+	return switchControlStmtMap;
+}
+
+unordered_set<int> PKB::getSwitchWithControlVar(string controlVar) {
+	return switchControlVarMap[controlVar];
 }
