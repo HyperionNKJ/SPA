@@ -19,6 +19,10 @@ QueryPreprocessorTokenizer::QueryPreprocessorTokenizer(const std::string& query)
 // Returns false if first to last statement is not a declarative statement or 
 // if the last statement is a Select statement.
 void QueryPreprocessorTokenizer::tokenize() {
+	if (QUERY.back() == ';') {
+		throw QueryPreprocessorError(ErrorType::SYNTACTIC);
+	}
+
 	split();
 	validateStatement();
 }

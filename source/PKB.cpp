@@ -1285,10 +1285,24 @@ unordered_map<int, unordered_set<int>> PKB::getAffectsMap(bool isTransitive, boo
 		}
 		visitedNodes.insert(affectElem.first);
 		while(toBeVisitedNodes.size() != 0) {
+			if (visitedNodes.count(toBeVisitedNodes.front())) {
+				for (const auto &neighbourT : resultTMap[toBeVisitedNodes.front()]) {
+					resultTMap[affectElem.first].insert(neighbourT);
+				}
+				toBeVisitedNodes.pop();
+				continue;
+			}
 			neighbours = affectsRelationshipMap[toBeVisitedNodes.front()];
 			for (const auto &neighbour : neighbours) {
 				if (!visitedNodes.count(neighbour)) {
 					toBeVisitedNodes.push(neighbour);
+					resultTMap[toBeVisitedNodes.front()].insert(neighbour);
+				}
+				else {
+					for (const auto &neighbourT : resultTMap[neighbour]) {
+						resultTMap[toBeVisitedNodes.front()].insert(neighbourT);
+						resultTMap[affectElem.first].insert(neighbourT);
+					}
 				}
 				resultTMap[affectElem.first].insert(neighbour);
 			}
