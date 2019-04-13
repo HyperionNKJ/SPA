@@ -144,12 +144,22 @@ void ProcessedQuery::optimiseClauses() {
 
 		if (paramOneResult != with.end()) {
 			DesignEntity replacement = paramOneResult->second;
+			
+			if (replacement.isVar()) {
+				continue;
+			}
+
 			replacement.setType(Type::FIXED);
 			clause->setParaOne(replacement);
 		}
 
 		if (paramTwoResult != with.end()) {
 			DesignEntity replacement = paramTwoResult->second;
+
+			if (replacement.isVar()) {
+				continue;
+			}
+
 			replacement.setType(Type::FIXED);
 			clause->setParaTwo(replacement);
 		}
@@ -167,12 +177,22 @@ void ProcessedQuery::optimiseClauses() {
 
 		if (paramOneResult != with.end()) {
 			DesignEntity replacement = paramOneResult->second;
+
+			if (replacement.isVar()) {
+				continue;
+			}
+
 			replacement.setType(Type::FIXED);
 			clause->setParaOne(replacement);
 		}
 
 		if (paramTwoResult != with.end()) {
 			DesignEntity replacement = paramOneResult->second;
+
+			if (replacement.isVar()) {
+				continue;
+			}
+
 			replacement.setType(Type::FIXED);
 			clause->setParaTwo(replacement);
 		}
@@ -190,12 +210,22 @@ void ProcessedQuery::optimiseClauses() {
 
 		if (paramOneResult != with.end()) {
 			DesignEntity replacement = paramOneResult->second;
+
+			if (replacement.isVar()) {
+				continue;
+			}
+
 			replacement.setType(Type::FIXED);
 			clause->setParaOne(replacement);
 		}
 
 		if (paramTwoResult != with.end()) {
 			DesignEntity replacement = paramOneResult->second;
+
+			if (replacement.isVar()) {
+				continue;
+			}
+
 			replacement.setType(Type::FIXED);
 			clause->setParaTwo(replacement);
 		}
@@ -213,12 +243,57 @@ void ProcessedQuery::optimiseClauses() {
 
 		if (paramOneResult != with.end()) {
 			DesignEntity replacement = paramOneResult->second;
+			ClauseType clauseType = clause->getClauseType();
+
+			if (replacement.isType(Type::WITH_STRING)
+				&& (clauseType == ClauseType::PARENT 
+					|| clauseType == ClauseType::PARENT_T 
+					|| clauseType == ClauseType::FOLLOWS
+					|| clauseType == ClauseType::FOLLOWS_T
+					|| clauseType == ClauseType::NEXT)) {
+				continue;
+			}
+
+			if (replacement.isType(Type::WITH_INTEGER)
+				&& (clauseType == ClauseType::CALLS
+					|| clauseType == ClauseType::CALLS_T
+					|| clauseType == ClauseType::PATTERN_ASSIGN
+					|| clauseType == ClauseType::PATTERN_IF
+					|| clauseType == ClauseType::PATTERN_WHILE
+					|| clauseType == ClauseType::PATTERN_SWITCH)) {
+				continue;
+			}
+
 			replacement.setType(Type::FIXED);
 			clause->setParaOne(replacement);
 		}
 
 		if (paramTwoResult != with.end()) {
+			if (clause->getClauseType() == ClauseType::PATTERN_ASSIGN
+				|| clause->getClauseType() == ClauseType::PATTERN_IF
+				|| clause->getClauseType() == ClauseType::PATTERN_WHILE
+				|| clause->getClauseType() == ClauseType::PATTERN_SWITCH) {
+				continue;
+			}
+
 			DesignEntity replacement = paramTwoResult->second;
+			ClauseType clauseType = clause->getClauseType();
+
+			if (replacement.isType(Type::WITH_STRING)
+				&& (clauseType == ClauseType::PARENT
+					|| clauseType == ClauseType::PARENT_T
+					|| clauseType == ClauseType::FOLLOWS
+					|| clauseType == ClauseType::FOLLOWS_T
+					|| clauseType == ClauseType::NEXT)) {
+				continue;
+			}
+
+			if (replacement.isType(Type::WITH_INTEGER)
+				&& (clauseType == ClauseType::CALLS
+					|| clauseType == ClauseType::CALLS_T)) {
+				continue;
+			}
+
 			replacement.setType(Type::FIXED);
 			clause->setParaTwo(replacement);
 		}
