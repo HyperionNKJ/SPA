@@ -1,7 +1,7 @@
 #include <regex>
 #include "PatternAssign.h"
 #include "PatternIf.h"
-//#include "PatternSwitch.h"
+#include "PatternSwitch.h"
 #include "PatternWhile.h"
 #include "QueryPreprocessorError.h"
 #include "QueryPreprocessorHelper.h"
@@ -80,13 +80,13 @@ void QueryPreprocessorPatternParser::parse() {
 	}
 	else if (designEntity == Type::IF && paramTwoString == "_,_") {
 		// if pattern
-		PatternIf* pattern = new PatternIf(target, paramOne);
+		PatternSwitch* pattern = new PatternSwitch(target, paramOne);
 		query.addClause(pattern, CLAUSE);
 	}
 	else if (designEntity == Type::SWITCH && paramTwoString == "_") {
 		// switch
-		//PatternSwitch pattern = new PatternSwitch(target, paramOne);
-		//query.addClause(pattern, CLAUSE);
+		PatternSwitch* pattern = new PatternSwitch(target, paramOne);
+		query.addClause(pattern, CLAUSE);
 	}
 	else {
 		// not a valid pattern clause
