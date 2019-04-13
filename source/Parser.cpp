@@ -880,15 +880,17 @@ int Parser::handleSwitchCase(string switchCaseLine) {
 	//add constant to pkb
 	size_t casePos = switchCaseLine.find("case");
 	size_t colonPos = switchCaseLine.find_last_of(":");
-	string caseVar = switchCaseLine.substr(casePos + 1, colonPos - casePos - 1);
-	caseVar = leftTrim(rightTrim(caseVar, " \t\n"), " \t\n");
-	if (isValidConstant(caseVar)) {
-		pkb->insertConstant(stoi(caseVar));
-	}
-	if (isValidVarName(caseVar)) {
-		setUses(-1, currProcedure, caseVar);
-		pkb->insertSwitchControlVar(parentVector.back(), caseVar);
-		pkb->insertVar(caseVar);
+	if (casePos != string::npos) {
+		string caseVar = switchCaseLine.substr(casePos + 4, colonPos - casePos - 5);
+		caseVar = leftTrim(rightTrim(caseVar, " \t\n"), " \t\n");
+		if (isValidConstant(caseVar)) {
+			pkb->insertConstant(stoi(caseVar));
+		}
+		if (isValidVarName(caseVar)) {
+			setUses(-1, currProcedure, caseVar);
+			pkb->insertSwitchControlVar(parentVector.back(), caseVar);
+			pkb->insertVar(caseVar);
+		}
 	}
 	return 0;
 }
