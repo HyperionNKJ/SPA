@@ -177,6 +177,9 @@ DesignEntity QueryPreprocessorHelper::getParam(const std::string& param, Process
 		}
 		else if (isInt(param)) {
 			// param is a statement number
+			if (param == "0") {
+				throw QueryPreprocessorError(query, ErrorType::SEMANTIC);
+			}
 			return DesignEntity(param, Type::FIXED);
 		}
 		else if (param.front() == '"' && param.back() == '"') {
