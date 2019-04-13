@@ -8,6 +8,8 @@
 #include <unordered_set>
 #include <unordered_map> 
 
+/* Cache results for Next*, Affects and Affects* when the clause contains at least one synonym */
+
 class ResultCache {
 private:
 	std::unordered_map<CacheType, std::unordered_map<int, std::unordered_set<int>>> SynSynSame; // Affects(a, a)

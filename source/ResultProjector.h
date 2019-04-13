@@ -5,6 +5,10 @@
 #include "PKB.h"
 #include "ResultCache.h"
 
+/*	 Combines results from the QueryEvaluator into the intermediate table after each query is evaluated.
+	 After combining results, a boolean is returned to signal to the QueryEvaluator if there is still results in the intermediate table
+	 such that early termination can be done if there is no more common results. */
+
 class ResultProjector {
 private:
 	// combine results
