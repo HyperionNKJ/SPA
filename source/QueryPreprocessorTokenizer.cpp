@@ -36,11 +36,7 @@ void QueryPreprocessorTokenizer::split() {
 // Validate that the statements are in the correct order.
 // First to second last statement must be Declarative statements.
 // Last statement must be a Select statement.
-bool QueryPreprocessorTokenizer::validateStatement() const {
-	if (statements.size() == 1) {
-		throw QueryPreprocessorError(ErrorType::SYNTACTIC);
-	}
-
+void QueryPreprocessorTokenizer::validateStatement() const {
 	// loop through the first to second last statement and check that they are
 	// all declarative statements
 	size_t numberOfStatements = statements.size();
