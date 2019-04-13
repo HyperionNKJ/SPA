@@ -888,6 +888,7 @@ int Parser::handleSwitchCase(string switchCaseLine) {
 	if (isValidVarName(caseVar)) {
 		setUses(-1, currProcedure, caseVar);
 		pkb->insertSwitchControlVar(parentVector.back(), caseVar);
+		pkb->insertVar(caseVar);
 	}
 	return 0;
 }
