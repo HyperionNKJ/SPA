@@ -143,7 +143,7 @@ Statement_Key Parser::getStatementIntent(string line) {
 	if (tokenLine[0] == "switch") {
 		return KEY_SWITCH;
 	}
-	if (tokenLine[0] == "case" || tokenLine[0] == "default") {
+	if (tokenLine[0] == "case" || tokenLine[0] == "default" || tokenLine[0] == "default:") {
 		return KEY_SWITCHCASE;
 	}
 	return KEY_ERROR;
