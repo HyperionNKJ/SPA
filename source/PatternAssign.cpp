@@ -14,9 +14,9 @@ Result PatternAssign::evaluate(const PKB& pkb) {
 	Type subjectType = subject.getType(); // should be an assign type
 	Type paraOneType = paraOne.getType();
 	Type paraTwoType = paraTwo.getType();
-	string subjectValue = subject.getValue();
-	string paraOneValue = paraOne.getValue();
-	string paraTwoValue = paraTwo.getValue();
+	std::string subjectValue = subject.getValue();
+	std::string paraOneValue = paraOne.getValue();
+	std::string paraTwoValue = paraTwo.getValue();
 
 	Result result;
 
@@ -73,13 +73,13 @@ Result PatternAssign::evaluate(const PKB& pkb) {
 }
 
 // case a(v, "x+y+10")
-Result PatternAssign::evaluateVariableExact(const string& variableSynonym, const string& exactString, const string& assignSynonym) {
+Result PatternAssign::evaluateVariableExact(const std::string& variableSynonym, const std::string& exactString, const std::string& assignSynonym) {
 	Result result;
-	unordered_set<int> assignStmtsWithExactMatch = pkb.getAssignStmtsWithExactMatch(exactString);
-	unordered_map<int, string> answer;
+	std::unordered_set<int> assignStmtsWithExactMatch = pkb.getAssignStmtsWithExactMatch(exactString);
+	std::unordered_map<int, std::string> answer;
 
 	for (auto a : assignStmtsWithExactMatch) {
-		string variableModified = pkb.getVarModifiedByAssignStmt(a);
+		std::string variableModified = pkb.getVarModifiedByAssignStmt(a);
 		answer.insert({ { a, variableModified } });
 	}
 
@@ -94,13 +94,13 @@ Result PatternAssign::evaluateVariableExact(const string& variableSynonym, const
 }
 
 // case a(v, _"x+y+10"_)
-Result PatternAssign::evaluateVariableSub(const string& variableSynonym, const string& subString, const string& assignSynonym) {
+Result PatternAssign::evaluateVariableSub(const std::string& variableSynonym, const std::string& subString, const std::string& assignSynonym) {
 	Result result;
-	unordered_set<int> assignStmtsWithSubMatch = pkb.getAssignStmtsWithSubMatch(subString);
-	unordered_map<int, string> answer;
+	std::unordered_set<int> assignStmtsWithSubMatch = pkb.getAssignStmtsWithSubMatch(subString);
+	std::unordered_map<int, std::string> answer;
 
 	for (auto a : assignStmtsWithSubMatch) {
-		string variableModified = pkb.getVarModifiedByAssignStmt(a);
+		std::string variableModified = pkb.getVarModifiedByAssignStmt(a);
 		answer.insert({ { a, variableModified } });
 	}
 
@@ -115,9 +115,9 @@ Result PatternAssign::evaluateVariableSub(const string& variableSynonym, const s
 }
 
 // case a(v, _) = Modifies(a, v)
-Result PatternAssign::evaluateVariableUnderscore(const string& variableSynonym, const string& assignSynonym) {
+Result PatternAssign::evaluateVariableUnderscore(const std::string& variableSynonym, const std::string& assignSynonym) {
 	Result result;
-	unordered_map<int, unordered_set<string>> answer = pkb.getModifiesStmtVarPairs(Type::ASSIGN);
+	std::unordered_map<int, std::unordered_set<std::string>> answer = pkb.getModifiesStmtVarPairs(Type::ASSIGN);
 	if (!answer.empty()) {
 		result.setPassed(true);
 		result.setAnswer(assignSynonym, variableSynonym, answer, pkb.getVarTable());
@@ -129,9 +129,9 @@ Result PatternAssign::evaluateVariableUnderscore(const string& variableSynonym, 
 }
 
 // case a(_, "count")
-Result PatternAssign::evaluateUnderscoreExact(const string& exactString, const string& assignSynonym) {
+Result PatternAssign::evaluateUnderscoreExact(const std::string& exactString, const std::string& assignSynonym) {
 	Result result;
-	unordered_set<int> answer = pkb.getAssignStmtsWithExactMatch(exactString);
+	std::unordered_set<int> answer = pkb.getAssignStmtsWithExactMatch(exactString);
 
 	if (!answer.empty()) {
 		result.setPassed(true);
@@ -144,9 +144,9 @@ Result PatternAssign::evaluateUnderscoreExact(const string& exactString, const s
 }
 
 // case a(_, _"count+10"_)
-Result PatternAssign::evaluateUnderscoreSub(const string& subString, const string& assignSynonym) {
+Result PatternAssign::evaluateUnderscoreSub(const std::string& subString, const std::string& assignSynonym) {
 	Result result;
-	unordered_set<int> answer = pkb.getAssignStmtsWithSubMatch(subString);
+	std::unordered_set<int> answer = pkb.getAssignStmtsWithSubMatch(subString);
 
 	if (!answer.empty()) {
 		result.setPassed(true);
@@ -159,9 +159,9 @@ Result PatternAssign::evaluateUnderscoreSub(const string& subString, const strin
 }
 
 // case a(_, _) = All assign statements, since they must have a LHS and RHS
-Result PatternAssign::evaluateUnderscoreUnderscore(const string& assignSynonym) {
+Result PatternAssign::evaluateUnderscoreUnderscore(const std::string& assignSynonym) {
 	Result result;
-	unordered_set<int> answer = pkb.getAssignStmts();
+	std::unordered_set<int> answer = pkb.getAssignStmts();
 	if (!answer.empty()) {
 		result.setPassed(true);
 		result.setAnswer(assignSynonym, answer);
@@ -173,11 +173,11 @@ Result PatternAssign::evaluateUnderscoreUnderscore(const string& assignSynonym) 
 }
 
 // case a("x", "x+1")
-Result PatternAssign::evaluateFixedExact(const string& varName, const string& exactString, const string& assignSynonym) {
+Result PatternAssign::evaluateFixedExact(const std::string& varName, const std::string& exactString, const std::string& assignSynonym) {
 	Result result;
-	unordered_set<int> answer;
+	std::unordered_set<int> answer;
 
-	unordered_set<int> assignStmtsWithExactMatch = pkb.getAssignStmtsWithExactMatch(exactString);
+	std::unordered_set<int> assignStmtsWithExactMatch = pkb.getAssignStmtsWithExactMatch(exactString);
 	for (auto a : assignStmtsWithExactMatch) {
 		if (pkb.isModifies(a, varName)) {
 			answer.insert(a);
@@ -195,11 +195,11 @@ Result PatternAssign::evaluateFixedExact(const string& varName, const string& ex
 }
 
 // case a("x", _"y*x+z"_)
-Result PatternAssign::evaluateFixedSub(const string& varName, const string& subString, const string& assignSynonym) {
+Result PatternAssign::evaluateFixedSub(const std::string& varName, const std::string& subString, const std::string& assignSynonym) {
 	Result result;
-	unordered_set<int> answer;
+	std::unordered_set<int> answer;
 
-	unordered_set<int> assignStmtsWithSubMatch = pkb.getAssignStmtsWithSubMatch(subString);
+	std::unordered_set<int> assignStmtsWithSubMatch = pkb.getAssignStmtsWithSubMatch(subString);
 	for (auto a : assignStmtsWithSubMatch) {
 		if (pkb.isModifies(a, varName)) {
 			answer.insert(a);
@@ -217,9 +217,9 @@ Result PatternAssign::evaluateFixedSub(const string& varName, const string& subS
 }
 
 // case a("i", _) = Modifies(a, "i")
-Result PatternAssign::evaluateFixedUnderscore(const string& varName, const string& assignSynonym) {
+Result PatternAssign::evaluateFixedUnderscore(const std::string& varName, const std::string& assignSynonym) {
 	Result result;
-	unordered_set<int> answer = pkb.getStmtsThatModifiesVar(varName, Type::ASSIGN);
+	std::unordered_set<int> answer = pkb.getStmtsThatModifiesVar(varName, Type::ASSIGN);
 
 	if (!answer.empty()) {
 		result.setPassed(true);

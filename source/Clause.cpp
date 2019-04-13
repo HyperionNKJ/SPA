@@ -24,7 +24,7 @@ bool Clause::isSynonym(Type& type) {
 		|| type == ASSIGN || type == VARIABLE || type == CONSTANT || type == PROCEDURE || type == SWITCH);
 }
 
-unordered_set<string> Clause::getSynonyms() {
+std::unordered_set<std::string> Clause::getSynonyms() {
 	return this->synonyms;
 }
 
@@ -32,7 +32,7 @@ int Clause::getNumOfSynonyms() {
 	return this->synonyms.size();
 }
 
-void Clause::setReducedDomain(const unordered_map<string, unordered_set<int>>& reducedDomain) {
+void Clause::setReducedDomain(const std::unordered_map<std::string, std::unordered_set<int>>& reducedDomain) {
 	this->reducedDomain = reducedDomain;
 }
 

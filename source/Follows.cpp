@@ -11,8 +11,8 @@ Result Follows::evaluate(const PKB& pkb) {
 	this->pkb = pkb;
 	Type paraOneType = paraOne.getType();
 	Type paraTwoType = paraTwo.getType();
-	string paraOneValue = paraOne.getValue();
-	string paraTwoValue = paraTwo.getValue();
+	std::string paraOneValue = paraOne.getValue();
+	std::string paraTwoValue = paraTwo.getValue();
 
 	Result result;
 
@@ -69,7 +69,7 @@ Result Follows::evaluate(const PKB& pkb) {
 }
 
 // case Follows(12, w)
-Result Follows::evaluateFixedSynonym(const string& leaderStmtNum, const string& followerSynonym, const Type& followerType) {
+Result Follows::evaluateFixedSynonym(const std::string& leaderStmtNum, const std::string& followerSynonym, const Type& followerType) {
 	Result result;
 	int answer = pkb.getFollowerOf(stoi(leaderStmtNum), followerType);
 	if (answer != -1) {
@@ -83,27 +83,27 @@ Result Follows::evaluateFixedSynonym(const string& leaderStmtNum, const string& 
 }
 
 // case Follows(3, _)
-Result Follows::evaluateFixedUnderscore(const string& leaderStmtNum) {
+Result Follows::evaluateFixedUnderscore(const std::string& leaderStmtNum) {
 	Result result;
 	result.setPassed(pkb.hasFollower(stoi(leaderStmtNum)));
 	return result;
 }
 
 // case Follows(4, 6)
-Result Follows::evaluateFixedFixed(const string& leaderStmtNum, const string& followerStmtNum) {
+Result Follows::evaluateFixedFixed(const std::string& leaderStmtNum, const std::string& followerStmtNum) {
 	Result result;
 	result.setPassed(pkb.isFollows(stoi(leaderStmtNum), stoi(followerStmtNum)));
 	return result;
 }
 
 // case Follows(r, a)
-Result Follows::evaluateSynonymSynonym(const string& leaderSynonym, const string& followerSynonym, const Type& leaderType, const Type& followerType) {
+Result Follows::evaluateSynonymSynonym(const std::string& leaderSynonym, const std::string& followerSynonym, const Type& leaderType, const Type& followerType) {
 	Result result;
 	if (leaderSynonym == followerSynonym) {
 		result.setPassed(false);
 		return result;
 	}
-	unordered_map<int, int> answer = pkb.getLeaderFollowerPairs(leaderType, followerType);
+	std::unordered_map<int, int> answer = pkb.getLeaderFollowerPairs(leaderType, followerType);
 	if (!answer.empty()) {
 		result.setPassed(true);
 		result.setAnswer(leaderSynonym, followerSynonym, answer);
@@ -115,9 +115,9 @@ Result Follows::evaluateSynonymSynonym(const string& leaderSynonym, const string
 }
 
 // case Follows(pr, _)
-Result Follows::evaluateSynonymUnderscore(const string& leaderSynonym, const Type& leaderType) {
+Result Follows::evaluateSynonymUnderscore(const std::string& leaderSynonym, const Type& leaderType) {
 	Result result;
-	unordered_set<int> answer = pkb.getLeaderStmts(leaderType);
+	std::unordered_set<int> answer = pkb.getLeaderStmts(leaderType);
 	if (!answer.empty()) {
 		result.setPassed(true);
 		result.setAnswer(leaderSynonym, answer);
@@ -129,7 +129,7 @@ Result Follows::evaluateSynonymUnderscore(const string& leaderSynonym, const Typ
 }
 
 // case Follows(s, 12)
-Result Follows::evaluateSynonymFixed(const string& leaderSynonym, const string& followerStmtNum, const Type& leaderType) {
+Result Follows::evaluateSynonymFixed(const std::string& leaderSynonym, const std::string& followerStmtNum, const Type& leaderType) {
 	Result result;
 	int answer = pkb.getLeaderOf(stoi(followerStmtNum), leaderType);
 	if (answer != -1) {
@@ -143,9 +143,9 @@ Result Follows::evaluateSynonymFixed(const string& leaderSynonym, const string& 
 }
 
 // case Follows(_, a)
-Result Follows::evaluateUnderscoreSynonym(const string& followerSynonym, const Type& followerType) {
+Result Follows::evaluateUnderscoreSynonym(const std::string& followerSynonym, const Type& followerType) {
 	Result result;
-	unordered_set<int> answer = pkb.getFollowerStmts(followerType);
+	std::unordered_set<int> answer = pkb.getFollowerStmts(followerType);
 	if (!answer.empty()) {
 		result.setPassed(true);
 		result.setAnswer(followerSynonym, answer);
@@ -159,13 +159,13 @@ Result Follows::evaluateUnderscoreSynonym(const string& followerSynonym, const T
 // case Follows(_, _)
 Result Follows::evaluateUnderscoreUnderscore() {
 	Result result;
-	unordered_set<int> leaders = pkb.getLeaderStmts(Type::STATEMENT);
+	std::unordered_set<int> leaders = pkb.getLeaderStmts(Type::STATEMENT);
 	result.setPassed(!leaders.empty());
 	return result;
 }
 
 // case Follows(_, 23)
-Result Follows::evaluateUnderscoreFixed(const string& followerStmtNum) {
+Result Follows::evaluateUnderscoreFixed(const std::string& followerStmtNum) {
 	Result result;
 	result.setPassed(pkb.hasLeader(stoi(followerStmtNum)));
 	return result;
