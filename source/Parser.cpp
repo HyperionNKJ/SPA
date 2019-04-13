@@ -746,6 +746,7 @@ int Parser::handleCloseBracket(string closeBracket) {
 			parentVector.pop_back();
 			currentFollowVector = allFollowStack.back();
 			allFollowStack.pop_back();
+			withinSwitch = false;
 		}
 		else if (containerTracker.back() == IFC) {
 			expectElse = true;
