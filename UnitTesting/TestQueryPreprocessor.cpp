@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
 #include "QueryPreprocessor.h"
+#include "QueryPreprocessorError.h"
 #include "QueryPreprocessorFormatter.h"
 #include "QueryPreprocessorPatternParser.h"
 #include "QueryPreprocessorSelectParser.h"
@@ -13,17 +14,6 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 namespace UnitTesting {
 	TEST_CLASS(TestQueryPreprocessor) {
 public:
-	/*
-	TEST_METHOD(emptyQueryShouldNotCauseException) {
-		std::string original = "";
-		std::string expected = "";
-
-		QueryPreprocessorFormatter formatter(original);
-		std::string result = formatter.getFormattedQuery();
-
-		Assert::IsTrue(result == expected);
-	}
-	
 	TEST_METHOD(leadingWhitespaceRemoved) {
 		std::string original = "\t\n\v\f\r          Select a;";
 		std::string expected = "Select a;";
@@ -91,71 +81,17 @@ public:
 		std::string statementB = "Select s1 such that Follows*(a2,s1) and Uses(a2,\"v\") with v=\"v\" pattern a2(_,_);";
 		std::string query = statementB + statementA;
 
-		QueryPreprocessorTokenizer tokenizer(query);
-		tokenizer.tokenize();
+		bool exceptionCaught = false;
 
-		Assert::IsFalse(status);
-	}
-	TEST_METHOD(declareStatementMustExist) {
-		std::string statementA = "Select s1 such that Follows*(a2,s1) and Uses(a2,\"v\") with v=\"v\" pattern a2(_,_);";
-		std::string query = statementA;
+		try {
+			QueryPreprocessorTokenizer tokenizer(query);
+			tokenizer.tokenize();
+		}
+		catch (QueryPreprocessorError exception) {
+			exceptionCaught = true;
+		}
 
-		QueryPreprocessorTokenizer tokenizer(query);
-		bool status = tokenizer.tokenize();
-
-		Assert::IsFalse(status);
-	}
-	TEST_METHOD(parseWithClauseWithRhsEqualLhsValueIgnored) {
-		ProcessedQuery stubQuery;
-		stubQuery.insertDeclaration("a", Type::ASSIGN);
-		stubQuery.insertDeclaration("p", Type::PROCEDURE);
-		stubQuery.insertDeclaration("pl", Type::PROGLINE);
-		stubQuery.insertDeclaration("v", Type::VARIABLE);
-
-		std::string withClauseA = "a.stmt#=a.stmt#";
-		std::string withClauseB = "v.varName=v.varName";
-		std::string withClauseC = "p.procName=p.procName";
-		std::string withClauseD = "pl=pl";
-		std::string withClauseE = "1=1";
-		std::string withClauseF = "\"a\"=\"a\"";
-
-		QueryPreprocessorWithParser withParserA(withClauseA, stubQuery);
-		bool status = withParserA.parse();
-
-		Assert::IsTrue(status);
-		Assert::IsTrue(stubQuery.booleanClauses.size() == 0);
-		Assert::IsTrue(stubQuery.withClauses.size() == 0);
-
-		QueryPreprocessorWithParser withParserB(withClauseB, stubQuery);
-		status = withParserB.parse();
-
-		Assert::IsTrue(status);
-		Assert::IsTrue(stubQuery.booleanClauses.size() == 0);
-		Assert::IsTrue(stubQuery.withClauses.size() == 0);
-
-		QueryPreprocessorWithParser withParserC(withClauseC, stubQuery);
-		withParserC.parse();
-
-		Assert::IsTrue(stubQuery.booleanClauses.size() == 0);
-		Assert::IsTrue(stubQuery.withClauses.size() == 0);
-
-		QueryPreprocessorWithParser withParserD(withClauseD, stubQuery);
-		withParserD.parse();
-
-		Assert::IsTrue(stubQuery.booleanClauses.size() == 0);
-		Assert::IsTrue(stubQuery.withClauses.size() == 0);
-
-		QueryPreprocessorWithParser withParserE(withClauseE, stubQuery);
-		withParserE.parse();
-
-		Assert::IsTrue(stubQuery.booleanClauses.size() == 0);
-		Assert::IsTrue(stubQuery.withClauses.size() == 0);
-
-		QueryPreprocessorWithParser withParserF(withClauseF, stubQuery);
-		withParserF.parse();
-
-		Assert::IsTrue(stubQuery.booleanClauses.size() == 0);
-		Assert::IsTrue(stubQuery.withClauses.size() == 0);
+		Assert::IsTrue(exceptionCaught);
 	}
 	TEST_METHOD(parseWithClauseStmtNumStmtNumPass) {
 		ProcessedQuery stubQuery;
@@ -165,9 +101,8 @@ public:
 		std::string withClauseA = "a1.stmt#=a2.stmt#";
 
 		QueryPreprocessorWithParser withParserA(withClauseA, stubQuery);
-		bool status = withParserA.parse();
+		withParserA.parse();
 
-		Assert::IsTrue(status);
 		Assert::IsTrue(stubQuery.booleanClauses.size() == 0);
 		Assert::IsTrue(stubQuery.withClauses.size() == 1);
 
@@ -189,9 +124,8 @@ public:
 		std::string withClauseA = "p1=p2";
 
 		QueryPreprocessorWithParser withParserA(withClauseA, stubQuery);
-		bool status = withParserA.parse();
+		withParserA.parse();
 
-		Assert::IsTrue(status);
 		Assert::IsTrue(stubQuery.booleanClauses.size() == 0);
 		Assert::IsTrue(stubQuery.withClauses.size() == 1);
 
@@ -213,9 +147,8 @@ public:
 		std::string withClauseA = "a.stmt#=p";
 
 		QueryPreprocessorWithParser withParserA(withClauseA, stubQuery);
-		bool status = withParserA.parse();
+		withParserA.parse();
 
-		Assert::IsTrue(status);
 		Assert::IsTrue(stubQuery.booleanClauses.size() == 0);
 		Assert::IsTrue(stubQuery.withClauses.size() == 1);
 
@@ -236,9 +169,8 @@ public:
 		std::string withClauseA = "a.stmt#=1";
 
 		QueryPreprocessorWithParser withParserA(withClauseA, stubQuery);
-		bool status = withParserA.parse();
+		withParserA.parse();
 
-		Assert::IsTrue(status);
 		Assert::IsTrue(stubQuery.booleanClauses.size() == 0);
 		Assert::IsTrue(stubQuery.withClauses.size() == 1);
 
@@ -260,9 +192,8 @@ public:
 		std::string withClauseA = "v1.varName=v2.varName";
 
 		QueryPreprocessorWithParser withParserA(withClauseA, stubQuery);
-		bool status = withParserA.parse();
+		withParserA.parse();
 
-		Assert::IsTrue(status);
 		Assert::IsTrue(stubQuery.booleanClauses.size() == 0);
 		Assert::IsTrue(stubQuery.withClauses.size() == 1);
 
@@ -284,9 +215,8 @@ public:
 		std::string withClauseA = "p1.procName=p2.procName";
 
 		QueryPreprocessorWithParser withParserA(withClauseA, stubQuery);
-		bool status = withParserA.parse();
+		withParserA.parse();
 
-		Assert::IsTrue(status);
 		Assert::IsTrue(stubQuery.booleanClauses.size() == 0);
 		Assert::IsTrue(stubQuery.withClauses.size() == 1);
 
@@ -308,9 +238,8 @@ public:
 		std::string withClauseA = "v.varName=p.procName";
 
 		QueryPreprocessorWithParser withParserA(withClauseA, stubQuery);
-		bool status = withParserA.parse();
+		withParserA.parse();
 
-		Assert::IsTrue(status);
 		Assert::IsTrue(stubQuery.booleanClauses.size() == 0);
 		Assert::IsTrue(stubQuery.withClauses.size() == 1);
 
@@ -331,9 +260,8 @@ public:
 		std::string withClauseA = "v.varName=\"var\"";
 
 		QueryPreprocessorWithParser withParserA(withClauseA, stubQuery);
-		bool status = withParserA.parse();
+		withParserA.parse();
 
-		Assert::IsTrue(status);
 		Assert::IsTrue(stubQuery.booleanClauses.size() == 0);
 		Assert::IsTrue(stubQuery.withClauses.size() == 1);
 
@@ -354,9 +282,8 @@ public:
 		std::string withClauseA = "p.procName=\"var\"";
 
 		QueryPreprocessorWithParser withParserA(withClauseA, stubQuery);
-		bool status = withParserA.parse();
+		withParserA.parse();
 
-		Assert::IsTrue(status);
 		Assert::IsTrue(stubQuery.booleanClauses.size() == 0);
 		Assert::IsTrue(stubQuery.withClauses.size() == 1);
 
@@ -377,9 +304,7 @@ public:
 		std::string patternCl = "a(_,_)";
 
 		QueryPreprocessorPatternParser parser(patternCl, stubQuery);
-		bool status = parser.parse();
-
-		Assert::IsTrue(status);
+		parser.parse();
 
 		DesignEntity paramOne = stubQuery.otherClauses[0]->getParaOne();
 		DesignEntity paramTwo = stubQuery.otherClauses[0]->getParaTwo();
@@ -399,9 +324,7 @@ public:
 		std::string patternCl = "a(v,_)";
 
 		QueryPreprocessorPatternParser parser(patternCl, stubQuery);
-		bool status = parser.parse();
-
-		Assert::IsTrue(status);
+		parser.parse();
 
 		DesignEntity paramOne = stubQuery.otherClauses[0]->getParaOne();
 		DesignEntity paramTwo = stubQuery.otherClauses[0]->getParaTwo();
@@ -420,9 +343,7 @@ public:
 		std::string patternCl = "a(\"v\",_)";
 
 		QueryPreprocessorPatternParser parser(patternCl, stubQuery);
-		bool status = parser.parse();
-
-		Assert::IsTrue(status);
+		parser.parse();
 
 		DesignEntity paramOne = stubQuery.otherClauses[0]->getParaOne();
 		DesignEntity paramTwo = stubQuery.otherClauses[0]->getParaTwo();
@@ -441,9 +362,7 @@ public:
 		std::string patternCl = "a(_,\"v\")";
 
 		QueryPreprocessorPatternParser parser(patternCl, stubQuery);
-		bool status = parser.parse();
-
-		Assert::IsTrue(status);
+		parser.parse();
 
 		DesignEntity paramOne = stubQuery.otherClauses[0]->getParaOne();
 		DesignEntity paramTwo = stubQuery.otherClauses[0]->getParaTwo();
@@ -462,9 +381,7 @@ public:
 		std::string patternCl = "a(_,\"((a+b)*(z+x))\")";
 
 		QueryPreprocessorPatternParser parser(patternCl, stubQuery);
-		bool status = parser.parse();
-
-		Assert::IsTrue(status);
+		parser.parse();
 
 		DesignEntity paramOne = stubQuery.otherClauses[0]->getParaOne();
 		DesignEntity paramTwo = stubQuery.otherClauses[0]->getParaTwo();
@@ -483,9 +400,7 @@ public:
 		std::string patternCl = "a(_,_\"((a+b)*(z+x))\"_)";
 
 		QueryPreprocessorPatternParser parser(patternCl, stubQuery);
-		bool status = parser.parse();
-
-		Assert::IsTrue(status);
+		parser.parse();
 
 		DesignEntity paramOne = stubQuery.otherClauses[0]->getParaOne();
 		DesignEntity paramTwo = stubQuery.otherClauses[0]->getParaTwo();
@@ -504,9 +419,7 @@ public:
 		std::string patternCl = "a(\"v\",\"((a+b)*(z+x))\")";
 
 		QueryPreprocessorPatternParser parser(patternCl, stubQuery);
-		bool status = parser.parse();
-
-		Assert::IsTrue(status);
+		parser.parse();
 
 		DesignEntity paramOne = stubQuery.otherClauses[0]->getParaOne();
 		DesignEntity paramTwo = stubQuery.otherClauses[0]->getParaTwo();
@@ -525,9 +438,7 @@ public:
 		std::string patternCl = "a(\"v\",_\"((a+b)*(z+x))\"_)";
 
 		QueryPreprocessorPatternParser parser(patternCl, stubQuery);
-		bool status = parser.parse();
-
-		Assert::IsTrue(status);
+		parser.parse();
 
 		DesignEntity paramOne = stubQuery.otherClauses[0]->getParaOne();
 		DesignEntity paramTwo = stubQuery.otherClauses[0]->getParaTwo();
@@ -547,9 +458,7 @@ public:
 		std::string patternCl = "a(v,\"((a+b)*(z+x))\")";
 
 		QueryPreprocessorPatternParser parser(patternCl, stubQuery);
-		bool status = parser.parse();
-
-		Assert::IsTrue(status);
+		parser.parse();
 
 		DesignEntity paramOne = stubQuery.otherClauses[0]->getParaOne();
 		DesignEntity paramTwo = stubQuery.otherClauses[0]->getParaTwo();
@@ -569,9 +478,7 @@ public:
 		std::string patternCl = "a(v,_\"((a+b)*(z+x))\"_)";
 
 		QueryPreprocessorPatternParser parser(patternCl, stubQuery);
-		bool status = parser.parse();
-
-		Assert::IsTrue(status);
+		parser.parse();
 
 		DesignEntity paramOne = stubQuery.otherClauses[0]->getParaOne();
 		DesignEntity paramTwo = stubQuery.otherClauses[0]->getParaTwo();
@@ -591,9 +498,7 @@ public:
 		std::string patternCl = "if(v,_,_)";
 
 		QueryPreprocessorPatternParser parser(patternCl, stubQuery);
-		bool status = parser.parse();
-
-		Assert::IsTrue(status);
+		parser.parse();
 
 		DesignEntity paramOne = stubQuery.otherClauses[0]->getParaOne();
 		DesignEntity paramTwo = stubQuery.otherClauses[0]->getParaTwo();
@@ -609,9 +514,7 @@ public:
 		std::string patternCl = "if(_,_,_)";
 
 		QueryPreprocessorPatternParser parser(patternCl, stubQuery);
-		bool status = parser.parse();
-
-		Assert::IsTrue(status);
+		parser.parse();
 
 		DesignEntity paramOne = stubQuery.otherClauses[0]->getParaOne();
 		DesignEntity paramTwo = stubQuery.otherClauses[0]->getParaTwo();
@@ -627,9 +530,7 @@ public:
 		std::string patternCl = "if(\"v\",_,_)";
 
 		QueryPreprocessorPatternParser parser(patternCl, stubQuery);
-		bool status = parser.parse();
-
-		Assert::IsTrue(status);
+		parser.parse();
 
 		DesignEntity paramOne = stubQuery.otherClauses[0]->getParaOne();
 		DesignEntity paramTwo = stubQuery.otherClauses[0]->getParaTwo();
@@ -646,9 +547,7 @@ public:
 		std::string patternCl = "while(v,_)";
 
 		QueryPreprocessorPatternParser parser(patternCl, stubQuery);
-		bool status = parser.parse();
-
-		Assert::IsTrue(status);
+		parser.parse();
 
 		DesignEntity paramOne = stubQuery.otherClauses[0]->getParaOne();
 		DesignEntity paramTwo = stubQuery.otherClauses[0]->getParaTwo();
@@ -664,9 +563,7 @@ public:
 		std::string patternCl = "while(_,_)";
 
 		QueryPreprocessorPatternParser parser(patternCl, stubQuery);
-		bool status = parser.parse();
-
-		Assert::IsTrue(status);
+		parser.parse();
 
 		DesignEntity paramOne = stubQuery.otherClauses[0]->getParaOne();
 		DesignEntity paramTwo = stubQuery.otherClauses[0]->getParaTwo();
@@ -682,9 +579,7 @@ public:
 		std::string patternCl = "while(\"v\",_)";
 
 		QueryPreprocessorPatternParser parser(patternCl, stubQuery);
-		bool status = parser.parse();
-
-		Assert::IsTrue(status);
+		parser.parse();
 
 		DesignEntity paramOne = stubQuery.otherClauses[0]->getParaOne();
 		DesignEntity paramTwo = stubQuery.otherClauses[0]->getParaTwo();
@@ -708,13 +603,12 @@ public:
 		std::string selectCl = "Select a " + modifiesSuchThatCl + " " + assignPatternCl + " " + ifPatternCl + " " + withPatternCl;
 
 		QueryPreprocessorSelectParser parser(selectCl, stubQuery);
-		bool status = parser.parse();
-
-		Assert::IsTrue(status);
+		parser.parse();
 	}
 	TEST_METHOD(parseSwitchDeclarePass) {
 		std::string query = "switch s;Select s pattern s(\"v\",_)";
-		Assert::IsTrue(parser.parse().hasSynonym("s"));
-	}*/
+		ProcessedQuery processedQuery = QueryPreprocessor(query).parse();
+		Assert::IsTrue(processedQuery.hasSynonym("s"));
+	}
 	};
 }
