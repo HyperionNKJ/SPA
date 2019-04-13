@@ -1,4 +1,4 @@
-/*
+
 #include "PatternSwitch.h"
 
 PatternSwitch::PatternSwitch(const DesignEntity& patternSubject, const DesignEntity& controlVar) {
@@ -56,7 +56,7 @@ Result PatternSwitch::evaluateVariable(const string& controlVar, const string& s
 // case sw(_, _)
 Result PatternSwitch::evaluateUnderscore(const string& switchSynonym) {
 	Result result;
-	unordered_set<int> answer = pkb.getSwitchWithControlVar();
+	unordered_set<int> answer = pkb.getSwitchStmts(); // all switch statement must have control variable
 
 	if (!answer.empty()) {
 		result.setPassed(true);
@@ -82,4 +82,3 @@ Result PatternSwitch::evaluateFixed(const string& controlVar, const string& swit
 	}
 	return result;
 }
-*/
