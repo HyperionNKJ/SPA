@@ -830,7 +830,7 @@ int Parser::handleSwitch(string switchLine) {
 	allFollowStack.push_back(currentFollowVector);
 	currentFollowVector.clear();
 	
-	//pkb->insertStmtType(statementNumber, SWITCH);
+	pkb->insertStmtType(statementNumber, SWITCH);
 
 	//set uses relationships
 	size_t openBracketPos = switchLine.find_first_of("(");
@@ -839,7 +839,7 @@ int Parser::handleSwitch(string switchLine) {
 	controlVar = leftTrim(rightTrim(controlVar, " \t\n"), " \t\n");
 	pkb->insertVar(controlVar);
 	setUses(statementNumber, currProcedure, controlVar);
-	//pkb->insertSwitchControlVar(statementNumber, controlVar);
+	pkb->insertSwitchControlVar(statementNumber, controlVar);
 
 	return 0;
 }
@@ -887,7 +887,7 @@ int Parser::handleSwitchCase(string switchCaseLine) {
 	}
 	if (isValidVarName(caseVar)) {
 		setUses(-1, currProcedure, caseVar);
-		//pkb->insertSwitchControlVar(parentVector.back(), caseVar);
+		pkb->insertSwitchControlVar(parentVector.back(), caseVar);
 	}
 	return 0;
 }
