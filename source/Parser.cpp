@@ -1187,6 +1187,10 @@ void Parser::setParentVector(vector<int> v) {
 	parentVector = v;
 }
 
+void Parser::setWithinProcedure(bool b) {
+	withinProcedure = b;
+}
+
 vector<int> Parser::getParentVector() {
 	return parentVector;
 }
@@ -1209,6 +1213,10 @@ vector<vector<int>> Parser::getAllFollowStack() {
 
 string Parser::getCurrentProcedure() {
 	return currProcedure;
+}
+
+unordered_set<string> Parser::getProcNames() {
+	return procNames;
 }
 
 unordered_map<int, string> Parser::getProcCalledByTable() {
