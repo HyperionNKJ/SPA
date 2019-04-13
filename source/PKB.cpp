@@ -1174,7 +1174,7 @@ unordered_map<int, unordered_set<int>> PKB::getAffectsMap(bool isTransitive, boo
 	set<int> toBeVisited;
 	string varModified;
 	queue<int> toBeVisitedNodes;
-	bool isNewProc = false;
+	bool isNewProc = true;
 
 	// Navigation of nextMap
 	if (allStmts.size() == 0)
@@ -1198,7 +1198,7 @@ unordered_map<int, unordered_set<int>> PKB::getAffectsMap(bool isTransitive, boo
 			maxLine = currLine;
 
 		// Duplication/merging of modMaps
-		if (currLine != 1 && !isNewProc) {
+		if (!isNewProc) {
 			if (prevMap[currLine].size() == 1) {
 				prevLine = *prevMap[currLine].begin();
 				modMaps[currLine] = modMaps[prevLine];
@@ -1213,18 +1213,21 @@ unordered_map<int, unordered_set<int>> PKB::getAffectsMap(bool isTransitive, boo
 						}
 					}
 				}
-				if (isWhileStmt(currLine)) {
-					if (prevModMap.count(currLine)) {
-						if (prevModMap[currLine] != modMaps[currLine]) {
-							visitedLines.erase(currLine);
-						}
-					}
-					else {
-						visitedLines.erase(currLine);
-					}
-				}
 			}
 		}
+
+		// Compare prevModMap for while statement
+		if (isWhileStmt(currLine)) {
+			if (prevModMap.count(currLine)) {
+				if (prevModMap[currLine] != modMaps[currLine]) {
+					visitedLines.erase(currLine);
+				}
+			}
+			else {
+				visitedLines.erase(currLine);
+			}
+		}
+
 		// If statement is a WHILE statement, check if it has been "visited".
 		// Not "visited" implies that while loop has not been processed,
 		// have to enter while loop again.
