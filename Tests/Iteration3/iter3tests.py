@@ -12,10 +12,10 @@ current_path = os.getcwd()
 cmd = r"..\..\Debug\AutoTester.exe"
 args = sys.argv
 if len(args) != 1:
-	if args[1] == "R":
+	if args[1].lower() == "r":
 		cmd = r"..\..\Release\AutoTester.exe"
 		print("Running System Test on Release Mode...\n")
-	if args[1] == "D":
+	if args[1].lower() == "d":
 		cmd = r"..\..\Debug\AutoTester.exe"
 		print("Running System Test on Debug Mode...\n")
 for root, dirs, files in os.walk(current_path):
@@ -34,14 +34,14 @@ for root, dirs, files in os.walk(current_path):
 							out = check_output([cmd, source, query, output], timeout=60).strip().decode()
 							print(out)
 							if 'Missing' in out or 'Additional' in out:
-								fail_cases.append(root2 + '\\' + file)
+								fail_cases.append(root2 + '\\' + filename + "_queries.txt")
 							if 'TIMEOUT' in out:
-								timeout_cases.append(root2 + '\\' + file)	
+								timeout_cases.append(root2 + '\\' + filename + "_queries.txt")	
 						except TimeoutExpired as e:
-							print("Query File Timeout: " + root2 + '\\' + file)
+							print("Query File Timeout: " + root2 + '\\' + filename + "_queries.txt")
 						except Exception as e:
 							print(e)
-							error_cases.append(root2 + '\\' + file)
+							error_cases.append(root2 + '\\' + filename + "_queries.txt")
 		else:
 			source = root + '\\' + nest + '\\' + nest + "_source.txt"
 			for root2, dirs2, files2 in os.walk(nest):

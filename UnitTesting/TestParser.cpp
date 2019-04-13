@@ -19,10 +19,24 @@ namespace UnitTesting {
 			Assert::AreEqual(result, 0, L"incorrect", LINE_INFO());
 			Assert::AreEqual(0, expectedProc.compare(parser.getCurrentProcedure()), L"incorrect", LINE_INFO());
 
+			parser.setWithinProcedure(false);
+
 			expectedProc = "if";
 			result = parser.handleProcedure("  procedure   if{");
+			cout << result << endl;
 			Assert::AreEqual(result, 0, L"incorrect", LINE_INFO());
 			Assert::AreEqual(0, expectedProc.compare(parser.getCurrentProcedure()), L"incorrect", LINE_INFO());
+
+			unordered_set<string>expectedProcSet = {"myProcOne", "if"};
+			bool isEqualExpectedProcSet = expectedProcSet == parser.getProcNames();
+			Assert::IsTrue(isEqualExpectedProcSet, L"incorrect", LINE_INFO());
+
+			result = parser.handleProcedure("  procedure myProcOne{");
+			Assert::AreEqual(result, -1, L"incorrect", LINE_INFO());
+
+			result = parser.handleProcedure("  procedure { ");
+			Assert::AreEqual(result, -1, L"incorrect", LINE_INFO());
+
 		}
 
 		/*Tests to handle statements in the code must ensure the following update correctly
@@ -224,7 +238,7 @@ namespace UnitTesting {
 			parser.setCurrentFollowVector(testFollowVector);
 			parser.setAllFollowStack(expectedAllFollowStack);
 
-			result = parser.handleAssignment("	call proc2  ;");
+			result = parser.handleCall("	call proc2  ;");
 			Assert::AreEqual(result, 0, L"incorrect", LINE_INFO());
 			bool equalFollowVector = parser.getCurrentFollowVector() == expectedFollowVector;
 			bool equalParentVector = parser.getParentVector() == expectedParentVector;
