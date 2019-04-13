@@ -230,26 +230,26 @@ none
 5000
 47 - Fixed with Fixed
 procedure p; variable v;
-Select BOOLEAN such that Modifies ("1", "k")
+Select BOOLEAN such that Modifies (1, "k")
 FALSE
 5000
 48 - Fixed with Fixed
 procedure p; variable v;
-Select BOOLEAN such that Modifies ("P", "123")
+Select BOOLEAN such that Modifies ("P", 123)
 FALSE
 5000
 49 - Fixed with Fixed
 procedure p; variable v;
-Select BOOLEAN such that Modifies ("a", "123")
+Select BOOLEAN such that Modifies ("a", 123)
 FALSE
 5000
 50 - Variable with Fixed
 procedure p; variable v;
-Select BOOLEAN such that Modifies (v, "123")
+Select BOOLEAN such that Modifies (v, 123)
 FALSE
 5000
 51 - Procedure with Fixed
 procedure p; variable v;
-Select BOOLEAN such that Modifies (p, "123")
+Select BOOLEAN such that Modifies (p, 123)
 FALSE
 5000
