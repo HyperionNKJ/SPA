@@ -44,7 +44,7 @@ void QueryPreprocessorTokenizer::validateStatement() const {
 		isDeclareStatement(statements[index]);
 	}
 
-	// last statement must be a declarative statement
+	// last statement must be a select statement
 	isSelectStatement(statements.back());
 }
 

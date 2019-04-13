@@ -1,4 +1,5 @@
 #include <string>
+#include "QueryPreprocessorError.h"
 #include "QueryPreprocessorFormatter.h"
 
 constexpr char CHAR_SPACE = ' ';
@@ -13,10 +14,12 @@ constexpr char TRAILING_SPACE[] = "(<=,_;\"*+-/%";
 // Initializes a newly created QueryPreprocessorFormatter.
 QueryPreprocessorFormatter::QueryPreprocessorFormatter(std::string& query)
 	: query(query) {
-	if (query != "") {
-		trim();
-		removeExtraWhitespace();
+	if (query.empty()) {
+		throw QueryPreprocessorError(ErrorType::SYNTACTIC);
 	}
+
+	trim();
+	removeExtraWhitespace();
 }
 
 // Omits the leading and trailing whitespace of the query.
