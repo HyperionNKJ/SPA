@@ -11,8 +11,8 @@ procedure main {
 			y = 10;
 			call P;
 		default:
-			z = 12 + x;
-			y = 5;
+			z = 12 + x + y;
+			y = 5 + z;
 			x = a + b * c;
 	}
 	z = x + 1 + y;

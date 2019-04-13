@@ -11,8 +11,8 @@ Result NextT::evaluate(const PKB& pkb) {
 	this->pkb = pkb;
 	Type paraOneType = paraOne.getType();
 	Type paraTwoType = paraTwo.getType();
-	string paraOneValue = paraOne.getValue();
-	string paraTwoValue = paraTwo.getValue();
+	std::string paraOneValue = paraOne.getValue();
+	std::string paraTwoValue = paraTwo.getValue();
 
 	Result result;
 
@@ -69,11 +69,11 @@ Result NextT::evaluate(const PKB& pkb) {
 }
 
 // case Next*(12, a)
-Result NextT::evaluateFixedSynonym(const string& previousLineNum, const string& nextSynonym, const Type& nextType) {
+Result NextT::evaluateFixedSynonym(const std::string& previousLineNum, const std::string& nextSynonym, const Type& nextType) {
 	Result result;
-	unordered_set<int> answer;
+	std::unordered_set<int> answer;
 	if (reducedDomain.count(nextSynonym)) { // domain is reduced if synonym is present in intermediate table. Can improve performance
-		unordered_set<int> possibleValues = reducedDomain.at(nextSynonym);
+		std::unordered_set<int> possibleValues = reducedDomain.at(nextSynonym);
 		for (auto value : possibleValues) {
 			if (pkb.isNextT(stoi(previousLineNum), value)) {
 				answer.insert(value);
@@ -95,27 +95,27 @@ Result NextT::evaluateFixedSynonym(const string& previousLineNum, const string& 
 }
 
 // case Next*(12, _)
-Result NextT::evaluateFixedUnderscore(const string& previousLineNum) {
+Result NextT::evaluateFixedUnderscore(const std::string& previousLineNum) {
 	Result result;
 	result.setPassed(pkb.hasNext(stoi(previousLineNum)));
 	return result;
 }
 
 // case Next*(12, 13)
-Result NextT::evaluateFixedFixed(const string& previousLineNum, const string& nextLineNum) {
+Result NextT::evaluateFixedFixed(const std::string& previousLineNum, const std::string& nextLineNum) {
 	Result result;
 	result.setPassed(pkb.isNextT(stoi(previousLineNum), stoi(nextLineNum)));
 	return result;
 }
 
 // case Next*(s, s1)
-Result NextT::evaluateSynonymSynonym(const string& previousSynonym, const string& nextSynonym, const Type& previousType, const Type& nextType) {
+Result NextT::evaluateSynonymSynonym(const std::string& previousSynonym, const std::string& nextSynonym, const Type& previousType, const Type& nextType) {
 	Result result;
 	bool isSameSynonym = nextSynonym == previousSynonym;
 	bool hasReducedDomainForPrevSyn = reducedDomain.count(previousSynonym);
 	bool hasReducedDomainForNextSyn = reducedDomain.count(nextSynonym);
-	unordered_set<int> prevSynPossibleValues; 
-	unordered_set<int> nextSynPossibleValues;
+	std::unordered_set<int> prevSynPossibleValues; 
+	std::unordered_set<int> nextSynPossibleValues;
 
 	if (hasReducedDomainForPrevSyn) {
 		prevSynPossibleValues = reducedDomain.at(previousSynonym);
@@ -125,7 +125,7 @@ Result NextT::evaluateSynonymSynonym(const string& previousSynonym, const string
 		nextSynPossibleValues = reducedDomain.at(nextSynonym);
 	}
 
-	unordered_map<int, unordered_set<int>> answer;
+	std::unordered_map<int, std::unordered_set<int>> answer;
 	bool keyIsPrevSyn = false; // true if above answer's key = previousSynonym & value = nextSynonym. false otherwise.
 
 	if (hasReducedDomainForPrevSyn && hasReducedDomainForNextSyn) { // if both synonyms exist in intermediate table
@@ -143,7 +143,7 @@ Result NextT::evaluateSynonymSynonym(const string& previousSynonym, const string
 	}
 	else {
 		if (isSameSynonym) {
-			unordered_set<int> prevLines = pkb.getPreviousLines(previousType);
+			std::unordered_set<int> prevLines = pkb.getPreviousLines(previousType);
 			evaluateSameSynonym(prevLines, pkb, answer);
 		}
 		else {
@@ -168,14 +168,14 @@ Result NextT::evaluateSynonymSynonym(const string& previousSynonym, const string
 }
 
 // Helper method for evaluateSynonymSynonym()
-bool NextT::evaluateSynSynFromPrev(const unordered_set<int>& prevSynPossibleValues, const Type& nextType, PKB& pkb, unordered_map<int, unordered_set<int>>& answer, const bool& isSameSynonym) {
+bool NextT::evaluateSynSynFromPrev(const std::unordered_set<int>& prevSynPossibleValues, const Type& nextType, PKB& pkb, std::unordered_map<int, std::unordered_set<int>>& answer, const bool& isSameSynonym) {
 	if (isSameSynonym) {
 		evaluateSameSynonym(prevSynPossibleValues, pkb, answer);
 		return true; // does not matter since same synonym
 	}
 	
 	for (auto prevValue : prevSynPossibleValues) {
-		unordered_set<int> nextValues = pkb.getNextTOf(prevValue, nextType);
+		std::unordered_set<int> nextValues = pkb.getNextTOf(prevValue, nextType);
 		if (!nextValues.empty()) {
 			answer.insert({ prevValue, nextValues }); 
 		}
@@ -184,14 +184,14 @@ bool NextT::evaluateSynSynFromPrev(const unordered_set<int>& prevSynPossibleValu
 }
 
 // Helper method for evaluateSynonymSynonym()
-bool NextT::evaluateSynSynFromNext(const unordered_set<int>& nextSynPossibleValues, const Type& previousType, PKB& pkb, unordered_map<int, unordered_set<int>>& answer, const bool& isSameSynonym) {
+bool NextT::evaluateSynSynFromNext(const std::unordered_set<int>& nextSynPossibleValues, const Type& previousType, PKB& pkb, std::unordered_map<int, std::unordered_set<int>>& answer, const bool& isSameSynonym) {
 	if (isSameSynonym) {
 		evaluateSameSynonym(nextSynPossibleValues, pkb, answer);
 		return false; // does not matter since same synonym
 	}
 	
 	for (auto nextValue : nextSynPossibleValues) {
-		unordered_set<int> prevValues = pkb.getPreviousTOf(nextValue, previousType); 
+		std::unordered_set<int> prevValues = pkb.getPreviousTOf(nextValue, previousType); 
 		if (!prevValues.empty()) {
 			answer.insert({ nextValue, prevValues });
 		}
@@ -199,7 +199,7 @@ bool NextT::evaluateSynSynFromNext(const unordered_set<int>& nextSynPossibleValu
 	return false; // false because answer's key is next
 }
 
-void NextT::evaluateSameSynonym(const unordered_set<int>& possibleValues, PKB& pkb, unordered_map<int, unordered_set<int>>& answer) {
+void NextT::evaluateSameSynonym(const std::unordered_set<int>& possibleValues, PKB& pkb, std::unordered_map<int, std::unordered_set<int>>& answer) {
 	for (auto value : possibleValues) {
 		if (pkb.isNextT(value, value)) {
 			answer.insert({ value, {value} });
@@ -208,11 +208,11 @@ void NextT::evaluateSameSynonym(const unordered_set<int>& possibleValues, PKB& p
 }
 
 // case Next*(w, _)
-Result NextT::evaluateSynonymUnderscore(const string& previousSynonym, const Type& previousType) {
+Result NextT::evaluateSynonymUnderscore(const std::string& previousSynonym, const Type& previousType) {
 	Result result;
-	unordered_set<int> answer;
+	std::unordered_set<int> answer;
 	if (reducedDomain.count(previousSynonym)) { 
-		unordered_set<int> possibleValues = reducedDomain.at(previousSynonym);
+		std::unordered_set<int> possibleValues = reducedDomain.at(previousSynonym);
 		for (auto value : possibleValues) {
 			if (pkb.hasNext(value)) { // evaluation of Next*(2,_) = Next(2,_)
 				answer.insert(value);
@@ -234,11 +234,11 @@ Result NextT::evaluateSynonymUnderscore(const string& previousSynonym, const Typ
 }
 
 // case Next*(s, 14)
-Result NextT::evaluateSynonymFixed(const string& previousSynonym, const string& nextLineNum, const Type& previousType) {
+Result NextT::evaluateSynonymFixed(const std::string& previousSynonym, const std::string& nextLineNum, const Type& previousType) {
 	Result result;
-	unordered_set<int> answer;
+	std::unordered_set<int> answer;
 	if (reducedDomain.count(previousSynonym)) {
-		unordered_set<int> possibleValues = reducedDomain.at(previousSynonym);
+		std::unordered_set<int> possibleValues = reducedDomain.at(previousSynonym);
 		for (auto value : possibleValues) {
 			if (pkb.isNextT(value, stoi(nextLineNum))) {
 				answer.insert(value);
@@ -259,11 +259,11 @@ Result NextT::evaluateSynonymFixed(const string& previousSynonym, const string& 
 }
 
 // case Next*(_, pl)
-Result NextT::evaluateUnderscoreSynonym(const string& nextSynonym, const Type& nextType) {
+Result NextT::evaluateUnderscoreSynonym(const std::string& nextSynonym, const Type& nextType) {
 	Result result;
-	unordered_set<int> answer;
+	std::unordered_set<int> answer;
 	if (reducedDomain.count(nextSynonym)) {
-		unordered_set<int> possibleValues = reducedDomain.at(nextSynonym);
+		std::unordered_set<int> possibleValues = reducedDomain.at(nextSynonym);
 		for (auto value : possibleValues) {
 			if (pkb.hasPrevious(value)) {
 				answer.insert(value);
@@ -292,7 +292,7 @@ Result NextT::evaluateUnderscoreUnderscore() {
 }
 
 // case Next*(_, 23)
-Result NextT::evaluateUnderscoreFixed(const string& nextLineNum) {
+Result NextT::evaluateUnderscoreFixed(const std::string& nextLineNum) {
 	Result result;
 	result.setPassed(pkb.hasPrevious(stoi(nextLineNum)));
 	return result;

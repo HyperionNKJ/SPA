@@ -11,8 +11,8 @@ Result CallsT::evaluate(const PKB& pkb) {
 	this->pkb = pkb;
 	Type paraOneType = paraOne.getType();
 	Type paraTwoType = paraTwo.getType();
-	string paraOneValue = paraOne.getValue();
-	string paraTwoValue = paraTwo.getValue();
+	std::string paraOneValue = paraOne.getValue();
+	std::string paraTwoValue = paraTwo.getValue();
 
 	Result result;
 
@@ -65,9 +65,9 @@ Result CallsT::evaluate(const PKB& pkb) {
 }
 
 // case Calls*("main", p)
-Result CallsT::evaluateFixedSynonym(const string& callerName, const string& receiverSynonym) {
+Result CallsT::evaluateFixedSynonym(const std::string& callerName, const std::string& receiverSynonym) {
 	Result result;
-	unordered_set<string> answer = pkb.getReceiverTOf(callerName);
+	std::unordered_set<std::string> answer = pkb.getReceiverTOf(callerName);
 	if (!answer.empty()) {
 		result.setPassed(true);
 		result.setAnswer(receiverSynonym, answer, pkb.getProcTable());
@@ -79,27 +79,27 @@ Result CallsT::evaluateFixedSynonym(const string& callerName, const string& rece
 }
 
 // case Calls*("main", _)
-Result CallsT::evaluateFixedUnderscore(const string& callerName) {
+Result CallsT::evaluateFixedUnderscore(const std::string& callerName) {
 	Result result;
 	result.setPassed(pkb.hasReceiver(callerName));
 	return result;
 }
 
 // case Calls*("main", "first")
-Result CallsT::evaluateFixedFixed(const string& callerName, const string& receiverName) {
+Result CallsT::evaluateFixedFixed(const std::string& callerName, const std::string& receiverName) {
 	Result result;
 	result.setPassed(pkb.isCallsT(callerName, receiverName));
 	return result;
 }
 
 // case Calls*(p, q)
-Result CallsT::evaluateSynonymSynonym(const string& callerSynonym, const string& receiverSynonym) {
+Result CallsT::evaluateSynonymSynonym(const std::string& callerSynonym, const std::string& receiverSynonym) {
 	Result result;
 	if (callerSynonym == receiverSynonym) { // cyclic calls not allowed
 		result.setPassed(false);
 		return result;
 	}
-	unordered_map<string, unordered_set<string>> answer = pkb.getCallerReceiverTPairs();
+	std::unordered_map<std::string, std::unordered_set<std::string>> answer = pkb.getCallerReceiverTPairs();
 	if (!answer.empty()) {
 		result.setPassed(true);
 		result.setAnswer(callerSynonym, receiverSynonym, answer, pkb.getProcTable());
@@ -111,9 +111,9 @@ Result CallsT::evaluateSynonymSynonym(const string& callerSynonym, const string&
 }
 
 // case Calls*(p, _)
-Result CallsT::evaluateSynonymUnderscore(const string& callerSynonym) {
+Result CallsT::evaluateSynonymUnderscore(const std::string& callerSynonym) {
 	Result result;
-	unordered_set<string> answer = pkb.getCallerProcedures();
+	std::unordered_set<std::string> answer = pkb.getCallerProcedures();
 	if (!answer.empty()) {
 		result.setPassed(true);
 		result.setAnswer(callerSynonym, answer, pkb.getProcTable());
@@ -125,9 +125,9 @@ Result CallsT::evaluateSynonymUnderscore(const string& callerSynonym) {
 }
 
 // case Calls*(p, "first")
-Result CallsT::evaluateSynonymFixed(const string& callerSynonym, const string& receiverName) {
+Result CallsT::evaluateSynonymFixed(const std::string& callerSynonym, const std::string& receiverName) {
 	Result result;
-	unordered_set<string> answer = pkb.getCallerTOf(receiverName);
+	std::unordered_set<std::string> answer = pkb.getCallerTOf(receiverName);
 	if (!answer.empty()) {
 		result.setPassed(true);
 		result.setAnswer(callerSynonym, answer, pkb.getProcTable());
@@ -139,9 +139,9 @@ Result CallsT::evaluateSynonymFixed(const string& callerSynonym, const string& r
 }
 
 // case Calls*(_, q)
-Result CallsT::evaluateUnderscoreSynonym(const string& receiverSynonym) {
+Result CallsT::evaluateUnderscoreSynonym(const std::string& receiverSynonym) {
 	Result result;
-	unordered_set<string> answer = pkb.getReceiverProcedures();
+	std::unordered_set<std::string> answer = pkb.getReceiverProcedures();
 	if (!answer.empty()) {
 		result.setPassed(true);
 		result.setAnswer(receiverSynonym, answer, pkb.getProcTable());
@@ -155,13 +155,13 @@ Result CallsT::evaluateUnderscoreSynonym(const string& receiverSynonym) {
 // case Calls*(_, _)
 Result CallsT::evaluateUnderscoreUnderscore() {
 	Result result;
-	unordered_set<string> callers = pkb.getCallerProcedures();
+	std::unordered_set<std::string> callers = pkb.getCallerProcedures();
 	result.setPassed(!callers.empty());
 	return result;
 }
 
 // case Calls*(_, "first")
-Result CallsT::evaluateUnderscoreFixed(const string& receiverName) {
+Result CallsT::evaluateUnderscoreFixed(const std::string& receiverName) {
 	Result result;
 	result.setPassed(pkb.hasCaller(receiverName));
 	return result;

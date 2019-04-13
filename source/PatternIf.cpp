@@ -13,8 +13,8 @@ Result PatternIf::evaluate(const PKB& pkb) {
 
 	Type subjectType = subject.getType(); // should be a if type
 	Type paraOneType = paraOne.getType();
-	string subjectValue = subject.getValue();
-	string paraOneValue = paraOne.getValue();
+	std::string subjectValue = subject.getValue();
+	std::string paraOneValue = paraOne.getValue();
 
 	Result result;
 
@@ -38,9 +38,9 @@ Result PatternIf::evaluate(const PKB& pkb) {
 }
 
 // case i(v, _, _)
-Result PatternIf::evaluateVariable(const string& controlVar, const string& ifSynonym) {
+Result PatternIf::evaluateVariable(const std::string& controlVar, const std::string& ifSynonym) {
 	Result result;
-	unordered_map<int, unordered_set<string>> answer = pkb.getIfControlVarPair();
+	std::unordered_map<int, std::unordered_set<std::string>> answer = pkb.getIfControlVarPair();
 
 	if (!answer.empty()) {
 		result.setPassed(true);
@@ -53,9 +53,9 @@ Result PatternIf::evaluateVariable(const string& controlVar, const string& ifSyn
 }
 
 // i(_, _, _)
-Result PatternIf::evaluateUnderscore(const string& ifSynonym) {
+Result PatternIf::evaluateUnderscore(const std::string& ifSynonym) {
 	Result result;
-	unordered_set<int> answer = pkb.getIfWithControlVar();
+	std::unordered_set<int> answer = pkb.getIfWithControlVar();
 
 	if (!answer.empty()) {
 		result.setPassed(true);
@@ -68,9 +68,9 @@ Result PatternIf::evaluateUnderscore(const string& ifSynonym) {
 }
 
 // case i("count", _, _)
-Result PatternIf::evaluateFixed(const string& controlVar, const string& ifSynonym) {
+Result PatternIf::evaluateFixed(const std::string& controlVar, const std::string& ifSynonym) {
 	Result result;
-	unordered_set<int> answer = pkb.getIfWithControlVar(controlVar);
+	std::unordered_set<int> answer = pkb.getIfWithControlVar(controlVar);
 
 	if (!answer.empty()) {
 		result.setPassed(true);

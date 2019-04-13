@@ -3,8 +3,8 @@ variable v; switch sw;
 Select v such that Uses (sw, v)
 x, y, z, a, b, c
 5000
-2 - All constants used by switch statement
-constant c; switch sw;
-Select c such that Uses (sw, c)
-10, 3, 6, 12, 1, 5
+2 - Specific variable used by switch statement
+switch sw;
+Select sw such that Uses (sw, "c")
+2
 5000

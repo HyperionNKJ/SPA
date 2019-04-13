@@ -187,7 +187,7 @@ void ProcessedQuery::optimiseClauses() {
 		}
 
 		if (paramTwoResult != with.end()) {
-			DesignEntity replacement = paramOneResult->second;
+			DesignEntity replacement = paramTwoResult->second;
 
 			if (replacement.isVar()) {
 				continue;
@@ -220,7 +220,7 @@ void ProcessedQuery::optimiseClauses() {
 		}
 
 		if (paramTwoResult != with.end()) {
-			DesignEntity replacement = paramOneResult->second;
+			DesignEntity replacement = paramTwoResult->second;
 
 			if (replacement.isVar()) {
 				continue;
