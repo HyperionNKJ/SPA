@@ -846,9 +846,11 @@ int Parser::handleSwitch(string switchLine) {
 bool Parser::checkSwitchCase(string switchCaseLine) {
 	string switchCaseVarRegexString = spaceRegex + "case" + spaceRegex + varNameRegex + spaceRegex + ":" + spaceRegex;
 	string switchCaseConstRegexString = spaceRegex + "case" + spaceRegex + constantRegex + spaceRegex + ":" + spaceRegex;
+	string switchCaseDefaultString = spaceRegex + "default" + spaceRegex + ":" + spaceRegex;
 	regex switchCaseVarRegex(switchCaseVarRegexString);
 	regex switchCaseConstRegex(switchCaseConstRegexString);
-	if (!(regex_match(switchCaseLine, switchCaseVarRegex) || regex_match(switchCaseLine, switchCaseConstRegex))) {
+	regex switchCaseDefaultRegex(switchCaseDefaultString);
+	if (!(regex_match(switchCaseLine, switchCaseVarRegex) || regex_match(switchCaseLine, switchCaseConstRegex) || regex_match(switchCaseLine, switchCaseDefaultRegex))) {
 		errorMessage = "Unexpected tokens in the switch case statement at line "  + to_string(statementNumber);
 		return false;
 	}
