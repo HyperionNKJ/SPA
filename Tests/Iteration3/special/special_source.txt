@@ -19,7 +19,7 @@ procedure alvin {
 			call kaijun;
 	}
 	impossible = just + 200 * kaijun + 6;
-	if (alex != smart) then {
+	if (alex != smart) {
 		print impossible;
 		while (secret != message) {
 			while (12 == 12) {
@@ -53,7 +53,7 @@ procedure kaijun {
 			kaijun = 3 + kaijun;
 			kaijun = kaijun + 3 * alex;
 		} else {
-			if (else == else && else >= else) {
+			if (else == else && else >= else) then {
 				else = else;
 			} else {
 				else = else + 3;
@@ -67,7 +67,7 @@ procedure kaijun {
 	if = kaijun + else;
 }
 procedure xinler {
-	if (alex == true && hisIQ == 200) {
+	if (alex == true && hisIQ == 200) then {
 		print true;
 	} else {
 		hisIQ = 200;
