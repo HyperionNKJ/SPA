@@ -87,19 +87,44 @@ private:
 	bool isValidVarName(string);
 	bool isValidConstant(string);
 	vector<string> tokeniseString(string, string);
+
 public:
+	//Takes in a string representing a procedure source statement. Validates and extracts relationships and information.
+	//Returns 0 on successful validation and handling, -1 otherwise.
 	int handleProcedure(string);
+	//Takes in a string representing an assignment source statement. Validates and extracts relationships and information.
+	//Returns 0 on successful validation and handling, -1 otherwise.
 	int handleAssignment(string);
+	//Takes in a string representing a read source statement. Validates and extracts relationships and information.
+	//Returns 0 on successful validation and handling, -1 otherwise.
 	int handleRead(string);
+	//Takes in a string representing a print source statement. Validates and extracts relationships and information.
+	//Returns 0 on successful validation and handling, -1 otherwise.
 	int handlePrint(string);
+	//Takes in a string representing a while source statement. Validates and extracts relationships and information.
+	//Returns 0 on successful validation and handling, -1 otherwise.
 	int handleWhile(string);
+	//Takes in a string representing an if source statement. Validates and extracts relationships and information.
+	//Returns 0 on successful validation and handling, -1 otherwise.
 	int handleIf(string);
+	//Takes in a string representing an else source statement. Validates and extracts relationships and information.
+	//Returns 0 on successful validation and handling, -1 otherwise.
 	int handleElse(string);
+	//Takes in a string representing a call source statement. Validates and extracts relationships and information.
+	//Returns 0 on successful validation and handling, -1 otherwise.
 	int handleCall(string);
+	//Takes in a string representing a switch source statement. Validates and extracts relationships and information.
+	//Returns 0 on successful validation and handling, -1 otherwise.
 	int handleSwitch(string);
+	//Takes in a string representing a case in switch source statement. Validates and extracts relationships and information.
+	//Returns 0 on successful validation and handling, -1 otherwise.
 	int handleSwitchCase(string);
+	//Takes in a string representing a closed curly bracket source statement. Validates and extracts relationships and information.
+	//Returns 0 on successful validation and handling, -1 otherwise.
 	int handleCloseBracket(string);
 
+	//Takes in a string containing the filename of the source to parse, and a reference to PKB to populate
+	//Returns 0 on successful parse, -1 otherwise.
 	int parse(string, PKB&);
 
 	//setter/getter functions for testing
