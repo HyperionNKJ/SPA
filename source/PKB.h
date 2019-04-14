@@ -18,13 +18,14 @@ private:
 	unordered_map<string, int> varTableByName, procTableByName, callTableByName, printTableByName, readTableByName;
 	vector<string> varTableByIdx, procTableByIdx, callTableByIdx, printTableByIdx, readTableByIdx;
 	unordered_set<int> allStmts, readStmts, printStmts, whileStmts, ifStmts, assignStmts, constSet, callStmts, ifControlStmtSet, whileControlStmtSet, *getTypedStmtSet(Type type), getAffectsSet(bool isAffects, bool isTransitive, int modifierStmtNum, int userStmtNum), switchStmts, switchControlStmtSet;
-	unordered_map<int, unordered_set<int>> leaderTMap, followerTMap, parentMap, parentTMap, childrenTMap, nextMap, prevMap, getAffectsMap(bool isTransitive, bool isAffects);
+	unordered_map<int, unordered_set<int>> leaderTMap, followerTMap, parentMap, parentTMap, childrenTMap, nextMap, prevMap, getAffectsMap(bool isTransitive, bool isAffects), affectsMap, affectedMap, affectsTMap, affectedTMap;
 	unordered_map<int, int> leaderMap, followerMap, childrenMap;
 	unordered_map<int, string> callMapByStmtNum, printMapByStmtNum, readMapByStmtNum, switchControlStmtMap;
 	unordered_map<string, unordered_set<int>> calledStmtMap, printStmtMap, readStmtMap, modifiesByVarMap, usesByVarMap, patternMap, fullPatternMap, ifControlVarMap, whileControlVarMap, switchControlVarMap;
 	unordered_map<int, unordered_set<string>> modifiesByStmtNumMap, usesByStmtNumMap, ifControlStmtMap, whileControlStmtMap;
 	unordered_map<string, unordered_set<string>> modifiesByProcMap, varModifiedByProcMap, usesByProcMap, varUsedByProcMap, callMap, calledByMap, callsTMap, calledByTMap;
 	bool getAffectsBoolean(bool isTransitive, int modifierStmtNum, int userStmtNum);
+	int smallestAffectsLine = INT_MAX, largestAffectsLine = INT_MIN, smallestAffectedLine = INT_MAX, largestAffectedLine = INT_MIN;
 
 public:
 	// Frontend APIs
@@ -217,6 +218,7 @@ public:
 	unordered_set<int> getModifierTOf(int userStmtNum);
 	unordered_set<int> getUserOf(int modifierStmtNum);
 	unordered_set<int> getUserTOf(int modifierStmtNum);
+	void clearAffects();
 
 	unordered_set<int> getSwitchStmts();
 	bool isSwitchStmt(int stmtNum);
