@@ -297,7 +297,7 @@
       <Filter>Header Files\Clauses</Filter>
     </ClInclude>
     <ClInclude Include="..\source\QueryPreprocessorWithParser.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\QueryPreprocessor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
