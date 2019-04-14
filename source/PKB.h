@@ -9,8 +9,11 @@
 #include <unordered_map>
 #include "Type.h"
 
+using namespace std;
+
 typedef short PROC;
 
+// PKB stores information from parser and also provides API for PQL to query the database.
 class PKB {
 private:
 	std::unordered_set<std::string> varSet, procSet, callSet, calledSet, printSet, readSet, modifiesProcSet, usesProcSet;
@@ -19,9 +22,9 @@ private:
 	std::unordered_set<int> allStmts, readStmts, printStmts, whileStmts, ifStmts, assignStmts, constSet, callStmts, ifControlStmtSet, whileControlStmtSet, *getTypedStmtSet(Type type), getAffectsSet(bool isAffects, bool isTransitive, int modifierStmtNum, int userStmtNum), switchStmts, switchControlStmtSet;
 	std::unordered_map<int, std::unordered_set<int>> leaderTMap, followerTMap, parentMap, parentTMap, childrenTMap, nextMap, prevMap, getAffectsMap(bool isTransitive, bool isAffects), nextTCache, prevTCache, affectsMap, affectedMap, affectsTMap, affectedTMap;
 	std::unordered_map<int, int> leaderMap, followerMap, childrenMap;
-	std::unordered_map<int, std::string> callMapByStmtNum, printMapByStmtNum, readMapByStmtNum, switchControlStmtMap;
+	std::unordered_map<int, std::string> callMapByStmtNum, printMapByStmtNum, readMapByStmtNum;
 	std::unordered_map<std::string, std::unordered_set<int>> calledStmtMap, printStmtMap, readStmtMap, modifiesByVarMap, usesByVarMap, patternMap, fullPatternMap, ifControlVarMap, whileControlVarMap, switchControlVarMap;
-	std::unordered_map<int, std::unordered_set<std::string>> modifiesByStmtNumMap, usesByStmtNumMap, ifControlStmtMap, whileControlStmtMap;
+	std::unordered_map<int, std::unordered_set<std::string>> modifiesByStmtNumMap, usesByStmtNumMap, ifControlStmtMap, whileControlStmtMap, switchControlStmtMap;
 	std::unordered_map<std::string, std::unordered_set<std::string>> modifiesByProcMap, varModifiedByProcMap, usesByProcMap, varUsedByProcMap, callMap, calledByMap, callsTMap, calledByTMap;
 	bool getAffectsBoolean(bool isTransitive, int modifierStmtNum, int userStmtNum), isAffectsComputed = false, isAffectsTComputed = false;
 	int smallestAffectsLine = INT_MAX, smallestAffectsTLine = INT_MAX, largestAffectsLine = INT_MIN, largestAffectsTLine = INT_MIN , smallestAffectedLine = INT_MAX, largestAffectedLine = INT_MIN;
@@ -221,6 +224,6 @@ public:
 
 	std::unordered_set<int> getSwitchStmts();
 	bool isSwitchStmt(int stmtNum);
-	std::unordered_map<int, std::string> getSwitchControlVarPair();
+	std::unordered_map<int, std::unordered_set<std::string>> getSwitchControlVarPair();
 	std::unordered_set<int> getSwitchWithControlVar(std::string controlVar);
 };

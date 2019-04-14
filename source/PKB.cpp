@@ -168,7 +168,7 @@ bool PKB::insertWhileControlVar(int whileStmtNum, std::string varName) {
 bool PKB::insertSwitchControlVar(int switchStmtNum, std::string varName) {
 	switchControlStmtSet.insert(switchStmtNum);
 	switchControlVarMap[varName].insert(switchStmtNum);
-	return switchControlStmtMap.insert({switchStmtNum, varName}).second;
+	return switchControlStmtMap[switchStmtNum].insert(varName).second;
 }
 
 bool PKB::setFollows(int leader, int follower) {
@@ -1686,7 +1686,7 @@ bool PKB::isSwitchStmt(int stmtNum) {
 	return false;
 }
 
-std::unordered_map<int, std::string> PKB::getSwitchControlVarPair() {
+std::unordered_map<int, std::unordered_set<std::string>> PKB::getSwitchControlVarPair() {
 	return switchControlStmtMap;
 }
 
