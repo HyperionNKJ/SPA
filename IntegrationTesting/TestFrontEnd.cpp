@@ -8,12 +8,18 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace IntegrationTesting {		
 	TEST_CLASS(TestParserToPKB) {
+	Parser parser;
+	PKB pkb;
 	public:
-		
-		TEST_METHOD(TestInsertProcedure) {
-			Parser parser;
-			PKB pkb;
+		TEST_METHOD_INITIALIZE(parserPKBSetup) {
 			parser.setPKB(&pkb);
+			int stmtNumber = 5;
+			parser.setStatementNumber(stmtNumber);
+			parser.setCurrentFollowVector({ 3, 4 });
+			parser.setParentVector({ 1 , 2 });
+		}
+
+		TEST_METHOD(TestInsertProcedure) {
 			unordered_set<string> procs;
 
 			procs = pkb.getAllProcedures();
@@ -32,9 +38,6 @@ namespace IntegrationTesting {
 		}
 
 		TEST_METHOD(TestInsertAssignment) {
-			Parser parser;
-			PKB pkb;
-			parser.setPKB(&pkb);
 			unordered_set<string> vars;
 			unordered_set<int> consts;
 
@@ -43,31 +46,47 @@ namespace IntegrationTesting {
 			Assert::AreEqual((int) vars.size(), 0, L"incorrect", LINE_INFO());
 			Assert::AreEqual((int) consts.size(), 0, L"incorrect", LINE_INFO());
 
-			//setup
-			int stmtNumber = 4;
-			parser.setStatementNumber(stmtNumber);
-			parser.setParentVector({ 1 , 2 });
 			unordered_set<string> expectedVars = {"a", "b", "c", "d"};
 			unordered_set<int> expectedConsts = {1, 10};
 			parser.handleAssignment("a		=	b + c*d - 1 * 10");
 
 			//test expected values
 			//test var/const table
+			int stmtNumber = 5;
+
 			bool equalVars = pkb.getAllVariables() == expectedVars;
 			bool equalConsts = pkb.getAllConstant() == expectedConsts;
 			Assert::IsTrue(equalVars, L"incorrect", LINE_INFO());
 			Assert::IsTrue(equalConsts, L"incorrect", LINE_INFO());
 			//test assignment tables
-			unordered_set<int> expectedAssignStmts = { 4 };
+			unordered_set<int> expectedAssignStmts = { stmtNumber };
 			bool equalAssignStmts = pkb.getAssignStmts() == expectedAssignStmts;
 			Assert::IsTrue(equalAssignStmts, L"incorrect", LINE_INFO());
 			//test statement modifies var and var modified by stmt is correct
 			unordered_set<string> expectedModifiedVar = { "a" };
 			bool equalModifiedVars = pkb.getVarModifiedByStmt(stmtNumber) == expectedModifiedVar;
 			Assert::IsTrue(equalModifiedVars, L"incorrect", LINE_INFO());
-			unordered_set<int> expectedModifyingStmt = { 4 };
+			unordered_set<int> expectedModifyingStmt = { stmtNumber };
 			bool equalModifyingStmt = pkb.getStmtsThatModifiesVar("a", ASSIGN) == expectedModifyingStmt;
 			Assert::IsTrue(equalModifyingStmt, L"incorrect", LINE_INFO());
+		}
+
+		TEST_METHOD(TestInsertRead) {
+			unordered_set<int> expectedFollowsTSet;
+			expectedFollowsTSet.insert(5);
+			unordered_set<int> expectedParentTSet;
+			expectedParentTSet.insert(5);
+
+			parser.handleRead(" read ABC ;");
+			Assert::IsTrue(pkb.isFollows(4, 5), L"Incorrect", LINE_INFO());
+			Assert::IsTrue(pkb.isFollowsT(4, 5), L"Incorrect", LINE_INFO());
+			Assert::IsTrue(pkb.isFollowsT(3, 5), L"Incorrect", LINE_INFO());
+			Assert::IsTrue(pkb.isParent(2, 5), L"Incorrect", LINE_INFO());
+			Assert::IsTrue(pkb.isParentT(2, 5), L"Incorrect", LINE_INFO());
+			Assert::IsTrue(pkb.isParentT(1, 5), L"Incorrect", LINE_INFO());
+			Assert::IsTrue(pkb.isModifies(5, "ABC"), L"Incorrect", LINE_INFO());
+			Assert::IsTrue(pkb.isModifies(2, "ABC"), L"Incorrect", LINE_INFO());
+			Assert::IsTrue(pkb.isModifies(1, "ABC"), L"Incorrect", LINE_INFO());
 		}
 
 		TEST_METHOD(TestNoNestSource) {
