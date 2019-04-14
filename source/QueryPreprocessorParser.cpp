@@ -19,7 +19,7 @@ void QueryPreprocessorParser::parse() {
 	size_t numberOfDeclarativeStatements = STATEMENTS.size() - 1;
 
 	for (size_t index = 0; index < numberOfDeclarativeStatements; index++) {
-		QueryPreprocessorDeclareParser declareParser(STATEMENTS[index], query);
+		QueryPreprocessorDeclareParser declareParser(STATEMENTS[index], query, STATEMENTS.back());
 		declareParser.parse();
 	}
 

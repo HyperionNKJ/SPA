@@ -1,0 +1,30 @@
+1 - Affects between statements before and after switch 
+stmt s;
+Select BOOLEAN such that Affects (1, 12)
+FALSE
+5000
+2 - Affects inside switch and outside 
+stmt s;
+Select BOOLEAN such that Affects (1, 9)
+TRUE
+5000
+3 - Affects inside switch and outside 
+stmt s;
+Select BOOLEAN such that Affects (7, 12)
+FALSE
+5000
+4 - Affects inside switch and outside 
+stmt s;
+Select BOOLEAN such that Affects (3, 12)
+TRUE
+5000
+5 - Affects between case containers 
+stmt s;
+Select BOOLEAN such that Affects (5, 9)
+FALSE
+5000
+6 - Affects* between statements before and after switch 
+stmt s;
+Select BOOLEAN such that Affects* (1, 12)
+TRUE
+5000

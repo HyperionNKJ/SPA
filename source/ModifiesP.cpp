@@ -1,6 +1,4 @@
 #include "ModifiesP.h"
-#include <unordered_set>
-#include <string>
 
 ModifiesP::ModifiesP(const DesignEntity& firstPara, const DesignEntity& secondPara) {
 	paraOne = firstPara;
@@ -13,8 +11,8 @@ Result ModifiesP::evaluate(const PKB& pkb) {
 	this->pkb = pkb;
 	Type paraOneType = paraOne.getType(); 
 	Type paraTwoType = paraTwo.getType();
-	string paraOneValue = paraOne.getValue();
-	string paraTwoValue = paraTwo.getValue();
+	std::string paraOneValue = paraOne.getValue();
+	std::string paraTwoValue = paraTwo.getValue();
 
 	Result result;
 
@@ -53,9 +51,9 @@ Result ModifiesP::evaluate(const PKB& pkb) {
 }
 
 // case Modifies("main", v)
-Result ModifiesP::evaluateFixedVariable(const string& procName, const string& variableSynonym) {
+Result ModifiesP::evaluateFixedVariable(const std::string& procName, const std::string& variableSynonym) {
 	Result result;
-	unordered_set<string> answer = pkb.getVarModifiedByProc(procName);
+	std::unordered_set<std::string> answer = pkb.getVarModifiedByProc(procName);
 	if (!answer.empty()) {
 		result.setPassed(true);
 		result.setAnswer(variableSynonym, answer, pkb.getVarTable());
@@ -67,23 +65,23 @@ Result ModifiesP::evaluateFixedVariable(const string& procName, const string& va
 }
 
 // case Modifies("main", _)
-Result ModifiesP::evaluateFixedUnderscore(const string& procName) {
+Result ModifiesP::evaluateFixedUnderscore(const std::string& procName) {
 	Result result;
 	result.setPassed(pkb.doesProcModifies(procName));
 	return result;
 }
 
 // case Modifies("main", "count")
-Result ModifiesP::evaluateFixedFixed(const string& procName, const string& varName) {
+Result ModifiesP::evaluateFixedFixed(const std::string& procName, const std::string& varName) {
 	Result result;
 	result.setPassed(pkb.isProcModifies(procName, varName));
 	return result;
 }
 
 // case Modifies(p, v)
-Result ModifiesP::evaluateSynonymVariable(const string& procSynonym, const string& variableSynonym) {
+Result ModifiesP::evaluateSynonymVariable(const std::string& procSynonym, const std::string& variableSynonym) {
 	Result result;
-	unordered_map<string, unordered_set<string>> answer = pkb.getModifiesProcVarPairs();
+	std::unordered_map<std::string, std::unordered_set<std::string>> answer = pkb.getModifiesProcVarPairs();
 	if (!answer.empty()) {
 		result.setPassed(true);
 		result.setAnswer(procSynonym, variableSynonym, answer, pkb.getProcTable(), pkb.getVarTable());
@@ -95,9 +93,9 @@ Result ModifiesP::evaluateSynonymVariable(const string& procSynonym, const strin
 }
 
 // case Modifies(p, _)
-Result ModifiesP::evaluateSynonymUnderscore(const string& procSynonym) {
+Result ModifiesP::evaluateSynonymUnderscore(const std::string& procSynonym) {
 	Result result;
-	unordered_set<string> answer = pkb.getProcThatModifiesVar();
+	std::unordered_set<std::string> answer = pkb.getProcThatModifiesVar();
 	if (!answer.empty()) {
 		result.setPassed(true);
 		result.setAnswer(procSynonym, answer, pkb.getProcTable());
@@ -109,9 +107,9 @@ Result ModifiesP::evaluateSynonymUnderscore(const string& procSynonym) {
 }
 
 // case Modifies(p, "count")
-Result ModifiesP::evaluateSynonymFixed(const string& procSynonym, const string& varName) {
+Result ModifiesP::evaluateSynonymFixed(const std::string& procSynonym, const std::string& varName) {
 	Result result;
-	unordered_set<string> answer = pkb.getProcThatModifiesVar(varName);
+	std::unordered_set<std::string> answer = pkb.getProcThatModifiesVar(varName);
 	if (!answer.empty()) {
 		result.setPassed(true);
 		result.setAnswer(procSynonym, answer, pkb.getProcTable());

@@ -205,6 +205,7 @@ void QueryPreprocessorSuchThatParser::isValidFollowsParam(const DesignEntity& pa
 		Type::READ, 
 		Type::STATEMENT, 
 		Type::WHILE, 
+		Type::SWITCH,
 		Type::UNDERSCORE
 	};
 
@@ -226,6 +227,7 @@ void QueryPreprocessorSuchThatParser::isValidModifiesParam(const DesignEntity& p
 		Type::PROCEDURE,
 		Type::PROGLINE, 
 		Type::READ, 
+		Type::SWITCH,
 		Type::STATEMENT, 
 		Type::WHILE, 
 		Type::FIXED
@@ -251,6 +253,7 @@ void QueryPreprocessorSuchThatParser::isValidParentParam(const DesignEntity& par
 		Type::STATEMENT,
 		Type::WHILE,
 		Type::IF,
+		Type::SWITCH,
 		Type::PROGLINE,
 		Type::UNDERSCORE
 	};
@@ -263,6 +266,7 @@ void QueryPreprocessorSuchThatParser::isValidParentParam(const DesignEntity& par
 		Type::PROCEDURE,
 		Type::PROGLINE,
 		Type::READ,
+		Type::SWITCH,
 		Type::STATEMENT,
 		Type::WHILE,
 		Type::UNDERSCORE

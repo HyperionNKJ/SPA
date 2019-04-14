@@ -1,0 +1,940 @@
+1 - Find statements that with stmt and stmt (same)
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select s such that Affects* (s, s)
+12,18,19,20,22,23,26,27,33,36,37
+5000
+2 - Find statements that with stmt and stmt (diff)
+stmt s, s1; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select s such that Affects* (s, s1)
+12,18,19,20,22,23,26,27,33,34,36,37,38,6,7,8
+5000
+3 - Find statements that with stmt and assign
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select s such that Affects* (s, a)
+12,18,19,20,22,23,26,27,33,34,36,37,38,6,7,8
+5000
+4 - Find statements that with stmt and call
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select s such that Affects* (s, cl)
+none
+5000
+5 - Find statements that with stmt and print
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select s such that Affects* (s, p)
+none
+5000
+6 - Find statements that with stmt and read
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select s such that Affects* (s, r)
+none
+5000
+7 - Find statements that with stmt and progline
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select s such that Affects* (s, n)
+12,18,19,20,22,23,26,27,33,34,36,37,38,6,7,8
+5000
+8 - Find statements that with stmt and while
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select s such that Affects* (s, w)
+none
+5000
+9 - Find statements that with stmt and if
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select s such that Affects* (s, ifs)
+none
+5000
+10 - Find statements that with assign and stmt
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select s such that Affects* (a, s)
+12,18,19,20,22,23,26,27,33,36,37,38,39,7,8,9
+5000
+11 - Find statements that with assign and assign (same)
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select a such that Affects* (a, a)
+12,18,19,20,22,23,26,27,33,36,37
+5000
+12 - Find statements that with assign and assign (diff)
+stmt s; assign a, a1; call cl; print p; read r; prog_line n; while w; if ifs;
+Select a such that Affects* (a, a1)
+12,18,19,20,22,23,26,27,33,34,36,37,38,6,7,8
+5000
+13 - Find statements that with assign and call
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select a such that Affects* (a, cl)
+none
+5000
+14 - Find statements that with assign and print
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select a such that Affects* (a, p)
+none
+5000
+15 - Find statements that with assign and read
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select a such that Affects* (a, r)
+none
+5000
+16 - Find statements that with assign and progline
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select a such that Affects* (a, n)
+12,18,19,20,22,23,26,27,33,34,36,37,38,6,7,8
+5000
+17 - Find statements that with assign and while
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select a such that Affects* (a, w)
+none
+5000
+18 - Find statements that with assign and if
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select a such that Affects* (a, ifs)
+none
+5000
+19 - Find statements that with call and stmt
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select cl such that Affects* (cl, s)
+none
+5000
+20 - Find statements that with call and assign
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select cl such that Affects* (cl, a)
+none
+5000
+21 - Find statements that with call and call (same)
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select cl such that Affects* (cl, cl)
+none
+5000
+22 - Find statements that with call and call (diff)
+stmt s; assign a; call cl, cl1; print p; read r; prog_line n; while w; if ifs;
+Select cl such that Affects* (cl, cl1)
+none
+5000
+23 - Find statements that with call and print
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select cl such that Affects* (cl, p)
+none
+5000
+24 - Find statements that with call and read
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select cl such that Affects* (cl, r)
+none
+5000
+25 - Find statements that with call and progline
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select cl such that Affects* (cl, n)
+none
+5000
+26 - Find statements that with call and while
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select cl such that Affects* (cl, w)
+none
+5000
+27 - Find statements that with call and ifs
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select cl such that Affects* (cl, ifs)
+none
+5000
+28 - Find statements that with print and stmt
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select p such that Affects* (p, s)
+none
+5000
+29 - Find statements that with print and assign
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select p such that Affects* (p, a)
+none
+5000
+30 - Find statements that with print and call
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select p such that Affects* (p, cl)
+none
+5000
+31 - Find statements that with print and print (same)
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select p such that Affects* (p, p)
+none
+5000
+32 - Find statements that with print and print (diff)
+stmt s; assign a; call cl; print p, p1; read r; prog_line n; while w; if ifs;
+Select p such that Affects* (p, p1)
+none
+5000
+33 - Find statements that with print and read
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select p such that Affects* (p, r)
+none
+5000
+34 - Find statements that with print and progline
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select p such that Affects* (p, n)
+none
+5000
+35 - Find statements that with print and while
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select p such that Affects* (p, w)
+none
+5000
+36 - Find statements that with print and ifs
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select p such that Affects* (p, ifs)
+none
+5000
+37 - Find statements that with read and stmt
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select r such that Affects* (r, s)
+none
+5000
+38 - Find statements that with read and assign
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select r such that Affects* (r, a)
+none
+5000
+39 - Find statements that with read and call
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select r such that Affects* (r, cl)
+none
+5000
+40 - Find statements that with read and print
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select r such that Affects* (r, p)
+none
+5000
+41 - Find statements that with read and read (same)
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select r such that Affects* (r, r)
+none
+5000
+42 - Find statements that with read and read (diff)
+stmt s; assign a; call cl; print p; read r,r1; prog_line n; while w; if ifs;
+Select r such that Affects* (r, r1)
+none
+5000
+43 - Find statements that with read and progline
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select r such that Affects* (r, n)
+none
+5000
+44 - Find statements that with read and while
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select r such that Affects* (r, w)
+none
+5000
+45 - Find statements that with read and if
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select r such that Affects* (r, ifs)
+none
+5000
+46 - Find statements that with progline and stmt
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select n such that Affects* (n, s)
+12,18,19,20,22,23,26,27,33,34,36,37,38,6,7,8
+5000
+47 - Find statements that with progline and assign
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select a such that Affects* (n, a)
+12,18,19,20,22,23,26,27,33,36,37,38,39,7,8,9
+5000
+48 - Find statements that with progline and call
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select n such that Affects* (n, cl)
+none
+5000
+49 - Find statements that with progline and print
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select n such that Affects* (n, p)
+none
+5000
+50 - Find statements that with progline and read
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select n such that Affects* (n, r)
+none
+5000
+51 - Find statements that with progline and progline (same)
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select n such that Affects* (n, n)
+12,18,19,20,22,23,26,27,33,36,37
+5000
+52 - Find statements that with progline and progline (diff)
+stmt s; assign a; call cl; print p; read r; prog_line n,n1; while w; if ifs;
+Select n such that Affects* (n, n1)
+12,18,19,20,22,23,26,27,33,34,36,37,38,6,7,8
+5000
+53 - Find statements that with while and stmt
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select w such that Affects* (w, s)
+none
+5000
+54 - Find statements that with ifs and assign
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select ifs such that Affects* (ifs, a)
+none
+5000
+55 - Find statements that with stmt and underscore
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select s such that Affects* (s, _)
+12,18,19,20,22,23,26,27,33,34,36,37,38,6,7,8
+5000
+56 - Find statements that with assign and underscore
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select a such that Affects* (a, _)
+12,18,19,20,22,23,26,27,33,34,36,37,38,6,7,8
+5000
+57 - Find statements that with call and underscore
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select cl such that Affects* (cl, _)
+none
+5000
+58 - Find statements that with print and underscore
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select p such that Affects* (p, _)
+none
+5000
+59 - Find statements that with read and underscore
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select r such that Affects* (r, _)
+none
+5000
+60 - Find statements that with progline and underscore
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select n such that Affects* (n, _)
+12,18,19,20,22,23,26,27,33,34,36,37,38,6,7,8
+5000
+61 - Find statements that with while and underscore
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select w such that Affects* (w, _)
+none
+5000
+62 - Find statements that with if and underscore
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select ifs such that Affects* (ifs, _)
+none
+5000
+63 - Find statements that with stmt and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select s such that Affects* (s, 9)
+6,7,8
+5000
+64 - Find statements that with assign and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select a such that Affects* (a, 11)
+none
+5000
+65 - Find statements that with call and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select cl such that Affects* (cl, 11)
+none
+5000
+66 - Find statements that with print and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select p such that Affects* (p, 8)
+none
+5000
+67 - Find statements that with read and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select r such that Affects* (r, 4)
+none
+5000
+68 - Find statements that with progline and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select n such that Affects* (n, 20)
+12,18,19,20,22,23,6,7,8
+5000
+69 - Find statements that with underscore and stmt
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select s such that Affects* (_, s)
+12,18,19,20,22,23,26,27,33,36,37,38,39,7,8,9
+5000
+70 - Find statements that with underscore and assign
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select a such that Affects* (_, a)
+12,18,19,20,22,23,26,27,33,36,37,38,39,7,8,9
+5000
+71 - Find statements that with underscore and call
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select cl such that Affects* (_, cl)
+none
+5000
+72 - Find statements that with underscore and print
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select p such that Affects* (_, p)
+none
+5000
+73 - Find statements that with underscore and read
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select r such that Affects* (_, r)
+none
+5000
+74 - Find statements that with underscore and progline
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select n such that Affects* (_, n)
+12,18,19,20,22,23,26,27,33,36,37,38,39,7,8,9
+5000
+75 - Find statements that with underscore and while
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select s such that Affects* (_, w)
+none
+5000
+76 - Find statements that with underscore and if
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select s such that Affects* (_, ifs)
+none
+5000
+77 - Find statements that with underscore and underscore
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (_, _)
+TRUE
+5000
+78 - Find statements that with underscore and fixed (wrong type)
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select r such that Affects* (_, 7)
+1,2,3,30
+5000
+79 - Find statements that with underscore and fixed (correct type)
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select r such that Affects* (_, 19)
+1,2,3,30
+5000
+80 - Find statements that with fixed and stmt (wrong type)
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select s such that Affects* (14, s)
+none
+5000
+81 - Find statements that with fixed and stmt (correct type)
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select s such that Affects* (6, s)
+12,18,19,20,22,23,26,27,7,8,9
+5000
+82 - Find statements that with fixed and assign
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select a such that Affects* (8, a)
+12,18,19,20,22,23,26,27,9
+5000
+83 - Find statements that with fixed and call
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select cl such that Affects* (9, cl)
+none
+5000
+84 - Find statements that with fixed and print
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select p such that Affects* (6, p)
+none
+5000
+85 - Find statements that with fixed and read
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select r such that Affects* (2, r)
+none
+5000
+86 - Find statements that with fixed and progline
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select n such that Affects* (11, n)
+none
+5000
+87 - Find statements that with fixed and while
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select w such that Affects* (8, w)
+none
+5000
+88 - Find statements that with fixed and if
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select ifs such that Affects* (8, ifs)
+none
+5000
+89 - Find statements that with fixed and underscore
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select r such that Affects* (17, _)
+none
+5000
+90 - Find statements that with fixed and fixed (same)
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select r such that Affects* (8, 8)
+none
+5000
+91 - Find statements that with fixed and fixed (read and call)
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select r such that Affects* (1, 4)
+none
+5000
+92 - Find statements that with fixed and fixed (cross procedure)
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select r such that Affects* (1, 5)
+none
+5000
+93 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (5, 6)
+FALSE
+5000
+94 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (5, 8)
+FALSE
+5000
+95 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (5, 9)
+FALSE
+5000
+96 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (5, 11)
+FALSE
+5000
+97 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (5, 15)
+FALSE
+5000
+98 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (6, 7)
+TRUE
+5000
+99 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (6, 8)
+TRUE
+5000
+100 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (6, 9)
+TRUE
+5000
+101 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (6, 18)
+TRUE
+5000
+102 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (6, 22)
+TRUE
+5000
+103 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (6, 27)
+TRUE
+5000
+104 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (6, 29)
+FALSE
+5000
+105 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (7, 8)
+TRUE
+5000
+106 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (7, 9)
+TRUE
+5000
+107 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (7, 12)
+TRUE
+5000
+108 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (7, 18)
+TRUE
+5000
+109 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (7, 19)
+TRUE
+5000
+110 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (7, 23)
+TRUE
+5000
+111 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (7, 26)
+TRUE
+5000
+112 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (7, 27)
+TRUE
+5000
+113 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (8, 9)
+TRUE
+5000
+114 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (8, 12)
+TRUE
+5000
+115 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (8, 18)
+TRUE
+5000
+116 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (8, 20)
+TRUE
+5000
+117 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (8, 22)
+TRUE
+5000
+118 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (8, 23)
+TRUE
+5000
+119 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (8, 26)
+TRUE
+5000
+120 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (8, 29)
+FALSE
+5000
+121 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (9, 20)
+FALSE
+5000
+122 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (9, 27)
+FALSE
+5000
+123 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (12, 12)
+TRUE
+5000
+124 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (12, 20)
+TRUE
+5000
+125 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (12, 22)
+TRUE
+5000
+126 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (12, 29)
+FALSE
+5000
+127 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (13, 26)
+FALSE
+5000
+128 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (13, 27)
+FALSE
+5000
+129 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (14, 15)
+FALSE
+5000
+130 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (15, 15)
+FALSE
+5000
+131 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (15, 16)
+FALSE
+5000
+132 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (15, 20)
+FALSE
+5000
+133 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (16, 18)
+FALSE
+5000
+134 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (16, 21)
+FALSE
+5000
+135 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (17, 18)
+FALSE
+5000
+136 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (17, 19)
+FALSE
+5000
+137 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (18, 12)
+TRUE
+5000
+138 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (18, 18)
+TRUE
+5000
+139 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (18, 19)
+TRUE
+5000
+140 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (18, 20)
+TRUE
+5000
+141 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (18, 23)
+TRUE
+5000
+142 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (18, 26)
+FALSE
+5000
+143 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (18, 29)
+FALSE
+5000
+144 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (19, 12)
+TRUE
+5000
+145 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (19, 18)
+TRUE
+5000
+146 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (19, 20)
+TRUE
+5000
+147 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (19, 23)
+TRUE
+5000
+148 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (19, 26)
+FALSE
+5000
+149 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (19, 29)
+FALSE
+5000
+150 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (20, 12)
+TRUE
+5000
+151 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (20, 18)
+TRUE
+5000
+152 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (20, 19)
+TRUE
+5000
+153 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (20, 20)
+TRUE
+5000
+154 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (20, 27)
+FALSE
+5000
+155 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (22, 12)
+TRUE
+5000
+156 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (22, 18)
+TRUE
+5000
+157 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (22, 20)
+TRUE
+5000
+158 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (22, 22)
+TRUE
+5000
+159 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (23, 12)
+TRUE
+5000
+160 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (23, 18)
+TRUE
+5000
+161 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (23, 20)
+TRUE
+5000
+162 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (23, 23)
+TRUE
+5000
+163 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (23, 29)
+FALSE
+5000
+164 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (23, 23)
+TRUE
+5000
+165 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (23, 29)
+FALSE
+5000
+166 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (24, 27)
+FALSE
+5000
+167 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (26, 13)
+FALSE
+5000
+168 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (26, 27)
+TRUE
+5000
+169 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (27, 26)
+TRUE
+5000
+170 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (27, 27)
+TRUE
+5000
+171 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (29, 7)
+FALSE
+5000
+172 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (33, 33)
+TRUE
+5000
+173 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (33, 34)
+FALSE
+5000
+174 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (33, 38)
+FALSE
+5000
+175 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (33, 39)
+FALSE
+5000
+176 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (34, 33)
+FALSE
+5000
+177 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (34, 34)
+FALSE
+5000
+178 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (34, 37)
+FALSE
+5000
+179 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (34, 38)
+TRUE
+5000
+180 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (34, 39)
+TRUE
+5000
+181 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (36, 36)
+TRUE
+5000
+182 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (36, 37)
+TRUE
+5000
+183 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (36, 38)
+TRUE
+5000
+184 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (37, 36)
+TRUE
+5000
+185 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (37, 37)
+TRUE
+5000
+186 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (37, 38)
+TRUE
+5000
+187 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (37, 39)
+TRUE
+5000
+188 - Find statements that with fixed and fixed
+stmt s; assign a; call cl; print p; read r; prog_line n; while w; if ifs;
+Select BOOLEAN such that Affects* (38, 39)
+TRUE
+5000

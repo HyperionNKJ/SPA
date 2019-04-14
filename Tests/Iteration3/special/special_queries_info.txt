@@ -6,7 +6,7 @@ Read: alex 5, impossible 23,
 Call: alvin 2, kaijun 7 & 13, xinler 41,
 If: alex & smart 15, alvin & true & hisIQ 22, if 32, else 36, alex & true & hisIQ 43
 While: secret & message 17, - 18, while 30, 
-Switch: alex 10, kaijun 24
+Switch: alex smart hardworking 10, kaijun secret impossible alex 24
 Assign: 
 1	just = jus + t;
 3	ju = just - st;

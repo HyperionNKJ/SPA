@@ -145,7 +145,7 @@ void ProcessedQuery::optimiseClauses() {
 		if (paramOneResult != with.end()) {
 			DesignEntity replacement = paramOneResult->second;
 			
-			if (replacement.isVar()) {
+			if (replacement.isType(Type::WITH_STRING)) {
 				continue;
 			}
 
@@ -156,7 +156,7 @@ void ProcessedQuery::optimiseClauses() {
 		if (paramTwoResult != with.end()) {
 			DesignEntity replacement = paramTwoResult->second;
 
-			if (replacement.isVar()) {
+			if (replacement.isType(Type::WITH_STRING)) {
 				continue;
 			}
 
@@ -178,7 +178,7 @@ void ProcessedQuery::optimiseClauses() {
 		if (paramOneResult != with.end()) {
 			DesignEntity replacement = paramOneResult->second;
 
-			if (replacement.isVar()) {
+			if (replacement.isType(Type::WITH_STRING)) {
 				continue;
 			}
 
@@ -187,9 +187,9 @@ void ProcessedQuery::optimiseClauses() {
 		}
 
 		if (paramTwoResult != with.end()) {
-			DesignEntity replacement = paramOneResult->second;
+			DesignEntity replacement = paramTwoResult->second;
 
-			if (replacement.isVar()) {
+			if (replacement.isType(Type::WITH_STRING)) {
 				continue;
 			}
 
@@ -211,7 +211,7 @@ void ProcessedQuery::optimiseClauses() {
 		if (paramOneResult != with.end()) {
 			DesignEntity replacement = paramOneResult->second;
 
-			if (replacement.isVar()) {
+			if (replacement.isType(Type::WITH_STRING)) {
 				continue;
 			}
 
@@ -220,9 +220,9 @@ void ProcessedQuery::optimiseClauses() {
 		}
 
 		if (paramTwoResult != with.end()) {
-			DesignEntity replacement = paramOneResult->second;
+			DesignEntity replacement = paramTwoResult->second;
 
-			if (replacement.isVar()) {
+			if (replacement.isType(Type::WITH_STRING)) {
 				continue;
 			}
 

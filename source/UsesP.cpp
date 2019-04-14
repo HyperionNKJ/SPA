@@ -1,6 +1,4 @@
 #include "UsesP.h"
-#include <unordered_set>
-#include <string>
 
 UsesP::UsesP(const DesignEntity& firstPara, const DesignEntity& secondPara) {
 	paraOne = firstPara;
@@ -13,8 +11,8 @@ Result UsesP::evaluate(const PKB& pkb) {
 	this->pkb = pkb;
 	Type paraOneType = paraOne.getType();
 	Type paraTwoType = paraTwo.getType();
-	string paraOneValue = paraOne.getValue();
-	string paraTwoValue = paraTwo.getValue();
+	std::string paraOneValue = paraOne.getValue();
+	std::string paraTwoValue = paraTwo.getValue();
 
 	Result result;
 
@@ -53,9 +51,9 @@ Result UsesP::evaluate(const PKB& pkb) {
 }
 
 // case Uses("main", v)
-Result UsesP::evaluateFixedVariable(const string& procName, const string& variableSynonym) {
+Result UsesP::evaluateFixedVariable(const std::string& procName, const std::string& variableSynonym) {
 	Result result;
-	unordered_set<string> answer = pkb.getVarUsedByProc(procName);
+	std::unordered_set<std::string> answer = pkb.getVarUsedByProc(procName);
 	if (!answer.empty()) {
 		result.setPassed(true);
 		result.setAnswer(variableSynonym, answer, pkb.getVarTable());
@@ -67,23 +65,23 @@ Result UsesP::evaluateFixedVariable(const string& procName, const string& variab
 }
 
 // case Uses("main", _)
-Result UsesP::evaluateFixedUnderscore(const string& procName) {
+Result UsesP::evaluateFixedUnderscore(const std::string& procName) {
 	Result result;
 	result.setPassed(pkb.doesProcUses(procName));
 	return result;
 }
 
 // case Uses("main", "count")
-Result UsesP::evaluateFixedFixed(const string& procName, const string& varName) {
+Result UsesP::evaluateFixedFixed(const std::string& procName, const std::string& varName) {
 	Result result;
 	result.setPassed(pkb.isProcUses(procName, varName));
 	return result;
 }
 
 // case Uses(p, v)
-Result UsesP::evaluateSynonymVariable(const string& procSynonym, const string& variableSynonym) {
+Result UsesP::evaluateSynonymVariable(const std::string& procSynonym, const std::string& variableSynonym) {
 	Result result;
-	unordered_map<string, unordered_set<string>> answer = pkb.getUsesProcVarPairs();
+	std::unordered_map<std::string, std::unordered_set<std::string>> answer = pkb.getUsesProcVarPairs();
 	if (!answer.empty()) {
 		result.setPassed(true);
 		result.setAnswer(procSynonym, variableSynonym, answer, pkb.getProcTable(), pkb.getVarTable());
@@ -95,9 +93,9 @@ Result UsesP::evaluateSynonymVariable(const string& procSynonym, const string& v
 }
 
 // case Uses(p, _)
-Result UsesP::evaluateSynonymUnderscore(const string& procSynonym) {
+Result UsesP::evaluateSynonymUnderscore(const std::string& procSynonym) {
 	Result result;
-	unordered_set<string> answer = pkb.getProcThatUsesVar();
+	std::unordered_set<std::string> answer = pkb.getProcThatUsesVar();
 	if (!answer.empty()) {
 		result.setPassed(true);
 		result.setAnswer(procSynonym, answer, pkb.getProcTable());
@@ -109,9 +107,9 @@ Result UsesP::evaluateSynonymUnderscore(const string& procSynonym) {
 }
 
 // case Uses(p, "count")
-Result UsesP::evaluateSynonymFixed(const string& procSynonym, const string& varName) {
+Result UsesP::evaluateSynonymFixed(const std::string& procSynonym, const std::string& varName) {
 	Result result;
-	unordered_set<string> answer = pkb.getProcThatUsesVar(varName);
+	std::unordered_set<std::string> answer = pkb.getProcThatUsesVar(varName);
 	if (!answer.empty()) {
 		result.setPassed(true);
 		result.setAnswer(procSynonym, answer, pkb.getProcTable());

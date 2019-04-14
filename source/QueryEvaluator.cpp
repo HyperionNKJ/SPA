@@ -1,24 +1,28 @@
 #include "QueryEvaluator.h"
-#include "ResultProjector.h"
 #include "Clause.h"
-#include <unordered_set>
-#include <map>
 
-list<string> QueryEvaluator::evaluate(ProcessedQuery& processedQuery, const PKB& pkb) {
+std::list<std::string> QueryEvaluator::evaluate(ProcessedQuery& processedQuery, PKB& pkb) {
 	ResultProjector resultProjector;
-	resultProjector.resetResults(); // Reset possible old query result
 
-	vector<Clause*>& booleanClauses = processedQuery.booleanClauses; // boolean clause refers to clause without synonym.
-	vector<Clause*>& sortedWithClauses = optimizationSort(processedQuery.withClauses); // all types of clauses below have synonyms. Hence optimization is required
-	vector<Clause*>& sortedNextTClauses = optimizationSort(processedQuery.nextTClauses);
-	vector<Clause*>& sortedAffectsClauses = optimizationSort(processedQuery.affectsClauses);
-	vector<Clause*>& sortedAffectsTClauses = optimizationSort(processedQuery.affectsTClauses);
-	vector<Clause*>& sortedOtherClauses = optimizationSort(processedQuery.otherClauses);
+	resultProjector.resetResults(); // Reset old query's intermediate table and cache
+	pkb.clearAffectsCache(); // Clear cache
 
-	vector<Clause*> combinedClauses; // optimally combined with the following order
-	combinedClauses.insert(combinedClauses.end(), booleanClauses.begin(), booleanClauses.end());
+	std::vector<Clause*>& booleanClauses = processedQuery.booleanClauses; // boolean clause refers to clause without synonym.
+	std::vector<Clause*> expensiveBooleanClauses; // i.e. Next* / Affects / Affects* boolean clauses
+	std::vector<Clause*> regularBooleanClauses; // other boolean clauses
+	sortBooleanClauses(booleanClauses, expensiveBooleanClauses, regularBooleanClauses); 
+
+	std::vector<Clause*>& sortedWithClauses = optimizationSort(processedQuery.withClauses); // all types of clauses below have synonyms. Hence optimization is required
+	std::vector<Clause*>& sortedNextTClauses = optimizationSort(processedQuery.nextTClauses);
+	std::vector<Clause*>& sortedAffectsClauses = optimizationSort(processedQuery.affectsClauses);
+	std::vector<Clause*>& sortedAffectsTClauses = optimizationSort(processedQuery.affectsTClauses);
+	std::vector<Clause*>& sortedOtherClauses = optimizationSort(processedQuery.otherClauses);
+
+	std::vector<Clause*> combinedClauses; // optimally combined with the following order
+	combinedClauses.insert(combinedClauses.end(), regularBooleanClauses.begin(), regularBooleanClauses.end());
 	combinedClauses.insert(combinedClauses.end(), sortedWithClauses.begin(), sortedWithClauses.end());
 	combinedClauses.insert(combinedClauses.end(), sortedOtherClauses.begin(), sortedOtherClauses.end());
+	combinedClauses.insert(combinedClauses.end(), expensiveBooleanClauses.begin(), expensiveBooleanClauses.end());
 	combinedClauses.insert(combinedClauses.end(), sortedNextTClauses.begin(), sortedNextTClauses.end());
 	combinedClauses.insert(combinedClauses.end(), sortedAffectsClauses.begin(), sortedAffectsClauses.end());
 	combinedClauses.insert(combinedClauses.end(), sortedAffectsTClauses.begin(), sortedAffectsTClauses.end());
@@ -47,7 +51,7 @@ list<string> QueryEvaluator::evaluate(ProcessedQuery& processedQuery, const PKB&
 		int numOfSyn = clauseResult.getNumOfSyn(); // num of synonyms in clauseResult is zero if clause is false or if boolean clause
 		if (clauseResult.hasPassed() && numOfSyn != 0) { // if clauseResult has synonym/s, send to ResultProjector to merge.
 			bool hasResultSoFar;
-			vector<string> synonyms = clauseResult.getSynonyms();
+			std::vector<std::string> synonyms = clauseResult.getSynonyms();
 			bool shouldStoreInCache = !reducedDomainExists && !cacheResultExists && clauseIsExpensive; // Cannot store in cache if result was evaluated using reduced domain!
 			if (numOfSyn == 1) {
 				hasResultSoFar = resultProjector.combineResults(clauseResult.getOneSynAnswer(), synonyms);
@@ -72,8 +76,8 @@ list<string> QueryEvaluator::evaluate(ProcessedQuery& processedQuery, const PKB&
 	return resultProjector.getResults(processedQuery.resultClElemList, pkb);
 }
 
-list<string> QueryEvaluator::returnNegativeResult(vector<DesignEntity>& selectClause) {
-	list<string> emptyResult;
+std::list<std::string> QueryEvaluator::returnNegativeResult(std::vector<DesignEntity>& selectClause) {
+	std::list<std::string> emptyResult;
 	if (selectClause[0].getType() == Type::BOOLEAN) {
 		emptyResult.push_back("FALSE");
 	}
@@ -82,8 +86,8 @@ list<string> QueryEvaluator::returnNegativeResult(vector<DesignEntity>& selectCl
 
 // only called by NextT, Affects, and AffectsT
 bool QueryEvaluator::findReducedDomain(Clause* clause, ResultProjector* resultProjector) {
-	const unordered_set<string>& synonyms = clause->getSynonyms(); // 1 or 2 synonyms
-	unordered_map<string, unordered_set<int>> reducedDomain;
+	const std::unordered_set<std::string>& synonyms = clause->getSynonyms(); // 1 or 2 synonyms
+	std::unordered_map<std::string, std::unordered_set<int>> reducedDomain;
 	bool hasReducedDomain = false;
 	for (const auto& s : synonyms) {
 		if (resultProjector->synonymExists(s)) {
@@ -96,30 +100,30 @@ bool QueryEvaluator::findReducedDomain(Clause* clause, ResultProjector* resultPr
 }
 
 // Function that encapsulates optimization logic
-vector<Clause*> QueryEvaluator::optimizationSort(vector<Clause*>& unconnectedClauses) {
-	vector<pair<unordered_set<string>, vector<Clause*>>> connectedClauses; // unordered_set<string> = common synonyms, vector<Clause*> = clauses with those synonyms
+std::vector<Clause*> QueryEvaluator::optimizationSort(std::vector<Clause*>& unconnectedClauses) {
+	std::vector<std::pair<std::unordered_set<std::string>, std::vector<Clause*>>> connectedClauses; // unordered_set<string> = common synonyms, vector<Clause*> = clauses with those synonyms
 	groupBasedOnConnectedSyn(unconnectedClauses, connectedClauses); // group clauses base on common synonyms
 	sortWithinEachGroup(connectedClauses); // Within each group, sort clauses such that synonym/s in one clause appears in a previous clause
 	return combineClauses(connectedClauses);
 } 
 
-void QueryEvaluator::groupBasedOnConnectedSyn(vector<Clause*>& unconnectedClauses, vector<pair<unordered_set<string>, vector<Clause*>>>& connectedClauses) {
+void QueryEvaluator::groupBasedOnConnectedSyn(std::vector<Clause*>& unconnectedClauses, std::vector<std::pair<std::unordered_set<std::string>, std::vector<Clause*>>>& connectedClauses) {
 	for (auto& clause : unconnectedClauses) {
-		unordered_set<string> synonyms = clause->getSynonyms();
+		std::unordered_set<std::string> synonyms = clause->getSynonyms();
 		bool addedIntoGroup = false;
 		for (auto& itr = connectedClauses.begin(); itr != connectedClauses.end(); ++itr) {
-			unordered_set<string>& synonymGroup = itr->first;
-			vector<Clause*>& clauseGroup = itr->second;
+			std::unordered_set<std::string>& synonymGroup = itr->first;
+			std::vector<Clause*>& clauseGroup = itr->second;
 			if (hasCommonSynonyms(synonyms, synonymGroup)) {
 				synonymGroup.insert(synonyms.begin(), synonyms.end());
 				clauseGroup.push_back(clause);
 				addedIntoGroup = true;
 				// New added clause may connect this synonym-clause group with another subsequent synonym-clause group. 
-				vector<pair<unordered_set<string>, vector<Clause*>>>::iterator ptr = itr;
+				std::vector<std::pair<std::unordered_set<std::string>, std::vector<Clause*>>>::iterator ptr = itr;
 				ptr++;
 				for (; ptr != connectedClauses.end(); ptr++) {
-					unordered_set<string>& subsequentSynGroup = ptr->first;
-					vector<Clause*>& subsequentClauseGroup = ptr->second;
+					std::unordered_set<std::string>& subsequentSynGroup = ptr->first;
+					std::vector<Clause*>& subsequentClauseGroup = ptr->second;
 					if (hasCommonSynonyms(synonyms, subsequentSynGroup)) { 
 						// combine the 2 groups together
 						synonymGroup.insert(subsequentSynGroup.begin(), subsequentSynGroup.end());
@@ -132,12 +136,12 @@ void QueryEvaluator::groupBasedOnConnectedSyn(vector<Clause*>& unconnectedClause
 			}
 		}
 		if (!addedIntoGroup) {
-			connectedClauses.push_back(make_pair(synonyms, vector<Clause*>({ clause })));
+			connectedClauses.push_back(make_pair(synonyms, std::vector<Clause*>({ clause })));
 		}
 	}
 }
 
-bool QueryEvaluator::hasCommonSynonyms(const unordered_set<string>& synonymSet1, const unordered_set<string>& synonymSet2) {
+bool QueryEvaluator::hasCommonSynonyms(const std::unordered_set<std::string>& synonymSet1, const std::unordered_set<std::string>& synonymSet2) {
 	for (const auto& syn : synonymSet1) {
 		if (synonymSet2.count(syn)) {
 			return true;
@@ -147,15 +151,15 @@ bool QueryEvaluator::hasCommonSynonyms(const unordered_set<string>& synonymSet1,
 }
 
 // Within each group, sort clauses such that synonym/s in one clause appears in any previous clause i.e. (s,a) -> (a, b) -> (s,w) -> (w,c)
-void QueryEvaluator::sortWithinEachGroup(vector<pair<unordered_set<string>, vector<Clause*>>>& connectedClauses) {
+void QueryEvaluator::sortWithinEachGroup(std::vector<std::pair<std::unordered_set<std::string>, std::vector<Clause*>>>& connectedClauses) {
 	for (auto& synClausePair : connectedClauses) {
-		vector<Clause*>& clauseGroup = synClausePair.second;
+		std::vector<Clause*>& clauseGroup = synClausePair.second;
 		if (clauseGroup.size() < 3) {
 			continue; // clause group with two or less clauses are always sorted
 		}
-		unordered_set<string> appearedBefore;
-		unordered_set<string> clauseOneSyn = clauseGroup[0]->getSynonyms();
-		unordered_set<string> clauseTwoSyn = clauseGroup[1]->getSynonyms();
+		std::unordered_set<std::string> appearedBefore;
+		std::unordered_set<std::string> clauseOneSyn = clauseGroup[0]->getSynonyms();
+		std::unordered_set<std::string> clauseTwoSyn = clauseGroup[1]->getSynonyms();
 		appearedBefore.insert(clauseOneSyn.begin(), clauseOneSyn.end());
 		appearedBefore.insert(clauseTwoSyn.begin(), clauseTwoSyn.end());
 
@@ -170,17 +174,29 @@ void QueryEvaluator::sortWithinEachGroup(vector<pair<unordered_set<string>, vect
 					}
 				}
 			}
-			unordered_set<string> synonyms = clauseGroup[i]->getSynonyms(); // updated if there was a swap
+			std::unordered_set<std::string> synonyms = clauseGroup[i]->getSynonyms(); // updated if there was a swap
 			appearedBefore.insert(synonyms.begin(), synonyms.end());
 		}
 	}
 }
 
-vector<Clause*> QueryEvaluator::combineClauses(vector<pair<unordered_set<string>, vector<Clause*>>>& connectedClauses) {
-	vector<Clause*> combinedClauses;
+std::vector<Clause*> QueryEvaluator::combineClauses(std::vector<std::pair<std::unordered_set<std::string>, std::vector<Clause*>>>& connectedClauses) {
+	std::vector<Clause*> combinedClauses;
 	for (auto& synClausePair : connectedClauses) {
-		vector<Clause*>& clauseGroup = synClausePair.second;
+		std::vector<Clause*>& clauseGroup = synClausePair.second;
 		combinedClauses.insert(combinedClauses.end(), clauseGroup.begin(), clauseGroup.end());
 	}
 	return combinedClauses;
+}
+
+void QueryEvaluator::sortBooleanClauses(const std::vector<Clause*>& booleanClauses, std::vector<Clause*>& expensiveBooleanClauses, std::vector<Clause*>& regularBooleanClauses) {
+	for (const auto& clause : booleanClauses) {
+		ClauseType clauseType = clause->getClauseType();
+		if (clauseType == NEXT_T || clauseType == AFFECTS || clauseType == AFFECTS_T) {
+			expensiveBooleanClauses.push_back(clause);
+		}
+		else {
+			regularBooleanClauses.push_back(clause);
+		}
+	}
 }

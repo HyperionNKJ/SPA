@@ -34,6 +34,10 @@ QueryPreprocessorResultParser::QueryPreprocessorResultParser(const string& claus
 // Parses the result clause.
 // Returns true if parsing is successful and false if unsucessful.
 void QueryPreprocessorResultParser::parse() {
+	if (CLAUSE.back() == COMMA) {
+		throw QueryPreprocessorError(ErrorType::SYNTACTIC);
+	}
+
 	// case 0: result clause is a boolean
 	if (CLAUSE == "BOOLEAN" && !query.hasSynonym("BOOLEAN")) {
 		DesignEntity element(EMPTY, Type::BOOLEAN);
@@ -43,7 +47,9 @@ void QueryPreprocessorResultParser::parse() {
 	}
 
 	// case 1: result clause is a tuple of element
-	if (CLAUSE.front() == TUPLE_BRACKET_L && CLAUSE.back() == TUPLE_BRACKET_R) {
+	if (CLAUSE.front() == TUPLE_BRACKET_L 
+		&& CLAUSE.back() == TUPLE_BRACKET_R
+		&& CLAUSE[CLAUSE.size() - 2] != COMMA) {
 		// tokenize result clause into elements
 		size_t clauseSize = CLAUSE.size() - 2;
 		std::string elements = CLAUSE.substr(1, clauseSize);

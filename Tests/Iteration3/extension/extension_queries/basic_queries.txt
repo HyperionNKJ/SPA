@@ -23,3 +23,18 @@ switch sw;
 Select BOOLEAN pattern sw ("y", _)
 FALSE
 5000
+6 - Valid switch pattern clause
+switch sw;
+Select BOOLEAN pattern sw ("x", _)
+TRUE
+5000
+7 - Valid switch pattern clause
+switch sw;
+Select BOOLEAN pattern sw ("c", _)
+TRUE
+5000
+8 - Valid switch pattern clause
+switch sw;
+Select BOOLEAN pattern sw ("a", _)
+TRUE
+5000
