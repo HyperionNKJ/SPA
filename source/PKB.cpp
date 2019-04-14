@@ -1026,6 +1026,8 @@ unordered_set<int> PKB::getPreviousTOf(int firstLine, Type stmtType) {
 		}
 		while (linesQueue.size() > 0) {
 			int currLine = linesQueue.front();
+			nextTCache[currLine].insert(firstLine);
+			prevTCache[firstLine].insert(currLine);
 			linesQueue.pop();
 			visitedLines.insert(currLine);
 			for (auto &elem : prevMap[currLine]) {
@@ -1034,7 +1036,6 @@ unordered_set<int> PKB::getPreviousTOf(int firstLine, Type stmtType) {
 				}
 			}
 		}
-		prevTCache.insert({ firstLine, visitedLines });
 	}
 	for (auto &elem : visitedLines) {
 		if (typedStmtSet->count(elem) > 0) {
