@@ -13,8 +13,8 @@ Result PatternWhile::evaluate(const PKB& pkb) {
 
 	Type subjectType = subject.getType(); // should be a while type
 	Type paraOneType = paraOne.getType();
-	string subjectValue = subject.getValue();
-	string paraOneValue = paraOne.getValue();
+	std::string subjectValue = subject.getValue();
+	std::string paraOneValue = paraOne.getValue();
 
 	Result result;
 
@@ -38,9 +38,9 @@ Result PatternWhile::evaluate(const PKB& pkb) {
 }
 
 // case w(v, _)
-Result PatternWhile::evaluateVariable(const string& controlVar, const string& whileSynonym) {
+Result PatternWhile::evaluateVariable(const std::string& controlVar, const std::string& whileSynonym) {
 	Result result;
-	unordered_map<int, unordered_set<string>> answer = pkb.getWhileControlVarPair();
+	std::unordered_map<int, std::unordered_set<std::string>> answer = pkb.getWhileControlVarPair();
 
 	if (!answer.empty()) {
 		result.setPassed(true);
@@ -53,9 +53,9 @@ Result PatternWhile::evaluateVariable(const string& controlVar, const string& wh
 }
 
 // case w(_, _)
-Result PatternWhile::evaluateUnderscore(const string& whileSynonym) {
+Result PatternWhile::evaluateUnderscore(const std::string& whileSynonym) {
 	Result result;
-	unordered_set<int> answer = pkb.getWhileWithControlVar();
+	std::unordered_set<int> answer = pkb.getWhileWithControlVar();
 
 	if (!answer.empty()) {
 		result.setPassed(true);
@@ -68,9 +68,9 @@ Result PatternWhile::evaluateUnderscore(const string& whileSynonym) {
 }
 
 // case w("count", _)
-Result PatternWhile::evaluateFixed(const string& controlVar, const string& whileSynonym) {
+Result PatternWhile::evaluateFixed(const std::string& controlVar, const std::string& whileSynonym) {
 	Result result;
-	unordered_set<int> answer = pkb.getWhileWithControlVar(controlVar);
+	std::unordered_set<int> answer = pkb.getWhileWithControlVar(controlVar);
 
 	if (!answer.empty()) {
 		result.setPassed(true);

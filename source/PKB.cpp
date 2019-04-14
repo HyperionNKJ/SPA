@@ -1181,13 +1181,13 @@ unordered_map<int, unordered_set<int>> PKB::getAffectsMap(bool isTransitive, boo
 		return {};
 	toBeVisited.insert(1);
 	visitedLines.insert(1);
-	while (visitedLines.size() != allStmts.size())
-	{
+	while (visitedLines.size() != allStmts.size()) {
 		// For moving on to the next proc in the code
 		if (toBeVisited.size() == 0) {
 			toBeVisited.insert(maxLine + 1);
 			isNewProc = true;
 		}
+
 		// Earlier lines will always be visited first
 		currLine = *toBeVisited.begin();
 		if (!allStmts.count(currLine))
@@ -1196,6 +1196,10 @@ unordered_map<int, unordered_set<int>> PKB::getAffectsMap(bool isTransitive, boo
 		visitedLines.insert(currLine);
 		if (currLine > maxLine)
 			maxLine = currLine;
+
+		// New modMap each time pkb traverses to the currLine
+		// So outdated values do not stay in modMap
+		modMaps[currLine] = {};
 
 		// Duplication/merging of modMaps
 		if (!isNewProc) {
@@ -1279,6 +1283,9 @@ unordered_map<int, unordered_set<int>> PKB::getAffectsMap(bool isTransitive, boo
 	else
 		affectsRelationshipMap = affectedMap;
 	for (const auto &affectElem : affectsRelationshipMap) {
+		/*if (visitedNodes.count(affectElem.first))
+			continue;*/
+		visitedNodes = {};
 		for (const auto &neighbour : affectElem.second) {
 			toBeVisitedNodes.push(neighbour);
 			resultTMap[affectElem.first].insert(neighbour);
@@ -1293,8 +1300,13 @@ unordered_map<int, unordered_set<int>> PKB::getAffectsMap(bool isTransitive, boo
 				continue;
 			}
 			neighbours = affectsRelationshipMap[toBeVisitedNodes.front()];
+			// isExplored = true;
 			for (const auto &neighbour : neighbours) {
 				if (!visitedNodes.count(neighbour)) {
+					/*if (neighbour != toBeVisitedNodes.front()) {
+						toBeVisitedNodes.push(neighbour);
+						isExplored = false;
+					}*/
 					toBeVisitedNodes.push(neighbour);
 					resultTMap[toBeVisitedNodes.front()].insert(neighbour);
 				}
@@ -1303,9 +1315,11 @@ unordered_map<int, unordered_set<int>> PKB::getAffectsMap(bool isTransitive, boo
 						resultTMap[toBeVisitedNodes.front()].insert(neighbourT);
 						resultTMap[affectElem.first].insert(neighbourT);
 					}
+					resultTMap[toBeVisitedNodes.front()].insert(neighbour);
 				}
 				resultTMap[affectElem.first].insert(neighbour);
 			}
+			// if (isExplored)
 			visitedNodes.insert(toBeVisitedNodes.front());
 			toBeVisitedNodes.pop();
 		}

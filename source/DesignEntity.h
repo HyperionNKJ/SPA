@@ -1,8 +1,9 @@
 #pragma once
-#include <string>
-#include <vector>
+
 #include "AttrRef.h"
 #include "Type.h"
+#include <string>
+#include <vector>
 
 class DesignEntity {
 private:

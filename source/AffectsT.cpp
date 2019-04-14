@@ -11,8 +11,8 @@ Result AffectsT::evaluate(const PKB& pkb) {
 	this->pkb = pkb;
 	Type paraOneType = paraOne.getType();
 	Type paraTwoType = paraTwo.getType();
-	string paraOneValue = paraOne.getValue();
-	string paraTwoValue = paraTwo.getValue();
+	std::string paraOneValue = paraOne.getValue();
+	std::string paraTwoValue = paraTwo.getValue();
 
 	Result result;
 
@@ -65,11 +65,11 @@ Result AffectsT::evaluate(const PKB& pkb) {
 }
 
 // case Affects*(5, a)
-Result AffectsT::evaluateFixedSynonym(const string& modifierStmtNum, const string& userSynonym) {
+Result AffectsT::evaluateFixedSynonym(const std::string& modifierStmtNum, const std::string& userSynonym) {
 	Result result;
-	unordered_set<int> answer;
+	std::unordered_set<int> answer;
 	if (reducedDomain.count(userSynonym)) {
-		unordered_set<int> possibleValues = reducedDomain.at(userSynonym);
+		std::unordered_set<int> possibleValues = reducedDomain.at(userSynonym);
 		for (auto value : possibleValues) {
 			if (pkb.isAffectsT(stoi(modifierStmtNum), value)) {
 				answer.insert(value);
@@ -91,14 +91,14 @@ Result AffectsT::evaluateFixedSynonym(const string& modifierStmtNum, const strin
 }
 
 // case Affects*(6, _)
-Result AffectsT::evaluateFixedUnderscore(const string& modifierStmtNum) {
+Result AffectsT::evaluateFixedUnderscore(const std::string& modifierStmtNum) {
 	Result result;
 	result.setPassed(pkb.hasUser(stoi(modifierStmtNum)));
 	return result;
 }
 
 // case Affects*(11, 15)
-Result AffectsT::evaluateFixedFixed(const string& modifierStmtNum, const string& userStmtNum) {
+Result AffectsT::evaluateFixedFixed(const std::string& modifierStmtNum, const std::string& userStmtNum) {
 	Result result;
 	result.setPassed(pkb.isAffectsT(stoi(modifierStmtNum), stoi(userStmtNum)));
 	return result;
@@ -106,13 +106,13 @@ Result AffectsT::evaluateFixedFixed(const string& modifierStmtNum, const string&
 
 
 // case Affects*(s, pl)
-Result AffectsT::evaluateSynonymSynonym(const string& modifierSynonym, const string& userSynonym) {
+Result AffectsT::evaluateSynonymSynonym(const std::string& modifierSynonym, const std::string& userSynonym) {
 	Result result;
 	bool isSameSynonym = modifierSynonym == userSynonym;
 	bool hasDomainForModifierSyn = reducedDomain.count(modifierSynonym);
 	bool hasDomainForUserSyn = reducedDomain.count(userSynonym);
-	unordered_set<int> modifierSynPossibleValues;
-	unordered_set<int> userSynPossibleValues;
+	std::unordered_set<int> modifierSynPossibleValues;
+	std::unordered_set<int> userSynPossibleValues;
 
 	if (hasDomainForModifierSyn) {
 		modifierSynPossibleValues = reducedDomain.at(modifierSynonym);
@@ -122,7 +122,7 @@ Result AffectsT::evaluateSynonymSynonym(const string& modifierSynonym, const str
 		userSynPossibleValues = reducedDomain.at(userSynonym);
 	}
 
-	unordered_map<int, unordered_set<int>> answer;
+	std::unordered_map<int, std::unordered_set<int>> answer;
 	bool keyIsModifierSyn = false; // true if above answer's key represents the modifier while value represents all its users. false otherwise.
 
 	if (hasDomainForModifierSyn && hasDomainForUserSyn) { // if both synonyms exist in intermediate table
@@ -141,7 +141,7 @@ Result AffectsT::evaluateSynonymSynonym(const string& modifierSynonym, const str
 	}
 	else {
 		if (isSameSynonym) {
-			unordered_set<int> modifiers = pkb.getModifierStmts();
+			std::unordered_set<int> modifiers = pkb.getModifierStmts();
 			evaluateSameSynonym(modifiers, pkb, answer);
 		}
 		else {
@@ -166,14 +166,14 @@ Result AffectsT::evaluateSynonymSynonym(const string& modifierSynonym, const str
 }
 
 // Helper method for evaluateSynonymSynonym()
-bool AffectsT::evaluateSynSynFromModifier(const unordered_set<int>& modifierSynPossibleValues, PKB& pkb, unordered_map<int, unordered_set<int>>& answer, const bool& isSameSynonym) {
+bool AffectsT::evaluateSynSynFromModifier(const std::unordered_set<int>& modifierSynPossibleValues, PKB& pkb, std::unordered_map<int, std::unordered_set<int>>& answer, const bool& isSameSynonym) {
 	if (isSameSynonym) {
 		evaluateSameSynonym(modifierSynPossibleValues, pkb, answer);
 		return true; // does not matter since same synonym
 	}
 	
 	for (const auto& modifier : modifierSynPossibleValues) {
-		unordered_set<int> users = pkb.getUserTOf(modifier);
+		std::unordered_set<int> users = pkb.getUserTOf(modifier);
 		if (!users.empty()) {
 			answer.insert({ modifier, users });
 		}
@@ -182,14 +182,14 @@ bool AffectsT::evaluateSynSynFromModifier(const unordered_set<int>& modifierSynP
 }
 
 // Helper method for evaluateSynonymSynonym()
-bool AffectsT::evaluateSynSynFromUser(const unordered_set<int>& userSynPossibleValues, PKB& pkb, unordered_map<int, unordered_set<int>>& answer, const bool& isSameSynonym) {
+bool AffectsT::evaluateSynSynFromUser(const std::unordered_set<int>& userSynPossibleValues, PKB& pkb, std::unordered_map<int, std::unordered_set<int>>& answer, const bool& isSameSynonym) {
 	if (isSameSynonym) {
 		evaluateSameSynonym(userSynPossibleValues, pkb, answer);
 		return false; // does not matter since same synonym
 	}
 	
 	for (auto user : userSynPossibleValues) {
-		unordered_set<int> modifiers = pkb.getModifierTOf(user);
+		std::unordered_set<int> modifiers = pkb.getModifierTOf(user);
 		if (!modifiers.empty()) {
 			answer.insert({ user, modifiers });
 		}
@@ -197,7 +197,7 @@ bool AffectsT::evaluateSynSynFromUser(const unordered_set<int>& userSynPossibleV
 	return false; // false because answer's key is not modifier
 }
 
-void AffectsT::evaluateSameSynonym(const unordered_set<int>& possibleValues, PKB& pkb, unordered_map<int, unordered_set<int>>& answer) {
+void AffectsT::evaluateSameSynonym(const std::unordered_set<int>& possibleValues, PKB& pkb, std::unordered_map<int, std::unordered_set<int>>& answer) {
 	for (auto value : possibleValues) {
 		if (pkb.isAffectsT(value, value)) {
 			answer.insert({ value, {value} });
@@ -206,11 +206,11 @@ void AffectsT::evaluateSameSynonym(const unordered_set<int>& possibleValues, PKB
 }
 
 // case Affects*(a, _)
-Result AffectsT::evaluateSynonymUnderscore(const string& modifierSyn) {
+Result AffectsT::evaluateSynonymUnderscore(const std::string& modifierSyn) {
 	Result result;
-	unordered_set<int> answer;
+	std::unordered_set<int> answer;
 	if (reducedDomain.count(modifierSyn)) {
-		unordered_set<int> possibleValues = reducedDomain.at(modifierSyn);
+		std::unordered_set<int> possibleValues = reducedDomain.at(modifierSyn);
 		for (auto value : possibleValues) {
 			if (pkb.hasUser(value)) {
 				answer.insert(value);
@@ -232,11 +232,11 @@ Result AffectsT::evaluateSynonymUnderscore(const string& modifierSyn) {
 }
 
 // case Affects*(pl, 14)
-Result AffectsT::evaluateSynonymFixed(const string& modifierSyn, const string& userStmtNum) {
+Result AffectsT::evaluateSynonymFixed(const std::string& modifierSyn, const std::string& userStmtNum) {
 	Result result;
-	unordered_set<int> answer;
+	std::unordered_set<int> answer;
 	if (reducedDomain.count(modifierSyn)) {
-		unordered_set<int> possibleValues = reducedDomain.at(modifierSyn);
+		std::unordered_set<int> possibleValues = reducedDomain.at(modifierSyn);
 		for (auto value : possibleValues) {
 			if (pkb.isAffectsT(value, stoi(userStmtNum))) {
 				answer.insert(value);
@@ -257,11 +257,11 @@ Result AffectsT::evaluateSynonymFixed(const string& modifierSyn, const string& u
 }
 
 // case Affects*(_, s)
-Result AffectsT::evaluateUnderscoreSynonym(const string& userSynonym) {
+Result AffectsT::evaluateUnderscoreSynonym(const std::string& userSynonym) {
 	Result result;
-	unordered_set<int> answer;
+	std::unordered_set<int> answer;
 	if (reducedDomain.count(userSynonym)) {
-		unordered_set<int> possibleValues = reducedDomain.at(userSynonym);
+		std::unordered_set<int> possibleValues = reducedDomain.at(userSynonym);
 		for (auto value : possibleValues) {
 			if (pkb.hasModifier(value)) {
 				answer.insert(value);
@@ -290,7 +290,7 @@ Result AffectsT::evaluateUnderscoreUnderscore() {
 }
 
 // case Affects*(_, 8)
-Result AffectsT::evaluateUnderscoreFixed(const string& userStmtNum) {
+Result AffectsT::evaluateUnderscoreFixed(const std::string& userStmtNum) {
 	Result result;
 	result.setPassed(pkb.hasModifier(stoi(userStmtNum)));
 	return result;

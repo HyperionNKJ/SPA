@@ -96,7 +96,7 @@ none
 20 - To be filled
 stmt s, s1; assign a, a1; while w; if ifs; variable v, v1; procedure p, q; constant c; prog_line n; call cl; read rd; print pt; switch sw;
 Select <sw, c, v> with sw.stmt# = c.value pattern sw(v, _)
-10 10 alex
+10 10 alex, 10 10 smart, 10 10 hardworking
 5000
 21 - To be filled
 stmt s, s1; assign a, a1; while w; if ifs; variable v, v1; procedure p, q; constant c; prog_line n; call cl; read rd; print pt; switch sw;

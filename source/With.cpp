@@ -15,9 +15,9 @@ RefIdentity With::determineRefIdentity(DesignEntity& ref) {
 	RefIdentity refIdentity;
 
 	try {
-		refIdentity = refIdentityTable.at(make_pair(type, attrRef));
+		refIdentity = refIdentityTable.at(std::make_pair(type, attrRef));
 	}
-	catch (out_of_range e) { // case where ref is not allowed in with clause, for example const.varName (type = CONSTANT, attrRef = VAR_NAME)
+	catch (std::out_of_range e) { // case where ref is not allowed in with clause, for example const.varName (type = CONSTANT, attrRef = VAR_NAME)
 		refIdentity = INVALID_REF;
 	}
 	return refIdentity;
@@ -31,10 +31,10 @@ Result With::evaluate(const PKB& pkb) {
 		result.setPassed(false);
 	}
 
-	string refOneValue = paraOne.getValue();
+	std::string refOneValue = paraOne.getValue();
 	Type refOneType = paraOne.getType();
 	AttrRef refOneAttRef = paraOne.getAttrRef();
-	string refTwoValue = paraTwo.getValue();
+	std::string refTwoValue = paraTwo.getValue();
 	Type refTwoType = paraTwo.getType();
 	AttrRef refTwoAttRef = paraTwo.getAttrRef();
 
@@ -135,12 +135,12 @@ Result With::evaluate(const PKB& pkb) {
 }
 
 // e.g. 12 = 15
-Result With::evaulateIntInt(const string& numOne, const string& numTwo) {
+Result With::evaulateIntInt(const std::string& numOne, const std::string& numTwo) {
 	return evaluateStrStr(numOne, numTwo);
 } 
 
 // e.g. 12 = n
-Result With::evaulateIntSyn(const string& num, const string& progLineSyn) {
+Result With::evaulateIntSyn(const std::string& num, const std::string& progLineSyn) {
 	Result result;
 	unsigned int progLineNum = stoi(num);
 	if (pkb.getAllStmts().size() >= progLineNum && progLineNum > 0 ) {
@@ -154,10 +154,10 @@ Result With::evaulateIntSyn(const string& num, const string& progLineSyn) {
 }
 
 // e.g. 12 = c.value
-Result With::evaulateIntConstVal(const string& num, const string& constSyn) {
+Result With::evaulateIntConstVal(const std::string& num, const std::string& constSyn) {
 	Result result;
 	int constValue = stoi(num);
-	unordered_set<int> constants = pkb.getAllConstant();
+	std::unordered_set<int> constants = pkb.getAllConstant();
 	if (constants.count(constValue)) {
 		result.setPassed(true);
 		result.setAnswer(constSyn, constValue);
@@ -169,10 +169,10 @@ Result With::evaulateIntConstVal(const string& num, const string& constSyn) {
 }
 
 // e.g. 12 = c.stmt#
-Result With::evaulateIntAttrRefInt(const string& num, const string& synonym, const Type& type) {
+Result With::evaulateIntAttrRefInt(const std::string& num, const std::string& synonym, const Type& type) {
 	Result result;
 	int stmtNum = stoi(num);
-	unordered_set<int> validStatements = getValidStmts(type);
+	std::unordered_set<int> validStatements = getValidStmts(type);
 	if (validStatements.count(stmtNum)) {
 		result.setPassed(true);
 		result.setAnswer(synonym, stmtNum);
@@ -184,16 +184,16 @@ Result With::evaulateIntAttrRefInt(const string& num, const string& synonym, con
 }
 
 // e.g. "second" = "second"
-Result With::evaluateStrStr(const string& stringOne, const string& stringTwo) {
+Result With::evaluateStrStr(const std::string& stringOne, const std::string& stringTwo) {
 	Result result;
 	result.setPassed(stringOne == stringTwo);
 	return result;
 }
 
 // e.g. "main" = p.procName
-Result With::evaluateStrAttrRefStr(const string& name, const string& synonym, const Type& type) {
+Result With::evaluateStrAttrRefStr(const std::string& name, const std::string& synonym, const Type& type) {
 	Result result;
-	unordered_set<string> validNames = getValidNames(type);
+	std::unordered_set<std::string> validNames = getValidNames(type);
 	if (validNames.count(name)) {
 		result.setPassed(true);
 		if (type == PROCEDURE || type == VARIABLE) {
@@ -210,11 +210,11 @@ Result With::evaluateStrAttrRefStr(const string& name, const string& synonym, co
 }
 
 // e.g. c.value = n
-Result With::evaulateConstValSyn(const string& constSyn, const string& progLineSyn) {
+Result With::evaulateConstValSyn(const std::string& constSyn, const std::string& progLineSyn) {
 	Result result;
-	unordered_set<int> allConstants = pkb.getAllConstant();
-	unordered_set<int> allProgLines = pkb.getAllStmts();
-	unordered_map<int, int> intersectionMap = getCommonValueMap(allConstants, allProgLines);
+	std::unordered_set<int> allConstants = pkb.getAllConstant();
+	std::unordered_set<int> allProgLines = pkb.getAllStmts();
+	std::unordered_map<int, int> intersectionMap = getCommonValueMap(allConstants, allProgLines);
 	if (!intersectionMap.empty()) {
 		result.setPassed(true);
 		result.setAnswer(constSyn, progLineSyn, intersectionMap);
@@ -226,9 +226,9 @@ Result With::evaulateConstValSyn(const string& constSyn, const string& progLineS
 }
 
 // e.g. c.value = c1.value
-Result With::evaulateConstValConstVal(const string& constSynOne, const string& constSynTwo) {
+Result With::evaulateConstValConstVal(const std::string& constSynOne, const std::string& constSynTwo) {
 	Result result;
-	unordered_set<int> allConstants = pkb.getAllConstant();
+	std::unordered_set<int> allConstants = pkb.getAllConstant();
 	if (!allConstants.empty()) {
 		result.setPassed(true);
 		result.setAnswer(constSynOne, constSynTwo, getCommonValueMap(allConstants, allConstants));
@@ -240,18 +240,18 @@ Result With::evaulateConstValConstVal(const string& constSynOne, const string& c
 }
 
 // e.g. n = n1
-Result With::evaulateSynSyn(const string& progLineSynOne, const string& progLineSynTwo) {
+Result With::evaulateSynSyn(const std::string& progLineSynOne, const std::string& progLineSynTwo) {
 	Result result;
-	unordered_set<int> allProgLines = pkb.getAllStmts();
+	std::unordered_set<int> allProgLines = pkb.getAllStmts();
 	result.setPassed(true); // program must contain at least one statement / program line. Hence n = n1 is always true!
 	result.setAnswer(progLineSynOne, progLineSynTwo, getCommonValueMap(allProgLines, allProgLines));
 	return result;
 }
 
 // e.g. w.stmt# = n
-Result With::evaulateAttrRefIntSyn(const string& synonym, const Type& type, const string& progLineSyn) {
+Result With::evaulateAttrRefIntSyn(const std::string& synonym, const Type& type, const std::string& progLineSyn) {
 	Result result;
-	unordered_set<int> validStatements = getValidStmts(type);
+	std::unordered_set<int> validStatements = getValidStmts(type);
 	if (!validStatements.empty()) {
 		result.setPassed(true); // validStatements is subset of n. Hence, intersection is simply validStatements.
 		result.setAnswer(synonym, progLineSyn, getCommonValueMap(validStatements, validStatements)); 
@@ -263,11 +263,11 @@ Result With::evaulateAttrRefIntSyn(const string& synonym, const Type& type, cons
 }
 
 // e.g. a.stmt# = c.value
-Result With::evaulateAttrRefIntConstVal(const string& synonym, const Type& type, const string& constSyn) {
+Result With::evaulateAttrRefIntConstVal(const std::string& synonym, const Type& type, const std::string& constSyn) {
 	Result result;
-	unordered_set<int> validStatements = getValidStmts(type);
-	unordered_set<int> allConstants = pkb.getAllConstant();
-	unordered_map<int, int> intersectionMap = getCommonValueMap(allConstants, validStatements);
+	std::unordered_set<int> validStatements = getValidStmts(type);
+	std::unordered_set<int> allConstants = pkb.getAllConstant();
+	std::unordered_map<int, int> intersectionMap = getCommonValueMap(allConstants, validStatements);
 	if (!intersectionMap.empty()) {
 		result.setPassed(true); 
 		result.setAnswer(synonym, constSyn, intersectionMap);
@@ -279,13 +279,13 @@ Result With::evaulateAttrRefIntConstVal(const string& synonym, const Type& type,
 }
 
 // e.g. s.stmt# = w.stmt#
-Result With::evaulateAttrRefIntAttrRefInt(const string& synOne, const Type& typeOne, const string& synTwo, const Type& typeTwo) {
+Result With::evaulateAttrRefIntAttrRefInt(const std::string& synOne, const Type& typeOne, const std::string& synTwo, const Type& typeTwo) {
 	Result result;
 
 	if (typeOne == STATEMENT || typeTwo == STATEMENT || typeOne == typeTwo) { 
-		unordered_set<int> validStmtsOne = getValidStmts(typeOne);
-		unordered_set<int> validStmtsTwo = getValidStmts(typeTwo);
-		unordered_map<int, int> intersectionMap = getCommonValueMap(validStmtsOne, validStmtsTwo);
+		std::unordered_set<int> validStmtsOne = getValidStmts(typeOne);
+		std::unordered_set<int> validStmtsTwo = getValidStmts(typeTwo);
+		std::unordered_map<int, int> intersectionMap = getCommonValueMap(validStmtsOne, validStmtsTwo);
 		if (!intersectionMap.empty()) {
 			result.setPassed(true);
 			result.setAnswer(synOne, synTwo, intersectionMap);
@@ -301,11 +301,11 @@ Result With::evaulateAttrRefIntAttrRefInt(const string& synOne, const Type& type
 }
 
 // e.g. v.varName = p.procName
-Result With::evaulateAttrRefStrAttrRefStr(const string& synOne, const Type& typeOne, const string& synTwo, const Type& typeTwo) {
+Result With::evaulateAttrRefStrAttrRefStr(const std::string& synOne, const Type& typeOne, const std::string& synTwo, const Type& typeTwo) {
 	Result result;
-	unordered_set<string> validNamesOne = getValidNames(typeOne);
-	unordered_set<string> validNamesTwo = getValidNames(typeTwo);
-	unordered_set<string> commonString = getCommonString(validNamesOne, validNamesTwo);
+	std::unordered_set<std::string> validNamesOne = getValidNames(typeOne);
+	std::unordered_set<std::string> validNamesTwo = getValidNames(typeTwo);
+	std::unordered_set<std::string> commonString = getCommonString(validNamesOne, validNamesTwo);
 
 	if (!commonString.empty()) {
 		result.setPassed(true);
@@ -331,20 +331,20 @@ Result With::evaulateAttrRefStrAttrRefStr(const string& synOne, const Type& type
 	return result;
 }
 
-unordered_map<string, unordered_set<int>> With::getStrIntPairWithCommonStr(const unordered_set<string>& commonStr, const Type& type) {
-	unordered_map<string, unordered_set<int>> answer;
+std::unordered_map<std::string, std::unordered_set<int>> With::getStrIntPairWithCommonStr(const std::unordered_set<std::string>& commonStr, const Type& type) {
+	std::unordered_map<std::string, std::unordered_set<int>> answer;
 	for (auto str : commonStr) {
-		unordered_set<int> validStmts = getStmtNums(type, str);
+		std::unordered_set<int> validStmts = getStmtNums(type, str);
 		answer.insert({ str, validStmts });
 	}
 	return answer;
 }
 
-unordered_map<int, unordered_set<int>> With::getIntIntPairWithCommonStr(const unordered_set<string>& commonStr, const Type& typeOne, const Type& typeTwo) {
-	unordered_map<int, unordered_set<int>> stmtPair;
+std::unordered_map<int, std::unordered_set<int>> With::getIntIntPairWithCommonStr(const std::unordered_set<std::string>& commonStr, const Type& typeOne, const Type& typeTwo) {
+	std::unordered_map<int, std::unordered_set<int>> stmtPair;
 	for (auto str : commonStr) {
-		unordered_set<int> validStmtsOne = getStmtNums(typeOne, str);
-		unordered_set<int> validStmtsTwo = getStmtNums(typeTwo, str);
+		std::unordered_set<int> validStmtsOne = getStmtNums(typeOne, str);
+		std::unordered_set<int> validStmtsTwo = getStmtNums(typeTwo, str);
 		for (auto stmtNum : validStmtsOne) {
 			stmtPair.insert({ stmtNum, validStmtsTwo });
 		}
@@ -353,15 +353,15 @@ unordered_map<int, unordered_set<int>> With::getIntIntPairWithCommonStr(const un
 }
 
 // Function to duplicate a string set to map = {x, {x}}. This format is required by Result's setAnswer function.
-unordered_map<string, unordered_set<string>> With::getStrStrPairWithCommonStr(const unordered_set<string>& set) {
-	unordered_map<string, unordered_set<string>> duplicatedMap;
+std::unordered_map<std::string, std::unordered_set<std::string>> With::getStrStrPairWithCommonStr(const std::unordered_set<std::string>& set) {
+	std::unordered_map<std::string, std::unordered_set<std::string>> duplicatedMap;
 	for (auto str : set) {
 		duplicatedMap.insert({ str, {str} });
 	}
 	return duplicatedMap;
 }
 
-unordered_set<int> With::getValidStmts(const Type& type) {
+std::unordered_set<int> With::getValidStmts(const Type& type) {
 	switch (type) {
 	case STATEMENT:
 		return pkb.getAllStmts();
@@ -384,7 +384,7 @@ unordered_set<int> With::getValidStmts(const Type& type) {
 	}
 }
 
-unordered_set<string> With::getValidNames(const Type& type) {
+std::unordered_set<std::string> With::getValidNames(const Type& type) {
 	switch (type) {
 	case PROCEDURE:
 		return pkb.getAllProcedures();
@@ -401,7 +401,7 @@ unordered_set<string> With::getValidNames(const Type& type) {
 	}
 }
 
-unordered_map<string, int> With::getIndexTable(const Type& type) {
+std::unordered_map<std::string, int> With::getIndexTable(const Type& type) {
 	switch (type) {
 	case PROCEDURE:
 		return pkb.getProcTable();
@@ -412,7 +412,7 @@ unordered_map<string, int> With::getIndexTable(const Type& type) {
 	}
 }
 
-unordered_set<int> With::getStmtNums(const Type& type, const string& name) {
+std::unordered_set<int> With::getStmtNums(const Type& type, const std::string& name) {
 	switch (type) {
 	case CALL:
 		return pkb.getCallStmtsWithProc(name);
@@ -426,8 +426,8 @@ unordered_set<int> With::getStmtNums(const Type& type, const string& name) {
 }
 
 // Utility function to find intersection of 2 int sets. Can also be used to duplicate a set to map = {x, x} e.g. Set = {1, 2, 3} Map = { {1, 1}, {2, 2}, {3, 3} }
-unordered_map<int, int> With::getCommonValueMap(const unordered_set<int>& setOne, const unordered_set<int>& setTwo) {
-	unordered_map<int, int> intersectionMap;
+std::unordered_map<int, int> With::getCommonValueMap(const std::unordered_set<int>& setOne, const std::unordered_set<int>& setTwo) {
+	std::unordered_map<int, int> intersectionMap;
 	for (auto elem : setOne) {
 		if (setTwo.count(elem)) {
 			intersectionMap.insert({ elem, elem });
@@ -437,8 +437,8 @@ unordered_map<int, int> With::getCommonValueMap(const unordered_set<int>& setOne
 }
 
 // Utility function to find intersection of 2 string sets.
-unordered_set<string> With::getCommonString(const unordered_set<string>& setOne, const unordered_set<string>& setTwo) {
-	unordered_set<string> intersectionMap;
+std::unordered_set<std::string> With::getCommonString(const std::unordered_set<std::string>& setOne, const std::unordered_set<std::string>& setTwo) {
+	std::unordered_set<std::string> intersectionMap;
 	for (auto elem : setOne) {
 		if (setTwo.count(elem)) {
 			intersectionMap.insert(elem);
