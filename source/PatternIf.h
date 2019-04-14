@@ -1,6 +1,7 @@
 #pragma once
 #include "Clause.h"
 
+// A class that represents PatternIf clause and its evaluation logic
 class PatternIf : public Clause {
 private:
 	Result evaluateVariable(const std::string&, const std::string&); // e.g. i(v, _, _)

@@ -1,6 +1,7 @@
 #pragma once
 #include "Clause.h"
 
+// A class that represents ModifiesS clause and its evaluation logic
 class ModifiesS : public Clause {
 private:
 	Result evaluateFixedVariable(const std::string&, const std::string&); // e.g. Modifies(7, v)

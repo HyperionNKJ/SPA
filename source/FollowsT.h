@@ -1,6 +1,7 @@
 #pragma once
 #include "Clause.h"
 
+// A class that represents FollowsT clause and its evaluation logic
 class FollowsT : public Clause {
 private: 
 	Result evaluateFixedSynonym(const std::string&, const std::string&, const Type&); // e.g. Follows*(12, w)

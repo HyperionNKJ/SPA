@@ -1,6 +1,7 @@
 #pragma once
 #include "Clause.h"
 
+// A class that represents Next clause and its evaluation logic
 class Next : public Clause {
 private:
 	Result evaluateFixedSynonym(const std::string&, const std::string&, const Type&); // e.g. Next(12, a)

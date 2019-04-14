@@ -6,6 +6,7 @@ enum RefIdentity {
 	STRING, INTEGER, ATTR_REF_STRING, ATTR_REF_INT, CONSTANT_VALUE, SYNONYM, INVALID_REF
 };
 
+// A class that represents With clause and its evaluation logic
 class With : public Clause {
 private:
 	RefIdentity refOneIdentity;

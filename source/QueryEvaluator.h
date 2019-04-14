@@ -3,6 +3,7 @@
 #include "ProcessedQuery.h"
 #include "ResultProjector.h"
 
+// The main class which encapsulates the evaluation of queries. All queries will be passed into the QueryEvaluator for evaluation.
 class QueryEvaluator {
 private:
 	bool findReducedDomain(Clause*, ResultProjector*);

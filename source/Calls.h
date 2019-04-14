@@ -1,6 +1,7 @@
 #pragma once
 #include "Clause.h"
 
+// A class that represents Calls clause and its evaluation logic
 class Calls : public Clause {
 private:
 	Result evaluateFixedSynonym(const std::string&, const std::string&); // e.g. Calls("main", p)

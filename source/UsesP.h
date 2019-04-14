@@ -1,6 +1,7 @@
 #pragma once
 #include "Clause.h"
 
+// A class that represents UsesP clause and its evaluation logic
 class UsesP : public Clause {
 private:
 	Result evaluateFixedVariable(const std::string&, const std::string&); // e.g. Uses("main", v)

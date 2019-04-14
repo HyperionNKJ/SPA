@@ -1,6 +1,7 @@
 #pragma once
 #include "Clause.h"
 
+// A class that represents PatternSwitch clause and its evaluation logic
 class PatternSwitch : public Clause {
 private:
 	Result evaluateVariable(const std::string&, const std::string&); // e.g. sw(v, _)

@@ -9,6 +9,8 @@ enum ClauseType {
 	PATTERN_ASSIGN, PATTERN_IF, PATTERN_WHILE, PATTERN_SWITCH, WITH
 };
 
+// A clause abstract class that clausetype classes extend. 
+//It contains an abstract method evaluate(const PKB&) which all clause type classes have to implement.
 class Clause {
 protected:
 	ClauseType type;

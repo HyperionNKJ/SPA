@@ -2,6 +2,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
+// The class which encapsulates the result for every clause. 
 class Result {
 private:
 	bool isPassed;

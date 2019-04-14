@@ -1,6 +1,7 @@
 #pragma once
 #include "Clause.h"
 
+// A class that represents PatternAssign clause and its evaluation logic
 class PatternAssign : public Clause {
 private:
 	Result evaluateVariableExact(const std::string&, const std::string&, const std::string&); // e.g. a(v, "x+y+10")

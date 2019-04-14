@@ -1,6 +1,7 @@
 #pragma once
 #include "Clause.h"
 
+// A class that represents Affects clause and its evaluation logic
 class Affects : public Clause {
 private:
 	Result evaluateFixedSynonym(const std::string&, const std::string&); // e.g. Affects(5, a)
@@ -18,6 +19,8 @@ private:
 	void evaluateSameSynonym(const std::unordered_set<int>&, PKB&, std::unordered_map<int, std::unordered_set<int>>&);
 
 public:
+	// constructor
 	Affects(const DesignEntity&, const DesignEntity&);
+	// overiden method to evaluate this clause
 	Result evaluate(const PKB&) override;
 };

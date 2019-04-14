@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+// A class that represents a design entity, or in other words, an argument in any clause.
 class DesignEntity {
 private:
 	std::string value;

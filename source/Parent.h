@@ -1,6 +1,7 @@
 #pragma once
 #include "Clause.h"
 
+// A class that represents Parent clause and its evaluation logic
 class Parent : public Clause {
 private:
 	Result evaluateFixedSynonym(const std::string&, const std::string&, const Type&); // e.g. Parent(12, w)
