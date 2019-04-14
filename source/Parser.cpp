@@ -818,6 +818,7 @@ int Parser::handleSwitch(string switchLine) {
 		return -1;
 	}
 	withinSwitch = true;
+	firstCase = true;
 	//set follow, parent relationships
 	setParent(statementNumber);
 	setFollow(statementNumber);
@@ -872,7 +873,12 @@ int Parser::handleSwitchCase(string switchCaseLine) {
 	}
 
 	//Need to handle tracking for Next here as there is no close brackets for case statements
-	lastInIfElseTracker.push_back(make_pair(lastStmtInFlow, parentVector.back()));
+	if (!firstCase) {
+		lastInIfElseTracker.push_back(make_pair(lastStmtInFlow, parentVector.back()));
+	}
+	else {
+		firstCase = false;
+	}
 	//discard previous statement list for follows, prepare first statement in switch case for the next
 	currentFollowVector.clear();
 	firstInElse = true;
@@ -1070,7 +1076,7 @@ bool Parser::setNext(int stmtNum, Container closingType) {
 		return true;
 	}
 	//for case of close bracket involving else
-	if (closingType == ELSEC) {
+	if (closingType == ELSEC || closingType == SWITCHC) {
 		lastInIfElseTracker.push_back(make_pair(lastStmtInFlow, parentVector.back()));
 		return true;
 	}
