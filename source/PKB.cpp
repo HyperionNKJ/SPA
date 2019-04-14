@@ -1,17 +1,8 @@
 #pragma once
 
 #include <ctype.h>
-#include <stdio.h>
-#include <iostream>
-#include <queue>
 #include <set>
-#include <string>
-#include <vector>
-#include <unordered_set>
-#include <unordered_map>
-
 #include "PKB.h"
-#include "Type.h"
 
 using namespace std;
 
