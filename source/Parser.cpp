@@ -7,15 +7,14 @@
 #include <algorithm>
 
 #include "Parser.h"
-#include "pkb.h"
 #include "Type.h"
 
-static string varNameRegex = "([[:alpha:]]([[:alnum:]])*)";
-static string constantRegex = "[[:digit:]]+";
-static string spaceRegex = "[[:s:]]*";
-static string openCurlyRegex = "\\{";
+static std::string varNameRegex = "([[:alpha:]]([[:alnum:]])*)";
+static std::string constantRegex = "[[:digit:]]+";
+static std::string spaceRegex = "[[:s:]]*";
+static std::string openCurlyRegex = "\\{";
 
-int Parser::parse(string fileName, PKB& p) {
+int Parser::parse(std::string fileName, PKB& p) {
 	pkb = &p;
 	try {
 		loadFile(fileName);
@@ -105,7 +104,7 @@ int Parser::parse(string fileName, PKB& p) {
 	return 0;
 }
 
-Statement_Key Parser::getStatementIntent(string line) {
+Statement_Key Parser::getStatementIntent(std::string line) {
 	//check assignment first for potential variable names being keywords
 	if (line.find("=", 0) != string::npos && line.find("<=") == string::npos && line.find("==") == string::npos
 		&& line.find(">=") == string::npos && line.find("!=") == string::npos) {
@@ -113,7 +112,7 @@ Statement_Key Parser::getStatementIntent(string line) {
 	}
 	//otherwise tokenise and find first token as keyword for statement.
 	//tokenise to split on spaces and brackets that might appear
-	vector<string> tokenLine = tokeniseString(line, " \t\n({");
+	std::vector<string> tokenLine = tokeniseString(line, " \t\n({");
 	tokenLine[0] = leftTrim(tokenLine[0], " \t\n");
 	tokenLine[0] = rightTrim(tokenLine[0], " \t\n");
 	if (tokenLine[0] == "procedure") {
@@ -149,9 +148,9 @@ Statement_Key Parser::getStatementIntent(string line) {
 	return KEY_ERROR;
 }
 
-bool Parser::checkProcedure(string procLine) {
+bool Parser::checkProcedure(std::string procLine) {
 	//parse the procedure and check it is valid.
-	string procedureRegexString = spaceRegex + "procedure" + spaceRegex + varNameRegex + spaceRegex + openCurlyRegex + spaceRegex;
+	std::string procedureRegexString = spaceRegex + "procedure" + spaceRegex + varNameRegex + spaceRegex + openCurlyRegex + spaceRegex;
 	regex procedureRegex(procedureRegexString);
 	if (!regex_match(procLine, procedureRegex)) {
 		errorMessage = "Procedure statement is invalid";
@@ -163,7 +162,7 @@ bool Parser::checkProcedure(string procLine) {
 	}
 	size_t startPos = procLine.find("procedure");
 	size_t endPos = procLine.find_first_of("{");
-	string procedureName = procLine.substr(startPos + 9, endPos - startPos - 9);
+	std::string procedureName = procLine.substr(startPos + 9, endPos - startPos - 9);
 	procedureName = leftTrim(procedureName, " \t\n");
 	procedureName = rightTrim(procedureName, " \t\n");
 	if (procNames.count(procedureName) > 0) {
@@ -173,13 +172,13 @@ bool Parser::checkProcedure(string procLine) {
 	return true;
 }
 
-int Parser::handleProcedure(string procLine) {
+int Parser::handleProcedure(std::string procLine) {
 	if (!checkProcedure(procLine)) {
 		return -1;
 	}
 	size_t startPos = procLine.find("procedure");
 	size_t endPos = procLine.find_first_of("{");
-	string procedureName = procLine.substr(startPos + 9, endPos - startPos - 9);
+	std::string procedureName = procLine.substr(startPos + 9, endPos - startPos - 9);
 	procedureName = leftTrim(procedureName, " \t\n");
 	procedureName = rightTrim(procedureName, " \t\n");
 
@@ -195,10 +194,10 @@ int Parser::handleProcedure(string procLine) {
 	return 0;
 }
 
-bool Parser::checkAssignment(string assignmentLine) {
+bool Parser::checkAssignment(std::string assignmentLine) {
 	size_t equalPos = assignmentLine.find_first_of("=");
-	string lhsLine = assignmentLine.substr(0, equalPos);
-	string rhsLine = assignmentLine.substr(equalPos + 1, string::npos);
+	std::string lhsLine = assignmentLine.substr(0, equalPos);
+	std::string rhsLine = assignmentLine.substr(equalPos + 1, string::npos);
 	if (!isValidVarName(lhsLine)) {
 		errorMessage = "Error in left hand side of assignment statement at line"  + to_string(statementNumber);
 		return false;
@@ -210,7 +209,7 @@ bool Parser::checkAssignment(string assignmentLine) {
 	return true;
 }
 
-bool Parser::checkExpr(string expr) {
+bool Parser::checkExpr(std::string expr) {
 	//start from the back, start scanning for + or -. Track brackets and ignore + or - inside them.
 	int bracketTracker = 0;
 	for (int currPos = expr.length() - 1; currPos >= 0; currPos--) {
@@ -222,8 +221,8 @@ bool Parser::checkExpr(string expr) {
 		}
 		if (bracketTracker == 0) {
 			if (expr[currPos] == '+' || expr[currPos] == '-') {
-				string firstExpr = expr.substr(0, currPos);
-				string secondTerm = expr.substr(currPos + 1, string::npos);
+				std::string firstExpr = expr.substr(0, currPos);
+				std::string secondTerm = expr.substr(currPos + 1, string::npos);
 				return checkExpr(firstExpr) & checkTerm(secondTerm);
 			}
 		}
@@ -240,7 +239,7 @@ bool Parser::checkExpr(string expr) {
 	return checkTerm(expr);
 }
 
-bool Parser::checkTerm(string term) {
+bool Parser::checkTerm(std::string term) {
 	//similar logic to checkExpr
 	//start from the back, start scanning for *, /, %. Track brackets and ignore delimiters inside them.
 	int bracketTracker = 0;
@@ -253,8 +252,8 @@ bool Parser::checkTerm(string term) {
 		}
 		if (bracketTracker == 0) {
 			if (term[currPos] == '*' || term[currPos] == '/' || term[currPos] == '%') {
-				string firstTerm = term.substr(0, currPos);
-				string secondFactor = term.substr(currPos + 1, string::npos);
+				std::string firstTerm = term.substr(0, currPos);
+				std::string secondFactor = term.substr(currPos + 1, string::npos);
 				return checkTerm(firstTerm) & checkFactor(secondFactor);
 			}
 		}
@@ -267,7 +266,7 @@ bool Parser::checkTerm(string term) {
 	return checkFactor(term);
 }
 
-bool Parser::checkFactor(string factor) {
+bool Parser::checkFactor(std::string factor) {
 	if (isValidVarName(factor)) {
 		return true;
 	}
@@ -284,10 +283,10 @@ bool Parser::checkFactor(string factor) {
 	return false;
 }
 
-int Parser::handleAssignment(string assignmentLine) {
+int Parser::handleAssignment(std::string assignmentLine) {
 	//clear spaces within the line to make parsing easier
 	//also remove the semicolon since not needed to check grammar of the assign statement
-	string cleanedAssignment = "";
+	std::string cleanedAssignment = "";
 	for (unsigned int i = 0; i < assignmentLine.length(); i++) {
 		if (assignmentLine[i] != ' ' && assignmentLine[i] != '\t' && assignmentLine[i] != '\n' && assignmentLine[i] != ';') {
 			cleanedAssignment += assignmentLine[i];
@@ -301,10 +300,10 @@ int Parser::handleAssignment(string assignmentLine) {
 	setFollow(statementNumber);
 	setNext(statementNumber, NONEC);
 	//Separate variable names, constants and operation/brackets from each other
-	vector<string> assignTokens = vector<string>();
-	string lhsVar = cleanedAssignment.substr(0, cleanedAssignment.find_first_of("="));
-	string rhs = cleanedAssignment.substr(cleanedAssignment.find_first_of("=") + 1, string::npos);
-	string currToken = "";
+	std::vector<string> assignTokens = std::vector<string>();
+	std::string lhsVar = cleanedAssignment.substr(0, cleanedAssignment.find_first_of("="));
+	std::string rhs = cleanedAssignment.substr(cleanedAssignment.find_first_of("=") + 1, string::npos);
+	std::string currToken = "";
 	for (unsigned int i = 0; i < rhs.length(); i++) {
 		//assignment should have only alphanum and bracket/op. Less than 48 in ascii must be a bracket/op
 		if (rhs[i] < 48) {
@@ -322,8 +321,8 @@ int Parser::handleAssignment(string assignmentLine) {
 		assignTokens.push_back(currToken);
 	}
 	//form postfix expression using Dijkstra Shunting Yard
-	vector<string> postfixRHS = vector<string>();
-	vector<string> opStack = vector<string>();
+	std::vector<string> postfixRHS = std::vector<string>();
+	std::vector<string> opStack = std::vector<string>();
 	for (unsigned int i = 0; i < assignTokens.size(); i++) {
 		if (isValidConstant(assignTokens[i]) || isValidVarName(assignTokens[i])) {
 			postfixRHS.push_back(assignTokens[i]);
@@ -358,9 +357,9 @@ int Parser::handleAssignment(string assignmentLine) {
 		opStack.pop_back();
 	}
 	//extract all possible substrings from the postfix notation
-	//start at each possible location and attempt to build a string, terminating if a string cannot be a valid pattern
-	vector<string> rhsSubstring = vector<string>();
-	string currentSubstr, fullExpr = "";
+	//start at each possible location and attempt to build a string, terminating if a std::string cannot be a valid pattern
+	std::vector<string> rhsSubstring = std::vector<string>();
+	std::string currentSubstr, fullExpr = "";
 	int tokenCount, opCount;
 	for (unsigned int i = 0; i < postfixRHS.size(); i++) {
 		currentSubstr = "";
@@ -411,8 +410,8 @@ int Parser::handleAssignment(string assignmentLine) {
 	return 0;
 }
 
-bool Parser::checkRead(string readLine) {
-	string readRegexString = spaceRegex + "read" + spaceRegex + varNameRegex + spaceRegex + ";" + spaceRegex;
+bool Parser::checkRead(std::string readLine) {
+	std::string readRegexString = spaceRegex + "read" + spaceRegex + varNameRegex + spaceRegex + ";" + spaceRegex;
 	regex readRegex(readRegexString);
 	if (!regex_match(readLine, readRegex)) {
 		errorMessage = "Read statement is invalid at line "  + to_string(statementNumber);
@@ -421,14 +420,14 @@ bool Parser::checkRead(string readLine) {
 	return true;
 }
 
-int Parser::handleRead(string readLine) {
+int Parser::handleRead(std::string readLine) {
 	if (!checkRead(readLine)) {
 		return -1;
 	}
 	//extract variable name
 	size_t startPos = readLine.find_first_of("read");
 	size_t endPos = readLine.find_first_of(";");
-	string varName = readLine.substr(startPos + 4, endPos - startPos - 4);
+	std::string varName = readLine.substr(startPos + 4, endPos - startPos - 4);
 	varName = leftTrim(varName, " \t\n");
 	varName = rightTrim(varName, " \t\n");
 
@@ -443,8 +442,8 @@ int Parser::handleRead(string readLine) {
 	return 0;
 }
 
-bool Parser::checkPrint(string printLine) {
-	string printRegexString = spaceRegex + "print" + spaceRegex + varNameRegex + spaceRegex + ";" + spaceRegex;
+bool Parser::checkPrint(std::string printLine) {
+	std::string printRegexString = spaceRegex + "print" + spaceRegex + varNameRegex + spaceRegex + ";" + spaceRegex;
 	regex printRegex(printRegexString);
 	if (!regex_match(printLine, printRegex)) {
 		errorMessage = "Print statement is invalid at line "  + to_string(statementNumber);
@@ -453,14 +452,14 @@ bool Parser::checkPrint(string printLine) {
 	return true;
 }
 
-int Parser::handlePrint(string printLine) {
+int Parser::handlePrint(std::string printLine) {
 	if (!checkPrint(printLine)) {
 		return -1;
 	}
 	//extract variable name
-	size_t startPos = printLine.find_first_of("read");
+	size_t startPos = printLine.find_first_of("print");
 	size_t endPos = printLine.find_first_of(";");
-	string varName = printLine.substr(startPos + 5, endPos - startPos - 5);
+	std::string varName = printLine.substr(startPos + 5, endPos - startPos - 5);
 	varName = leftTrim(varName, " \t\n");
 	varName = rightTrim(varName, " \t\n");
 
@@ -475,7 +474,7 @@ int Parser::handlePrint(string printLine) {
 	return 0;
 }
 
-bool Parser::checkWhile(string whileLine) {
+bool Parser::checkWhile(std::string whileLine) {
 	//find the brackets on the cond expr, check that no unexpected tokens are in the while line
 	//then call functions to check validity of the cond expr
 	size_t firstOpenBracket = whileLine.find_first_of("(");
@@ -484,9 +483,9 @@ bool Parser::checkWhile(string whileLine) {
 		errorMessage = "Missing ( and ) brackets around the conditional expession at line "  + to_string(statementNumber);
 		return false;
 	}
-	string truncWhileLine = whileLine.substr(0, firstOpenBracket) + whileLine.substr(lastCloseBracket+1, string::npos);
-	string condExprLine = whileLine.substr(firstOpenBracket, lastCloseBracket - firstOpenBracket + 1);
-	string whileRegexString = spaceRegex + "while" + spaceRegex + openCurlyRegex + spaceRegex;
+	std::string truncWhileLine = whileLine.substr(0, firstOpenBracket) + whileLine.substr(lastCloseBracket+1, string::npos);
+	std::string condExprLine = whileLine.substr(firstOpenBracket, lastCloseBracket - firstOpenBracket + 1);
+	std::string whileRegexString = spaceRegex + "while" + spaceRegex + openCurlyRegex + spaceRegex;
 	regex whileRegex(whileRegexString);
 	if (!regex_match(truncWhileLine, whileRegex)) {
 		errorMessage = "Unexpected tokens in the while statement at line "  + to_string(statementNumber);
@@ -495,7 +494,7 @@ bool Parser::checkWhile(string whileLine) {
 	return checkCondExpr(condExprLine);
 }
 
-int Parser::handleWhile(string whileLine) {
+int Parser::handleWhile(std::string whileLine) {
 	if (!checkWhile(whileLine)) {
 		return -1;
 	}
@@ -516,8 +515,8 @@ int Parser::handleWhile(string whileLine) {
 	//set uses relationships
 	size_t openBracketPos = whileLine.find_first_of("(");
 	size_t closeBracketPos = whileLine.find_last_of(")");
-	string condExpr = whileLine.substr(openBracketPos + 1, closeBracketPos - openBracketPos - 1);
-	vector<string> tokens = tokeniseString(condExpr, " \t\n&|()!><=+-*/%");
+	std::string condExpr = whileLine.substr(openBracketPos + 1, closeBracketPos - openBracketPos - 1);
+	std::vector<string> tokens = tokeniseString(condExpr, " \t\n&|()!><=+-*/%");
 	for (unsigned int i = 0; i < tokens.size(); i++) {
 		if (isValidVarName(tokens[i])) {
 			pkb->insertVar(tokens[i]);
@@ -531,7 +530,7 @@ int Parser::handleWhile(string whileLine) {
 	return 0;
 }
 
-bool Parser::checkIf(string ifLine) {
+bool Parser::checkIf(std::string ifLine) {
 	//check for brackets, then check the cond_expr
 
 	size_t firstOpenBracket = ifLine.find_first_of("(");
@@ -540,9 +539,9 @@ bool Parser::checkIf(string ifLine) {
 		errorMessage = "Missing ( and ) brackets around the conditional expression at line "  + to_string(statementNumber);
 		return false;
 	}
-	string truncIfLine = ifLine.substr(0, firstOpenBracket) + ifLine.substr(lastCloseBracket+1, string::npos);
-	string condExprLine = ifLine.substr(firstOpenBracket, lastCloseBracket - firstOpenBracket + 1);
-	string ifRegexString = spaceRegex + "if" + spaceRegex + "then" + spaceRegex + openCurlyRegex + spaceRegex;
+	std::string truncIfLine = ifLine.substr(0, firstOpenBracket) + ifLine.substr(lastCloseBracket+1, string::npos);
+	std::string condExprLine = ifLine.substr(firstOpenBracket, lastCloseBracket - firstOpenBracket + 1);
+	std::string ifRegexString = spaceRegex + "if" + spaceRegex + "then" + spaceRegex + openCurlyRegex + spaceRegex;
 	regex ifRegex(ifRegexString);
 	if (!regex_match(truncIfLine, ifRegex)) {
 		errorMessage = "Unexpected tokens in the if statement at line "  + to_string(statementNumber);
@@ -552,7 +551,7 @@ bool Parser::checkIf(string ifLine) {
 	return false;
 }
 
-int Parser::handleIf(string ifLine) {
+int Parser::handleIf(std::string ifLine) {
 	if (!checkIf(ifLine)) {
 		return -1;
 	}
@@ -572,8 +571,8 @@ int Parser::handleIf(string ifLine) {
 	//set uses relationships
 	size_t openBracketPos = ifLine.find_first_of("(");
 	size_t closeBracketPos = ifLine.find_last_of(")");
-	string condExpr = ifLine.substr(openBracketPos + 1, closeBracketPos - openBracketPos - 1);
-	vector<string> tokens = tokeniseString(condExpr, " \t\n&|()!><=+-*/%");
+	std::string condExpr = ifLine.substr(openBracketPos + 1, closeBracketPos - openBracketPos - 1);
+	std::vector<string> tokens = tokeniseString(condExpr, " \t\n&|()!><=+-*/%");
 	for (unsigned int i = 0; i < tokens.size(); i++) {
 		if (isValidVarName(tokens[i])) {
 			pkb->insertVar(tokens[i]);
@@ -587,8 +586,8 @@ int Parser::handleIf(string ifLine) {
 	return 0;
 }
 
-bool Parser::checkElse(string elseLine) {
-	string elseRegexString = spaceRegex + "else" + spaceRegex + openCurlyRegex;
+bool Parser::checkElse(std::string elseLine) {
+	std::string elseRegexString = spaceRegex + "else" + spaceRegex + openCurlyRegex;
 	regex elseRegex(elseRegexString);
 	if (!regex_match(elseLine, elseRegex)) {
 		errorMessage = "Else statement has unexpected tokens just before line "  + to_string(statementNumber);
@@ -597,7 +596,7 @@ bool Parser::checkElse(string elseLine) {
 	return true;
 }
 
-int Parser::handleElse(string elseLine) {
+int Parser::handleElse(std::string elseLine) {
 	if (!checkElse(elseLine)) {
 		return -1;
 	}
@@ -609,9 +608,9 @@ int Parser::handleElse(string elseLine) {
 	return 0;
 }
 
-bool Parser::checkCondExpr(string condExpr) {
+bool Parser::checkCondExpr(std::string condExpr) {
 	//clean spaces or tabs to make parsing easier
-	string cleanedCondExpr = "";
+	std::string cleanedCondExpr = "";
 	for (unsigned int i = 0; i < condExpr.length(); i++) {
 		if (condExpr[i] != ' ' && condExpr[i] != '\t') {
 			cleanedCondExpr += condExpr[i];
@@ -635,7 +634,7 @@ bool Parser::checkCondExpr(string condExpr) {
 		if (startOfExpr) {
 			if (condExpr[pos] == '!') {
 				//extract out the internal expr. Exclude ending brackets
-				string nextCondExpr = condExpr.substr(pos + 1, condExpr.length()-pos);
+				std::string nextCondExpr = condExpr.substr(pos + 1, condExpr.length()-pos);
 				return checkCondExpr(nextCondExpr);
 			}
 			else if (condExpr[pos] == '(') {
@@ -650,8 +649,8 @@ bool Parser::checkCondExpr(string condExpr) {
 		else if (checkForAndOr) {
 			if (condExpr.substr(pos, 2) == "&&" || condExpr.substr(pos, 2) == "||") {
 				//extract out the 2 expressions
-				string firstCondExpr = condExpr.substr(0, pos);
-				string secondCondExpr = condExpr.substr(pos + 2, string::npos);
+				std::string firstCondExpr = condExpr.substr(0, pos);
+				std::string secondCondExpr = condExpr.substr(pos + 2, string::npos);
 				return checkCondExpr(firstCondExpr) & checkCondExpr(secondCondExpr);
 			}
 		}
@@ -676,7 +675,7 @@ bool Parser::checkCondExpr(string condExpr) {
 	return checkRelExpr(condExpr);
 }																
 
-bool Parser::checkRelExpr(string relExpr) {
+bool Parser::checkRelExpr(std::string relExpr) {
 	//should have only 1 of the relational operators
 	//look for 2 character ones, then 1 character due to overlap in < and >
 	size_t relOpPos = relExpr.find("==");
@@ -690,15 +689,15 @@ bool Parser::checkRelExpr(string relExpr) {
 		relOpPos = min(relOpPos, relExpr.find(">"));
 	}
 	if (relOpPos != string::npos) {
-		string firstRelFactor = relExpr.substr(0, relOpPos);
-		string secondRelFactor = relExpr.substr(relOpPos + offset, string::npos);
+		std::string firstRelFactor = relExpr.substr(0, relOpPos);
+		std::string secondRelFactor = relExpr.substr(relOpPos + offset, string::npos);
 		return checkRelFactor(firstRelFactor) & checkRelFactor(secondRelFactor);
 	}
 	errorMessage = "Could not find a relational operator at line "  + to_string(statementNumber);
 	return false;
 }
 
-bool Parser::checkRelFactor(string relFactor) {
+bool Parser::checkRelFactor(std::string relFactor) {
 	relFactor = leftTrim(rightTrim(relFactor, " \t\n"), " \t\n");
 	if (isValidVarName(relFactor)) {
 		return true;
@@ -709,7 +708,7 @@ bool Parser::checkRelFactor(string relFactor) {
 	return checkExpr(relFactor);
 }
 
-int Parser::handleCloseBracket(string closeBracket) {
+int Parser::handleCloseBracket(std::string closeBracket) {
 	//if no container statements tracked, assume close bracket is for procedure
 	if (containerTracker.size() < 1) {
 		if (emptyProcedure) {
@@ -766,8 +765,8 @@ int Parser::handleCloseBracket(string closeBracket) {
 	return 0;
 }
 
-bool Parser::checkCall(string callLine) {
-	string callRegexString = spaceRegex + "call" + spaceRegex + varNameRegex + spaceRegex + ";" + spaceRegex;
+bool Parser::checkCall(std::string callLine) {
+	std::string callRegexString = spaceRegex + "call" + spaceRegex + varNameRegex + spaceRegex + ";" + spaceRegex;
 	regex callRegex(callRegexString);
 	if (!regex_match(callLine, callRegex)) {
 		errorMessage = "Call statement is invalid at line "  + to_string(statementNumber);
@@ -776,14 +775,14 @@ bool Parser::checkCall(string callLine) {
 	return true;
 }
 
-int Parser::handleCall(string callLine) {
+int Parser::handleCall(std::string callLine) {
 	if (!checkCall(callLine)) {
 		return -1;
 	}
 	//extract proc name
 	size_t startPos = callLine.find_first_of("call");
 	size_t endPos = callLine.find_first_of(";");
-	string calledProcName = callLine.substr(startPos + 4, endPos - startPos - 4);
+	std::string calledProcName = callLine.substr(startPos + 4, endPos - startPos - 4);
 	calledProcName = leftTrim(calledProcName, " \t\n");
 	calledProcName = rightTrim(calledProcName, " \t\n");
 
@@ -799,8 +798,8 @@ int Parser::handleCall(string callLine) {
 	return 0;
 }
 
-bool Parser::checkSwitch(string switchLine) {
-	string switchRegexString = spaceRegex + "switch" + spaceRegex + "\\(" + spaceRegex + varNameRegex + spaceRegex + "\\)" + spaceRegex + openCurlyRegex + spaceRegex;
+bool Parser::checkSwitch(std::string switchLine) {
+	std::string switchRegexString = spaceRegex + "switch" + spaceRegex + "\\(" + spaceRegex + varNameRegex + spaceRegex + "\\)" + spaceRegex + openCurlyRegex + spaceRegex;
 	regex switchRegex(switchRegexString);
 	if (!regex_match(switchLine, switchRegex)) {
 		errorMessage = "Unexpected tokens in the switch statement at line "  + to_string(statementNumber);
@@ -813,7 +812,7 @@ bool Parser::checkSwitch(string switchLine) {
 	return true;
 }
 
-int Parser::handleSwitch(string switchLine) {
+int Parser::handleSwitch(std::string switchLine) {
 	if (!checkSwitch(switchLine)) {
 		return -1;
 	}
@@ -837,7 +836,7 @@ int Parser::handleSwitch(string switchLine) {
 	//set uses relationships
 	size_t openBracketPos = switchLine.find_first_of("(");
 	size_t closeBracketPos = switchLine.find_last_of(")");
-	string controlVar = switchLine.substr(openBracketPos + 1, closeBracketPos - openBracketPos - 1);
+	std::string controlVar = switchLine.substr(openBracketPos + 1, closeBracketPos - openBracketPos - 1);
 	controlVar = leftTrim(rightTrim(controlVar, " \t\n"), " \t\n");
 	pkb->insertVar(controlVar);
 	setUses(statementNumber, currProcedure, controlVar);
@@ -846,10 +845,10 @@ int Parser::handleSwitch(string switchLine) {
 	return 0;
 }
 
-bool Parser::checkSwitchCase(string switchCaseLine) {
-	string switchCaseVarRegexString = spaceRegex + "case" + spaceRegex + varNameRegex + spaceRegex + ":" + spaceRegex;
-	string switchCaseConstRegexString = spaceRegex + "case" + spaceRegex + constantRegex + spaceRegex + ":" + spaceRegex;
-	string switchCaseDefaultString = spaceRegex + "default" + spaceRegex + ":" + spaceRegex;
+bool Parser::checkSwitchCase(std::string switchCaseLine) {
+	std::string switchCaseVarRegexString = spaceRegex + "case" + spaceRegex + varNameRegex + spaceRegex + ":" + spaceRegex;
+	std::string switchCaseConstRegexString = spaceRegex + "case" + spaceRegex + constantRegex + spaceRegex + ":" + spaceRegex;
+	std::string switchCaseDefaultString = spaceRegex + "default" + spaceRegex + ":" + spaceRegex;
 	regex switchCaseVarRegex(switchCaseVarRegexString);
 	regex switchCaseConstRegex(switchCaseConstRegexString);
 	regex switchCaseDefaultRegex(switchCaseDefaultString);
@@ -872,7 +871,7 @@ bool Parser::checkSwitchCase(string switchCaseLine) {
 	return true;
 }
 
-int Parser::handleSwitchCase(string switchCaseLine) {
+int Parser::handleSwitchCase(std::string switchCaseLine) {
 	if (!checkSwitchCase(switchCaseLine)) {
 		return -1;
 	}
@@ -892,7 +891,7 @@ int Parser::handleSwitchCase(string switchCaseLine) {
 	size_t casePos = switchCaseLine.find("case");
 	size_t colonPos = switchCaseLine.find_last_of(":");
 	if (casePos != string::npos) {
-		string caseVar = switchCaseLine.substr(casePos + 4, colonPos - casePos - 4);
+		std::string caseVar = switchCaseLine.substr(casePos + 4, colonPos - casePos - 4);
 		caseVar = leftTrim(rightTrim(caseVar, " \t\n"), " \t\n");
 		if (isValidConstant(caseVar)) {
 			pkb->insertConstant(stoi(caseVar));
@@ -909,14 +908,14 @@ int Parser::handleSwitchCase(string switchCaseLine) {
 	return 0;
 }
 
-vector<string> Parser::loadFile(string fileName) {
+std::vector<string> Parser::loadFile(std::string fileName) {
 	ifstream sourceFile;
 	sourceFile.open(fileName);
 	if (sourceFile.fail()) {
 		throw;
 	}
-	string currLine;
-	string allSourceCode = "";
+	std::string currLine;
+	std::string allSourceCode = "";
 	while (getline(sourceFile, currLine)) {
 		allSourceCode += currLine;
 	}
@@ -928,7 +927,7 @@ vector<string> Parser::loadFile(string fileName) {
 		Extra case is colon for extension switch statement */
 		size_t delimitPos = allSourceCode.find_first_of(";{}:");
 		while (delimitPos != string::npos) {
-			string currStatement = allSourceCode.substr(0, delimitPos+1);
+			std::string currStatement = allSourceCode.substr(0, delimitPos+1);
 			sourceCode.push_back(currStatement);
 			allSourceCode = allSourceCode.substr(delimitPos + 1, string::npos);
 			delimitPos = allSourceCode.find_first_of(";{}:");
@@ -940,8 +939,8 @@ vector<string> Parser::loadFile(string fileName) {
 	return sourceCode;
 }
 
-bool Parser::isValidVarName(string line) {
-	string varNameRegexString = spaceRegex + varNameRegex + spaceRegex;
+bool Parser::isValidVarName(std::string line) {
+	std::string varNameRegexString = spaceRegex + varNameRegex + spaceRegex;
 	regex varRegex(varNameRegexString);
 	if (!regex_match(line, varRegex)) {
 		return false;
@@ -949,8 +948,8 @@ bool Parser::isValidVarName(string line) {
 	return true;
 }
 
-bool Parser::isValidConstant(string line) {
-	string constantRegexString = spaceRegex + constantRegex + spaceRegex;
+bool Parser::isValidConstant(std::string line) {
+	std::string constantRegexString = spaceRegex + constantRegex + spaceRegex;
 	regex constRegex(constantRegexString);
 	if (!regex_match(line, constRegex)) {
 		return false;
@@ -958,7 +957,7 @@ bool Parser::isValidConstant(string line) {
 	return true;
 }
 
-string Parser::leftTrim(string line, string targetChar) {
+std::string Parser::leftTrim(std::string line, std::string targetChar) {
 	size_t startpos = line.find_first_not_of(targetChar);
 	if (string::npos != startpos) {
 		line = line.substr(startpos);
@@ -966,7 +965,7 @@ string Parser::leftTrim(string line, string targetChar) {
 	return line;
 }
 
-string Parser::rightTrim(string line, string targetChar) {
+std::string Parser::rightTrim(std::string line, std::string targetChar) {
 	size_t endpos = line.find_last_not_of(targetChar);
 	if (string::npos != endpos) {
 		line = line.substr(0, endpos + 1);
@@ -974,12 +973,12 @@ string Parser::rightTrim(string line, string targetChar) {
 	return line;
 }
 
-vector<string> Parser::tokeniseString(string toTokenise, string delimiters) {
-	vector<string> tokenList = vector<string>();
-	string currToken;
+std::vector<string> Parser::tokeniseString(std::string toTokenise, std::string delimiters) {
+	std::vector<string> tokenList = std::vector<string>();
+	std::string currToken;
 	while (!toTokenise.empty()) {
 		size_t delimiterPos = toTokenise.find_first_of(delimiters);
-		string token = toTokenise.substr(0, delimiterPos);
+		std::string token = toTokenise.substr(0, delimiterPos);
 		if (delimiterPos == string::npos) {
 			toTokenise = "";
 		}
@@ -1017,7 +1016,7 @@ bool Parser::setFollow(int currStatementNum) {
 	return true;
 }
 
-bool Parser::setModifies(int currStatementNum, string currProc, string varName) {
+bool Parser::setModifies(int currStatementNum, std::string currProc, std::string varName) {
 	for (unsigned int i = 0; i < parentVector.size(); i++) {
 		pkb->setModifies(parentVector[i], varName);
 	}
@@ -1026,7 +1025,7 @@ bool Parser::setModifies(int currStatementNum, string currProc, string varName) 
 	return true;
 }
 
-bool Parser::setUses(int currStatementNum, string currProc, string varName) {
+bool Parser::setUses(int currStatementNum, std::string currProc, std::string varName) {
 	for (unsigned int i = 0; i < parentVector.size(); i++) {
 		pkb->setUses(parentVector[i], varName);
 	}
@@ -1124,8 +1123,8 @@ bool Parser::setCallUsesModifies() {
 	unordered_map<string, unordered_set<string>> procUsesTable = de.getProcUsesTable();
 	for (const auto &elem : procCalledByTable) {
 		int stmtNum = elem.first;
-		string procName = elem.second;
-		vector<int> parentOfCall = callParentTable[stmtNum];
+		std::string procName = elem.second;
+		std::vector<int> parentOfCall = callParentTable[stmtNum];
 		for (const auto &var : procModifiesTable[procName]) {
 			pkb->setModifies(stmtNum, var);
 			for (unsigned int i = 0; i < parentOfCall.size(); i++) {
@@ -1147,7 +1146,7 @@ bool Parser::setProcIndirectUsesModifies() {
 	unordered_map<string, unordered_set<string>> procModifiesTable = de.getProcModifiesTable();
 	unordered_map<string, unordered_set<string>> procUsesTable = de.getProcUsesTable();
 	for (const auto &elem : procList) {
-		string procName = elem;
+		std::string procName = elem;
 		for (const auto &elem : procModifiesTable[procName]) {
 			pkb->setModifies(procName, elem);
 		}
@@ -1158,7 +1157,7 @@ bool Parser::setProcIndirectUsesModifies() {
 	return true;
 }
 
-bool Parser::setCalls(string currProc, string calledProcName) {
+bool Parser::setCalls(std::string currProc, std::string calledProcName) {
 	pkb->setCalls(currProc, calledProcName);
 	pkb->setCalledBy(currProc, calledProcName);
 	de.insertCall(currProc, calledProcName);
@@ -1176,7 +1175,7 @@ bool Parser::setCallsT() {
 			bfsQueue.push(calledProc);
 		}
 		while (bfsQueue.size() > 0) {
-			string currCalledTProc = bfsQueue.front();
+			std::string currCalledTProc = bfsQueue.front();
 			bfsQueue.pop();
 			pkb->setCallsT(proc, currCalledTProc);
 			pkb->setCalledByT(proc, currCalledTProc);
@@ -1200,7 +1199,7 @@ int Parser::getStatementNumber() {
 	return statementNumber;
 }
 
-void Parser::setParentVector(vector<int> v) {
+void Parser::setParentVector(std::vector<int> v) {
 	parentVector = v;
 }
 
@@ -1208,27 +1207,27 @@ void Parser::setWithinProcedure(bool b) {
 	withinProcedure = b;
 }
 
-vector<int> Parser::getParentVector() {
+std::vector<int> Parser::getParentVector() {
 	return parentVector;
 }
 
-void Parser::setCurrentFollowVector(vector<int> v) {
+void Parser::setCurrentFollowVector(std::vector<int> v) {
 	currentFollowVector = v;
 }
 
-vector<int> Parser::getCurrentFollowVector() {
+std::vector<int> Parser::getCurrentFollowVector() {
 	return currentFollowVector;
 }
 
-void Parser::setAllFollowStack(vector<vector<int>> v) {
+void Parser::setAllFollowStack(std::vector<std::vector<int>> v) {
 	allFollowStack = v;
 }
 
-vector<vector<int>> Parser::getAllFollowStack() {
+std::vector<std::vector<int>> Parser::getAllFollowStack() {
 	return allFollowStack;
 }
 
-string Parser::getCurrentProcedure() {
+std::string Parser::getCurrentProcedure() {
 	return currProcedure;
 }
 
@@ -1240,6 +1239,6 @@ unordered_map<int, string> Parser::getProcCalledByTable() {
 	return procCalledByTable;
 }
 
-string Parser::getErrorMessage() {
+std::string Parser::getErrorMessage() {
 	return errorMessage;
 }
