@@ -8,11 +8,12 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 namespace IntegrationTesting {
 	PKB pkb;
 	QueryProcessor queryProcessor;
-	list<string> actualResults;
-	list<string> expectedResults;
+	std::list<std::string> actualResults;
+	std::list<std::string> expectedResults;
 
 	TEST_CLASS(TestPKBToPQL) {
-public:
+	
+	public:
 	TEST_CLASS_INITIALIZE(initialSetup) {
 		// Code 5 in Full SPA Requirements. (only required relationships are inserted into PKB)
 		
@@ -248,7 +249,7 @@ public:
 	}
 
 	TEST_METHOD(TestSelect) {
-		string query = "assign a; Select a";
+		std::string query = "assign a; Select a";
 		actualResults = queryProcessor.evaluate(query, pkb);
 
 		expectedResults = {"1", "2", "4", "6", "8", "9", "10", "11", "12", "13", "14"};
@@ -256,7 +257,7 @@ public:
 	}
 
 	TEST_METHOD(TestTuple) {
-		string query = "read r; print pn; Select <r, r.varName, pn>";
+		std::string query = "read r; print pn; Select <r, r.varName, pn>";
 		actualResults = queryProcessor.evaluate(query, pkb);
 
 		expectedResults = { "16 x 15", "17 z 15"};
@@ -264,7 +265,7 @@ public:
 	}
 
 	TEST_METHOD(TestPartialPattern) {
-		string query = "assign a; variable v;  Select a pattern a(_, _\"x*y\"_)";
+		std::string query = "assign a; variable v;  Select a pattern a(_, _\"x*y\"_)";
 		actualResults = queryProcessor.evaluate(query, pkb);
 
 		expectedResults = { "12" };
@@ -272,7 +273,7 @@ public:
 	}
 
 	TEST_METHOD(TestFullPattern) {
-		string query = "assign a; variable v;  Select a pattern a(_, \"x*y+z\")";
+		std::string query = "assign a; variable v;  Select a pattern a(_, \"x*y+z\")";
 		actualResults = queryProcessor.evaluate(query, pkb);
 
 		expectedResults = { "12" };
@@ -280,7 +281,7 @@ public:
 	}
 
 	TEST_METHOD(TestFollows) {
-		string query = "stmt s, s1; Select s such that Follows(s, s1)";
+		std::string query = "stmt s, s1; Select s such that Follows(s, s1)";
 		actualResults = queryProcessor.evaluate(query, pkb);
 
 		expectedResults = { "1", "2", "3", "4", "5", "7", "10", "11", "13", "14", "16", "17" };
@@ -288,7 +289,7 @@ public:
 	}
 
 	TEST_METHOD(TestFollowsT) {
-		string query = "stmt s; Select s such that Follows*(3, s)";
+		std::string query = "stmt s; Select s such that Follows*(3, s)";
 		actualResults = queryProcessor.evaluate(query, pkb);
 
 		expectedResults = { "7", "10", "11", "12" };
@@ -296,7 +297,7 @@ public:
 	}
 
 	TEST_METHOD(TestParent) {
-		string query = "stmt s; Select s such that Parent(3, s)";
+		std::string query = "stmt s; Select s such that Parent(3, s)";
 		actualResults = queryProcessor.evaluate(query, pkb);
 
 		expectedResults = { "4", "5", "6" };
@@ -304,7 +305,7 @@ public:
 	}
 
 	TEST_METHOD(TestParentT) {
-		string query = "stmt s; Select s such that Parent*(s, 9)";
+		std::string query = "stmt s; Select s such that Parent*(s, 9)";
 		actualResults = queryProcessor.evaluate(query, pkb);
 
 		expectedResults = { "7" };
@@ -312,7 +313,7 @@ public:
 	}
 
 	TEST_METHOD(TestUsesS) {
-		string query = "stmt s; Select s such that Uses(s, \"x\")";
+		std::string query = "stmt s; Select s such that Uses(s, \"x\")";
 		actualResults = queryProcessor.evaluate(query, pkb);
 
 		expectedResults = { "3", "4", "7", "8", "10", "12", "18"};
@@ -320,7 +321,7 @@ public:
 	}
 
 	TEST_METHOD(TestUsesP) {
-		string query = "variable v; Select v such that Uses(\"First\", v)";
+		std::string query = "variable v; Select v such that Uses(\"First\", v)";
 		actualResults = queryProcessor.evaluate(query, pkb);
 
 		expectedResults = { "x", "y", "i", "z", "v" };
@@ -328,7 +329,7 @@ public:
 	}
 
 	TEST_METHOD(TestModifiesS) {
-		string query = "stmt s; Select s such that Modifies(s, \"x\")";
+		std::string query = "stmt s; Select s such that Modifies(s, \"x\")";
 		actualResults = queryProcessor.evaluate(query, pkb);
 
 		expectedResults = { "1", "3", "4", "7", "8", "12", "16", "18" };
@@ -336,7 +337,7 @@ public:
 	}
 
 	TEST_METHOD(TestModifiesP) {
-		string query = "procedure p; Select p such that Modifies(p, \"x\")";
+		std::string query = "procedure p; Select p such that Modifies(p, \"x\")";
 		actualResults = queryProcessor.evaluate(query, pkb);
 
 		expectedResults = { "First", "Second" };
@@ -344,7 +345,7 @@ public:
 	}
 
 	TEST_METHOD(TestCalls) {
-		string query = "procedure p, p1; Select p1 such that Calls(p, p1)";
+		std::string query = "procedure p, p1; Select p1 such that Calls(p, p1)";
 		actualResults = queryProcessor.evaluate(query, pkb);
 
 		expectedResults = { "Second", "Third" };
@@ -352,7 +353,7 @@ public:
 	}
 
 	TEST_METHOD(TestCallsT) {
-		string query = "procedure p; Select p such that Calls*(\"First\", p)";
+		std::string query = "procedure p; Select p such that Calls*(\"First\", p)";
 		actualResults = queryProcessor.evaluate(query, pkb);
 
 		expectedResults = { "Second", "Third" };
@@ -360,7 +361,7 @@ public:
 	}
 
 	TEST_METHOD(TestNext) {
-		string query = "stmt s; Select s such that Next(3, s)";
+		std::string query = "stmt s; Select s such that Next(3, s)";
 		actualResults = queryProcessor.evaluate(query, pkb);
 
 		expectedResults = { "4", "7" };
@@ -368,7 +369,7 @@ public:
 	}
 
 	TEST_METHOD(TestNextT) {
-		string query = "stmt s; Select s such that Next*(3, s)";
+		std::string query = "stmt s; Select s such that Next*(3, s)";
 		actualResults = queryProcessor.evaluate(query, pkb);
 
 		expectedResults = { "4", "5", "6", "3", "7", "8", "9", "10", "11", "12" };
@@ -376,7 +377,7 @@ public:
 	}
 
 	TEST_METHOD(TestAffects) {
-		string query = "stmt s; Select s such that Affects(1, s)";
+		std::string query = "stmt s; Select s such that Affects(1, s)";
 		actualResults = queryProcessor.evaluate(query, pkb);
 
 		expectedResults = { "4", "8", "10", "12" };
@@ -384,7 +385,7 @@ public:
 	}
 
 	TEST_METHOD(TestAffectsT) {
-		string query = "stmt s; Select s such that Affects*(1, s)";
+		std::string query = "stmt s; Select s such that Affects*(1, s)";
 		actualResults = queryProcessor.evaluate(query, pkb);
 
 		expectedResults = { "4", "8", "10", "11", "12" };
@@ -392,13 +393,13 @@ public:
 	}
 
 	// ---------------------------------- HELPER FUNCTIONS -----------------------------------------------
-		// order in list does not matter
-	bool isSameResult(list<string> expectedResults, list<string> actualResults) {
+		// order in std::list does not matter
+	bool isSameResult(std::list<std::string> expectedResults, std::list<std::string> actualResults) {
 		if (expectedResults.size() != actualResults.size()) {
 			return false;
 		}
 
-		unordered_set<string> expectedResultsSet;
+		std::unordered_set<std::string> expectedResultsSet;
 		for (auto expectedResult : expectedResults) {
 			expectedResultsSet.insert(expectedResult);
 		}

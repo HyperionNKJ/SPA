@@ -6,8 +6,17 @@
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace UnitTesting {
+	ResultProjector resultProjector;
+	static std::unordered_map<std::string, int> synonymTable;
+	static std::unordered_map<int, std::list<std::unordered_map<std::string, int>>> synonymResults;
+
 	TEST_CLASS(TestResultProjector) {
+	
 	public:
+		TEST_METHOD_INITIALIZE(setup)
+		{
+			resultProjector.resetResults();
+		}
 
 		/* Convention:
 			OneOne -> 1 synonym from first clause, 1 synonym from second clause
@@ -17,15 +26,12 @@ namespace UnitTesting {
 
 		// OneOne
 		TEST_METHOD(combineOneOneWithNoCommonSynonym) {
-			ResultProjector resultProjector;
-			// set up
-			resultProjector.resetResults();
 
-			vector<string> result1Synonym { "a" };
-			vector<string> result2Synonym { "b" };
+			std::vector<std::string> result1Synonym { "a" };
+			std::vector<std::string> result2Synonym { "b" };
 
-			unordered_set<int> result1;
-			unordered_set<int> result2;
+			std::unordered_set<int> result1;
+			std::unordered_set<int> result2;
 			result1 = { 9,3,5,2 };
 			result2 = { 4,5,3 };
 
@@ -34,19 +40,19 @@ namespace UnitTesting {
 			resultProjector.combineResults(result2, result2Synonym);
 
 			// expected results
-			unordered_map<string, int> expectedSynonymTable;
+			std::unordered_map<std::string, int> expectedSynonymTable;
 			expectedSynonymTable["a"] = 0;
 			expectedSynonymTable["b"] = 1;
 
-			unordered_map<int, list<unordered_map<string, int>>> expectedSynonymResults;
-			list<unordered_map<string, int>> expectedResults1;
+			std::unordered_map<int, std::list<std::unordered_map<std::string, int>>> expectedSynonymResults;
+			std::list<std::unordered_map<std::string, int>> expectedResults1;
 			expectedResults1.push_back({ {"a", 9} });
 			expectedResults1.push_back({ {"a", 3} });
 			expectedResults1.push_back({ {"a", 5} });
 			expectedResults1.push_back({ {"a", 2} });
 			expectedSynonymResults[0] = expectedResults1;
 
-			list<unordered_map<string, int>> expectedResults2;
+			std::list<std::unordered_map<std::string, int>> expectedResults2;
 			expectedResults2.push_back({ {"b", 4} });
 			expectedResults2.push_back({ {"b", 5} });
 			expectedResults2.push_back({ {"b", 3} });
@@ -59,15 +65,12 @@ namespace UnitTesting {
 			Assert::IsTrue(sameResult);
 		}
 		TEST_METHOD(combineOneOneWithOneCommonSynonym) {
-			ResultProjector resultProjector;
-			// set up
-			resultProjector.resetResults();
 
-			vector<string> result1Synonym{ "a" };
-			vector<string> result2Synonym{ "a" };
+			std::vector<std::string> result1Synonym{ "a" };
+			std::vector<std::string> result2Synonym{ "a" };
 
-			unordered_set<int> result1;
-			unordered_set<int> result2;
+			std::unordered_set<int> result1;
+			std::unordered_set<int> result2;
 			result1 = { 9,3,5,2 };
 			result2 = { 4,5,3 };
 
@@ -76,12 +79,12 @@ namespace UnitTesting {
 			resultProjector.combineResults(result2, result2Synonym);
 
 			// expected results
-			unordered_map<string, int> expectedSynonymTable;
+			std::unordered_map<std::string, int> expectedSynonymTable;
 			expectedSynonymTable["a"] = 0;
-			unordered_map<int, list<unordered_map<string, int>>> expectedSynonymResults;
+			std::unordered_map<int, std::list<std::unordered_map<std::string, int>>> expectedSynonymResults;
 
 
-			list<unordered_map<string, int>> expectedResults;
+			std::list<std::unordered_map<std::string, int>> expectedResults;
 			expectedResults.push_back({ {"a", 3} });
 			expectedResults.push_back({ {"a", 5} });
 			expectedSynonymResults[0] = expectedResults;
@@ -93,15 +96,12 @@ namespace UnitTesting {
 			Assert::IsTrue(sameResult);
 		}
 		TEST_METHOD(combineOneOneWithOneCommonSynonymWithNoCommonResults) {
-			ResultProjector resultProjector;
-			// set up
-			resultProjector.resetResults();
 
-			vector<string> result1Synonym{ "a" };
-			vector<string> result2Synonym{ "a" };
+			std::vector<std::string> result1Synonym{ "a" };
+			std::vector<std::string> result2Synonym{ "a" };
 
-			unordered_set<int> result1;
-			unordered_set<int> result2;
+			std::unordered_set<int> result1;
+			std::unordered_set<int> result2;
 			result1 = { 9,3,5,2 };
 			result2 = { 4 };
 
@@ -110,8 +110,8 @@ namespace UnitTesting {
 			resultProjector.combineResults(result2, result2Synonym);
 
 			// expected results
-			unordered_map<string, int> expectedSynonymTable;
-			unordered_map<int, list<unordered_map<string, int>>> expectedSynonymResults;
+			std::unordered_map<std::string, int> expectedSynonymTable;
+			std::unordered_map<int, std::list<std::unordered_map<std::string, int>>> expectedSynonymResults;
 
 			// compare results
 			bool sameTable = expectedSynonymTable == resultProjector.getSynonymTable();
@@ -122,15 +122,12 @@ namespace UnitTesting {
 
 		// OneTwo
 		TEST_METHOD(combineOneTwoWithNoCommonSynonym) {
-			ResultProjector resultProjector;
-			// set up
-			resultProjector.resetResults();
 
-			vector<string> result1Synonym{ "a" };
-			vector<string> result2Synonym{ "b", "c" };
+			std::vector<std::string> result1Synonym{ "a" };
+			std::vector<std::string> result2Synonym{ "b", "c" };
 
-			unordered_set<int> result1;
-			unordered_map<int, unordered_set<int>> result2;
+			std::unordered_set<int> result1;
+			std::unordered_map<int, std::unordered_set<int>> result2;
 			result1 = { 9,3,5,2 };
 			result2 = {	{1, {4,6}},
 						{2, {5}},
@@ -141,20 +138,20 @@ namespace UnitTesting {
 			resultProjector.combineResults(result2, result2Synonym);
 
 			// expected results
-			unordered_map<string, int> expectedSynonymTable;
+			std::unordered_map<std::string, int> expectedSynonymTable;
 			expectedSynonymTable["a"] = 0;
 			expectedSynonymTable["b"] = 1;
 			expectedSynonymTable["c"] = 1;
 
-			unordered_map<int, list<unordered_map<string, int>>> expectedSynonymResults;
-			list<unordered_map<string, int>> expectedResults1;
+			std::unordered_map<int, std::list<std::unordered_map<std::string, int>>> expectedSynonymResults;
+			std::list<std::unordered_map<std::string, int>> expectedResults1;
 			expectedResults1.push_back({ {"a", 9} });
 			expectedResults1.push_back({ {"a", 3} });
 			expectedResults1.push_back({ {"a", 5} });
 			expectedResults1.push_back({ {"a", 2} });
 			expectedSynonymResults[0] = expectedResults1;
 
-			list<unordered_map<string, int>> expectedResults2;
+			std::list<std::unordered_map<std::string, int>> expectedResults2;
 			expectedResults2.push_back({ {"b", 1}, {"c", 4} });
 			expectedResults2.push_back({ {"b", 1}, {"c", 6} });
 			expectedResults2.push_back({ {"b", 2}, {"c", 5} });
@@ -168,15 +165,12 @@ namespace UnitTesting {
 			Assert::IsTrue(sameResult);
 		}
 		TEST_METHOD(combineOneTwoWithOneCommonSynonym) {
-			ResultProjector resultProjector;
-			// set up
-			resultProjector.resetResults();
 
-			vector<string> result1Synonym{ "a" };
-			vector<string> result2Synonym{ "b", "a" };
+			std::vector<std::string> result1Synonym{ "a" };
+			std::vector<std::string> result2Synonym{ "b", "a" };
 
-			unordered_set<int> result1;
-			unordered_map<int, unordered_set<int>> result2;
+			std::unordered_set<int> result1;
+			std::unordered_map<int, std::unordered_set<int>> result2;
 			result1 = { 9,3,5,2 };
 			result2 = { {1, {4}},
 						{2, {5,3}},
@@ -187,12 +181,12 @@ namespace UnitTesting {
 			resultProjector.combineResults(result2, result2Synonym);
 
 			// expected results
-			unordered_map<string, int> expectedSynonymTable;
+			std::unordered_map<std::string, int> expectedSynonymTable;
 			expectedSynonymTable["a"] = 0;
 			expectedSynonymTable["b"] = 0;
 
-			unordered_map<int, list<unordered_map<string, int>>> expectedSynonymResults;
-			list<unordered_map<string, int>> expectedResults;
+			std::unordered_map<int, std::list<std::unordered_map<std::string, int>>> expectedSynonymResults;
+			std::list<std::unordered_map<std::string, int>> expectedResults;
 			expectedResults.push_back({ {"a", 3}, {"b", 2}});
 			expectedResults.push_back({ {"a", 3}, {"b", 3}});
 			expectedResults.push_back({ {"a", 5}, {"b", 2}});
@@ -205,15 +199,12 @@ namespace UnitTesting {
 			Assert::IsTrue(sameResult);
 		}
 		TEST_METHOD(combineOneTwoWithOneCommonSynonym2) {
-			ResultProjector resultProjector;
-			// set up
-			resultProjector.resetResults();
+			
+			std::vector<std::string> result1Synonym{ "b" };
+			std::vector<std::string> result2Synonym{ "b", "a" };
 
-			vector<string> result1Synonym{ "b" };
-			vector<string> result2Synonym{ "b", "a" };
-
-			unordered_set<int> result1;
-			unordered_map<int, unordered_set<int>> result2;
+			std::unordered_set<int> result1;
+			std::unordered_map<int, std::unordered_set<int>> result2;
 			result1 = { 2,5,6 };
 			result2 = { {2, {1,5}},
 						{5, {2}},
@@ -225,12 +216,12 @@ namespace UnitTesting {
 			resultProjector.combineResults(result2, result2Synonym);
 
 			// expected results
-			unordered_map<string, int> expectedSynonymTable;
+			std::unordered_map<std::string, int> expectedSynonymTable;
 			expectedSynonymTable["a"] = 0;
 			expectedSynonymTable["b"] = 0;
 
-			unordered_map<int, list<unordered_map<string, int>>> expectedSynonymResults;
-			list<unordered_map<string, int>> expectedResults;
+			std::unordered_map<int, std::list<std::unordered_map<std::string, int>>> expectedSynonymResults;
+			std::list<std::unordered_map<std::string, int>> expectedResults;
 			expectedResults.push_back({ {"a", 1}, {"b", 2} });
 			expectedResults.push_back({ {"a", 5}, {"b", 2} });
 			expectedResults.push_back({ {"a", 2}, {"b", 5} });
@@ -243,15 +234,12 @@ namespace UnitTesting {
 			Assert::IsTrue(sameResult);
 		}
 		TEST_METHOD(combineOneTwoWithOneCommonSynonym3) {
-			ResultProjector resultProjector;
-			// set up
-			resultProjector.resetResults();
 
-			vector<string> result1Synonym{ "a" };
-			vector<string> result2Synonym{ "a", "b" };
+			std::vector<std::string> result1Synonym{ "a" };
+			std::vector<std::string> result2Synonym{ "a", "b" };
 
-			unordered_set<int> result1;
-			unordered_map<int, unordered_set<int>> result2;
+			std::unordered_set<int> result1;
+			std::unordered_map<int, std::unordered_set<int>> result2;
 			result1 = { 1,2,4,8 };
 			result2 = { {1, {2}},
 						{2, {5,6,7}},
@@ -265,12 +253,12 @@ namespace UnitTesting {
 			resultProjector.combineResults(result2, result2Synonym);
 
 			// expected results
-			unordered_map<string, int> expectedSynonymTable;
+			std::unordered_map<std::string, int> expectedSynonymTable;
 			expectedSynonymTable["a"] = 0;
 			expectedSynonymTable["b"] = 0;
 
-			unordered_map<int, list<unordered_map<string, int>>> expectedSynonymResults;
-			list<unordered_map<string, int>> expectedResults;
+			std::unordered_map<int, std::list<std::unordered_map<std::string, int>>> expectedSynonymResults;
+			std::list<std::unordered_map<std::string, int>> expectedResults;
 			expectedResults.push_back({ {"a", 1}, {"b", 2} });
 			expectedResults.push_back({ {"a", 2}, {"b", 5} });
 			expectedResults.push_back({ {"a", 2}, {"b", 6} });
@@ -286,15 +274,12 @@ namespace UnitTesting {
 			Assert::IsTrue(sameResult);
 		}
 		TEST_METHOD(combineOneTwoWithOneCommonSynonymWithNoCommonResults) {
-			ResultProjector resultProjector;
-			// set up
-			resultProjector.resetResults();
 
-			vector<string> result1Synonym{ "a" };
-			vector<string> result2Synonym{ "a", "b" };
+			std::vector<std::string> result1Synonym{ "a" };
+			std::vector<std::string> result2Synonym{ "a", "b" };
 
-			unordered_set<int> result1;
-			unordered_map<int, unordered_set<int>> result2;
+			std::unordered_set<int> result1;
+			std::unordered_map<int, std::unordered_set<int>> result2;
 			result1 = { 9,3,5,2 };
 			result2 = { {1, {4}},
 						{8, {6}},
@@ -306,8 +291,8 @@ namespace UnitTesting {
 			resultProjector.combineResults(result2, result2Synonym);
 
 			// expected results
-			unordered_map<string, int> expectedSynonymTable;
-			unordered_map<int, list<unordered_map<string, int>>> expectedSynonymResults;
+			std::unordered_map<std::string, int> expectedSynonymTable;
+			std::unordered_map<int, std::list<std::unordered_map<std::string, int>>> expectedSynonymResults;
 
 			// compare results
 			bool sameTable = expectedSynonymTable == resultProjector.getSynonymTable();
@@ -318,15 +303,12 @@ namespace UnitTesting {
 
 		// TwoOne
 		TEST_METHOD(combineTwoOneWithNoCommonSynonym) {
-			ResultProjector resultProjector;
-			// set up
-			resultProjector.resetResults();
 
-			vector<string> result1Synonym{ "a", "b" };
-			vector<string> result2Synonym{ "c" };
+			std::vector<std::string> result1Synonym{ "a", "b" };
+			std::vector<std::string> result2Synonym{ "c" };
 
-			unordered_map<int, unordered_set<int>> result1;
-			unordered_set<int> result2;
+			std::unordered_map<int, std::unordered_set<int>> result1;
+			std::unordered_set<int> result2;
 			result1 = { {9, {1}},
 						{3, {2}},
 						{5, {3}},
@@ -338,20 +320,20 @@ namespace UnitTesting {
 			resultProjector.combineResults(result2, result2Synonym);
 
 			// expected results
-			unordered_map<string, int> expectedSynonymTable;
+			std::unordered_map<std::string, int> expectedSynonymTable;
 			expectedSynonymTable["a"] = 0;
 			expectedSynonymTable["b"] = 0;
 			expectedSynonymTable["c"] = 1;
 
-			unordered_map<int, list<unordered_map<string, int>>> expectedSynonymResults;
-			list<unordered_map<string, int>> expectedResults1;
+			std::unordered_map<int, std::list<std::unordered_map<std::string, int>>> expectedSynonymResults;
+			std::list<std::unordered_map<std::string, int>> expectedResults1;
 			expectedResults1.push_back({ {"a", 9}, {"b", 1} });
 			expectedResults1.push_back({ {"a", 3}, {"b", 2} });
 			expectedResults1.push_back({ {"a", 5}, {"b", 3} });
 			expectedResults1.push_back({ {"a", 2}, {"b", 4} });
 			expectedSynonymResults[0] = expectedResults1;
 
-			list<unordered_map<string, int>> expectedResults2;
+			std::list<std::unordered_map<std::string, int>> expectedResults2;
 			expectedResults2.push_back({ {"c", 4} });
 			expectedResults2.push_back({ {"c", 5} });
 			expectedResults2.push_back({ {"c", 3} });
@@ -364,15 +346,12 @@ namespace UnitTesting {
 			Assert::IsTrue(sameResult);
 		}
 		TEST_METHOD(combineTwoOneWithOneCommonSynonym) {
-			ResultProjector resultProjector;
-			// set up
-			resultProjector.resetResults();
 
-			vector<string> result1Synonym{ "a", "b" };
-			vector<string> result2Synonym{ "b" };
+			std::vector<std::string> result1Synonym{ "a", "b" };
+			std::vector<std::string> result2Synonym{ "b" };
 
-			unordered_map<int, unordered_set<int>> result1;
-			unordered_set<int> result2;
+			std::unordered_map<int, std::unordered_set<int>> result1;
+			std::unordered_set<int> result2;
 			result1 = { {9, {1}},
 						{3, {2}},
 						{5, {3}},
@@ -384,12 +363,12 @@ namespace UnitTesting {
 			resultProjector.combineResults(result2, result2Synonym);
 
 			// expected results
-			unordered_map<string, int> expectedSynonymTable;
+			std::unordered_map<std::string, int> expectedSynonymTable;
 			expectedSynonymTable["a"] = 0;
 			expectedSynonymTable["b"] = 0;
 
-			unordered_map<int, list<unordered_map<string, int>>> expectedSynonymResults;
-			list<unordered_map<string, int>> expectedResults;
+			std::unordered_map<int, std::list<std::unordered_map<std::string, int>>> expectedSynonymResults;
+			std::list<std::unordered_map<std::string, int>> expectedResults;
 			expectedResults.push_back({ {"a", 9}, {"b", 1} });
 			expectedResults.push_back({ {"a", 5}, {"b", 3} });
 			expectedSynonymResults[0] = expectedResults;
@@ -401,15 +380,12 @@ namespace UnitTesting {
 			Assert::IsTrue(sameResult);
 		}
 		TEST_METHOD(combineTwoOneWithOneCommonSynonymWithNoCommonResults) {
-			ResultProjector resultProjector;
-			// set up
-			resultProjector.resetResults();
 
-			vector<string> result1Synonym{ "a", "b" };
-			vector<string> result2Synonym{ "b" };
+			std::vector<std::string> result1Synonym{ "a", "b" };
+			std::vector<std::string> result2Synonym{ "b" };
 
-			unordered_map<int, unordered_set<int>> result1;
-			unordered_set<int> result2;
+			std::unordered_map<int, std::unordered_set<int>> result1;
+			std::unordered_set<int> result2;
 			result1 = { {9, {1}},
 						{3, {5}},
 						{5, {3}},
@@ -421,8 +397,8 @@ namespace UnitTesting {
 			resultProjector.combineResults(result2, result2Synonym);
 
 			// expected results
-			unordered_map<string, int> expectedSynonymTable;
-			unordered_map<int, list<unordered_map<string, int>>> expectedSynonymResults;
+			std::unordered_map<std::string, int> expectedSynonymTable;
+			std::unordered_map<int, std::list<std::unordered_map<std::string, int>>> expectedSynonymResults;
 
 			// compare results
 			bool sameTable = expectedSynonymTable == resultProjector.getSynonymTable();
@@ -433,15 +409,12 @@ namespace UnitTesting {
 
 		// TwoTwo
 		TEST_METHOD(combineTwoTwoWithNoCommonSynonym) {
-			ResultProjector resultProjector;
-			// set up
-			resultProjector.resetResults();
 
-			vector<string> result1Synonym{ "a", "b" };
-			vector<string> result2Synonym{ "c", "d" };
+			std::vector<std::string> result1Synonym{ "a", "b" };
+			std::vector<std::string> result2Synonym{ "c", "d" };
 
-			unordered_map<int, unordered_set<int>> result1;
-			unordered_map<int, unordered_set<int>> result2;
+			std::unordered_map<int, std::unordered_set<int>> result1;
+			std::unordered_map<int, std::unordered_set<int>> result2;
 			result1 = { {9, {1}},
 						{3, {2}},
 						{5, {3}},
@@ -455,21 +428,21 @@ namespace UnitTesting {
 			resultProjector.combineResults(result2, result2Synonym);
 
 			// expected results
-			unordered_map<string, int> expectedSynonymTable;
+			std::unordered_map<std::string, int> expectedSynonymTable;
 			expectedSynonymTable["a"] = 0;
 			expectedSynonymTable["b"] = 0;
 			expectedSynonymTable["c"] = 1;
 			expectedSynonymTable["d"] = 1;
 
-			unordered_map<int, list<unordered_map<string, int>>> expectedSynonymResults;
-			list<unordered_map<string, int>> expectedResults1;
+			std::unordered_map<int, std::list<std::unordered_map<std::string, int>>> expectedSynonymResults;
+			std::list<std::unordered_map<std::string, int>> expectedResults1;
 			expectedResults1.push_back({ {"a", 9}, {"b", 1} });
 			expectedResults1.push_back({ {"a", 3}, {"b", 2} });
 			expectedResults1.push_back({ {"a", 5}, {"b", 3} });
 			expectedResults1.push_back({ {"a", 2}, {"b", 4} });
 			expectedSynonymResults[0] = expectedResults1;
 
-			list<unordered_map<string, int>> expectedResults2;
+			std::list<std::unordered_map<std::string, int>> expectedResults2;
 			expectedResults2.push_back({ {"c", 4}, {"d", 2} });
 			expectedResults2.push_back({ {"c", 5}, {"d", 5} });
 			expectedResults2.push_back({ {"c", 3}, {"d", 3} });
@@ -482,15 +455,12 @@ namespace UnitTesting {
 			Assert::IsTrue(sameResult);
 		}
 		TEST_METHOD(combineTwoTwoWithOneCommonSynonym) {
-			ResultProjector resultProjector;
-			// set up
-			resultProjector.resetResults();
 
-			vector<string> result1Synonym{ "a", "b" };
-			vector<string> result2Synonym{ "b", "c" };
+			std::vector<std::string> result1Synonym{ "a", "b" };
+			std::vector<std::string> result2Synonym{ "b", "c" };
 
-			unordered_map<int, unordered_set<int>> result1;
-			unordered_map<int, unordered_set<int>> result2;
+			std::unordered_map<int, std::unordered_set<int>> result1;
+			std::unordered_map<int, std::unordered_set<int>> result2;
 			result1 = { {9, {1}},
 						{3, {5}},
 						{5, {3}},
@@ -504,13 +474,13 @@ namespace UnitTesting {
 			resultProjector.combineResults(result2, result2Synonym);
 
 			// expected results
-			unordered_map<string, int> expectedSynonymTable;
+			std::unordered_map<std::string, int> expectedSynonymTable;
 			expectedSynonymTable["a"] = 0;
 			expectedSynonymTable["b"] = 0;
 			expectedSynonymTable["c"] = 0;
 
-			unordered_map<int, list<unordered_map<string, int>>> expectedSynonymResults;
-			list<unordered_map<string, int>> expectedResults;
+			std::unordered_map<int, std::list<std::unordered_map<std::string, int>>> expectedSynonymResults;
+			std::list<std::unordered_map<std::string, int>> expectedResults;
 			expectedResults.push_back({ {"a", 9}, {"b", 1}, {"c", 2} });
 			expectedResults.push_back({ {"a", 3}, {"b", 5}, {"c", 6} });
 			expectedSynonymResults[0] = expectedResults;
@@ -522,15 +492,12 @@ namespace UnitTesting {
 			Assert::IsTrue(sameResult);
 		}
 		TEST_METHOD(combineTwoTwoWithOneCommonSynonym2) {
-			ResultProjector resultProjector;
-			// set up
-			resultProjector.resetResults();
 
-			vector<string> result1Synonym{ "a", "b" };
-			vector<string> result2Synonym{ "a", "c" };
+			std::vector<std::string> result1Synonym{ "a", "b" };
+			std::vector<std::string> result2Synonym{ "a", "c" };
 
-			unordered_map<int, unordered_set<int>> result1;
-			unordered_map<int, unordered_set<int>> result2;
+			std::unordered_map<int, std::unordered_set<int>> result1;
+			std::unordered_map<int, std::unordered_set<int>> result2;
 			result1 = { {9, {1}},
 						{3, {5}},
 						{5, {3}},
@@ -545,13 +512,13 @@ namespace UnitTesting {
 			resultProjector.combineResults(result2, result2Synonym);
 
 			// expected results
-			unordered_map<string, int> expectedSynonymTable;
+			std::unordered_map<std::string, int> expectedSynonymTable;
 			expectedSynonymTable["a"] = 0;
 			expectedSynonymTable["b"] = 0;
 			expectedSynonymTable["c"] = 0;
 
-			unordered_map<int, list<unordered_map<string, int>>> expectedSynonymResults;
-			list<unordered_map<string, int>> expectedResults;
+			std::unordered_map<int, std::list<std::unordered_map<std::string, int>>> expectedSynonymResults;
+			std::list<std::unordered_map<std::string, int>> expectedResults;
 			expectedResults.push_back({ {"a", 5}, {"b", 3}, {"c", 6} });
 			expectedResults.push_back({ {"a", 5}, {"b", 3}, {"c", 7} });
 			expectedResults.push_back({ {"a", 2}, {"b", 4}, {"c", 9} });
@@ -566,15 +533,12 @@ namespace UnitTesting {
 			Assert::IsTrue(sameResult);
 		}
 		TEST_METHOD(combineTwoTwoWithOneCommonSynonym3) {
-			ResultProjector resultProjector;
-			// set up
-			resultProjector.resetResults();
 
-			vector<string> result1Synonym{ "a", "b" };
-			vector<string> result2Synonym{ "b", "c" };
+			std::vector<std::string> result1Synonym{ "a", "b" };
+			std::vector<std::string> result2Synonym{ "b", "c" };
 
-			unordered_map<int, unordered_set<int>> result1;
-			unordered_map<int, unordered_set<int>> result2;
+			std::unordered_map<int, std::unordered_set<int>> result1;
+			std::unordered_map<int, std::unordered_set<int>> result2;
 			result1 = { {9, {1}},
 						{3, {5}},
 						{5, {3}},
@@ -590,13 +554,13 @@ namespace UnitTesting {
 			resultProjector.combineResults(result2, result2Synonym);
 
 			// expected results
-			unordered_map<string, int> expectedSynonymTable;
+			std::unordered_map<std::string, int> expectedSynonymTable;
 			expectedSynonymTable["a"] = 0;
 			expectedSynonymTable["b"] = 0;
 			expectedSynonymTable["c"] = 0;
 
-			unordered_map<int, list<unordered_map<string, int>>> expectedSynonymResults;
-			list<unordered_map<string, int>> expectedResults;
+			std::unordered_map<int, std::list<std::unordered_map<std::string, int>>> expectedSynonymResults;
+			std::list<std::unordered_map<std::string, int>> expectedResults;
 			expectedResults.push_back({ {"a", 9}, {"b", 1}, {"c", 2} });
 			expectedResults.push_back({ {"a", 9}, {"b", 1}, {"c", 3} });
 			expectedResults.push_back({ {"a", 3}, {"b", 5}, {"c", 6} });
@@ -612,15 +576,12 @@ namespace UnitTesting {
 			Assert::IsTrue(sameResult);
 		}
 		TEST_METHOD(combineTwoTwoWithOneCommonSynonym4) {
-			ResultProjector resultProjector;
-			// set up
-			resultProjector.resetResults();
 
-			vector<string> result1Synonym{ "a", "b" };
-			vector<string> result2Synonym{ "b", "c" };
+			std::vector<std::string> result1Synonym{ "a", "b" };
+			std::vector<std::string> result2Synonym{ "b", "c" };
 
-			unordered_map<int, unordered_set<int>> result1;
-			unordered_map<int, unordered_set<int>> result2;
+			std::unordered_map<int, std::unordered_set<int>> result1;
+			std::unordered_map<int, std::unordered_set<int>> result2;
 			result1 = { {3, {0,3}},
 						{6, {3,1}},
 						{9, {2,0,3,1}} };
@@ -635,13 +596,13 @@ namespace UnitTesting {
 			resultProjector.combineResults(result2, result2Synonym);
 
 			// expected results
-			unordered_map<string, int> expectedSynonymTable;
+			std::unordered_map<std::string, int> expectedSynonymTable;
 			expectedSynonymTable["a"] = 0;
 			expectedSynonymTable["b"] = 0;
 			expectedSynonymTable["c"] = 0;
 
-			unordered_map<int, list<unordered_map<string, int>>> expectedSynonymResults;
-			list<unordered_map<string, int>> expectedResults;
+			std::unordered_map<int, std::list<std::unordered_map<std::string, int>>> expectedSynonymResults;
+			std::list<std::unordered_map<std::string, int>> expectedResults;
 			expectedResults.push_back({ {"a", 3}, {"b", 0}, {"c", 4} });
 			expectedResults.push_back({ {"a", 3}, {"b", 3}, {"c", 7} });
 			expectedResults.push_back({ {"a", 3}, {"b", 3}, {"c", 14} });
@@ -662,15 +623,12 @@ namespace UnitTesting {
 			Assert::IsTrue(sameResult);
 		}
 		TEST_METHOD(combineTwoTwoWithOneCommonSynonymWithAllCommonResults) {
-			ResultProjector resultProjector;
-			// set up
-			resultProjector.resetResults();
 
-			vector<string> result1Synonym{ "a", "b" };
-			vector<string> result2Synonym{ "c", "b" };
+			std::vector<std::string> result1Synonym{ "a", "b" };
+			std::vector<std::string> result2Synonym{ "c", "b" };
 
-			unordered_map<int, unordered_set<int>> result1;
-			unordered_map<int, unordered_set<int>> result2;
+			std::unordered_map<int, std::unordered_set<int>> result1;
+			std::unordered_map<int, std::unordered_set<int>> result2;
 			result1 = { {9, {1}},
 						{3, {5}},
 						{5, {3}},
@@ -685,13 +643,13 @@ namespace UnitTesting {
 			resultProjector.combineResults(result2, result2Synonym);
 
 			// expected results
-			unordered_map<string, int> expectedSynonymTable;
+			std::unordered_map<std::string, int> expectedSynonymTable;
 			expectedSynonymTable["a"] = 0;
 			expectedSynonymTable["b"] = 0;
 			expectedSynonymTable["c"] = 0;
 
-			unordered_map<int, list<unordered_map<string, int>>> expectedSynonymResults;
-			list<unordered_map<string, int>> expectedResults;
+			std::unordered_map<int, std::list<std::unordered_map<std::string, int>>> expectedSynonymResults;
+			std::list<std::unordered_map<std::string, int>> expectedResults;
 			expectedResults.push_back({ {"a", 9}, {"b", 1}, {"c", 2} });
 			expectedResults.push_back({ {"a", 3}, {"b", 5}, {"c", 7} });
 			expectedResults.push_back({ {"a", 5}, {"b", 3}, {"c", 6} });
@@ -705,15 +663,12 @@ namespace UnitTesting {
 			Assert::IsTrue(sameResult);
 		}
 		TEST_METHOD(combineTwoTwoWithOneCommonSynonymWithAllCommonResults2) {
-			ResultProjector resultProjector;
-			// set up
-			resultProjector.resetResults();
 
-			vector<string> result1Synonym{ "a", "b" };
-			vector<string> result2Synonym{ "b", "c" };
+			std::vector<std::string> result1Synonym{ "a", "b" };
+			std::vector<std::string> result2Synonym{ "b", "c" };
 
-			unordered_map<int, unordered_set<int>> result1;
-			unordered_map<int, unordered_set<int>> result2;
+			std::unordered_map<int, std::unordered_set<int>> result1;
+			std::unordered_map<int, std::unordered_set<int>> result2;
 			result1 = { {9, {1}},
 						{3, {3}},
 						{5, {4}} };
@@ -726,13 +681,13 @@ namespace UnitTesting {
 			resultProjector.combineResults(result2, result2Synonym);
 
 			// expected results
-			unordered_map<string, int> expectedSynonymTable;
+			std::unordered_map<std::string, int> expectedSynonymTable;
 			expectedSynonymTable["a"] = 0;
 			expectedSynonymTable["b"] = 0;
 			expectedSynonymTable["c"] = 0;
 
-			unordered_map<int, list<unordered_map<string, int>>> expectedSynonymResults;
-			list<unordered_map<string, int>> expectedResults;
+			std::unordered_map<int, std::list<std::unordered_map<std::string, int>>> expectedSynonymResults;
+			std::list<std::unordered_map<std::string, int>> expectedResults;
 			expectedResults.push_back({ {"a", 9}, {"b", 1}, {"c", 2} });
 			expectedResults.push_back({ {"a", 9}, {"b", 1}, {"c", 3} });
 			expectedResults.push_back({ {"a", 3}, {"b", 3}, {"c", 4} });
@@ -748,15 +703,12 @@ namespace UnitTesting {
 			Assert::IsTrue(sameResult);
 		}
 		TEST_METHOD(combineTwoTwoWithOneCommonSynonymWithNoCommonResults) {
-			ResultProjector resultProjector;
-			// set up
-			resultProjector.resetResults();
 
-			vector<string> result1Synonym{ "a", "b" };
-			vector<string> result2Synonym{ "a", "c" };
+			std::vector<std::string> result1Synonym{ "a", "b" };
+			std::vector<std::string> result2Synonym{ "a", "c" };
 
-			unordered_map<int, unordered_set<int>> result1;
-			unordered_map<int, unordered_set<int>> result2;
+			std::unordered_map<int, std::unordered_set<int>> result1;
+			std::unordered_map<int, std::unordered_set<int>> result2;
 			result1 = { {9, {1}},
 						{3, {5}},
 						{5, {3}},
@@ -769,8 +721,8 @@ namespace UnitTesting {
 			resultProjector.combineResults(result2, result2Synonym);
 
 			// expected results
-			unordered_map<string, int> expectedSynonymTable;
-			unordered_map<int, list<unordered_map<string, int>>> expectedSynonymResults;
+			std::unordered_map<std::string, int> expectedSynonymTable;
+			std::unordered_map<int, std::list<std::unordered_map<std::string, int>>> expectedSynonymResults;
 
 			// compare results
 			bool sameTable = expectedSynonymTable == resultProjector.getSynonymTable();
@@ -780,15 +732,12 @@ namespace UnitTesting {
 		}
 
 		TEST_METHOD(combineTwoTwoWithTwoCommonSynonym) {
-			ResultProjector resultProjector;
-			// set up
-			resultProjector.resetResults();
 
-			vector<string> result1Synonym{ "a", "b" };
-			vector<string> result2Synonym{ "b", "a" };
+			std::vector<std::string> result1Synonym{ "a", "b" };
+			std::vector<std::string> result2Synonym{ "b", "a" };
 
-			unordered_map<int, unordered_set<int>> result1;
-			unordered_map<int, unordered_set<int>> result2;
+			std::unordered_map<int, std::unordered_set<int>> result1;
+			std::unordered_map<int, std::unordered_set<int>> result2;
 			result1 = { {9, {1}},
 						{3, {5}},
 						{5, {3}},
@@ -803,12 +752,12 @@ namespace UnitTesting {
 			resultProjector.combineResults(result2, result2Synonym);
 
 			// expected results
-			unordered_map<string, int> expectedSynonymTable;
+			std::unordered_map<std::string, int> expectedSynonymTable;
 			expectedSynonymTable["a"] = 0;
 			expectedSynonymTable["b"] = 0;
 
-			unordered_map<int, list<unordered_map<string, int>>> expectedSynonymResults;
-			list<unordered_map<string, int>> expectedResults;
+			std::unordered_map<int, std::list<std::unordered_map<std::string, int>>> expectedSynonymResults;
+			std::list<std::unordered_map<std::string, int>> expectedResults;
 			expectedResults.push_back({ {"a", 3}, {"b", 5} });
 			expectedResults.push_back({ {"a", 2}, {"b", 4} });
 			expectedSynonymResults[0] = expectedResults;
@@ -820,15 +769,12 @@ namespace UnitTesting {
 			Assert::IsTrue(sameResult);
 		}
 		TEST_METHOD(combineTwoTwoWithTwoCommonSynonym2) {
-			ResultProjector resultProjector;
-			// set up
-			resultProjector.resetResults();
 
-			vector<string> result1Synonym{ "a", "b" };
-			vector<string> result2Synonym{ "a", "b" };
+			std::vector<std::string> result1Synonym{ "a", "b" };
+			std::vector<std::string> result2Synonym{ "a", "b" };
 
-			unordered_map<int, unordered_set<int>> result1;
-			unordered_map<int, unordered_set<int>> result2;
+			std::unordered_map<int, std::unordered_set<int>> result1;
+			std::unordered_map<int, std::unordered_set<int>> result2;
 			result1 = { {1, {1}},
 						{2, {3,4}},
 						{4, {5}} };
@@ -842,12 +788,12 @@ namespace UnitTesting {
 			resultProjector.combineResults(result2, result2Synonym);
 
 			// expected results
-			unordered_map<string, int> expectedSynonymTable;
+			std::unordered_map<std::string, int> expectedSynonymTable;
 			expectedSynonymTable["a"] = 0;
 			expectedSynonymTable["b"] = 0;
 
-			unordered_map<int, list<unordered_map<string, int>>> expectedSynonymResults;
-			list<unordered_map<string, int>> expectedResults;
+			std::unordered_map<int, std::list<std::unordered_map<std::string, int>>> expectedSynonymResults;
+			std::list<std::unordered_map<std::string, int>> expectedResults;
 			expectedResults.push_back({ {"a", 2}, {"b", 3} });
 			expectedResults.push_back({ {"a", 4}, {"b", 5} });
 			expectedSynonymResults[0] = expectedResults;
@@ -859,15 +805,12 @@ namespace UnitTesting {
 			Assert::IsTrue(sameResult);
 		}
 		TEST_METHOD(combineTwoTwoWithTwoCommonSynonym3) {
-			ResultProjector resultProjector;
-			// set up
-			resultProjector.resetResults();
 
-			vector<string> result1Synonym{ "a", "b" };
-			vector<string> result2Synonym{ "a", "b" };
+			std::vector<std::string> result1Synonym{ "a", "b" };
+			std::vector<std::string> result2Synonym{ "a", "b" };
 
-			unordered_map<int, unordered_set<int>> result1;
-			unordered_map<int, unordered_set<int>> result2;
+			std::unordered_map<int, std::unordered_set<int>> result1;
+			std::unordered_map<int, std::unordered_set<int>> result2;
 			result1 = { {2, {5,3}},
 						{3, {1}},
 						{4, {5,6}},
@@ -881,12 +824,12 @@ namespace UnitTesting {
 			resultProjector.combineResults(result2, result2Synonym);
 
 			// expected results
-			unordered_map<string, int> expectedSynonymTable;
+			std::unordered_map<std::string, int> expectedSynonymTable;
 			expectedSynonymTable["a"] = 0;
 			expectedSynonymTable["b"] = 0;
 
-			unordered_map<int, list<unordered_map<string, int>>> expectedSynonymResults;
-			list<unordered_map<string, int>> expectedResults;
+			std::unordered_map<int, std::list<std::unordered_map<std::string, int>>> expectedSynonymResults;
+			std::list<std::unordered_map<std::string, int>> expectedResults;
 			expectedResults.push_back({ {"a", 2}, {"b", 3} });
 			expectedResults.push_back({ {"a", 4}, {"b", 5} });
 			expectedSynonymResults[0] = expectedResults;
@@ -898,15 +841,12 @@ namespace UnitTesting {
 			Assert::IsTrue(sameResult);
 		}
 		TEST_METHOD(combineTwoTwoWithTwoCommonSynonymWithAllCommonResults) {
-			ResultProjector resultProjector;
-			// set up
-			resultProjector.resetResults();
 
-			vector<string> result1Synonym{ "a", "b" };
-			vector<string> result2Synonym{ "a", "b" };
+			std::vector<std::string> result1Synonym{ "a", "b" };
+			std::vector<std::string> result2Synonym{ "a", "b" };
 
-			unordered_map<int, unordered_set<int>> result1;
-			unordered_map<int, unordered_set<int>> result2;
+			std::unordered_map<int, std::unordered_set<int>> result1;
+			std::unordered_map<int, std::unordered_set<int>> result2;
 			result1 = { {1, {1}},
 						{2, {3,4}},
 						{4, {5}} };
@@ -919,12 +859,12 @@ namespace UnitTesting {
 			resultProjector.combineResults(result2, result2Synonym);
 
 			// expected results
-			unordered_map<string, int> expectedSynonymTable;
+			std::unordered_map<std::string, int> expectedSynonymTable;
 			expectedSynonymTable["a"] = 0;
 			expectedSynonymTable["b"] = 0;
 
-			unordered_map<int, list<unordered_map<string, int>>> expectedSynonymResults;
-			list<unordered_map<string, int>> expectedResults;
+			std::unordered_map<int, std::list<std::unordered_map<std::string, int>>> expectedSynonymResults;
+			std::list<std::unordered_map<std::string, int>> expectedResults;
 			expectedResults.push_back({ {"a", 1}, {"b", 1} });
 			expectedResults.push_back({ {"a", 2}, {"b", 3} });
 			expectedResults.push_back({ {"a", 2}, {"b", 4} });
@@ -938,15 +878,12 @@ namespace UnitTesting {
 			Assert::IsTrue(sameResult);
 		}
 		TEST_METHOD(combineTwoTwoWithTwoCommonSynonymWithNoCommonResults) {
-			ResultProjector resultProjector;
-			// set up
-			resultProjector.resetResults();
 
-			vector<string> result1Synonym{ "a", "b" };
-			vector<string> result2Synonym{ "a", "b" };
+			std::vector<std::string> result1Synonym{ "a", "b" };
+			std::vector<std::string> result2Synonym{ "a", "b" };
 
-			unordered_map<int, unordered_set<int>> result1;
-			unordered_map<int, unordered_set<int>> result2;
+			std::unordered_map<int, std::unordered_set<int>> result1;
+			std::unordered_map<int, std::unordered_set<int>> result2;
 			result1 = { {1, {1}},
 						{2, {3,4}},
 						{4, {5}} };
@@ -959,8 +896,8 @@ namespace UnitTesting {
 			resultProjector.combineResults(result2, result2Synonym);
 
 			// expected results
-			unordered_map<string, int> expectedSynonymTable;
-			unordered_map<int, list<unordered_map<string, int>>> expectedSynonymResults;
+			std::unordered_map<std::string, int> expectedSynonymTable;
+			std::unordered_map<int, std::list<std::unordered_map<std::string, int>>> expectedSynonymResults;
 
 			// compare results
 			bool sameTable = expectedSynonymTable == resultProjector.getSynonymTable();
@@ -969,15 +906,12 @@ namespace UnitTesting {
 			Assert::IsTrue(sameResult);
 		}
 		TEST_METHOD(combineTwoTwoWithTwoCommonSynonymWithNoCommonResults2) {
-			ResultProjector resultProjector;
-			// set up
-			resultProjector.resetResults();
 
-			vector<string> result1Synonym{ "a", "b" };
-			vector<string> result2Synonym{ "a", "b" };
+			std::vector<std::string> result1Synonym{ "a", "b" };
+			std::vector<std::string> result2Synonym{ "a", "b" };
 
-			unordered_map<int, unordered_set<int>> result1;
-			unordered_map<int, unordered_set<int>> result2;
+			std::unordered_map<int, std::unordered_set<int>> result1;
+			std::unordered_map<int, std::unordered_set<int>> result2;
 			result1 = { {9, {1}},
 						{3, {3}},
 						{5, {5}},
@@ -992,8 +926,8 @@ namespace UnitTesting {
 			resultProjector.combineResults(result2, result2Synonym);
 
 			// expected results
-			unordered_map<string, int> expectedSynonymTable;
-			unordered_map<int, list<unordered_map<string, int>>> expectedSynonymResults;
+			std::unordered_map<std::string, int> expectedSynonymTable;
+			std::unordered_map<int, std::list<std::unordered_map<std::string, int>>> expectedSynonymResults;
 
 			// compare results
 			bool sameTable = expectedSynonymTable == resultProjector.getSynonymTable();
@@ -1002,17 +936,14 @@ namespace UnitTesting {
 			Assert::IsTrue(sameResult);
 		}
 		TEST_METHOD(combineTwoTwoTwoWithOneCommonSynonymSameTable) {
-			ResultProjector resultProjector;
-			// set up
-			resultProjector.resetResults();
 
-			vector<string> result1Synonym{ "a", "b" };
-			vector<string> result2Synonym{ "b", "c" };
-			vector<string> result3Synonym{ "c", "d" };
+			std::vector<std::string> result1Synonym{ "a", "b" };
+			std::vector<std::string> result2Synonym{ "b", "c" };
+			std::vector<std::string> result3Synonym{ "c", "d" };
 
-			unordered_map<int, unordered_set<int>> result1;
-			unordered_map<int, unordered_set<int>> result2;
-			unordered_map<int, unordered_set<int>> result3;
+			std::unordered_map<int, std::unordered_set<int>> result1;
+			std::unordered_map<int, std::unordered_set<int>> result2;
+			std::unordered_map<int, std::unordered_set<int>> result3;
 			result1 = { {2, {1,3}},
 						{5, {4,6}},
 						{6, {2,8,3}} };
@@ -1032,14 +963,14 @@ namespace UnitTesting {
 			resultProjector.combineResults(result3, result3Synonym);
 
 			// expected results
-			unordered_map<string, int> expectedSynonymTable;
+			std::unordered_map<std::string, int> expectedSynonymTable;
 			expectedSynonymTable["a"] = 0;
 			expectedSynonymTable["b"] = 0;
 			expectedSynonymTable["c"] = 0;
 			expectedSynonymTable["d"] = 0;
 
-			unordered_map<int, list<unordered_map<string, int>>> expectedSynonymResults;
-			list<unordered_map<string, int>> expectedResults;
+			std::unordered_map<int, std::list<std::unordered_map<std::string, int>>> expectedSynonymResults;
+			std::list<std::unordered_map<std::string, int>> expectedResults;
 			expectedResults.push_back({ {"a", 2}, {"b", 1}, {"c", 2}, {"d", 5} });
 			expectedResults.push_back({ {"a", 5}, {"b", 4}, {"c", 7}, {"d", 8} });
 			expectedResults.push_back({ {"a", 5}, {"b", 4}, {"c", 4}, {"d", 1} });
@@ -1055,17 +986,14 @@ namespace UnitTesting {
 			Assert::IsTrue(sameResult);
 		}
 		TEST_METHOD(combineTwoTwoTwoWithOneCommonSynonymSameTable2) {
-			ResultProjector resultProjector;
-			// set up
-			resultProjector.resetResults();
 
-			vector<string> result1Synonym{ "a", "b" };
-			vector<string> result2Synonym{ "c", "b" };
-			vector<string> result3Synonym{ "c", "d" };
+			std::vector<std::string> result1Synonym{ "a", "b" };
+			std::vector<std::string> result2Synonym{ "c", "b" };
+			std::vector<std::string> result3Synonym{ "c", "d" };
 
-			unordered_map<int, unordered_set<int>> result1;
-			unordered_map<int, unordered_set<int>> result2;
-			unordered_map<int, unordered_set<int>> result3;
+			std::unordered_map<int, std::unordered_set<int>> result1;
+			std::unordered_map<int, std::unordered_set<int>> result2;
+			std::unordered_map<int, std::unordered_set<int>> result3;
 			result1 = { {2, {1,3}},
 						{5, {4,6}},
 						{6, {2,8,3}} };
@@ -1088,14 +1016,14 @@ namespace UnitTesting {
 			resultProjector.combineResults(result3, result3Synonym);
 
 			// expected results
-			unordered_map<string, int> expectedSynonymTable;
+			std::unordered_map<std::string, int> expectedSynonymTable;
 			expectedSynonymTable["a"] = 0;
 			expectedSynonymTable["b"] = 0;
 			expectedSynonymTable["c"] = 0;
 			expectedSynonymTable["d"] = 0;
 
-			unordered_map<int, list<unordered_map<string, int>>> expectedSynonymResults;
-			list<unordered_map<string, int>> expectedResults;
+			std::unordered_map<int, std::list<std::unordered_map<std::string, int>>> expectedSynonymResults;
+			std::list<std::unordered_map<std::string, int>> expectedResults;
 			expectedResults.push_back({ {"a", 2}, {"b", 1}, {"c", 2}, {"d", 5} });
 			expectedResults.push_back({ {"a", 5}, {"b", 4}, {"c", 1}, {"d", 2} });
 			expectedResults.push_back({ {"a", 5}, {"b", 4}, {"c", 7}, {"d", 8} });
@@ -1111,17 +1039,14 @@ namespace UnitTesting {
 			Assert::IsTrue(sameResult);
 		}
 		TEST_METHOD(combineTwoTwoTwoWithOneCommonSynonymSameTable3) {
-			ResultProjector resultProjector;
-			// set up
-			resultProjector.resetResults();
 
-			vector<string> result1Synonym{ "a", "b" };
-			vector<string> result2Synonym{ "a", "c" };
-			vector<string> result3Synonym{ "b", "d" };
+			std::vector<std::string> result1Synonym{ "a", "b" };
+			std::vector<std::string> result2Synonym{ "a", "c" };
+			std::vector<std::string> result3Synonym{ "b", "d" };
 
-			unordered_map<int, unordered_set<int>> result1;
-			unordered_map<int, unordered_set<int>> result2;
-			unordered_map<int, unordered_set<int>> result3;
+			std::unordered_map<int, std::unordered_set<int>> result1;
+			std::unordered_map<int, std::unordered_set<int>> result2;
+			std::unordered_map<int, std::unordered_set<int>> result3;
 			result1 = { {2, {1,3}},
 						{4, {4,6}},
 						{6, {2,8,3}} };
@@ -1141,14 +1066,14 @@ namespace UnitTesting {
 			resultProjector.combineResults(result3, result3Synonym);
 
 			// expected results
-			unordered_map<string, int> expectedSynonymTable;
+			std::unordered_map<std::string, int> expectedSynonymTable;
 			expectedSynonymTable["a"] = 0;
 			expectedSynonymTable["b"] = 0;
 			expectedSynonymTable["c"] = 0;
 			expectedSynonymTable["d"] = 0;
 
-			unordered_map<int, list<unordered_map<string, int>>> expectedSynonymResults;
-			list<unordered_map<string, int>> expectedResults;
+			std::unordered_map<int, std::list<std::unordered_map<std::string, int>>> expectedSynonymResults;
+			std::list<std::unordered_map<std::string, int>> expectedResults;
 			expectedResults.push_back({ {"a", 2}, {"b", 1}, {"c", 3}, {"d", 2} });
 			expectedResults.push_back({ {"a", 2}, {"b", 1}, {"c", 9}, {"d", 2} });
 			expectedResults.push_back({ {"a", 2}, {"b", 3}, {"c", 3}, {"d", 6} });
@@ -1170,17 +1095,14 @@ namespace UnitTesting {
 
 		// testing merging different tables
 		TEST_METHOD(combineOneOneTwoWithTwoCommonSynonymDiffTable) {
-			ResultProjector resultProjector;
-			// set up
-			resultProjector.resetResults();
 
-			vector<string> result1Synonym{ "b" };
-			vector<string> result2Synonym{ "a" };
-			vector<string> result3Synonym{ "a", "b" };
+			std::vector<std::string> result1Synonym{ "b" };
+			std::vector<std::string> result2Synonym{ "a" };
+			std::vector<std::string> result3Synonym{ "a", "b" };
 
-			unordered_set<int> result1;
-			unordered_set<int> result2;
-			unordered_map<int, unordered_set<int>> result3;
+			std::unordered_set<int> result1;
+			std::unordered_set<int> result2;
+			std::unordered_map<int, std::unordered_set<int>> result3;
 			result1 = { 2,5,6 };
 			result2 = { 1,2,4,5,6,7 };
 			result3 = { {1, {2}},
@@ -1196,12 +1118,12 @@ namespace UnitTesting {
 			resultProjector.combineResults(result3, result3Synonym);
 
 			// expected results
-			unordered_map<string, int> expectedSynonymTable;
+			std::unordered_map<std::string, int> expectedSynonymTable;
 			expectedSynonymTable["a"] = 2;
 			expectedSynonymTable["b"] = 2;
 
-			unordered_map<int, list<unordered_map<string, int>>> expectedSynonymResults;
-			list<unordered_map<string, int>> expectedResults;
+			std::unordered_map<int, std::list<std::unordered_map<std::string, int>>> expectedSynonymResults;
+			std::list<std::unordered_map<std::string, int>> expectedResults;
 			expectedResults.push_back({ {"a", 1}, {"b", 2} });
 			expectedResults.push_back({ {"a", 2}, {"b", 5} });
 			expectedResults.push_back({ {"a", 5}, {"b", 2} });
@@ -1214,17 +1136,14 @@ namespace UnitTesting {
 			Assert::IsTrue(sameResult);
 		}
 		TEST_METHOD(combineOneTwoTwoWithTwoCommonSynonymDiffTable) {
-			ResultProjector resultProjector;
-			// set up
-			resultProjector.resetResults();
 
-			vector<string> result1Synonym{ "b" };
-			vector<string> result2Synonym{ "a", "c" };
-			vector<string> result3Synonym{ "a", "b" };
+			std::vector<std::string> result1Synonym{ "b" };
+			std::vector<std::string> result2Synonym{ "a", "c" };
+			std::vector<std::string> result3Synonym{ "a", "b" };
 
-			unordered_set<int> result1;
-			unordered_map<int, unordered_set<int>> result2;
-			unordered_map<int, unordered_set<int>> result3;
+			std::unordered_set<int> result1;
+			std::unordered_map<int, std::unordered_set<int>> result2;
+			std::unordered_map<int, std::unordered_set<int>> result3;
 			result1 = { 2,5,6 };
 			result2 = { {1, {2}},
 						{2, {3,9}},
@@ -1243,13 +1162,13 @@ namespace UnitTesting {
 			resultProjector.combineResults(result3, result3Synonym);
 
 			// expected results
-			unordered_map<string, int> expectedSynonymTable;
+			std::unordered_map<std::string, int> expectedSynonymTable;
 			expectedSynonymTable["a"] = 2;
 			expectedSynonymTable["b"] = 2;
 			expectedSynonymTable["c"] = 2;
 
-			unordered_map<int, list<unordered_map<string, int>>> expectedSynonymResults;
-			list<unordered_map<string, int>> expectedResults;
+			std::unordered_map<int, std::list<std::unordered_map<std::string, int>>> expectedSynonymResults;
+			std::list<std::unordered_map<std::string, int>> expectedResults;
 			expectedResults.push_back({ {"a", 1}, {"b", 2}, {"c", 2} });
 			expectedResults.push_back({ {"a", 2}, {"b", 5}, {"c", 3} });
 			expectedResults.push_back({ {"a", 2}, {"b", 5}, {"c", 9} });
@@ -1262,17 +1181,14 @@ namespace UnitTesting {
 			Assert::IsTrue(sameResult);
 		}
 		TEST_METHOD(combineTwoTwoTwoWithTwoCommonSynonymDiffTable) {
-			ResultProjector resultProjector;
-			// set up
-			resultProjector.resetResults();
 
-			vector<string> result1Synonym{ "b", "d" };
-			vector<string> result2Synonym{ "a", "c" };
-			vector<string> result3Synonym{ "a", "b" };
+			std::vector<std::string> result1Synonym{ "b", "d" };
+			std::vector<std::string> result2Synonym{ "a", "c" };
+			std::vector<std::string> result3Synonym{ "a", "b" };
 
-			unordered_map<int, unordered_set<int>> result1;
-			unordered_map<int, unordered_set<int>> result2;
-			unordered_map<int, unordered_set<int>> result3;
+			std::unordered_map<int, std::unordered_set<int>> result1;
+			std::unordered_map<int, std::unordered_set<int>> result2;
+			std::unordered_map<int, std::unordered_set<int>> result3;
 			result1 = { {2, {1,3}},
 						{5, {4,6}},
 						{6, {2,8,3}} };
@@ -1293,14 +1209,14 @@ namespace UnitTesting {
 			resultProjector.combineResults(result3, result3Synonym);
 
 			// expected results
-			unordered_map<string, int> expectedSynonymTable;
+			std::unordered_map<std::string, int> expectedSynonymTable;
 			expectedSynonymTable["a"] = 2;
 			expectedSynonymTable["b"] = 2;
 			expectedSynonymTable["c"] = 2;
 			expectedSynonymTable["d"] = 2;
 
-			unordered_map<int, list<unordered_map<string, int>>> expectedSynonymResults;
-			list<unordered_map<string, int>> expectedResults;
+			std::unordered_map<int, std::list<std::unordered_map<std::string, int>>> expectedSynonymResults;
+			std::list<std::unordered_map<std::string, int>> expectedResults;
 			expectedResults.push_back({ {"a", 1}, {"b", 2}, {"c", 2}, {"d", 1} });
 			expectedResults.push_back({ {"a", 1}, {"b", 2}, {"c", 2}, {"d", 3} });
 			expectedResults.push_back({ {"a", 2}, {"b", 5}, {"c", 3}, {"d", 4} });
@@ -1319,16 +1235,12 @@ namespace UnitTesting {
 		// ---------------------------------- TEST SELECT -----------------------------------------------
 	
 		TEST_METHOD(selectOneSynonym) {
-			ResultProjector resultProjector;
-			// set up
-			static unordered_map<string, int> synonymTable;
-			static unordered_map<int, list<unordered_map<string, int>>> synonymResults;
 
 			synonymTable["a"] = 0;
 			synonymTable["b"] = 0;
 			synonymTable["c"] = 0;
 
-			list<unordered_map<string, int>> synonymResult;
+			std::list<std::unordered_map<std::string, int>> synonymResult;
 			synonymResult.push_back({ {"a", 1}, {"b", 2}, {"c", 2} });
 			synonymResult.push_back({ {"a", 3}, {"b", 1}, {"c", 1} });
 			synonymResult.push_back({ {"a", 7}, {"b", 2}, {"c", 9} });
@@ -1339,26 +1251,22 @@ namespace UnitTesting {
 			resultProjector.setSynonymTable(synonymTable);
 			resultProjector.setSynonymResults(synonymResults);
 
-			vector<DesignEntity> selectedSynonyms = { DesignEntity("a", Type::STATEMENT) };
+			std::vector<DesignEntity> selectedSynonyms = { DesignEntity("a", Type::STATEMENT) };
 			PKB pkb; // dummy
 
 			// get results
-			list<string> actualResults = resultProjector.getResults(selectedSynonyms, pkb);
-			list<string> expectedResults = { "1", "3", "7", "2", "5" };
+			std::list<std::string> actualResults = resultProjector.getResults(selectedSynonyms, pkb);
+			std::list<std::string> expectedResults = { "1", "3", "7", "2", "5" };
 
 			Assert::IsTrue(isSameResult(expectedResults, actualResults));
 		}
 		TEST_METHOD(selectTupleSameTable) {
-			ResultProjector resultProjector;
-			// set up
-			static unordered_map<string, int> synonymTable;
-			static unordered_map<int, list<unordered_map<string, int>>> synonymResults;
 
 			synonymTable["a"] = 0;
 			synonymTable["b"] = 0;
 			synonymTable["c"] = 0;
 
-			list<unordered_map<string, int>> synonymResult;
+			std::list<std::unordered_map<std::string, int>> synonymResult;
 			synonymResult.push_back({ {"a", 1}, {"b", 2}, {"c", 2} });
 			synonymResult.push_back({ {"a", 3}, {"b", 1}, {"c", 1} });
 			synonymResult.push_back({ {"a", 7}, {"b", 2}, {"c", 9} });
@@ -1369,33 +1277,29 @@ namespace UnitTesting {
 			resultProjector.setSynonymTable(synonymTable);
 			resultProjector.setSynonymResults(synonymResults);
 
-			vector<DesignEntity> selectedSynonyms = {	DesignEntity("b", Type::STATEMENT),
+			std::vector<DesignEntity> selectedSynonyms = {	DesignEntity("b", Type::STATEMENT),
 														DesignEntity("a", Type::ASSIGN) };
 			PKB pkb; // dummy
 			
 			// get results
-			list<string> actualResults = resultProjector.getResults(selectedSynonyms, pkb);
-			list<string> expectedResults = { "2 1", "1 3", "2 7", "4 2", "5 5" };
+			std::list<std::string> actualResults = resultProjector.getResults(selectedSynonyms, pkb);
+			std::list<std::string> expectedResults = { "2 1", "1 3", "2 7", "4 2", "5 5" };
 
 			Assert::IsTrue(isSameResult(expectedResults, actualResults));
 		}
 		TEST_METHOD(selectTupleDiffTable) {
-			ResultProjector resultProjector;
-			// set up
-			static unordered_map<string, int> synonymTable;
-			static unordered_map<int, list<unordered_map<string, int>>> synonymResults;
 
 			synonymTable["a"] = 0;
 			synonymTable["b"] = 0;
 			synonymTable["c"] = 1;
 			synonymTable["d"] = 1;
 
-			list<unordered_map<string, int>> synonymResult1;
+			std::list<std::unordered_map<std::string, int>> synonymResult1;
 			synonymResult1.push_back({ {"a", 1}, {"b", 2} });
 			synonymResult1.push_back({ {"a", 3}, {"b", 1} });
 			synonymResult1.push_back({ {"a", 7}, {"b", 2} });
 			synonymResults[0] = synonymResult1;
-			list<unordered_map<string, int>> synonymResult2;
+			std::list<std::unordered_map<std::string, int>> synonymResult2;
 			synonymResult2.push_back({ {"c", 11}, {"d", 22} });
 			synonymResult2.push_back({ {"c", 33}, {"d", 11} });
 			synonymResult2.push_back({ {"c", 77}, {"d", 22} });
@@ -1404,34 +1308,30 @@ namespace UnitTesting {
 			resultProjector.setSynonymTable(synonymTable);
 			resultProjector.setSynonymResults(synonymResults);
 
-			vector<DesignEntity> selectedSynonyms = {	DesignEntity("b", Type::STATEMENT),
+			std::vector<DesignEntity> selectedSynonyms = {	DesignEntity("b", Type::STATEMENT),
 														DesignEntity("c", Type::ASSIGN) };
 			PKB pkb; // dummy
 
 			// get results
-			list<string> actualResults = resultProjector.getResults(selectedSynonyms, pkb);
-			list<string> expectedResults = {	"2 11", "2 33", "2 77",
+			std::list<std::string> actualResults = resultProjector.getResults(selectedSynonyms, pkb);
+			std::list<std::string> expectedResults = {	"2 11", "2 33", "2 77",
 												"1 11", "1 33", "1 77" };
 
 			Assert::IsTrue(isSameResult(expectedResults, actualResults));
 		}
 		TEST_METHOD(selectTupleDiffTable2) {
-			ResultProjector resultProjector;
-			// set up
-			static unordered_map<string, int> synonymTable;
-			static unordered_map<int, list<unordered_map<string, int>>> synonymResults;
 
 			synonymTable["a"] = 0;
 			synonymTable["b"] = 0;
 			synonymTable["c"] = 1;
 			synonymTable["d"] = 1;
 
-			list<unordered_map<string, int>> synonymResult1;
+			std::list<std::unordered_map<std::string, int>> synonymResult1;
 			synonymResult1.push_back({ {"a", 1}, {"b", 2} });
 			synonymResult1.push_back({ {"a", 3}, {"b", 1} });
 			synonymResult1.push_back({ {"a", 7}, {"b", 2} });
 			synonymResults[0] = synonymResult1;
-			list<unordered_map<string, int>> synonymResult2;
+			std::list<std::unordered_map<std::string, int>> synonymResult2;
 			synonymResult2.push_back({ {"c", 11}, {"d", 22} });
 			synonymResult2.push_back({ {"c", 33}, {"d", 11} });
 			synonymResult2.push_back({ {"c", 77}, {"d", 22} });
@@ -1440,24 +1340,20 @@ namespace UnitTesting {
 			resultProjector.setSynonymTable(synonymTable);
 			resultProjector.setSynonymResults(synonymResults);
 
-			vector<DesignEntity> selectedSynonyms = {	DesignEntity("b", Type::STATEMENT),
+			std::vector<DesignEntity> selectedSynonyms = {	DesignEntity("b", Type::STATEMENT),
 														DesignEntity("c", Type::ASSIGN),
 														DesignEntity("a", Type::ASSIGN) };
 			PKB pkb; // dummy
 
 			// get results
-			list<string> actualResults = resultProjector.getResults(selectedSynonyms, pkb);
-			list<string> expectedResults = {	"2 11 1", "2 33 1", "2 77 1",
+			std::list<std::string> actualResults = resultProjector.getResults(selectedSynonyms, pkb);
+			std::list<std::string> expectedResults = {	"2 11 1", "2 33 1", "2 77 1",
 												"1 11 3", "1 33 3", "1 77 3",
 												"2 11 7", "2 33 7", "2 77 7" };
 
 			Assert::IsTrue(isSameResult(expectedResults, actualResults));
 		}
 		TEST_METHOD(selectTupleDiffTable3) {
-			ResultProjector resultProjector;
-			// set up
-			static unordered_map<string, int> synonymTable;
-			static unordered_map<int, list<unordered_map<string, int>>> synonymResults;
 
 			synonymTable["a"] = 0;
 			synonymTable["b"] = 0;
@@ -1465,17 +1361,17 @@ namespace UnitTesting {
 			synonymTable["d"] = 1;
 			synonymTable["e"] = 2;
 
-			list<unordered_map<string, int>> synonymResult1;
+			std::list<std::unordered_map<std::string, int>> synonymResult1;
 			synonymResult1.push_back({ {"a", 1}, {"b", 2} });
 			synonymResult1.push_back({ {"a", 3}, {"b", 1} });
 			synonymResult1.push_back({ {"a", 7}, {"b", 2} });
 			synonymResults[0] = synonymResult1;
-			list<unordered_map<string, int>> synonymResult2;
+			std::list<std::unordered_map<std::string, int>> synonymResult2;
 			synonymResult2.push_back({ {"c", 11}, {"d", 22} });
 			synonymResult2.push_back({ {"c", 33}, {"d", 11} });
 			synonymResult2.push_back({ {"c", 77}, {"d", 22} });
 			synonymResults[1] = synonymResult2;
-			list<unordered_map<string, int>> synonymResult3;
+			std::list<std::unordered_map<std::string, int>> synonymResult3;
 			synonymResult3.push_back({ {"e", 4} });
 			synonymResult3.push_back({ {"e", 6} });
 			synonymResults[2] = synonymResult3;
@@ -1483,14 +1379,14 @@ namespace UnitTesting {
 			resultProjector.setSynonymTable(synonymTable);
 			resultProjector.setSynonymResults(synonymResults);
 
-			vector<DesignEntity> selectedSynonyms = {	DesignEntity("b", Type::STATEMENT),
+			std::vector<DesignEntity> selectedSynonyms = {	DesignEntity("b", Type::STATEMENT),
 														DesignEntity("e", Type::ASSIGN),
 														DesignEntity("c", Type::ASSIGN) };
 			PKB pkb; // dummy
 
 			// get results
-			list<string> actualResults = resultProjector.getResults(selectedSynonyms, pkb);
-			list<string> expectedResults = {	"2 4 11", "2 6 11", "2 4 33", "2 6 33", "2 4 77", "2 6 77",
+			std::list<std::string> actualResults = resultProjector.getResults(selectedSynonyms, pkb);
+			std::list<std::string> expectedResults = {	"2 4 11", "2 6 11", "2 4 33", "2 6 33", "2 4 77", "2 6 77",
 												"1 4 11", "1 6 11", "1 4 33", "1 6 33", "1 4 77", "1 6 77" };
 
 			Assert::IsTrue(isSameResult(expectedResults, actualResults));
@@ -1498,15 +1394,12 @@ namespace UnitTesting {
 
 		// ---------------------------------- TEST CACHING -----------------------------------------------
 		TEST_METHOD(cacheSynSynSame) {
-			ResultProjector resultProjector;
-			// set up
-			resultProjector.resetResults();
 
 			DesignEntity paramOne = DesignEntity("s", Type::STATEMENT, AttrRef::UNASSIGNED);
 			DesignEntity paramTwo = DesignEntity("s", Type::STATEMENT, AttrRef::UNASSIGNED);
 			NextT* clause = new NextT(paramOne, paramTwo);
 
-			unordered_map<int, unordered_set<int>> result;
+			std::unordered_map<int, std::unordered_set<int>> result;
 			result = { {2, {1,3}},
 						{5, {4,6}},
 						{6, {2,8,3}} };
@@ -1514,7 +1407,7 @@ namespace UnitTesting {
 			resultProjector.storeInCache(clause, result);
 
 			ResultCache expectedCache;
-			unordered_map<CacheType, unordered_map<int, unordered_set<int>>> expectedResult;
+			std::unordered_map<CacheType, std::unordered_map<int, std::unordered_set<int>>> expectedResult;
 			expectedResult[CacheType::STMT_STMT] = result;
 			expectedCache.setSynSynSame(expectedResult);
 			Assert::IsTrue(resultProjector.getNextTCache().isEquals(expectedCache));
@@ -1528,15 +1421,12 @@ namespace UnitTesting {
 			Assert::IsTrue(isSameResultCached);
 		}
 		TEST_METHOD(cacheSynSynDiff) {
-			ResultProjector resultProjector;
-			// set up
-			resultProjector.resetResults();
 
 			DesignEntity paramOne = DesignEntity("r", Type::READ, AttrRef::UNASSIGNED);
 			DesignEntity paramTwo = DesignEntity("s", Type::STATEMENT, AttrRef::UNASSIGNED);
 			NextT* clause = new NextT(paramOne, paramTwo);
 
-			unordered_map<int, unordered_set<int>> result;
+			std::unordered_map<int, std::unordered_set<int>> result;
 			result = { {2, {1,3}},
 						{5, {4,6}},
 						{6, {2,8,3}} };
@@ -1544,7 +1434,7 @@ namespace UnitTesting {
 			resultProjector.storeInCache(clause, result);
 
 			ResultCache expectedCache;
-			unordered_map<CacheType, unordered_map<int, unordered_set<int>>> expectedResult;
+			std::unordered_map<CacheType, std::unordered_map<int, std::unordered_set<int>>> expectedResult;
 			expectedResult[CacheType::READ_STMT] = result;
 			expectedCache.setSynSynDiff(expectedResult);
 			Assert::IsTrue(resultProjector.getNextTCache().isEquals(expectedCache));
@@ -1563,15 +1453,12 @@ namespace UnitTesting {
 			Assert::IsFalse(resultProjector.cacheExists(clause));
 		}
 		TEST_METHOD(cacheSynSynDiff2) {
-			ResultProjector resultProjector;
-			// set up
-			resultProjector.resetResults();
 
 			DesignEntity paramOne = DesignEntity("s", Type::STATEMENT, AttrRef::UNASSIGNED);
 			DesignEntity paramTwo = DesignEntity("s1", Type::STATEMENT, AttrRef::UNASSIGNED);
 			NextT* clause = new NextT(paramOne, paramTwo);
 
-			unordered_map<int, unordered_set<int>> result;
+			std::unordered_map<int, std::unordered_set<int>> result;
 			result = { {2, {1,3}},
 						{5, {4,6}},
 						{6, {2,8,3}} };
@@ -1579,7 +1466,7 @@ namespace UnitTesting {
 			resultProjector.storeInCache(clause, result);
 
 			ResultCache expectedCache;
-			unordered_map<CacheType, unordered_map<int, unordered_set<int>>> expectedResult;
+			std::unordered_map<CacheType, std::unordered_map<int, std::unordered_set<int>>> expectedResult;
 			expectedResult[CacheType::STMT_STMT] = result;
 			expectedCache.setSynSynDiff(expectedResult);
 			Assert::IsTrue(resultProjector.getNextTCache().isEquals(expectedCache));
@@ -1593,21 +1480,18 @@ namespace UnitTesting {
 			Assert::IsTrue(isSameResultCached);
 		}
 		TEST_METHOD(cacheSynUnderscore) {
-			ResultProjector resultProjector;
-			// set up
-			resultProjector.resetResults();
 
 			DesignEntity paramOne = DesignEntity("s", Type::STATEMENT, AttrRef::UNASSIGNED);
 			DesignEntity paramTwo = DesignEntity("_", Type::UNDERSCORE, AttrRef::UNASSIGNED);
 			NextT* clause = new NextT(paramOne, paramTwo);
 
-			unordered_set<int> result;
+			std::unordered_set<int> result;
 			result = { 2,1,5,8 };
 
 			resultProjector.storeInCache(clause, result);
 
 			ResultCache expectedCache;
-			unordered_map<Type, unordered_set<int>> expectedResult;
+			std::unordered_map<Type, std::unordered_set<int>> expectedResult;
 			expectedResult[Type::STATEMENT] = result;
 			expectedCache.setSynUnderscore(expectedResult);
 			Assert::IsTrue(resultProjector.getNextTCache().isEquals(expectedCache));
@@ -1621,21 +1505,18 @@ namespace UnitTesting {
 			Assert::IsTrue(isSameResultCached);
 		}
 		TEST_METHOD(cacheUnderscoreSyn) {
-			ResultProjector resultProjector;
-			// set up
-			resultProjector.resetResults();
 
 			DesignEntity paramOne = DesignEntity("_", Type::UNDERSCORE, AttrRef::UNASSIGNED);
 			DesignEntity paramTwo = DesignEntity("pn", Type::PRINT, AttrRef::UNASSIGNED);
 			NextT* clause = new NextT(paramOne, paramTwo);
 
-			unordered_set<int> result;
+			std::unordered_set<int> result;
 			result = { 2,1,5,8 };
 
 			resultProjector.storeInCache(clause, result);
 
 			ResultCache expectedCache;
-			unordered_map<Type, unordered_set<int>> expectedResult;
+			std::unordered_map<Type, std::unordered_set<int>> expectedResult;
 			expectedResult[Type::PRINT] = result;
 			expectedCache.setUnderscoreSyn(expectedResult);
 			Assert::IsTrue(resultProjector.getNextTCache().isEquals(expectedCache));
@@ -1649,21 +1530,18 @@ namespace UnitTesting {
 			Assert::IsTrue(isSameResultCached);
 		}
 		TEST_METHOD(cacheSynFixed) {
-			ResultProjector resultProjector;
-			// set up
-			resultProjector.resetResults();
 
 			DesignEntity paramOne = DesignEntity("cl", Type::CALL, AttrRef::UNASSIGNED);
 			DesignEntity paramTwo = DesignEntity("2", Type::FIXED, AttrRef::UNASSIGNED);
 			NextT* clause = new NextT(paramOne, paramTwo);
 
-			unordered_set<int> result;
+			std::unordered_set<int> result;
 			result = { 2,1,5,8 };
 
 			resultProjector.storeInCache(clause, result);
 
 			ResultCache expectedCache;
-			unordered_map<Type, unordered_map<int, unordered_set<int>>> expectedResult;
+			std::unordered_map<Type, std::unordered_map<int, std::unordered_set<int>>> expectedResult;
 			expectedResult[Type::CALL][2] = result;
 			expectedCache.setSynFixed(expectedResult);
 			Assert::IsTrue(resultProjector.getNextTCache().isEquals(expectedCache));
@@ -1682,21 +1560,18 @@ namespace UnitTesting {
 			Assert::IsFalse(resultProjector.cacheExists(clause));
 		}
 		TEST_METHOD(cacheFixedSyn) {
-			ResultProjector resultProjector;
-			// set up
-			resultProjector.resetResults();
 
 			DesignEntity paramOne = DesignEntity("1", Type::FIXED, AttrRef::UNASSIGNED);
 			DesignEntity paramTwo = DesignEntity("w", Type::WHILE, AttrRef::UNASSIGNED);
 			NextT* clause = new NextT(paramOne, paramTwo);
 
-			unordered_set<int> result;
+			std::unordered_set<int> result;
 			result = { 2,1,5,8 };
 
 			resultProjector.storeInCache(clause, result);
 
 			ResultCache expectedCache;
-			unordered_map<Type, unordered_map<int, unordered_set<int>>> expectedResult;
+			std::unordered_map<Type, std::unordered_map<int, std::unordered_set<int>>> expectedResult;
 			expectedResult[Type::WHILE][1] = result;
 			expectedCache.setFixedSyn(expectedResult);
 			Assert::IsTrue(resultProjector.getNextTCache().isEquals(expectedCache));
@@ -1717,13 +1592,13 @@ namespace UnitTesting {
 
 
 		// ---------------------------------- HELPER FUNCTIONS -----------------------------------------------
-		// order in list does not matter
-		bool isSameResult(list<string> expectedResults, list<string> actualResults) {
+		// order in std::list does not matter
+		bool isSameResult(std::list<std::string> expectedResults, std::list<std::string> actualResults) {
 			if (expectedResults.size() != actualResults.size()) {
 				return false;
 			}
 
-			unordered_set<string> expectedResultsSet;
+			std::unordered_set<std::string> expectedResultsSet;
 			for (auto expectedResult : expectedResults) {
 				expectedResultsSet.insert(expectedResult);
 			}
