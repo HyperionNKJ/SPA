@@ -819,6 +819,7 @@ int Parser::handleSwitch(string switchLine) {
 	}
 	withinSwitch = true;
 	firstCase = true;
+	expectDefault = true;
 	//set follow, parent relationships
 	setParent(statementNumber);
 	setFollow(statementNumber);
@@ -854,6 +855,10 @@ bool Parser::checkSwitchCase(string switchCaseLine) {
 	regex switchCaseDefaultRegex(switchCaseDefaultString);
 	if (!(regex_match(switchCaseLine, switchCaseVarRegex) || regex_match(switchCaseLine, switchCaseConstRegex) || regex_match(switchCaseLine, switchCaseDefaultRegex))) {
 		errorMessage = "Unexpected tokens in the switch case statement at line "  + to_string(statementNumber);
+		return false;
+	}
+	if (regex_match(switchCaseLine, switchCaseDefaultRegex) && !expectDefault) {
+		errorMessage = "Switch statement can only contain 1 default statement at line " + to_string(statementNumber);
 		return false;
 	}
 	if (expectStatement) {
@@ -897,6 +902,9 @@ int Parser::handleSwitchCase(string switchCaseLine) {
 			pkb->insertSwitchControlVar(parentVector.back(), caseVar);
 			pkb->insertVar(caseVar);
 		}
+	}
+	else {
+		expectDefault = false;
 	}
 	return 0;
 }
