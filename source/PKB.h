@@ -18,7 +18,7 @@ private:
 	unordered_map<string, int> varTableByName, procTableByName, callTableByName, printTableByName, readTableByName;
 	vector<string> varTableByIdx, procTableByIdx, callTableByIdx, printTableByIdx, readTableByIdx;
 	unordered_set<int> allStmts, readStmts, printStmts, whileStmts, ifStmts, assignStmts, constSet, callStmts, ifControlStmtSet, whileControlStmtSet, *getTypedStmtSet(Type type), getAffectsSet(bool isAffects, bool isTransitive, int modifierStmtNum, int userStmtNum), switchStmts, switchControlStmtSet;
-	unordered_map<int, unordered_set<int>> leaderTMap, followerTMap, parentMap, parentTMap, childrenTMap, nextMap, prevMap, getAffectsMap(bool isTransitive, bool isAffects), affectsMap, affectedMap, affectsTMap, affectedTMap;
+	unordered_map<int, unordered_set<int>> leaderTMap, followerTMap, parentMap, parentTMap, childrenTMap, nextMap, prevMap, getAffectsMap(bool isTransitive, bool isAffects), affectsMap, affectedMap, affectsTMap, affectedTMap, nextTMap, prevTMap;
 	unordered_map<int, int> leaderMap, followerMap, childrenMap;
 	unordered_map<int, string> callMapByStmtNum, printMapByStmtNum, readMapByStmtNum, switchControlStmtMap;
 	unordered_map<string, unordered_set<int>> calledStmtMap, printStmtMap, readStmtMap, modifiesByVarMap, usesByVarMap, patternMap, fullPatternMap, ifControlVarMap, whileControlVarMap, switchControlVarMap;
@@ -192,6 +192,7 @@ public:
 	unordered_set<int> getPreviousTOf(int nextLineNum, Type previousType);
 	unordered_set<int> getNextOf(int prevLineNum, Type nextType);
 	unordered_set<int> getNextTOf(int prevLineNum, Type nextType);
+	void clearNextTCache();
 
 	unordered_map<int, unordered_set<string>> getIfControlVarPair();
 	unordered_set<int> getIfWithControlVar();
