@@ -5,7 +5,8 @@ std::list<std::string> QueryEvaluator::evaluate(ProcessedQuery& processedQuery, 
 	ResultProjector resultProjector;
 
 	resultProjector.resetResults(); // Reset old query's intermediate table and cache
-	pkb.clearAffectsCache(); // Clear cache
+	pkb.clearNextTCache(); // Clear NextT cache
+	pkb.clearAffectsCache(); // Clear Affects cache
 
 	std::vector<Clause*>& booleanClauses = processedQuery.booleanClauses; // boolean clause refers to clause without synonym.
 	std::vector<Clause*> expensiveBooleanClauses; // i.e. Next* / Affects / Affects* boolean clauses
