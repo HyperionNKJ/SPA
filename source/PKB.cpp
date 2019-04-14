@@ -1321,6 +1321,7 @@ unordered_map<int, unordered_set<int>> PKB::getAffectsMap(bool isTransitive, boo
 				for (const auto &neighbourT : resultTMap->operator[](toBeVisitedNodes.front())) {
 					resultTMap->operator[](affectElem.first).insert(neighbourT);
 				}
+				resultTMap->operator[](affectElem.first).insert(toBeVisitedNodes.front());
 				toBeVisitedNodes.pop();
 				continue;
 			}
@@ -1356,17 +1357,23 @@ unordered_map<int, unordered_set<int>> PKB::getAffectsMap(bool isTransitive, boo
 bool PKB::getAffectsBoolean(bool isTransitive, int modifierStmtNum, int userStmtNum) {
 	if (modifierStmtNum != -1 && modifierStmtNum >= smallestAffectsLine && modifierStmtNum <= largestAffectsLine) {
 		if (userStmtNum != - 1 && userStmtNum >= smallestAffectedLine && userStmtNum <= largestAffectedLine) {
-			if (affectsMap[modifierStmtNum].count(userStmtNum))
+			if (!isTransitive && affectsMap[modifierStmtNum].count(userStmtNum))
+				return true;
+			else if (isTransitive && affectsTMap[modifierStmtNum].count(userStmtNum))
 				return true;
 			return false;
 		} else if (userStmtNum == -1) {
-			if (affectsMap.count(modifierStmtNum))
+			if (!isTransitive && affectsMap.count(modifierStmtNum))
+				return true;
+			else if (isTransitive && affectsTMap.count(modifierStmtNum))
 				return true;
 			return false;
 		}
 	} else if (userStmtNum != -1 && userStmtNum >= smallestAffectedLine && userStmtNum <= largestAffectedLine) {
 		if (modifierStmtNum == -1) {
-			if (affectedMap.count(userStmtNum))
+			if (!isTransitive && affectedMap.count(userStmtNum))
+				return true;
+			else if (isTransitive && affectedTMap.count(userStmtNum))
 				return true;
 			else
 				return false;
@@ -1548,6 +1555,7 @@ bool PKB::getAffectsBoolean(bool isTransitive, int modifierStmtNum, int userStmt
 				for (const auto &neighbourT : resultTMap->operator[](toBeVisitedNodes.front())) {
 					resultTMap->operator[](affectElem.first).insert(neighbourT);
 				}
+				resultTMap->operator[](affectElem.first).insert(toBeVisitedNodes.front());
 				toBeVisitedNodes.pop();
 				continue;
 			}
