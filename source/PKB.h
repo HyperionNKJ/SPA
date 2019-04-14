@@ -25,7 +25,7 @@ private:
 	unordered_map<int, unordered_set<string>> modifiesByStmtNumMap, usesByStmtNumMap, ifControlStmtMap, whileControlStmtMap;
 	unordered_map<string, unordered_set<string>> modifiesByProcMap, varModifiedByProcMap, usesByProcMap, varUsedByProcMap, callMap, calledByMap, callsTMap, calledByTMap;
 	bool getAffectsBoolean(bool isTransitive, int modifierStmtNum, int userStmtNum), isAffectsComputed = false, isAffectsTComputed = false;
-	int smallestAffectsLine = INT_MAX, largestAffectsLine = INT_MIN, smallestAffectedLine = INT_MAX, largestAffectedLine = INT_MIN;
+	int smallestAffectsLine = INT_MAX, smallestAffectsTLine = INT_MAX, largestAffectsLine = INT_MIN, largestAffectsTLine = INT_MIN , smallestAffectedLine = INT_MAX, largestAffectedLine = INT_MIN;
 
 public:
 	// Frontend APIs
