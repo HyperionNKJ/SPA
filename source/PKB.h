@@ -24,7 +24,7 @@ private:
 	unordered_map<string, unordered_set<int>> calledStmtMap, printStmtMap, readStmtMap, modifiesByVarMap, usesByVarMap, patternMap, fullPatternMap, ifControlVarMap, whileControlVarMap, switchControlVarMap;
 	unordered_map<int, unordered_set<string>> modifiesByStmtNumMap, usesByStmtNumMap, ifControlStmtMap, whileControlStmtMap;
 	unordered_map<string, unordered_set<string>> modifiesByProcMap, varModifiedByProcMap, usesByProcMap, varUsedByProcMap, callMap, calledByMap, callsTMap, calledByTMap;
-	bool getAffectsBoolean(bool isTransitive, int modifierStmtNum, int userStmtNum);
+	bool getAffectsBoolean(bool isTransitive, int modifierStmtNum, int userStmtNum), isAffectsComputed = false, isAffectsTComputed = false;
 	int smallestAffectsLine = INT_MAX, largestAffectsLine = INT_MIN, smallestAffectedLine = INT_MAX, largestAffectedLine = INT_MIN;
 
 public:
@@ -218,7 +218,7 @@ public:
 	unordered_set<int> getModifierTOf(int userStmtNum);
 	unordered_set<int> getUserOf(int modifierStmtNum);
 	unordered_set<int> getUserTOf(int modifierStmtNum);
-	void clearAffects();
+	void clearAffectsCache();
 
 	unordered_set<int> getSwitchStmts();
 	bool isSwitchStmt(int stmtNum);

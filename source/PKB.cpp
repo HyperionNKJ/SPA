@@ -1164,6 +1164,16 @@ unordered_set<int> PKB::getReadStmtsWithVar(string varName) {
 }
 
 unordered_map<int, unordered_set<int>> PKB::getAffectsMap(bool isTransitive, bool isAffects) {
+	if ((isAffectsComputed || isAffectsTComputed) && !isTransitive) {
+		if (isAffects)
+			return affectsMap;
+		return affectedMap;
+	} else if (isAffectsTComputed && isTransitive) {
+		if (isAffects)
+			return affectsTMap;
+		return affectedTMap;
+	}
+
 	vector<unordered_map<string, unordered_set<int>>> modMaps(allStmts.size() + 1);
 	unordered_map<int, unordered_map<string, unordered_set<int>>> prevModMap;
 	unordered_map<string, unordered_set<int>> *currModMap;
@@ -1176,109 +1186,112 @@ unordered_map<int, unordered_set<int>> PKB::getAffectsMap(bool isTransitive, boo
 	queue<int> toBeVisitedNodes;
 	bool isNewProc = true;
 
-	// Navigation of nextMap
-	if (allStmts.size() == 0)
-		return {};
-	toBeVisited.insert(1);
-	visitedLines.insert(1);
-	while (visitedLines.size() != allStmts.size()) {
-		// For moving on to the next proc in the code
-		if (toBeVisited.size() == 0) {
-			toBeVisited.insert(maxLine + 1);
-			isNewProc = true;
-		}
-
-		// Earlier lines will always be visited first
-		currLine = *toBeVisited.begin();
-		if (!allStmts.count(currLine))
-			break;
-		toBeVisited.erase(toBeVisited.begin());
-		visitedLines.insert(currLine);
-		if (currLine > maxLine)
-			maxLine = currLine;
-
-		// New modMap each time pkb traverses to the currLine
-		// So outdated values do not stay in modMap
-		modMaps[currLine] = {};
-
-		// Duplication/merging of modMaps
-		if (!isNewProc) {
-			if (prevMap[currLine].size() == 1) {
-				prevLine = *prevMap[currLine].begin();
-				modMaps[currLine] = modMaps[prevLine];
+	if (!isAffectsComputed || !isTransitive) {
+		// Navigation of nextMap
+		if (allStmts.size() == 0)
+			return {};
+		toBeVisited.insert(1);
+		visitedLines.insert(1);
+		while (visitedLines.size() != allStmts.size()) {
+			// For moving on to the next proc in the code
+			if (toBeVisited.size() == 0) {
+				toBeVisited.insert(maxLine + 1);
+				isNewProc = true;
 			}
-			else {
-				prevLines = prevMap[currLine];
-				// Merge all the prevLines modMaps into the modMap for current line
-				for (const auto &previousLine : prevLines) {
-					for (const auto &entry : modMaps[previousLine]) {
-						for (const auto &line : entry.second) {
-							modMaps[currLine].operator[](entry.first).insert(line);
+
+			// Earlier lines will always be visited first
+			currLine = *toBeVisited.begin();
+			if (!allStmts.count(currLine))
+				break;
+			toBeVisited.erase(toBeVisited.begin());
+			visitedLines.insert(currLine);
+			if (currLine > maxLine)
+				maxLine = currLine;
+
+			// New modMap each time pkb traverses to the currLine
+			// So outdated values do not stay in modMap
+			modMaps[currLine] = {};
+
+			// Duplication/merging of modMaps
+			if (!isNewProc) {
+				if (prevMap[currLine].size() == 1) {
+					prevLine = *prevMap[currLine].begin();
+					modMaps[currLine] = modMaps[prevLine];
+				}
+				else {
+					prevLines = prevMap[currLine];
+					// Merge all the prevLines modMaps into the modMap for current line
+					for (const auto &previousLine : prevLines) {
+						for (const auto &entry : modMaps[previousLine]) {
+							for (const auto &line : entry.second) {
+								modMaps[currLine].operator[](entry.first).insert(line);
+							}
 						}
 					}
 				}
 			}
-		}
 
-		// Compare prevModMap for while statement
-		if (isWhileStmt(currLine)) {
-			if (prevModMap.count(currLine)) {
-				if (prevModMap[currLine] != modMaps[currLine]) {
+			// Compare prevModMap for while statement
+			if (isWhileStmt(currLine)) {
+				if (prevModMap.count(currLine)) {
+					if (prevModMap[currLine] != modMaps[currLine]) {
+						visitedLines.erase(currLine);
+					}
+				}
+				else {
 					visitedLines.erase(currLine);
 				}
 			}
-			else {
-				visitedLines.erase(currLine);
-			}
-		}
 
-		// If statement is a WHILE statement, check if it has been "visited".
-		// Not "visited" implies that while loop has not been processed,
-		// have to enter while loop again.
-		if (!isWhileStmt(currLine) || visitedLines.count(currLine) == 0) {
-			if (nextMap.count(currLine)) {
-				for (const auto &nextLine : nextMap[currLine]) {
-					toBeVisited.insert(nextLine);
-				}
-			}
-		}
-		currModMap = &modMaps[currLine];
-		if (isNewProc)
-			isNewProc = false;
-
-		// Updating of modMap
-		if (isAssignStmt(currLine)) {
-			varsUsed = getVarUsedByStmt(currLine);
-			for (const auto &varUsed : varsUsed) {
-				if (currModMap->count(varUsed)) {
-					for (const auto &modLine : currModMap->operator[](varUsed)) {
-						affectsMap[modLine].insert(currLine);
-						affectedMap[currLine].insert(modLine);
-						if (smallestAffectsLine > modLine)
-							smallestAffectsLine = modLine;
-						if (largestAffectsLine < modLine)
-							largestAffectsLine = modLine;
-						if (smallestAffectedLine > currLine)
-							smallestAffectedLine = currLine;
-						if (largestAffectedLine < currLine)
-							largestAffectedLine = modLine;
+			// If statement is a WHILE statement, check if it has been "visited".
+			// Not "visited" implies that while loop has not been processed,
+			// have to enter while loop again.
+			if (!isWhileStmt(currLine) || visitedLines.count(currLine) == 0) {
+				if (nextMap.count(currLine)) {
+					for (const auto &nextLine : nextMap[currLine]) {
+						toBeVisited.insert(nextLine);
 					}
 				}
 			}
-			varModified = getVarModifiedByAssignStmt(currLine);
-			currModMap->erase(varModified);
-			currModMap->operator[](varModified).insert(currLine);
-		} else if(isReadStmt(currLine)) {
-			varModified = *getVarModifiedByStmt(currLine).begin();
-			currModMap->erase(varModified);
-		} else if (isCallStmt(currLine)) {
-			varsModified = getVarModifiedByProc(getCallAtStmtNum(currLine));
-			for (const auto &variableModified : varsModified) {
-				currModMap->erase(variableModified);
+			currModMap = &modMaps[currLine];
+			if (isNewProc)
+				isNewProc = false;
+
+			// Updating of modMap
+			if (isAssignStmt(currLine)) {
+				varsUsed = getVarUsedByStmt(currLine);
+				for (const auto &varUsed : varsUsed) {
+					if (currModMap->count(varUsed)) {
+						for (const auto &modLine : currModMap->operator[](varUsed)) {
+							affectsMap[modLine].insert(currLine);
+							affectedMap[currLine].insert(modLine);
+							if (smallestAffectsLine > modLine)
+								smallestAffectsLine = modLine;
+							if (largestAffectsLine < modLine)
+								largestAffectsLine = modLine;
+							if (smallestAffectedLine > currLine)
+								smallestAffectedLine = currLine;
+							if (largestAffectedLine < currLine)
+								largestAffectedLine = modLine;
+						}
+					}
+				}
+				varModified = getVarModifiedByAssignStmt(currLine);
+				currModMap->erase(varModified);
+				currModMap->operator[](varModified).insert(currLine);
+			} else if(isReadStmt(currLine)) {
+				varModified = *getVarModifiedByStmt(currLine).begin();
+				currModMap->erase(varModified);
+			} else if (isCallStmt(currLine)) {
+				varsModified = getVarModifiedByProc(getCallAtStmtNum(currLine));
+				for (const auto &variableModified : varsModified) {
+					currModMap->erase(variableModified);
+				}
+			} else if(isWhileStmt(currLine)) {
+					prevModMap[currLine] = *currModMap;
 			}
-		} else if(isWhileStmt(currLine)) {
-				prevModMap[currLine] = *currModMap;
 		}
+		isAffectsComputed = true;
 	}
 
 	if (!isTransitive) {
@@ -1336,6 +1349,7 @@ unordered_map<int, unordered_set<int>> PKB::getAffectsMap(bool isTransitive, boo
 			toBeVisitedNodes.pop();
 		}
 	}
+	isAffectsTComputed = true;
 	return *resultTMap;
 }
 
@@ -1358,13 +1372,6 @@ bool PKB::getAffectsBoolean(bool isTransitive, int modifierStmtNum, int userStmt
 				return false;
 		}
 	}
-
-		// if (isTransitive) {
-		// 	unordered_map<int, unordered_set<int>> affectsTMap = getAffectsMap(isTransitive, true);
-		// 	if (affectsTMap.count(modifierStmtNum) && affectsTMap[modifierStmtNum].count(userStmtNum))
-		// 		return true;
-		// 	return false;
-		// }
 
 	vector<unordered_map<string, unordered_set<int>>> modMaps(allStmts.size() + 1);
 	unordered_map<int, unordered_map<string, unordered_set<int>>> prevModMap;
@@ -1440,6 +1447,7 @@ bool PKB::getAffectsBoolean(bool isTransitive, int modifierStmtNum, int userStmt
 				}
 			}
 		}
+
 		// If statement is a WHILE statement, check if it has been "visited".
 		// Not "visited" implies that while loop has not been processed,
 		// have to enter while loop again.
@@ -1501,6 +1509,10 @@ bool PKB::getAffectsBoolean(bool isTransitive, int modifierStmtNum, int userStmt
 		}
 	}
 
+	if ((modifierStmtNum == 1 || modifierStmtNum == -1) && (userStmtNum == allStmts.size()) || userStmtNum == -1) {
+		isAffectsComputed = true;
+	}
+
 	if (!isTransitive) {
 		return false;
 	}
@@ -1545,6 +1557,10 @@ bool PKB::getAffectsBoolean(bool isTransitive, int modifierStmtNum, int userStmt
 			visitedNodes.insert(toBeVisitedNodes.front());
 			toBeVisitedNodes.pop();
 		}
+	}
+
+	if ((modifierStmtNum == 1 || modifierStmtNum == -1) && (userStmtNum == allStmts.size()) || userStmtNum == -1) {
+		isAffectsTComputed = true;
 	}
 
 	if (modifierStmtNum != -1) {
@@ -1645,7 +1661,7 @@ unordered_set<int> PKB::getUserTOf(int modifierStmtNum) {
 	return getAffectsSet(true, true, modifierStmtNum, -1);
 }
 
-void PKB::clearAffects() {
+void PKB::clearAffectsCache() {
 	smallestAffectsLine = INT_MAX;
 	largestAffectsLine = INT_MIN;
 	smallestAffectedLine = INT_MAX;
@@ -1654,6 +1670,8 @@ void PKB::clearAffects() {
 	affectedMap = {};
 	affectsTMap = {};
 	affectedTMap = {};
+	isAffectsComputed = false;
+	isAffectsTComputed = false;
 }
 
 unordered_set<int> PKB::getSwitchStmts() {
