@@ -1,4 +1,3 @@
-#include <regex>
 #include "Affects.h"
 #include "AffectsT.h"
 #include "Calls.h"
@@ -42,7 +41,6 @@ QueryPreprocessorSuchThatParser::QueryPreprocessorSuchThatParser(const string& c
 	: CLAUSE(clause), query(query) {}
 
 // Parses the such that clause.
-// Returns true if parsing is successful and false if unsucessful.
 void QueryPreprocessorSuchThatParser::parse() {
 	size_t relSize = CLAUSE.find(BRACKET_LEFT);
 	size_t closeBracketPos = CLAUSE.find(BRACKET_RIGHT);

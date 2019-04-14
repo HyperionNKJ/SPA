@@ -1,11 +1,14 @@
 #include <string>
+#include "QueryPreprocessor.h"
 #include "QueryPreprocessorFormatter.h"
 #include "QueryPreprocessorParser.h"
 #include "QueryPreprocessorTokenizer.h"
-#include "QueryPreprocessor.h"
 
+// Constructor for query preprocessor. Takes in the PQL string literal.
 QueryPreprocessor::QueryPreprocessor(std::string& query) : query(query) {}
 
+// Parses the string literal of PQL query and returns ProcesedQuery containing
+// the parsed information.
 ProcessedQuery QueryPreprocessor::parse() {
 	QueryPreprocessorFormatter formatter = QueryPreprocessorFormatter(query);
 	query = formatter.getFormattedQuery();

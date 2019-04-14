@@ -2,9 +2,13 @@
 
 #include "ProcessedQuery.h"
 
+// Parses the such that clause.
 class QueryPreprocessorSuchThatParser {
 public:
+	// Initializes a newly created QueryPreprocessorSuchThatParser.
 	QueryPreprocessorSuchThatParser(const std::string& clause, ProcessedQuery& query);
+	
+	// Parses the such that clause.
 	void parse();
 private:
 	enum RelRef {

@@ -1,4 +1,3 @@
-#include <regex>
 #include "PatternAssign.h"
 #include "PatternIf.h"
 #include "PatternWhile.h"

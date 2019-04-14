@@ -1,13 +1,8 @@
 #include <regex>
 #include <sstream>
 #include <string>
-#include <unordered_map>
-#include <unordered_set>
 #include <vector>
-#include "AttrRef.h"
 #include "DesignEntity.h"
-#include "ProcessedQuery.h"
-#include "Type.h"
 #include "QueryPreprocessorError.h"
 #include "QueryPreprocessorHelper.h"
 

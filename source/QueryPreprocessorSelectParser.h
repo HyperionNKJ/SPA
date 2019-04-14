@@ -1,13 +1,13 @@
 #pragma once
-
-#include <unordered_set>
 #include "ProcessedQuery.h"
-#include "Type.h"
 
+// Parses the select clause.
 class QueryPreprocessorSelectParser {
 public:
-	static const std::regex REL_REF_REGEX;
+	// Initializes a newly created QueryPreprocessorSelectParser.
 	QueryPreprocessorSelectParser(const std::string& statement, ProcessedQuery& query);
+	
+	// Parse select clause.
 	void parse();
 private:
 	enum ClauseType { RESULT, SUCH_THAT, PATTERN, WITH };
