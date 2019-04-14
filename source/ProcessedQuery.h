@@ -18,6 +18,7 @@ public:
 	std::vector<Clause*> otherClauses;
 	std::vector<Clause*> withClauses;
 
+	// Constructor to initialise ProcessedQuery.
 	ProcessedQuery();
 
 	// Insert declarations.
@@ -32,8 +33,12 @@ public:
 	// Add with clause.
 	void addWithClause(Clause* withClause, const std::string& clauseString);
 
+	// Returns true if synonym exist.
 	bool hasSynonym(const std::string& synonym) const;
+	
+	// Returns the design entity of the synonym.
 	Type getDesignEntity(const std::string& synonym) const;
 
+	// Optimise the clauses.
 	void optimiseClauses();
 };
