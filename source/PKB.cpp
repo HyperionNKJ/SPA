@@ -1279,8 +1279,10 @@ unordered_map<int, unordered_set<int>> PKB::getAffectsMap(bool isTransitive, boo
 		resultTMap = &affectedTMap;
 	}
 	for (const auto &affectElem : affectsRelationshipMap) {
-		/*if (visitedNodes.count(affectElem.first))
-			continue;*/
+		if (affectElem.first < smallestAffectsTLine)
+			smallestAffectsTLine = affectElem.first;
+		if (affectElem.first > largestAffectsTLine)
+			largestAffectsTLine = affectElem.first;
 		visitedNodes = {};
 		for (const auto &neighbour : affectElem.second) {
 			toBeVisitedNodes.push(neighbour);
@@ -1297,13 +1299,8 @@ unordered_map<int, unordered_set<int>> PKB::getAffectsMap(bool isTransitive, boo
 				continue;
 			}
 			neighbours = affectsRelationshipMap[toBeVisitedNodes.front()];
-			// isExplored = true;
 			for (const auto &neighbour : neighbours) {
 				if (!visitedNodes.count(neighbour)) {
-					/*if (neighbour != toBeVisitedNodes.front()) {
-						toBeVisitedNodes.push(neighbour);
-						isExplored = false;
-					}*/
 					toBeVisitedNodes.push(neighbour);
 					resultTMap->operator[](toBeVisitedNodes.front()).insert(neighbour);
 				}
@@ -1316,7 +1313,6 @@ unordered_map<int, unordered_set<int>> PKB::getAffectsMap(bool isTransitive, boo
 				}
 				resultTMap->operator[](affectElem.first).insert(neighbour);
 			}
-			// if (isExplored)
 			visitedNodes.insert(toBeVisitedNodes.front());
 			toBeVisitedNodes.pop();
 		}
@@ -1326,30 +1322,43 @@ unordered_map<int, unordered_set<int>> PKB::getAffectsMap(bool isTransitive, boo
 }
 
 bool PKB::getAffectsBoolean(bool isTransitive, int modifierStmtNum, int userStmtNum) {
-	if (modifierStmtNum != -1 && modifierStmtNum >= smallestAffectsLine && modifierStmtNum <= largestAffectsLine) {
-		if (userStmtNum != - 1 && userStmtNum >= smallestAffectedLine && userStmtNum <= largestAffectedLine) {
-			if (!isTransitive && affectsMap[modifierStmtNum].count(userStmtNum))
-				return true;
-			else if (isTransitive && affectsTMap[modifierStmtNum].count(userStmtNum))
-				return true;
-			return false;
-		} else if (userStmtNum == -1) {
-			if (!isTransitive && affectsMap.count(modifierStmtNum))
-				return true;
-			else if (isTransitive && affectsTMap.count(modifierStmtNum))
-				return true;
-			return false;
-		}
-	} else if (userStmtNum != -1 && userStmtNum >= smallestAffectedLine && userStmtNum <= largestAffectedLine) {
-		if (modifierStmtNum == -1) {
-			if (!isTransitive && affectedMap.count(userStmtNum))
-				return true;
-			else if (isTransitive && affectedTMap.count(userStmtNum))
-				return true;
-			else
+	if (modifierStmtNum != -1) {
+		if (!isTransitive && modifierStmtNum >= smallestAffectsLine && modifierStmtNum <= largestAffectsLine) {
+			if (userStmtNum != - 1 && userStmtNum >= smallestAffectedLine && userStmtNum <= largestAffectedLine) {
+				if (affectsMap[modifierStmtNum].count(userStmtNum))
+					return true;
 				return false;
+			} else if (userStmtNum == -1) {
+				if (affectsMap.count(modifierStmtNum))
+					return true;
+				return false;
+			}
+		} else if (modifierStmtNum >= smallestAffectsTLine && modifierStmtNum <= largestAffectsTLine){
+			if (userStmtNum != - 1 && userStmtNum >= smallestAffectsTLine && userStmtNum <= largestAffectsTLine) {
+				if (affectsTMap[modifierStmtNum].count(userStmtNum))
+					return true;
+				return false;
+			} else if (userStmtNum == -1) {
+				if (affectsTMap.count(modifierStmtNum))
+					return true;
+				return false;
+			}
 		}
-	}
+	} else if (userStmtNum != -1) {
+			if (!isTransitive) {
+				if (userStmtNum >= smallestAffectedLine && userStmtNum <= largestAffectedLine) {
+					if (affectedMap.count(userStmtNum))
+						return true;
+					return false;
+				}
+			} else {
+				if (userStmtNum >= smallestAffectsTLine && userStmtNum <= largestAffectsTLine) {
+					if (affectedTMap.count(userStmtNum))
+						return true;
+					return false;
+				}
+			}
+		}
 
 	vector<unordered_map<string, unordered_set<int>>> modMaps(allStmts.size() + 1);
 	unordered_map<int, unordered_map<string, unordered_set<int>>> prevModMap;
@@ -1515,6 +1524,10 @@ bool PKB::getAffectsBoolean(bool isTransitive, int modifierStmtNum, int userStmt
 		resultTMap = &affectedTMap;
 	}
 	for (const auto &affectElem : affectsRelationshipMap) {
+		if (affectElem.first < smallestAffectsTLine)
+			smallestAffectsTLine = affectElem.first;
+		if (affectElem.first > largestAffectsTLine)
+			largestAffectsTLine = affectElem.first;
 		visitedNodes = {};
 		for (const auto &neighbour : affectElem.second) {
 			toBeVisitedNodes.push(neighbour);
