@@ -131,6 +131,7 @@ public:
 	//setter/getter functions for testing
 	void setPKB(PKB*);
 	void setStatementNumber(int);
+	void setProcedure(std::string);
 	void setCurrentFollowVector(std::vector<int>);
 	void setParentVector(std::vector<int>);
 	void setAllFollowStack(std::vector<std::vector<int>>);
