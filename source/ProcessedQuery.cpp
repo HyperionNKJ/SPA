@@ -12,7 +12,7 @@
 
 struct ElementHasher {
 	std::size_t operator()(const DesignEntity& element) const {
-		return hash<string>()(element.toString());
+		return std::hash<std::string>()(element.toString());
 	}
 };
 
