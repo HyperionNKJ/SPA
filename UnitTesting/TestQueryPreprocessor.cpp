@@ -63,7 +63,7 @@ public:
 		std::string statementA = "stmt s1;";
 		std::string statementB = "assign a2;";
 		std::string statementC = "variable v;";
-		std::string statementD = "Select s1 such that Follows*(a2,s1) and Uses(a2,\"v\") with v=\"v\" pattern a2(_,_);";
+		std::string statementD = "Select s1 such that Follows*(a2,s1) and Uses(a2,\"v\") with v=\"v\" pattern a2(_,_)";
 		std::string query = statementA + statementB + statementC + statementD;
 
 		QueryPreprocessorTokenizer tokenizer(query);
@@ -74,7 +74,7 @@ public:
 		Assert::IsTrue(resultStatements[0] + ";" == statementA);
 		Assert::IsTrue(resultStatements[1] + ";" == statementB);
 		Assert::IsTrue(resultStatements[2] + ";" == statementC);
-		Assert::IsTrue(resultStatements[3] + ";" == statementD);
+		Assert::IsTrue(resultStatements[3] == statementD);
 	}
 	TEST_METHOD(selectStatementShouldBeAfterDeclareStatement) {
 		std::string statementA = "stmt s1;";
