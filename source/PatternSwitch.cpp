@@ -40,7 +40,7 @@ Result PatternSwitch::evaluate(const PKB& pkb) {
 // case sw(v, _)
 Result PatternSwitch::evaluateVariable(const std::string& controlVar, const std::string& switchSynonym) {
 	Result result;
-	std::unordered_map<int, std::string> answer = pkb.getSwitchControlVarPair();
+	std::unordered_map<int, std::unordered_set<std::string>> answer = pkb.getSwitchControlVarPair();
 
 	if (!answer.empty()) {
 		result.setPassed(true);

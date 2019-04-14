@@ -224,7 +224,7 @@ namespace UnitTesting {
 		TEST_METHOD(TestInsertSwitchControlVar) {
 			result = pkb.insertSwitchControlVar(32, "x");
 			Assert::IsTrue(result);
-			result = pkb.insertSwitchControlVar(33, "y");
+			result = pkb.insertSwitchControlVar(32, "y");
 			Assert::IsTrue(result);
 			result = pkb.insertSwitchControlVar(32, "x");
 			Assert::IsFalse(result);
