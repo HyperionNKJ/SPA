@@ -1215,6 +1215,10 @@ void Parser::setCurrentFollowVector(std::vector<int> v) {
 	currentFollowVector = v;
 }
 
+void Parser::setProcedure(std::string p) {
+	currProcedure = p;
+}
+
 std::vector<int> Parser::getCurrentFollowVector() {
 	return currentFollowVector;
 }
