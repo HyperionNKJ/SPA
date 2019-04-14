@@ -954,16 +954,6 @@ bool PKB::isNextT(int firstLine, int secondLine) {
 	return resultSet.count(secondLine) > 0 ? true : false;
 }
 
-unordered_map<int, unordered_set<int>> PKB::getPreviousNextTPairs(Type firstStmtType, Type secondStmtType) {
-	unordered_map<int, unordered_set<int>> resultMap;
-	unordered_set<int> *typedStmtSet = getTypedStmtSet(firstStmtType);
-	for (const auto &elem : *typedStmtSet) {
-		unordered_set<int> resultSet = getNextTOf(elem, secondStmtType);
-		resultMap[elem] = resultSet;
-	}
-	return resultMap;
-}
-
 unordered_set<int> PKB::getPreviousLines(Type previousType) {
 	unordered_set<int> *typedStmtSet = getTypedStmtSet(previousType), resultSet;
 
@@ -1017,8 +1007,8 @@ unordered_set<int> PKB::getNextOf(int prevLineNum, Type nextType) {
 unordered_set<int> PKB::getPreviousTOf(int firstLine, Type stmtType) {
 	unordered_set<int> visitedLines;
 	unordered_set<int> *typedStmtSet = getTypedStmtSet(stmtType), resultSet;
-	if (prevTMap.count(firstLine) > 0) {
-		visitedLines = prevTMap[firstLine];
+	if (prevTCache.count(firstLine) > 0) {
+		visitedLines = prevTCache[firstLine];
 	}
 	else{
 		queue<int> linesQueue;
@@ -1027,15 +1017,16 @@ unordered_set<int> PKB::getPreviousTOf(int firstLine, Type stmtType) {
 		}
 		while (linesQueue.size() > 0) {
 			int currLine = linesQueue.front();
+			nextTCache[currLine].insert(firstLine);
+			prevTCache[firstLine].insert(currLine);
 			linesQueue.pop();
-			if (visitedLines.count(currLine) <= 0) {
-				visitedLines.insert(currLine);
-				for (auto &elem : prevMap[currLine]) {
+			visitedLines.insert(currLine);
+			for (auto &elem : prevMap[currLine]) {
+				if (visitedLines.count(elem) < 1) {
 					linesQueue.push(elem);
 				}
 			}
 		}
-		prevTMap[firstLine] = visitedLines;
 	}
 	for (auto &elem : visitedLines) {
 		if (typedStmtSet->count(elem) > 0) {
@@ -1048,8 +1039,8 @@ unordered_set<int> PKB::getPreviousTOf(int firstLine, Type stmtType) {
 unordered_set<int> PKB::getNextTOf(int firstLine, Type stmtType) {
 	unordered_set<int> visitedLines;
 	unordered_set<int> *typedStmtSet = getTypedStmtSet(stmtType), resultSet;
-	if (nextTMap.count(firstLine) > 0) {
-		visitedLines = nextTMap[firstLine];
+	if (nextTCache.count(firstLine) > 0) {
+		visitedLines = nextTCache[firstLine];
 	}
 	else {
 		queue<int> linesQueue;
@@ -1058,28 +1049,38 @@ unordered_set<int> PKB::getNextTOf(int firstLine, Type stmtType) {
 		}
 		while (linesQueue.size() > 0) {
 			int currLine = linesQueue.front();
+			nextTCache[firstLine].insert(currLine);
+			prevTCache[currLine].insert(firstLine);
 			linesQueue.pop();
-			if (visitedLines.count(currLine) <= 0) {
-				visitedLines.insert(currLine);
-				for (auto &elem : nextMap[currLine]) {
+			visitedLines.insert(currLine);
+			for (auto &elem : nextMap[currLine]) {
+				if (visitedLines.count(elem) < 1) {
 					linesQueue.push(elem);
 				}
 			}
 		}
-		nextTMap[firstLine] = visitedLines;
 	}
 	for (auto &elem : visitedLines) {
 		if (typedStmtSet->count(elem) > 0) {
 			resultSet.insert(elem);
 		}
 	}
-	nextTMap[firstLine] = resultSet;
 	return resultSet;
 }
 
+unordered_map<int, unordered_set<int>> PKB::getPreviousNextTPairs(Type firstStmtType, Type secondStmtType) {
+	unordered_map<int, unordered_set<int>> resultMap;
+	unordered_set<int> *typedStmtSet = getTypedStmtSet(firstStmtType);
+	for (const auto &elem : *typedStmtSet) {
+		unordered_set<int> resultSet = getNextTOf(elem, secondStmtType);
+		resultMap[elem] = resultSet;
+	}
+	return resultMap;
+}
+
 void PKB::clearNextTCache() {
-	nextTMap = {};
-	prevTMap = {};
+	nextTCache = {};
+	prevTCache = {};
 }
 
 unordered_map<int, unordered_set<string>> PKB::getIfControlVarPair() {

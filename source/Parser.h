@@ -28,6 +28,8 @@ class Parser {
 	bool expectElse = false;
 	bool withinSwitch = false;
 	bool expectStatement = false;
+	bool expectDefault = false;
+	bool firstCase = false;
 	string currProcedure;
 	vector<string> sourceCode = vector<string>();
 	int statementNumber = 1;
