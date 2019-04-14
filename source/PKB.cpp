@@ -4,10 +4,8 @@
 #include <set>
 #include "PKB.h"
 
-using namespace std;
-
 // Frontend APIs
-bool PKB::insertVar(string varName) {
+bool PKB::insertVar(std::string varName) {
 	if (!varSet.count(varName)) {
 		varSet.insert(varName);
 		varTableByIdx.push_back(varName);
@@ -21,7 +19,7 @@ bool PKB::insertConstant(int constant) {
 	return constSet.insert(constant).second;
 }
 
-bool PKB::insertProc(string procName) {
+bool PKB::insertProc(std::string procName) {
 	if (!procTableByName.count(procName)) {
 		procSet.insert(procName);
 		procTableByIdx.push_back(procName);
@@ -31,8 +29,8 @@ bool PKB::insertProc(string procName) {
 	return false;
 }
 
-unordered_set<int>* PKB::getTypedStmtSet(Type type) {
-	unordered_set<int> *typedStmtSet;
+std::unordered_set<int>* PKB::getTypedStmtSet(Type type) {
+	std::unordered_set<int> *typedStmtSet;
 
 	switch (type) {
 	case STATEMENT:
@@ -66,7 +64,7 @@ unordered_set<int>* PKB::getTypedStmtSet(Type type) {
 }
 
 bool PKB::insertStmtType(int stmtNum, Type type) {
-	unordered_set<int> *typedStmtSet;
+	std::unordered_set<int> *typedStmtSet;
 	switch (type) {
 	case STATEMENT:
 		return allStmts.insert(stmtNum).second;
@@ -95,14 +93,14 @@ bool PKB::insertStmtType(int stmtNum, Type type) {
 	return typedStmtSet->insert(stmtNum).second && allStmts.insert(stmtNum).second;
 }
 
-bool PKB::insertCPRStmtType(int stmtNum, Type type, string name) {
+bool PKB::insertCPRStmtType(int stmtNum, Type type, std::string name) {
 	bool isValidStmt;
-	unordered_set<string> *typedNameSet;
-	unordered_set<int> *typedStmtSet;
-	unordered_map<string, int> *typedTable;
-	unordered_map<string, unordered_set<int>> *typedByNameMap;
-	unordered_map<int, string> *typedByStmtNumMap;
-	vector<string> *typedVector;
+	std::unordered_set<std::string> *typedNameSet;
+	std::unordered_set<int> *typedStmtSet;
+	std::unordered_map<std::string, int> *typedTable;
+	std::unordered_map<std::string, std::unordered_set<int>> *typedByNameMap;
+	std::unordered_map<int, std::string> *typedByStmtNumMap;
+	std::vector<std::string> *typedVector;
 
 	switch(type) {
 		case CALL:
@@ -147,27 +145,27 @@ bool PKB::insertCPRStmtType(int stmtNum, Type type, string name) {
 	return false;
 }
 
-bool PKB::insertPattern(string pattern, int stmtNum) {
+bool PKB::insertPattern(std::string pattern, int stmtNum) {
 	return patternMap[pattern].insert(stmtNum).second;
 }
 
-bool PKB::insertFullPattern(string fullPattern, int stmtNum) {
+bool PKB::insertFullPattern(std::string fullPattern, int stmtNum) {
 	return fullPatternMap[fullPattern].insert(stmtNum).second;
 }
 
-bool PKB::insertIfControlVar(int ifStmtNum, string varName) {
+bool PKB::insertIfControlVar(int ifStmtNum, std::string varName) {
 	ifControlStmtSet.insert(ifStmtNum);
 	ifControlVarMap[varName].insert(ifStmtNum);
 	return ifControlStmtMap[ifStmtNum].insert(varName).second;
 }
 
-bool PKB::insertWhileControlVar(int whileStmtNum, string varName) {
+bool PKB::insertWhileControlVar(int whileStmtNum, std::string varName) {
 	whileControlStmtSet.insert(whileStmtNum);
 	whileControlVarMap[varName].insert(whileStmtNum);
 	return whileControlStmtMap[whileStmtNum].insert(varName).second;
 }
 
-bool PKB::insertSwitchControlVar(int switchStmtNum, string varName) {
+bool PKB::insertSwitchControlVar(int switchStmtNum, std::string varName) {
 	switchControlStmtSet.insert(switchStmtNum);
 	switchControlVarMap[varName].insert(switchStmtNum);
 	return switchControlStmtMap.insert({switchStmtNum, varName}).second;
@@ -205,42 +203,42 @@ bool PKB::setChildT(int parent, int child) {
 	return childrenTMap[child].insert(parent).second;
 }
 
-bool PKB::setModifies(int stmtNum, string varName) {
+bool PKB::setModifies(int stmtNum, std::string varName) {
 	modifiesByStmtNumMap[stmtNum].insert(varName);
 	return modifiesByVarMap[varName].insert(stmtNum).second;
 }
 
-bool PKB::setModifies(string procName, string varName) {
+bool PKB::setModifies(std::string procName, std::string varName) {
 	modifiesProcSet.insert(procName);
 	varModifiedByProcMap[varName].insert(procName);
 	return modifiesByProcMap[procName].insert(varName).second;
 }
 
-bool PKB::setUses(int stmtNum, string varName) {
+bool PKB::setUses(int stmtNum, std::string varName) {
 	usesByStmtNumMap[stmtNum].insert(varName);
 	return usesByVarMap[varName].insert(stmtNum).second;
 }
 
-bool PKB::setUses(string procName, string varName) {
+bool PKB::setUses(std::string procName, std::string varName) {
 	usesProcSet.insert(procName);
 	varUsedByProcMap[varName].insert(procName);
 	return usesByProcMap[procName].insert(varName).second;
 }
 
-bool PKB::setCalls(string proc1, string proc2) {
+bool PKB::setCalls(std::string proc1, std::string proc2) {
 	callSet.insert(proc1);
 	return callMap[proc1].insert(proc2).second;
 }
 
-bool PKB::setCalledBy(string proc1, string proc2) {
+bool PKB::setCalledBy(std::string proc1, std::string proc2) {
 	return calledByMap[proc2].insert(proc1).second;
 }
 
-bool PKB::setCallsT(string proc1, string proc2) {
+bool PKB::setCallsT(std::string proc1, std::string proc2) {
 	return callsTMap[proc1].insert(proc2).second;
 }
 
-bool PKB::setCalledByT(string proc1, string proc2) {
+bool PKB::setCalledByT(std::string proc1, std::string proc2) {
 	return calledByTMap[proc2].insert(proc1).second;
 }
 
@@ -253,55 +251,55 @@ bool PKB::setPrevious(int prevLine, int nextLine) {
 }
 
 // PQL APIs
-unordered_set<int> PKB::getAllStmts() {
+std::unordered_set<int> PKB::getAllStmts() {
 	return allStmts;
 }
 
-unordered_set<int> PKB::getReadStmts() {
+std::unordered_set<int> PKB::getReadStmts() {
 	return readStmts;
 }
 
-unordered_set<int> PKB::getPrintStmts() {
+std::unordered_set<int> PKB::getPrintStmts() {
 	return printStmts;
 }
 
-unordered_set<int> PKB::getWhileStmts() {
+std::unordered_set<int> PKB::getWhileStmts() {
 	return whileStmts;
 }
 
-unordered_set<int> PKB::getIfStmts() {
+std::unordered_set<int> PKB::getIfStmts() {
 	return ifStmts;
 }
 
-unordered_set<int> PKB::getAssignStmts() {
+std::unordered_set<int> PKB::getAssignStmts() {
 	return assignStmts;
 }
 
-unordered_set<string> PKB::getAllVariables() {
+std::unordered_set<std::string> PKB::getAllVariables() {
 	return varSet;
 }
 
-unordered_set<int> PKB::getAllConstant() {
+std::unordered_set<int> PKB::getAllConstant() {
 	return constSet;
 }
 
-unordered_set<string> PKB::getAllProcedures() {
+std::unordered_set<std::string> PKB::getAllProcedures() {
 	return procSet;
 }
 
-unordered_set<int> PKB::getCallStmts() {
+std::unordered_set<int> PKB::getCallStmts() {
 	return callStmts;
 }
 
-unordered_set<string> PKB::getCallProcNames() {
+std::unordered_set<std::string> PKB::getCallProcNames() {
 	return calledSet;
 }
 
-unordered_set<string> PKB::getPrintVarNames() {
+std::unordered_set<std::string> PKB::getPrintVarNames() {
 	return printSet;
 }
 
-unordered_set<string> PKB::getReadVarNames() {
+std::unordered_set<std::string> PKB::getReadVarNames() {
 	return readSet;
 }
 
@@ -347,73 +345,73 @@ bool PKB::isCallStmt(int stmtNum) {
 	return false;
 }
 
-int PKB::getVarIdx(string varName) {
+int PKB::getVarIdx(std::string varName) {
 	return varTableByName[varName];
 }
 
-string PKB::getVarAtIdx(int varIdx) {
+std::string PKB::getVarAtIdx(int varIdx) {
 	return varTableByIdx[varIdx];
 }
 
-unordered_map<string, int> PKB::getVarTable() {
+std::unordered_map<std::string, int> PKB::getVarTable() {
 	return varTableByName;
 }
 
-int PKB::getProcIdx(string procName) {
+int PKB::getProcIdx(std::string procName) {
 	return procTableByName[procName];
 }
 
-string PKB::getProcAtIdx(int procIdx) {
+std::string PKB::getProcAtIdx(int procIdx) {
 	return procTableByIdx[procIdx];
 }
 
-unordered_map<string, int> PKB::getProcTable() {
+std::unordered_map<std::string, int> PKB::getProcTable() {
 	return procTableByName;
 }
 
-int PKB::getCallIdx(string procName) {
+int PKB::getCallIdx(std::string procName) {
 	return callTableByName[procName];
 }
 
-string PKB::getCallAtIdx(int callIdx) {
+std::string PKB::getCallAtIdx(int callIdx) {
 	return callTableByIdx[callIdx];
 }
 
-string PKB::getCallAtStmtNum(int stmtNum) {
+std::string PKB::getCallAtStmtNum(int stmtNum) {
 	if (callMapByStmtNum.count(stmtNum))
 		return callMapByStmtNum[stmtNum];
 	return "";
 }
 
-int PKB::getReadIdx(string varName) {
+int PKB::getReadIdx(std::string varName) {
 	return readTableByName[varName];
 }
 
-string PKB::getReadAtIdx(int readIdx) {
+std::string PKB::getReadAtIdx(int readIdx) {
 	return readTableByIdx[readIdx];
 }
 
-string PKB::getReadAtStmtNum(int stmtNum) {
+std::string PKB::getReadAtStmtNum(int stmtNum) {
 	if (readMapByStmtNum.count(stmtNum))
 		return readMapByStmtNum[stmtNum];
 	return "";
 }
 
-int PKB::getPrintIdx(string varName) {
+int PKB::getPrintIdx(std::string varName) {
 	return printTableByName[varName];
 }
 
-string PKB::getPrintAtIdx(int printIdx) {
+std::string PKB::getPrintAtIdx(int printIdx) {
 	return printTableByIdx[printIdx];
 }
 
-string PKB::getPrintAtStmtNum(int stmtNum) {
+std::string PKB::getPrintAtStmtNum(int stmtNum) {
 	if (printMapByStmtNum.count(stmtNum))
 		return printMapByStmtNum[stmtNum];
 	return "";
 }
 
-bool PKB::isModifies(int stmtNum, string varName) {
+bool PKB::isModifies(int stmtNum, std::string varName) {
 	if (allStmts.count(stmtNum)) {
 		if (modifiesByStmtNumMap[stmtNum].count(varName))
 			return true;
@@ -429,12 +427,12 @@ bool PKB::doesStmtModifies(int stmtNum) {
 	return false;
 }
 
-unordered_set<string> PKB::getVarModifiedByStmt(int stmtNum) {
+std::unordered_set<std::string> PKB::getVarModifiedByStmt(int stmtNum) {
 	return modifiesByStmtNumMap[stmtNum];
 }
 
-unordered_set<int> PKB::getStmtsThatModifiesVar(string varName, Type type) {
-	unordered_set<int> allModifyingStmts = modifiesByVarMap[varName], *typedStmtSet = getTypedStmtSet(type), resultSet;
+std::unordered_set<int> PKB::getStmtsThatModifiesVar(std::string varName, Type type) {
+	std::unordered_set<int> allModifyingStmts = modifiesByVarMap[varName], *typedStmtSet = getTypedStmtSet(type), resultSet;
 
 	for (const auto &elem : allModifyingStmts) {
 		if (typedStmtSet->count(elem)) {
@@ -445,9 +443,9 @@ unordered_set<int> PKB::getStmtsThatModifiesVar(string varName, Type type) {
 	return resultSet;
 }
 
-unordered_map<int, unordered_set<string>> PKB::getModifiesStmtVarPairs(Type type) {
-	unordered_set<int> *typedStmtSet = getTypedStmtSet(type);
-	unordered_map<int, unordered_set<string>> resultSet;
+std::unordered_map<int, std::unordered_set<std::string>> PKB::getModifiesStmtVarPairs(Type type) {
+	std::unordered_set<int> *typedStmtSet = getTypedStmtSet(type);
+	std::unordered_map<int, std::unordered_set<std::string>> resultSet;
 
 	for (const auto &elem : *typedStmtSet)
 		resultSet.insert({elem, modifiesByStmtNumMap[elem]});
@@ -455,9 +453,9 @@ unordered_map<int, unordered_set<string>> PKB::getModifiesStmtVarPairs(Type type
 	return resultSet;
 }
 
-unordered_set<int> PKB::getStmtsThatModifiesVar(Type type) {
-	unordered_set<int> *typedStmtSet = getTypedStmtSet(type);
-	unordered_set<int> resultSet;
+std::unordered_set<int> PKB::getStmtsThatModifiesVar(Type type) {
+	std::unordered_set<int> *typedStmtSet = getTypedStmtSet(type);
+	std::unordered_set<int> resultSet;
 
 	for (const auto &elem : *typedStmtSet) {
 		if (modifiesByStmtNumMap.count(elem))
@@ -467,35 +465,35 @@ unordered_set<int> PKB::getStmtsThatModifiesVar(Type type) {
 	return resultSet;
 }
 
-bool PKB::isProcModifies(string procName, string varName) {
+bool PKB::isProcModifies(std::string procName, std::string varName) {
 	if (modifiesByProcMap.count(procName) && modifiesByProcMap[procName].count(varName))
 		return true;
 	return false;
 }
 
-bool PKB::doesProcModifies(string procName) {
+bool PKB::doesProcModifies(std::string procName) {
 	if (modifiesByProcMap.count(procName))
 		return true;
 	return false;
 }
 
-unordered_set<string> PKB::getVarModifiedByProc(string procName) {
+std::unordered_set<std::string> PKB::getVarModifiedByProc(std::string procName) {
 	return modifiesByProcMap[procName];
 }
 
-unordered_map<string, unordered_set<string>> PKB::getModifiesProcVarPairs() {
+std::unordered_map<std::string, std::unordered_set<std::string>> PKB::getModifiesProcVarPairs() {
 	return modifiesByProcMap;
 }
 
-unordered_set<string> PKB:: getProcThatModifiesVar() {
+std::unordered_set<std::string> PKB:: getProcThatModifiesVar() {
 	return modifiesProcSet;
 }
 
-unordered_set<string> PKB::getProcThatModifiesVar(string varName) {
+std::unordered_set<std::string> PKB::getProcThatModifiesVar(std::string varName) {
 	return varModifiedByProcMap[varName];
 }
 
-bool PKB::isUses(int stmtNum, string varName) {
+bool PKB::isUses(int stmtNum, std::string varName) {
 	if (allStmts.count(stmtNum)) {
 		if (usesByStmtNumMap[stmtNum].count(varName))
 			return true;
@@ -511,12 +509,12 @@ bool PKB::doesStmtUses(int stmtNum) {
 	return false;
 }
 
-unordered_set<string> PKB::getVarUsedByStmt(int stmtNum) {
+std::unordered_set<std::string> PKB::getVarUsedByStmt(int stmtNum) {
 	return usesByStmtNumMap[stmtNum];
 }
 
-unordered_set<int> PKB::getStmtsThatUsesVar(string varName, Type type) {
-	unordered_set<int> allUsesStmts = usesByVarMap[varName], *typedStmtSet = getTypedStmtSet(type), resultSet;
+std::unordered_set<int> PKB::getStmtsThatUsesVar(std::string varName, Type type) {
+	std::unordered_set<int> allUsesStmts = usesByVarMap[varName], *typedStmtSet = getTypedStmtSet(type), resultSet;
 
 	for (const auto &elem : allUsesStmts) {
 		if (typedStmtSet->count(elem)) {
@@ -527,9 +525,9 @@ unordered_set<int> PKB::getStmtsThatUsesVar(string varName, Type type) {
 	return resultSet;
 }
 
-unordered_map<int, unordered_set<string>> PKB::getUsesStmtVarPairs(Type type) {
-	unordered_set<int> *typedStmtSet = getTypedStmtSet(type);
-	unordered_map<int, unordered_set<string>> resultSet;
+std::unordered_map<int, std::unordered_set<std::string>> PKB::getUsesStmtVarPairs(Type type) {
+	std::unordered_set<int> *typedStmtSet = getTypedStmtSet(type);
+	std::unordered_map<int, std::unordered_set<std::string>> resultSet;
 
 	for (const auto &elem : *typedStmtSet)
 		resultSet.insert({elem, usesByStmtNumMap[elem]});
@@ -537,9 +535,9 @@ unordered_map<int, unordered_set<string>> PKB::getUsesStmtVarPairs(Type type) {
 	return resultSet;
 }
 
-unordered_set<int> PKB::getStmtsThatUsesVar(Type type) {
-	unordered_set<int> *typedStmtSet = getTypedStmtSet(type);
-	unordered_set<int> resultSet;
+std::unordered_set<int> PKB::getStmtsThatUsesVar(Type type) {
+	std::unordered_set<int> *typedStmtSet = getTypedStmtSet(type);
+	std::unordered_set<int> resultSet;
 
 	for (const auto &elem : *typedStmtSet) {
 		if (usesByStmtNumMap.count(elem))
@@ -549,31 +547,31 @@ unordered_set<int> PKB::getStmtsThatUsesVar(Type type) {
 	return resultSet;
 }
 
-bool PKB::isProcUses(string procName, string varName) {
+bool PKB::isProcUses(std::string procName, std::string varName) {
 	if (usesByProcMap.count(procName) && usesByProcMap[procName].count(varName))
 		return true;
 	return false;
 }
 
-bool PKB::doesProcUses(string procName) {
+bool PKB::doesProcUses(std::string procName) {
 	if (usesByProcMap.count(procName))
 		return true;
 	return false;
 }
 
-unordered_set<string> PKB::getVarUsedByProc(string procName) {
+std::unordered_set<std::string> PKB::getVarUsedByProc(std::string procName) {
 	return usesByProcMap[procName];
 }
 
-unordered_map<string, unordered_set<string>> PKB::getUsesProcVarPairs() {
+std::unordered_map<std::string, std::unordered_set<std::string>> PKB::getUsesProcVarPairs() {
 	return usesByProcMap;
 }
 
-unordered_set<string> PKB::getProcThatUsesVar() {
+std::unordered_set<std::string> PKB::getProcThatUsesVar() {
 	return usesProcSet;
 }
 
-unordered_set<string> PKB::getProcThatUsesVar(string varName) {
+std::unordered_set<std::string> PKB::getProcThatUsesVar(std::string varName) {
 	return varUsedByProcMap[varName];
 }
 
@@ -601,9 +599,9 @@ bool PKB::hasParent(int stmtNum) {
 	return false;
 }
 
-unordered_map<int, unordered_set<int>> PKB::getParentChildrenPairs(Type parentType, Type childrenType) {
-	unordered_set<int> *parentTypedStmtSet = getTypedStmtSet(parentType), *childrenTypedStmtSet = getTypedStmtSet(childrenType);
-	unordered_map<int, unordered_set<int>> resultMap;
+std::unordered_map<int, std::unordered_set<int>> PKB::getParentChildrenPairs(Type parentType, Type childrenType) {
+	std::unordered_set<int> *parentTypedStmtSet = getTypedStmtSet(parentType), *childrenTypedStmtSet = getTypedStmtSet(childrenType);
+	std::unordered_map<int, std::unordered_set<int>> resultMap;
 
 	for (const auto &elem : *parentTypedStmtSet) {
 		if (parentMap.count(elem)) {
@@ -618,9 +616,9 @@ unordered_map<int, unordered_set<int>> PKB::getParentChildrenPairs(Type parentTy
 	return resultMap;
 }
 
-unordered_map<int, unordered_set<int>> PKB::getParentChildrenTPairs(Type parentType, Type childrenType) {
-	unordered_set<int> *parentTypedStmtSet = getTypedStmtSet(parentType), *childrenTypedStmtSet = getTypedStmtSet(childrenType);
-	unordered_map<int, unordered_set<int>> resultMap;
+std::unordered_map<int, std::unordered_set<int>> PKB::getParentChildrenTPairs(Type parentType, Type childrenType) {
+	std::unordered_set<int> *parentTypedStmtSet = getTypedStmtSet(parentType), *childrenTypedStmtSet = getTypedStmtSet(childrenType);
+	std::unordered_map<int, std::unordered_set<int>> resultMap;
 
 	for (const auto &elem : *parentTypedStmtSet) {
 		if (parentTMap.count(elem)) {
@@ -635,8 +633,8 @@ unordered_map<int, unordered_set<int>> PKB::getParentChildrenTPairs(Type parentT
 	return resultMap;
 }
 
-unordered_set<int> PKB::getParentStmts(Type parentType) {
-	unordered_set<int> *typedStmtSet = getTypedStmtSet(parentType), resultSet;
+std::unordered_set<int> PKB::getParentStmts(Type parentType) {
+	std::unordered_set<int> *typedStmtSet = getTypedStmtSet(parentType), resultSet;
 
 	for (const auto &elem : parentMap) {
 		if (typedStmtSet->count(elem.first)) {
@@ -647,8 +645,8 @@ unordered_set<int> PKB::getParentStmts(Type parentType) {
 	return resultSet;
 }
 
-unordered_set<int> PKB::getChildrenStmts(Type childrenType) {
-	unordered_set<int> *typedStmtSet = getTypedStmtSet(childrenType), resultSet;
+std::unordered_set<int> PKB::getChildrenStmts(Type childrenType) {
+	std::unordered_set<int> *typedStmtSet = getTypedStmtSet(childrenType), resultSet;
 
 	for (const auto &elem : childrenMap) {
 		if (typedStmtSet->count(elem.first)) {
@@ -660,7 +658,7 @@ unordered_set<int> PKB::getChildrenStmts(Type childrenType) {
 }
 
 int PKB::getParentOf(int stmtNum, Type parentType) {
-	unordered_set<int> *typedStmtSet = getTypedStmtSet(parentType);
+	std::unordered_set<int> *typedStmtSet = getTypedStmtSet(parentType);
 
 	if (childrenMap.count(stmtNum) && typedStmtSet->count(childrenMap[stmtNum])) {
 		return childrenMap[stmtNum];
@@ -668,8 +666,8 @@ int PKB::getParentOf(int stmtNum, Type parentType) {
 	return -1;
 }
 
-unordered_set<int> PKB::getParentTOf(int stmtNum, Type parentType) {
-	unordered_set<int> *typedStmtSet = getTypedStmtSet(parentType), resultSet;
+std::unordered_set<int> PKB::getParentTOf(int stmtNum, Type parentType) {
+	std::unordered_set<int> *typedStmtSet = getTypedStmtSet(parentType), resultSet;
 
 	if (childrenTMap.count(stmtNum)) {
 		for (const auto &elem : childrenTMap[stmtNum]) {
@@ -682,8 +680,8 @@ unordered_set<int> PKB::getParentTOf(int stmtNum, Type parentType) {
 	return resultSet;
 }
 
-unordered_set<int> PKB::getChildrenOf(int stmtNum, Type childrenType) {
-	unordered_set<int> *typedStmtSet = getTypedStmtSet(childrenType), resultSet;
+std::unordered_set<int> PKB::getChildrenOf(int stmtNum, Type childrenType) {
+	std::unordered_set<int> *typedStmtSet = getTypedStmtSet(childrenType), resultSet;
 
 	if (parentMap.count(stmtNum)) {
 		for (const auto &elem : parentMap[stmtNum]) {
@@ -696,8 +694,8 @@ unordered_set<int> PKB::getChildrenOf(int stmtNum, Type childrenType) {
 	return resultSet;
 }
 
-unordered_set<int> PKB::getChildrenTOf(int stmtNum, Type childrenType) {
-	unordered_set<int> *typedStmtSet = getTypedStmtSet(childrenType), resultSet;
+std::unordered_set<int> PKB::getChildrenTOf(int stmtNum, Type childrenType) {
+	std::unordered_set<int> *typedStmtSet = getTypedStmtSet(childrenType), resultSet;
 
 	if (parentTMap.count(stmtNum)) {
 		for (const auto &elem : parentTMap[stmtNum]) {
@@ -734,9 +732,9 @@ bool PKB::hasLeader(int stmtNum) {
 	return false;
 }
 
-unordered_map<int, int> PKB::getLeaderFollowerPairs(Type leaderType, Type followerType) {
-	unordered_set<int> *leaderTypedStmtSet = getTypedStmtSet(leaderType), *followerTypedStmtSet = getTypedStmtSet(followerType);
-	unordered_map<int, int> resultMap;
+std::unordered_map<int, int> PKB::getLeaderFollowerPairs(Type leaderType, Type followerType) {
+	std::unordered_set<int> *leaderTypedStmtSet = getTypedStmtSet(leaderType), *followerTypedStmtSet = getTypedStmtSet(followerType);
+	std::unordered_map<int, int> resultMap;
 
 	for (const auto &elem : *leaderTypedStmtSet) {
 		if (leaderMap.count(elem) && followerTypedStmtSet->count(leaderMap[elem]))
@@ -746,9 +744,9 @@ unordered_map<int, int> PKB::getLeaderFollowerPairs(Type leaderType, Type follow
 	return resultMap;
 }
 
-unordered_map<int, unordered_set<int>> PKB::getLeaderFollowerTPairs(Type leaderType, Type followerType) {
-	unordered_set<int> *leaderTypedStmtSet = getTypedStmtSet(leaderType), *followerTypedStmtSet = getTypedStmtSet(followerType);
-	unordered_map<int, unordered_set<int>> resultMap;
+std::unordered_map<int, std::unordered_set<int>> PKB::getLeaderFollowerTPairs(Type leaderType, Type followerType) {
+	std::unordered_set<int> *leaderTypedStmtSet = getTypedStmtSet(leaderType), *followerTypedStmtSet = getTypedStmtSet(followerType);
+	std::unordered_map<int, std::unordered_set<int>> resultMap;
 
 	for (const auto &elem : *leaderTypedStmtSet) {
 		if (leaderTMap.count(elem)) {
@@ -763,8 +761,8 @@ unordered_map<int, unordered_set<int>> PKB::getLeaderFollowerTPairs(Type leaderT
 	return resultMap;
 }
 
-unordered_set<int> PKB::getLeaderStmts(Type leaderType) {
-	unordered_set<int> *typedStmtSet = getTypedStmtSet(leaderType), resultSet;
+std::unordered_set<int> PKB::getLeaderStmts(Type leaderType) {
+	std::unordered_set<int> *typedStmtSet = getTypedStmtSet(leaderType), resultSet;
 
 	for (const auto &elem : leaderMap) {
 		if (typedStmtSet->count(elem.first)) {
@@ -775,8 +773,8 @@ unordered_set<int> PKB::getLeaderStmts(Type leaderType) {
 	return resultSet;
 }
 
-unordered_set<int> PKB::getFollowerStmts(Type followerType) {
-	unordered_set<int> *typedStmtSet = getTypedStmtSet(followerType), resultSet;
+std::unordered_set<int> PKB::getFollowerStmts(Type followerType) {
+	std::unordered_set<int> *typedStmtSet = getTypedStmtSet(followerType), resultSet;
 
 	for (const auto &elem : followerMap) {
 		if (typedStmtSet->count(elem.first)) {
@@ -788,7 +786,7 @@ unordered_set<int> PKB::getFollowerStmts(Type followerType) {
 }
 
 int PKB::getLeaderOf(int stmtNum, Type leaderType) {
-	unordered_set<int> *typedStmtSet = getTypedStmtSet(leaderType);
+	std::unordered_set<int> *typedStmtSet = getTypedStmtSet(leaderType);
 
 	if (followerMap.count(stmtNum) && typedStmtSet->count(followerMap[stmtNum])) {
 		return followerMap[stmtNum];
@@ -796,8 +794,8 @@ int PKB::getLeaderOf(int stmtNum, Type leaderType) {
 	return -1;
 }
 
-unordered_set<int> PKB::getLeaderTOf(int stmtNum, Type leaderType) {
-	unordered_set<int> *typedStmtSet = getTypedStmtSet(leaderType), resultSet;
+std::unordered_set<int> PKB::getLeaderTOf(int stmtNum, Type leaderType) {
+	std::unordered_set<int> *typedStmtSet = getTypedStmtSet(leaderType), resultSet;
 
 	if (followerTMap.count(stmtNum)) {
 		for (const auto &elem : followerTMap[stmtNum]) {
@@ -811,7 +809,7 @@ unordered_set<int> PKB::getLeaderTOf(int stmtNum, Type leaderType) {
 }
 
 int PKB::getFollowerOf(int stmtNum, Type followerType) {
-	unordered_set<int> *typedStmtSet = getTypedStmtSet(followerType);
+	std::unordered_set<int> *typedStmtSet = getTypedStmtSet(followerType);
 	int result = -1;
 
 	if (leaderMap.count(stmtNum) && typedStmtSet->count(leaderMap[stmtNum]))
@@ -820,8 +818,8 @@ int PKB::getFollowerOf(int stmtNum, Type followerType) {
 	return result;
 }
 
-unordered_set<int> PKB::getFollowerTOf(int stmtNum, Type followerType) {
-	unordered_set<int> *typedStmtSet = getTypedStmtSet(followerType), resultSet;
+std::unordered_set<int> PKB::getFollowerTOf(int stmtNum, Type followerType) {
+	std::unordered_set<int> *typedStmtSet = getTypedStmtSet(followerType), resultSet;
 
 	if (leaderTMap.count(stmtNum)) {
 		for (const auto &elem : leaderTMap[stmtNum]) {
@@ -834,78 +832,78 @@ unordered_set<int> PKB::getFollowerTOf(int stmtNum, Type followerType) {
 	return resultSet;
 }
 
-string PKB::getVarModifiedByAssignStmt(int stmtNum) {
+std::string PKB::getVarModifiedByAssignStmt(int stmtNum) {
 	if (modifiesByStmtNumMap.count(stmtNum) && isAssignStmt(stmtNum)) {
 		return *modifiesByStmtNumMap[stmtNum].begin();
 	}
 	return "";
 }
 
-unordered_set<int> PKB::getAssignStmtsThatModifiesVar(string varName) {
+std::unordered_set<int> PKB::getAssignStmtsThatModifiesVar(std::string varName) {
 	return modifiesByVarMap[varName];
 }
 
-unordered_set<int> PKB::getAssignStmtsWithSubMatch(string subString) {
+std::unordered_set<int> PKB::getAssignStmtsWithSubMatch(std::string subString) {
 	return patternMap[subString];
 }
 
-unordered_set<int> PKB::getAssignStmtsWithExactMatch(string exactString) {
+std::unordered_set<int> PKB::getAssignStmtsWithExactMatch(std::string exactString) {
 	return fullPatternMap[exactString];
 }
 
-bool PKB::isCalls(string callerName, string receiverName) {
+bool PKB::isCalls(std::string callerName, std::string receiverName) {
 	if (callMap.count(callerName) && callMap[callerName].count(receiverName))
 		return true;
 	return false;
 }
 
-bool PKB::isCallsT(string callerName, string receiverName) {
+bool PKB::isCallsT(std::string callerName, std::string receiverName) {
 	if (callsTMap.count(callerName) && callsTMap[callerName].count(receiverName))
 		return true;
 	return false;
 }
 
-bool PKB::hasReceiver(string callerName) {
+bool PKB::hasReceiver(std::string callerName) {
 	if (callMap.count(callerName))
 		return true;
 	return false;
 }
 
-bool PKB::hasCaller(string receiverName) {
+bool PKB::hasCaller(std::string receiverName) {
 	if (calledByMap.count(receiverName))
 		return true;
 	return false;
 }
 
-unordered_map<string, unordered_set<string>> PKB::getCallerReceiverPairs() {
+std::unordered_map<std::string, std::unordered_set<std::string>> PKB::getCallerReceiverPairs() {
 	return callMap;
 }
 
-unordered_map<string, unordered_set<string>> PKB::getCallerReceiverTPairs() {
+std::unordered_map<std::string, std::unordered_set<std::string>> PKB::getCallerReceiverTPairs() {
 	return callsTMap;
 }
 
-unordered_set<string> PKB::getCallerProcedures() {
+std::unordered_set<std::string> PKB::getCallerProcedures() {
 	return callSet;
 }
 
-unordered_set<string> PKB::getReceiverProcedures() {
+std::unordered_set<std::string> PKB::getReceiverProcedures() {
 	return calledSet;
 }
 
-unordered_set<string> PKB::getCallerOf(string receiverName) {
+std::unordered_set<std::string> PKB::getCallerOf(std::string receiverName) {
 	return calledByMap[receiverName];
 }
 
-unordered_set<string> PKB::getCallerTOf(string receiverName) {
+std::unordered_set<std::string> PKB::getCallerTOf(std::string receiverName) {
 	return calledByTMap[receiverName];
 }
 
-unordered_set<string> PKB::getReceiverOf(string callerName) {
+std::unordered_set<std::string> PKB::getReceiverOf(std::string callerName) {
 	return callMap[callerName];
 }
 
-unordered_set<string> PKB::getReceiverTOf(string callerName) {
+std::unordered_set<std::string> PKB::getReceiverTOf(std::string callerName) {
 	return callsTMap[callerName];
 }
 
@@ -933,9 +931,9 @@ bool PKB::hasNextT() {
 	return false;
 }
 
-unordered_map<int, unordered_set<int>> PKB::getPreviousNextPairs(Type previousType, Type nextType) {
-	unordered_set<int> *prevTypedStmtSet = getTypedStmtSet(previousType), *nextTypedStmtSet = getTypedStmtSet(nextType);
-	unordered_map<int, unordered_set<int>> resultMap;
+std::unordered_map<int, std::unordered_set<int>> PKB::getPreviousNextPairs(Type previousType, Type nextType) {
+	std::unordered_set<int> *prevTypedStmtSet = getTypedStmtSet(previousType), *nextTypedStmtSet = getTypedStmtSet(nextType);
+	std::unordered_map<int, std::unordered_set<int>> resultMap;
 
 	for (const auto&elem: nextMap) {
 		if (prevTypedStmtSet->count(elem.first)) {
@@ -950,12 +948,12 @@ unordered_map<int, unordered_set<int>> PKB::getPreviousNextPairs(Type previousTy
 }
 
 bool PKB::isNextT(int firstLine, int secondLine) {
-	unordered_set<int> resultSet = getNextTOf(firstLine, STATEMENT);
+	std::unordered_set<int> resultSet = getNextTOf(firstLine, STATEMENT);
 	return resultSet.count(secondLine) > 0 ? true : false;
 }
 
-unordered_set<int> PKB::getPreviousLines(Type previousType) {
-	unordered_set<int> *typedStmtSet = getTypedStmtSet(previousType), resultSet;
+std::unordered_set<int> PKB::getPreviousLines(Type previousType) {
+	std::unordered_set<int> *typedStmtSet = getTypedStmtSet(previousType), resultSet;
 
 	for (const auto&elem : nextMap) {
 		if (typedStmtSet->count(elem.first))
@@ -965,8 +963,8 @@ unordered_set<int> PKB::getPreviousLines(Type previousType) {
 	return resultSet;
 }
 
-unordered_set<int> PKB::getNextLines(Type nextType) {
-	unordered_set<int> *typedStmtSet = getTypedStmtSet(nextType), resultSet;
+std::unordered_set<int> PKB::getNextLines(Type nextType) {
+	std::unordered_set<int> *typedStmtSet = getTypedStmtSet(nextType), resultSet;
 
 	for (const auto&elem : prevMap) {
 		if (typedStmtSet->count(elem.first))
@@ -976,8 +974,8 @@ unordered_set<int> PKB::getNextLines(Type nextType) {
 	return resultSet;
 }
 
-unordered_set<int> PKB::getPreviousOf(int nextLineNum, Type previousType) {
-	unordered_set<int> *typedStmtSet = getTypedStmtSet(previousType), resultSet;
+std::unordered_set<int> PKB::getPreviousOf(int nextLineNum, Type previousType) {
+	std::unordered_set<int> *typedStmtSet = getTypedStmtSet(previousType), resultSet;
 
 	if (prevMap.count(nextLineNum)) {
 		for (const auto&elem : prevMap[nextLineNum]) {
@@ -990,8 +988,8 @@ unordered_set<int> PKB::getPreviousOf(int nextLineNum, Type previousType) {
 	return resultSet;
 }
 
-unordered_set<int> PKB::getNextOf(int prevLineNum, Type nextType) {
-	unordered_set<int> *typedStmtSet = getTypedStmtSet(nextType), resultSet;
+std::unordered_set<int> PKB::getNextOf(int prevLineNum, Type nextType) {
+	std::unordered_set<int> *typedStmtSet = getTypedStmtSet(nextType), resultSet;
 
 	if (nextMap.count(prevLineNum)) {
 		for (const auto &elem : nextMap[prevLineNum]) {
@@ -1004,14 +1002,14 @@ unordered_set<int> PKB::getNextOf(int prevLineNum, Type nextType) {
 	return resultSet;
 }
 
-unordered_set<int> PKB::getPreviousTOf(int firstLine, Type stmtType) {
-	unordered_set<int> visitedLines;
-	unordered_set<int> *typedStmtSet = getTypedStmtSet(stmtType), resultSet;
+std::unordered_set<int> PKB::getPreviousTOf(int firstLine, Type stmtType) {
+	std::unordered_set<int> visitedLines;
+	std::unordered_set<int> *typedStmtSet = getTypedStmtSet(stmtType), resultSet;
 	if (prevTCache.count(firstLine) > 0) {
 		visitedLines = prevTCache[firstLine];
 	}
 	else{
-		queue<int> linesQueue;
+		std::queue<int> linesQueue;
 		for (auto &elem : prevMap[firstLine]) {
 			linesQueue.push(elem);
 		}
@@ -1036,14 +1034,14 @@ unordered_set<int> PKB::getPreviousTOf(int firstLine, Type stmtType) {
 	return resultSet;
 }
 
-unordered_set<int> PKB::getNextTOf(int firstLine, Type stmtType) {
-	unordered_set<int> visitedLines;
-	unordered_set<int> *typedStmtSet = getTypedStmtSet(stmtType), resultSet;
+std::unordered_set<int> PKB::getNextTOf(int firstLine, Type stmtType) {
+	std::unordered_set<int> visitedLines;
+	std::unordered_set<int> *typedStmtSet = getTypedStmtSet(stmtType), resultSet;
 	if (nextTCache.count(firstLine) > 0) {
 		visitedLines = nextTCache[firstLine];
 	}
 	else {
-		queue<int> linesQueue;
+		std::queue<int> linesQueue;
 		for (auto &elem : nextMap[firstLine]) {
 			linesQueue.push(elem);
 		}
@@ -1068,11 +1066,11 @@ unordered_set<int> PKB::getNextTOf(int firstLine, Type stmtType) {
 	return resultSet;
 }
 
-unordered_map<int, unordered_set<int>> PKB::getPreviousNextTPairs(Type firstStmtType, Type secondStmtType) {
-	unordered_map<int, unordered_set<int>> resultMap;
-	unordered_set<int> *typedStmtSet = getTypedStmtSet(firstStmtType);
+std::unordered_map<int, std::unordered_set<int>> PKB::getPreviousNextTPairs(Type firstStmtType, Type secondStmtType) {
+	std::unordered_map<int, std::unordered_set<int>> resultMap;
+	std::unordered_set<int> *typedStmtSet = getTypedStmtSet(firstStmtType);
 	for (const auto &elem : *typedStmtSet) {
-		unordered_set<int> resultSet = getNextTOf(elem, secondStmtType);
+		std::unordered_set<int> resultSet = getNextTOf(elem, secondStmtType);
 		resultMap[elem] = resultSet;
 	}
 	return resultMap;
@@ -1083,58 +1081,58 @@ void PKB::clearNextTCache() {
 	prevTCache = {};
 }
 
-unordered_map<int, unordered_set<string>> PKB::getIfControlVarPair() {
+std::unordered_map<int, std::unordered_set<std::string>> PKB::getIfControlVarPair() {
 	return ifControlStmtMap;
 }
 
-unordered_set<int> PKB::getIfWithControlVar() {
+std::unordered_set<int> PKB::getIfWithControlVar() {
 	return ifControlStmtSet;
 }
 
-unordered_set<int> PKB::getIfWithControlVar(string controlVar) {
-	unordered_set<int> emptySet;
+std::unordered_set<int> PKB::getIfWithControlVar(std::string controlVar) {
+	std::unordered_set<int> emptySet;
 	if (ifControlVarMap.count(controlVar))
 		return ifControlVarMap[controlVar];
 	return emptySet;
 }
 
-unordered_map<int, unordered_set<string>> PKB::getWhileControlVarPair() {
+std::unordered_map<int, std::unordered_set<std::string>> PKB::getWhileControlVarPair() {
 	return whileControlStmtMap;
 }
 
-unordered_set<int> PKB::getWhileWithControlVar() {
+std::unordered_set<int> PKB::getWhileWithControlVar() {
 	return whileControlStmtSet;
 }
 
-unordered_set<int> PKB::getWhileWithControlVar(string controlVar) {
-	unordered_set<int> emptySet;
+std::unordered_set<int> PKB::getWhileWithControlVar(std::string controlVar) {
+	std::unordered_set<int> emptySet;
 	if (whileControlVarMap.count(controlVar))
 		return whileControlVarMap[controlVar];
 	return emptySet;
 }
 
-unordered_set<int> PKB::getCallStmtsWithProc(string procName) {
-	unordered_set<int> emptySet;
+std::unordered_set<int> PKB::getCallStmtsWithProc(std::string procName) {
+	std::unordered_set<int> emptySet;
 	if (calledStmtMap.count(procName))
 		return calledStmtMap[procName];
 	return emptySet;
 }
 
-unordered_set<int> PKB::getPrintStmtsWithVar(string varName) {
-	unordered_set<int> emptySet;
+std::unordered_set<int> PKB::getPrintStmtsWithVar(std::string varName) {
+	std::unordered_set<int> emptySet;
 	if (printStmtMap.count(varName))
 		return printStmtMap[varName];
 	return emptySet;
 }
 
-unordered_set<int> PKB::getReadStmtsWithVar(string varName) {
-	unordered_set<int> emptySet;
+std::unordered_set<int> PKB::getReadStmtsWithVar(std::string varName) {
+	std::unordered_set<int> emptySet;
 	if (readStmtMap.count(varName))
 		return readStmtMap[varName];
 	return emptySet;
 }
 
-unordered_map<int, unordered_set<int>> PKB::getAffectsMap(bool isTransitive, bool isAffects) {
+std::unordered_map<int, std::unordered_set<int>> PKB::getAffectsMap(bool isTransitive, bool isAffects) {
 	if ((isAffectsComputed || isAffectsTComputed) && !isTransitive) {
 		if (isAffects)
 			return affectsMap;
@@ -1145,16 +1143,16 @@ unordered_map<int, unordered_set<int>> PKB::getAffectsMap(bool isTransitive, boo
 		return affectedTMap;
 	}
 
-	vector<unordered_map<string, unordered_set<int>>> modMaps(allStmts.size() + 1);
-	unordered_map<int, unordered_map<string, unordered_set<int>>> prevModMap;
-	unordered_map<string, unordered_set<int>> *currModMap;
-	unordered_map<int, unordered_set<int>> affectsRelationshipMap, *resultTMap;
-	unordered_set<int> visitedLines, prevLines, visitedNodes, neighbours;
-	unordered_set<string> varsModified, varsUsed;
+	std::vector<std::unordered_map<std::string, std::unordered_set<int>>> modMaps(allStmts.size() + 1);
+	std::unordered_map<int, std::unordered_map<std::string, std::unordered_set<int>>> prevModMap;
+	std::unordered_map<std::string, std::unordered_set<int>> *currModMap;
+	std::unordered_map<int, std::unordered_set<int>> affectsRelationshipMap, *resultTMap;
+	std::unordered_set<int> visitedLines, prevLines, visitedNodes, neighbours;
+	std::unordered_set<std::string> varsModified, varsUsed;
 	int currLine, prevLine, maxLine = 0;
-	set<int> toBeVisited;
-	string varModified;
-	queue<int> toBeVisitedNodes;
+	std::set<int> toBeVisited;
+	std::string varModified;
+	std::queue<int> toBeVisitedNodes;
 	bool isNewProc = true;
 
 	if (!isAffectsComputed || !isTransitive) {
@@ -1360,16 +1358,16 @@ bool PKB::getAffectsBoolean(bool isTransitive, int modifierStmtNum, int userStmt
 			}
 		}
 
-	vector<unordered_map<string, unordered_set<int>>> modMaps(allStmts.size() + 1);
-	unordered_map<int, unordered_map<string, unordered_set<int>>> prevModMap;
-	unordered_map<string, unordered_set<int>> *currModMap;
-	unordered_map<int, unordered_set<int>> affectsRelationshipMap, *resultTMap;
-	unordered_set<int> visitedLines, prevLines, visitedNodes, neighbours;
-	unordered_set<string> varsModified, varsUsed;
+	std::vector<std::unordered_map<std::string, std::unordered_set<int>>> modMaps(allStmts.size() + 1);
+	std::unordered_map<int, std::unordered_map<std::string, std::unordered_set<int>>> prevModMap;
+	std::unordered_map<std::string, std::unordered_set<int>> *currModMap;
+	std::unordered_map<int, std::unordered_set<int>> affectsRelationshipMap, *resultTMap;
+	std::unordered_set<int> visitedLines, prevLines, visitedNodes, neighbours;
+	std::unordered_set<std::string> varsModified, varsUsed;
 	int currLine, prevLine, maxLine = 0;
-	set<int> toBeVisited;
-	string varModified;
-	queue<int> toBeVisitedNodes;
+	std::set<int> toBeVisited;
+	std::string varModified;
+	std::queue<int> toBeVisitedNodes;
 	bool isNewProc = false;
 
 	// Navigation of nextMap
@@ -1591,9 +1589,9 @@ bool PKB::getAffectsBoolean(bool isTransitive, int modifierStmtNum, int userStmt
 	return false;
 }
 
-unordered_set<int> PKB::getAffectsSet(bool isAffects, bool isTransitive, int modifierStmtNum, int userStmtNum) {
-	unordered_set<int> resultSet;
-	unordered_map<int, unordered_set<int>> affectsRelationshipMap = getAffectsMap(isTransitive, isAffects);
+std::unordered_set<int> PKB::getAffectsSet(bool isAffects, bool isTransitive, int modifierStmtNum, int userStmtNum) {
+	std::unordered_set<int> resultSet;
+	std::unordered_map<int, std::unordered_set<int>> affectsRelationshipMap = getAffectsMap(isTransitive, isAffects);
 	if (!isTransitive) {
 		if (modifierStmtNum == -1 && userStmtNum == -1) {
 			for (const auto &affectsElem : affectsRelationshipMap) {
@@ -1633,35 +1631,35 @@ bool PKB::hasModifier(int userStmtNum) {
 	return getAffectsBoolean(false, -1, userStmtNum);
 }
 
-unordered_map<int, unordered_set<int>> PKB::getModifierUserPairs() {
+std::unordered_map<int, std::unordered_set<int>> PKB::getModifierUserPairs() {
 	return getAffectsMap(false, true);
 }
 
-unordered_map<int, unordered_set<int>> PKB::getModifierUserTPairs() {
+std::unordered_map<int, std::unordered_set<int>> PKB::getModifierUserTPairs() {
 	return getAffectsMap(true, true);
 }
 
-unordered_set<int> PKB::getModifierStmts() {
+std::unordered_set<int> PKB::getModifierStmts() {
 	return getAffectsSet(true, false, -1, -1);
 }
 
-unordered_set<int> PKB::getUserStmts() {
+std::unordered_set<int> PKB::getUserStmts() {
 	return getAffectsSet(false, false, -1, -1);
 }
 
-unordered_set<int> PKB::getModifierOf(int userStmtNum) {
+std::unordered_set<int> PKB::getModifierOf(int userStmtNum) {
 	return getAffectsSet(false, false, -1, userStmtNum);
 }
 
-unordered_set<int> PKB::getModifierTOf(int userStmtNum) {
+std::unordered_set<int> PKB::getModifierTOf(int userStmtNum) {
 	return getAffectsSet(false, true, -1, userStmtNum);
 }
 
-unordered_set<int> PKB::getUserOf(int modifierStmtNum) {
+std::unordered_set<int> PKB::getUserOf(int modifierStmtNum) {
 	return getAffectsSet(true, false, modifierStmtNum, -1);
 }
 
-unordered_set<int> PKB::getUserTOf(int modifierStmtNum) {
+std::unordered_set<int> PKB::getUserTOf(int modifierStmtNum) {
 	return getAffectsSet(true, true, modifierStmtNum, -1);
 }
 
@@ -1678,7 +1676,7 @@ void PKB::clearAffectsCache() {
 	isAffectsTComputed = false;
 }
 
-unordered_set<int> PKB::getSwitchStmts() {
+std::unordered_set<int> PKB::getSwitchStmts() {
 	return switchStmts;
 }
 
@@ -1688,10 +1686,10 @@ bool PKB::isSwitchStmt(int stmtNum) {
 	return false;
 }
 
-unordered_map<int, string> PKB::getSwitchControlVarPair() {
+std::unordered_map<int, std::string> PKB::getSwitchControlVarPair() {
 	return switchControlStmtMap;
 }
 
-unordered_set<int> PKB::getSwitchWithControlVar(string controlVar) {
+std::unordered_set<int> PKB::getSwitchWithControlVar(std::string controlVar) {
 	return switchControlVarMap[controlVar];
 }

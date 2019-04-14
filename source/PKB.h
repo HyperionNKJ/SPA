@@ -9,36 +9,35 @@
 #include <unordered_map>
 #include "Type.h"
 
-using namespace std;
 typedef short PROC;
 
 class PKB {
 private:
-	unordered_set<string> varSet, procSet, callSet, calledSet, printSet, readSet, modifiesProcSet, usesProcSet;
-	unordered_map<string, int> varTableByName, procTableByName, callTableByName, printTableByName, readTableByName;
-	vector<string> varTableByIdx, procTableByIdx, callTableByIdx, printTableByIdx, readTableByIdx;
-	unordered_set<int> allStmts, readStmts, printStmts, whileStmts, ifStmts, assignStmts, constSet, callStmts, ifControlStmtSet, whileControlStmtSet, *getTypedStmtSet(Type type), getAffectsSet(bool isAffects, bool isTransitive, int modifierStmtNum, int userStmtNum), switchStmts, switchControlStmtSet;
-	unordered_map<int, unordered_set<int>> leaderTMap, followerTMap, parentMap, parentTMap, childrenTMap, nextMap, prevMap, getAffectsMap(bool isTransitive, bool isAffects), nextTCache, prevTCache, affectsMap, affectedMap, affectsTMap, affectedTMap;
-	unordered_map<int, int> leaderMap, followerMap, childrenMap;
-	unordered_map<int, string> callMapByStmtNum, printMapByStmtNum, readMapByStmtNum, switchControlStmtMap;
-	unordered_map<string, unordered_set<int>> calledStmtMap, printStmtMap, readStmtMap, modifiesByVarMap, usesByVarMap, patternMap, fullPatternMap, ifControlVarMap, whileControlVarMap, switchControlVarMap;
-	unordered_map<int, unordered_set<string>> modifiesByStmtNumMap, usesByStmtNumMap, ifControlStmtMap, whileControlStmtMap;
-	unordered_map<string, unordered_set<string>> modifiesByProcMap, varModifiedByProcMap, usesByProcMap, varUsedByProcMap, callMap, calledByMap, callsTMap, calledByTMap;
+	std::unordered_set<std::string> varSet, procSet, callSet, calledSet, printSet, readSet, modifiesProcSet, usesProcSet;
+	std::unordered_map<std::string, int> varTableByName, procTableByName, callTableByName, printTableByName, readTableByName;
+	std::vector<std::string> varTableByIdx, procTableByIdx, callTableByIdx, printTableByIdx, readTableByIdx;
+	std::unordered_set<int> allStmts, readStmts, printStmts, whileStmts, ifStmts, assignStmts, constSet, callStmts, ifControlStmtSet, whileControlStmtSet, *getTypedStmtSet(Type type), getAffectsSet(bool isAffects, bool isTransitive, int modifierStmtNum, int userStmtNum), switchStmts, switchControlStmtSet;
+	std::unordered_map<int, std::unordered_set<int>> leaderTMap, followerTMap, parentMap, parentTMap, childrenTMap, nextMap, prevMap, getAffectsMap(bool isTransitive, bool isAffects), nextTCache, prevTCache, affectsMap, affectedMap, affectsTMap, affectedTMap;
+	std::unordered_map<int, int> leaderMap, followerMap, childrenMap;
+	std::unordered_map<int, std::string> callMapByStmtNum, printMapByStmtNum, readMapByStmtNum, switchControlStmtMap;
+	std::unordered_map<std::string, std::unordered_set<int>> calledStmtMap, printStmtMap, readStmtMap, modifiesByVarMap, usesByVarMap, patternMap, fullPatternMap, ifControlVarMap, whileControlVarMap, switchControlVarMap;
+	std::unordered_map<int, std::unordered_set<std::string>> modifiesByStmtNumMap, usesByStmtNumMap, ifControlStmtMap, whileControlStmtMap;
+	std::unordered_map<std::string, std::unordered_set<std::string>> modifiesByProcMap, varModifiedByProcMap, usesByProcMap, varUsedByProcMap, callMap, calledByMap, callsTMap, calledByTMap;
 	bool getAffectsBoolean(bool isTransitive, int modifierStmtNum, int userStmtNum), isAffectsComputed = false, isAffectsTComputed = false;
 	int smallestAffectsLine = INT_MAX, smallestAffectsTLine = INT_MAX, largestAffectsLine = INT_MIN, largestAffectsTLine = INT_MIN , smallestAffectedLine = INT_MAX, largestAffectedLine = INT_MIN;
 
 public:
 	// Frontend APIs
-	bool insertVar(string VarName);
+	bool insertVar(std::string VarName);
 	bool insertConstant(int constant);
-	bool insertProc(string procName);
+	bool insertProc(std::string procName);
 	bool insertStmtType(int stmtNum, Type type);
-	bool insertCPRStmtType(int stmtNum, Type type, string name);
-	bool insertPattern(string pattern, int stmtNum);
-	bool insertFullPattern(string fullPattern, int stmtNum);
-	bool insertIfControlVar(int ifStmtNum, string varName);
-	bool insertWhileControlVar(int whileStmtNum, string varName);
-	bool insertSwitchControlVar(int switchStmtNum, string varName);
+	bool insertCPRStmtType(int stmtNum, Type type, std::string name);
+	bool insertPattern(std::string pattern, int stmtNum);
+	bool insertFullPattern(std::string fullPattern, int stmtNum);
+	bool insertIfControlVar(int ifStmtNum, std::string varName);
+	bool insertWhileControlVar(int whileStmtNum, std::string varName);
+	bool insertSwitchControlVar(int switchStmtNum, std::string varName);
 
 	bool setFollows(int leader, int follower);
 	bool setFollowsT(int leader, int follower);
@@ -50,34 +49,34 @@ public:
 	bool setChild(int parent, int child);
 	bool setChildT(int parent, int child);
 
-	bool setModifies(int stmtNum, string varName);
-	bool setModifies(string procName, string varName);
+	bool setModifies(int stmtNum, std::string varName);
+	bool setModifies(std::string procName, std::string varName);
 
-	bool setUses(int stmtNum, string varName);
-	bool setUses(string procName, string varName);
+	bool setUses(int stmtNum, std::string varName);
+	bool setUses(std::string procName, std::string varName);
 
-	bool setCalls(string proc1, string proc2);
-	bool setCalledBy(string proc1, string proc2);
-	bool setCallsT(string proc1, string proc2);
-	bool setCalledByT(string proc1, string proc2);
+	bool setCalls(std::string proc1, std::string proc2);
+	bool setCalledBy(std::string proc1, std::string proc2);
+	bool setCallsT(std::string proc1, std::string proc2);
+	bool setCalledByT(std::string proc1, std::string proc2);
 
 	bool setNext(int prevLine, int nextLine);
 	bool setPrevious(int prevLine, int nextLine);
 
 	// PQL APIs
-	unordered_set<int> getAllStmts();
-	unordered_set<int> getReadStmts();
-	unordered_set<int> getPrintStmts();
-	unordered_set<int> getWhileStmts();
-	unordered_set<int> getIfStmts();
-	unordered_set<int> getAssignStmts();
-	unordered_set<string> getAllVariables();
-	unordered_set<int> getAllConstant();
-	unordered_set<string> getAllProcedures();
-	unordered_set<int> getCallStmts();
-	unordered_set<string> getCallProcNames();
-	unordered_set<string> getPrintVarNames();
-	unordered_set<string> getReadVarNames();
+	std::unordered_set<int> getAllStmts();
+	std::unordered_set<int> getReadStmts();
+	std::unordered_set<int> getPrintStmts();
+	std::unordered_set<int> getWhileStmts();
+	std::unordered_set<int> getIfStmts();
+	std::unordered_set<int> getAssignStmts();
+	std::unordered_set<std::string> getAllVariables();
+	std::unordered_set<int> getAllConstant();
+	std::unordered_set<std::string> getAllProcedures();
+	std::unordered_set<int> getCallStmts();
+	std::unordered_set<std::string> getCallProcNames();
+	std::unordered_set<std::string> getPrintVarNames();
+	std::unordered_set<std::string> getReadVarNames();
 
 	bool isReadStmt(int stmtNum);
 	bool isWhileStmt(int stmtNum);
@@ -86,142 +85,142 @@ public:
 	bool isPrintStmt(int stmtNum);
 	bool isCallStmt(int stmtNum);
 
-	int getVarIdx(string varName);
-	string getVarAtIdx(int varIdx);
-	unordered_map<string, int> getVarTable();
+	int getVarIdx(std::string varName);
+	std::string getVarAtIdx(int varIdx);
+	std::unordered_map<std::string, int> getVarTable();
 
-	int getProcIdx(string procName);
-	string getProcAtIdx(int procIdx);
-	unordered_map<string, int> getProcTable();
+	int getProcIdx(std::string procName);
+	std::string getProcAtIdx(int procIdx);
+	std::unordered_map<std::string, int> getProcTable();
 
-	int getCallIdx(string procName);
-	string getCallAtIdx(int callIdx);
-	string getCallAtStmtNum(int stmtNum);
+	int getCallIdx(std::string procName);
+	std::string getCallAtIdx(int callIdx);
+	std::string getCallAtStmtNum(int stmtNum);
 
-	int getReadIdx(string varName);
-	string getReadAtIdx(int readIdx);
-	string getReadAtStmtNum(int stmtNum);
+	int getReadIdx(std::string varName);
+	std::string getReadAtIdx(int readIdx);
+	std::string getReadAtStmtNum(int stmtNum);
 
-	int getPrintIdx(string varName);
-	string getPrintAtIdx(int idx);
-	string getPrintAtStmtNum(int stmtNum);
+	int getPrintIdx(std::string varName);
+	std::string getPrintAtIdx(int idx);
+	std::string getPrintAtStmtNum(int stmtNum);
 
-	bool isModifies(int stmtNum, string varName);
+	bool isModifies(int stmtNum, std::string varName);
 	bool doesStmtModifies(int stmtNum);
-	unordered_set<string> getVarModifiedByStmt(int stmtNum);
-	unordered_set<int> getStmtsThatModifiesVar(string varName, Type type);
-	unordered_map<int, unordered_set<string>> getModifiesStmtVarPairs(Type type);
-	unordered_set<int> getStmtsThatModifiesVar(Type type);
+	std::unordered_set<std::string> getVarModifiedByStmt(int stmtNum);
+	std::unordered_set<int> getStmtsThatModifiesVar(std::string varName, Type type);
+	std::unordered_map<int, std::unordered_set<std::string>> getModifiesStmtVarPairs(Type type);
+	std::unordered_set<int> getStmtsThatModifiesVar(Type type);
 
-	bool isProcModifies(string procName, string varName);
-	bool doesProcModifies(string procName);
-	unordered_set<string> getVarModifiedByProc(string procName);
-	unordered_map<string, unordered_set<string>> getModifiesProcVarPairs();
-	unordered_set<string> getProcThatModifiesVar();
-	unordered_set<string> getProcThatModifiesVar(string varName);
+	bool isProcModifies(std::string procName, std::string varName);
+	bool doesProcModifies(std::string procName);
+	std::unordered_set<std::string> getVarModifiedByProc(std::string procName);
+	std::unordered_map<std::string, std::unordered_set<std::string>> getModifiesProcVarPairs();
+	std::unordered_set<std::string> getProcThatModifiesVar();
+	std::unordered_set<std::string> getProcThatModifiesVar(std::string varName);
 
-	bool isUses(int stmtNum, string varName);
+	bool isUses(int stmtNum, std::string varName);
 	bool doesStmtUses(int stmtNum);
-	unordered_set<string> getVarUsedByStmt(int stmtNum);
-	unordered_set<int> getStmtsThatUsesVar(string varName, Type type);
-	unordered_map<int, unordered_set<string>> getUsesStmtVarPairs(Type type);
-	unordered_set<int> getStmtsThatUsesVar(Type type);
+	std::unordered_set<std::string> getVarUsedByStmt(int stmtNum);
+	std::unordered_set<int> getStmtsThatUsesVar(std::string varName, Type type);
+	std::unordered_map<int, std::unordered_set<std::string>> getUsesStmtVarPairs(Type type);
+	std::unordered_set<int> getStmtsThatUsesVar(Type type);
 
-	bool isProcUses(string procName, string varName);
-	bool doesProcUses(string procName);
-	unordered_set<string> getVarUsedByProc(string procName);
-	unordered_map<string, unordered_set<string>> getUsesProcVarPairs();
-	unordered_set<string> getProcThatUsesVar();
-	unordered_set<string> getProcThatUsesVar(string varName);
+	bool isProcUses(std::string procName, std::string varName);
+	bool doesProcUses(std::string procName);
+	std::unordered_set<std::string> getVarUsedByProc(std::string procName);
+	std::unordered_map<std::string, std::unordered_set<std::string>> getUsesProcVarPairs();
+	std::unordered_set<std::string> getProcThatUsesVar();
+	std::unordered_set<std::string> getProcThatUsesVar(std::string varName);
 
 	bool isParent(int stmtNum1, int stmtNum2);
 	bool isParentT(int stmtNum1, int stmtNum2);
 	bool hasChildren(int stmtNum);
 	bool hasParent(int stmtNum);
-	unordered_map<int, unordered_set<int>> getParentChildrenPairs(Type parentType, Type childrenType);
-	unordered_map<int, unordered_set<int>> getParentChildrenTPairs(Type parentType, Type childrenType);
-	unordered_set<int> getParentStmts(Type parentType);
-	unordered_set<int> getChildrenStmts(Type childrenType);
+	std::unordered_map<int, std::unordered_set<int>> getParentChildrenPairs(Type parentType, Type childrenType);
+	std::unordered_map<int, std::unordered_set<int>> getParentChildrenTPairs(Type parentType, Type childrenType);
+	std::unordered_set<int> getParentStmts(Type parentType);
+	std::unordered_set<int> getChildrenStmts(Type childrenType);
 	int getParentOf(int stmtNum, Type parentType);
-	unordered_set<int> getParentTOf(int stmtNum, Type parentType);
-	unordered_set<int> getChildrenOf(int stmtNum, Type childrenType);
-	unordered_set<int> getChildrenTOf(int stmtNum, Type childrenType);
+	std::unordered_set<int> getParentTOf(int stmtNum, Type parentType);
+	std::unordered_set<int> getChildrenOf(int stmtNum, Type childrenType);
+	std::unordered_set<int> getChildrenTOf(int stmtNum, Type childrenType);
 
 	bool isFollows(int stmtNum1, int stmtNum2);
 	bool isFollowsT(int stmtNum1, int stmtNum2);
 	bool hasFollower(int stmtNum);
 	bool hasLeader(int stmtNum);
-	unordered_map<int, int> getLeaderFollowerPairs(Type leaderType, Type followerType);
-	unordered_map<int, unordered_set<int>> getLeaderFollowerTPairs(Type leaderType, Type followerType);
-	unordered_set<int> getLeaderStmts(Type leaderType);
-	unordered_set<int> getFollowerStmts(Type followerType);
+	std::unordered_map<int, int> getLeaderFollowerPairs(Type leaderType, Type followerType);
+	std::unordered_map<int, std::unordered_set<int>> getLeaderFollowerTPairs(Type leaderType, Type followerType);
+	std::unordered_set<int> getLeaderStmts(Type leaderType);
+	std::unordered_set<int> getFollowerStmts(Type followerType);
 	int getLeaderOf(int stmtNum, Type leaderType);
-	unordered_set<int> getLeaderTOf(int stmtNum, Type leaderType);
+	std::unordered_set<int> getLeaderTOf(int stmtNum, Type leaderType);
 	int getFollowerOf(int stmtNum, Type followerType);
-	unordered_set<int> getFollowerTOf(int stmtNum, Type followerType);
+	std::unordered_set<int> getFollowerTOf(int stmtNum, Type followerType);
 
-	string getVarModifiedByAssignStmt(int stmtNum);
-	unordered_set<int> getAssignStmtsThatModifiesVar(string varName);
-	unordered_set<int> getAssignStmtsWithSubMatch(string subString);
-	unordered_set<int> getAssignStmtsWithExactMatch(string exactString);
+	std::string getVarModifiedByAssignStmt(int stmtNum);
+	std::unordered_set<int> getAssignStmtsThatModifiesVar(std::string varName);
+	std::unordered_set<int> getAssignStmtsWithSubMatch(std::string subString);
+	std::unordered_set<int> getAssignStmtsWithExactMatch(std::string exactString);
 
-	bool isCalls(string callerName, string receiverName);
-	bool isCallsT(string callerName, string receiverName);
-	bool hasReceiver(string callerName);
-	bool hasCaller(string receiverName);
-	unordered_map<string, unordered_set<string>> getCallerReceiverPairs();
-	unordered_map<string, unordered_set<string>> getCallerReceiverTPairs();
-	unordered_set<string> getCallerProcedures();
-	unordered_set<string> getReceiverProcedures();
-	unordered_set<string> getCallerOf(string receiverName);
-	unordered_set<string> getCallerTOf(string receiverName);
-	unordered_set<string> getReceiverOf(string callerName);
-	unordered_set<string> getReceiverTOf(string callerName);
+	bool isCalls(std::string callerName, std::string receiverName);
+	bool isCallsT(std::string callerName, std::string receiverName);
+	bool hasReceiver(std::string callerName);
+	bool hasCaller(std::string receiverName);
+	std::unordered_map<std::string, std::unordered_set<std::string>> getCallerReceiverPairs();
+	std::unordered_map<std::string, std::unordered_set<std::string>> getCallerReceiverTPairs();
+	std::unordered_set<std::string> getCallerProcedures();
+	std::unordered_set<std::string> getReceiverProcedures();
+	std::unordered_set<std::string> getCallerOf(std::string receiverName);
+	std::unordered_set<std::string> getCallerTOf(std::string receiverName);
+	std::unordered_set<std::string> getReceiverOf(std::string callerName);
+	std::unordered_set<std::string> getReceiverTOf(std::string callerName);
 
 	bool isNext(int prevLineNum, int nextLineNum);
 	bool isNextT(int prevLineNum, int nextLineNum);
 	bool hasNext(int prevLineNum);
 	bool hasPrevious(int nextLineNum);
 	bool hasNextT();
-	unordered_map<int, unordered_set<int>> getPreviousNextPairs(Type previousType, Type nextType);
-	unordered_map<int, unordered_set<int>> getPreviousNextTPairs(Type previousType, Type nextType);
-	unordered_set<int> getPreviousLines(Type previousType);
-	unordered_set<int> getNextLines(Type nextType);
-	unordered_set<int> getPreviousOf(int nextLineNum, Type previousType);
-	unordered_set<int> getPreviousTOf(int nextLineNum, Type previousType);
-	unordered_set<int> getNextOf(int prevLineNum, Type nextType);
-	unordered_set<int> getNextTOf(int prevLineNum, Type nextType);
+	std::unordered_map<int, std::unordered_set<int>> getPreviousNextPairs(Type previousType, Type nextType);
+	std::unordered_map<int, std::unordered_set<int>> getPreviousNextTPairs(Type previousType, Type nextType);
+	std::unordered_set<int> getPreviousLines(Type previousType);
+	std::unordered_set<int> getNextLines(Type nextType);
+	std::unordered_set<int> getPreviousOf(int nextLineNum, Type previousType);
+	std::unordered_set<int> getPreviousTOf(int nextLineNum, Type previousType);
+	std::unordered_set<int> getNextOf(int prevLineNum, Type nextType);
+	std::unordered_set<int> getNextTOf(int prevLineNum, Type nextType);
 	void clearNextTCache();
 
-	unordered_map<int, unordered_set<string>> getIfControlVarPair();
-	unordered_set<int> getIfWithControlVar();
-	unordered_set<int> getIfWithControlVar(string controlVar);
+	std::unordered_map<int, std::unordered_set<std::string>> getIfControlVarPair();
+	std::unordered_set<int> getIfWithControlVar();
+	std::unordered_set<int> getIfWithControlVar(std::string controlVar);
 
-	unordered_map<int, unordered_set<string>> getWhileControlVarPair();
-	unordered_set<int> getWhileWithControlVar();
-	unordered_set<int> getWhileWithControlVar(string controlVar);
+	std::unordered_map<int, std::unordered_set<std::string>> getWhileControlVarPair();
+	std::unordered_set<int> getWhileWithControlVar();
+	std::unordered_set<int> getWhileWithControlVar(std::string controlVar);
 
-	unordered_set<int> getCallStmtsWithProc(string procName);
-	unordered_set<int> getPrintStmtsWithVar(string varName);
-	unordered_set<int> getReadStmtsWithVar(string varName);
+	std::unordered_set<int> getCallStmtsWithProc(std::string procName);
+	std::unordered_set<int> getPrintStmtsWithVar(std::string varName);
+	std::unordered_set<int> getReadStmtsWithVar(std::string varName);
 
 	bool isAffects(int modifierStmtNum, int userStmtNum);
 	bool isAffectsT(int modifierStmtNum, int userStmtNum);
 	bool hasAffects();
 	bool hasUser(int modifierStmtNum);
 	bool hasModifier(int userStmtNum);
-	unordered_map<int, unordered_set<int>> getModifierUserPairs();
-	unordered_map<int, unordered_set<int>> getModifierUserTPairs();
-	unordered_set<int> getModifierStmts();
-	unordered_set<int> getUserStmts();
-	unordered_set<int> getModifierOf(int userStmtNum);
-	unordered_set<int> getModifierTOf(int userStmtNum);
-	unordered_set<int> getUserOf(int modifierStmtNum);
-	unordered_set<int> getUserTOf(int modifierStmtNum);
+	std::unordered_map<int, std::unordered_set<int>> getModifierUserPairs();
+	std::unordered_map<int, std::unordered_set<int>> getModifierUserTPairs();
+	std::unordered_set<int> getModifierStmts();
+	std::unordered_set<int> getUserStmts();
+	std::unordered_set<int> getModifierOf(int userStmtNum);
+	std::unordered_set<int> getModifierTOf(int userStmtNum);
+	std::unordered_set<int> getUserOf(int modifierStmtNum);
+	std::unordered_set<int> getUserTOf(int modifierStmtNum);
 	void clearAffectsCache();
 
-	unordered_set<int> getSwitchStmts();
+	std::unordered_set<int> getSwitchStmts();
 	bool isSwitchStmt(int stmtNum);
-	unordered_map<int, string> getSwitchControlVarPair();
-	unordered_set<int> getSwitchWithControlVar(string controlVar);
+	std::unordered_map<int, std::string> getSwitchControlVarPair();
+	std::unordered_set<int> getSwitchWithControlVar(std::string controlVar);
 };
