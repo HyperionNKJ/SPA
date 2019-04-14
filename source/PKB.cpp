@@ -1412,8 +1412,20 @@ bool PKB::getAffectsBoolean(bool isTransitive, int modifierStmtNum, int userStmt
 			maxLine = currLine;
 
 		// Check if pkb has travsersed past userStmtNum
-		if (userStmtNum != -1 && currLine > userStmtNum && getParentTOf(currLine, WHILE).size() == 0)
-			return false;
+		if (userStmtNum != -1 && currLine > userStmtNum && getParentTOf(currLine, WHILE).size() == 0) {
+			if (isTransitive)
+				break;
+			if (modifierStmtNum != -1) {
+				if (affectsMap.count(modifierStmtNum) && affectsMap[modifierStmtNum].count(userStmtNum))
+					return true;
+				return false;
+			}
+			else {
+				if (affectedMap.count(userStmtNum) && affectedMap[userStmtNum].count(modifierStmtNum))
+					return true;
+				return false;
+			}
+		}
 
 		// New modMap each time pkb traverses to the currLine
 		// So outdated values do not stay in modMap
