@@ -2,9 +2,13 @@
 
 #include "ProcessedQuery.h"
 
+// Parses with clauses
 class QueryPreprocessorWithParser {
 public:
+	// Initializes a newly created QueryPreprocessorWithParser.
 	QueryPreprocessorWithParser(std::string& clause, ProcessedQuery& query);
+	
+	// Parses the with clause.
 	void parse();
 private:
 	const std::string& CLAUSE;

@@ -1,4 +1,3 @@
-#include <string>
 #include "QueryPreprocessorError.h"
 #include "QueryPreprocessorFormatter.h"
 
@@ -42,6 +41,7 @@ std::string QueryPreprocessorFormatter::getFormattedQuery() {
 	return query;
 }
 
+// Removes extra whitespaces.
 void QueryPreprocessorFormatter::removeSpaces() {
 	size_t orginalSize = query.length();
 
@@ -73,6 +73,7 @@ void QueryPreprocessorFormatter::removeSpaces() {
 	query.erase(newPos);
 }
 
+// Remove leading spaces of special characters.
 void QueryPreprocessorFormatter::removeLeadingSpace() {
 	size_t index = query.find_first_of(LEADING_SPACE);
 	while (index != std::string::npos) {
@@ -148,6 +149,7 @@ void QueryPreprocessorFormatter::removeLeadingSpace() {
 	}
 }
 
+// Removes trailing whitespace of special characters.
 void QueryPreprocessorFormatter::removeTrailingSpace() {
 	for (size_t index = query.find_first_of(TRAILING_SPACE);
 		index != std::string::npos;
