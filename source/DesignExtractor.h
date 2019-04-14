@@ -6,33 +6,34 @@
 #include <string>
 #include <stack>
 #include <queue>
-#include "PKB.h"
+#include <unordered_map>
+#include <unordered_set>
 #include "Type.h"
 
 class DesignExtractor {
-	unordered_set<string> procList;
-	unordered_map<string, unordered_set<string>> callGraph;
-	unordered_map<string, unordered_set<string>> procUsesTable;
-	unordered_map<string, unordered_set<string>> procModifiesTable;
-	vector<string> topoSortedProc;
-	string errorMessage;
+	std::unordered_set<std::string> procList;
+	std::unordered_map<std::string, std::unordered_set<std::string>> callGraph;
+	std::unordered_map<std::string, std::unordered_set<std::string>> procUsesTable;
+	std::unordered_map<std::string, std::unordered_set<std::string>> procModifiesTable;
+	std::vector<std::string> topoSortedProc;
+	std::string errorMessage;
 
 private:
 	bool topologicalSortCalls();
-	bool topologicalVisit(string, unordered_set<string>*, unordered_set<string>*);
-	void updateProcModifies(string, string);
-	void updateProcUses(string, string);
+	bool topologicalVisit(std::string, std::unordered_set<std::string>*, std::unordered_set<std::string>*);
+	void updateProcModifies(std::string, std::string);
+	void updateProcUses(std::string, std::string);
 public:
-	bool insertCall(string, string);
-	bool insertProc(string);
-	bool insertProcUses(string, string);
-	bool insertProcModifies(string, string);
+	bool insertCall(std::string, std::string);
+	bool insertProc(std::string);
+	bool insertProcUses(std::string, std::string);
+	bool insertProcModifies(std::string, std::string);
 
 	bool processCalls();
 
-	unordered_map<string, unordered_set<string>> getProcUsesTable();
-	unordered_map<string, unordered_set<string>> getProcModifiesTable();
-	unordered_map<string, unordered_set<string>> getCallGraph();
-	unordered_set<string> getProcList();
-	string getErrorMessage();
+	std::unordered_map<std::string, std::unordered_set<std::string>> getProcUsesTable();
+	std::unordered_map<std::string, std::unordered_set<std::string>> getProcModifiesTable();
+	std::unordered_map<std::string, std::unordered_set<std::string>> getCallGraph();
+	std::unordered_set<std::string> getProcList();
+	std::string getErrorMessage();
 };
