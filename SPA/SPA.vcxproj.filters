@@ -281,9 +281,6 @@
     <ClInclude Include="..\source\QueryPreprocessorTokenizer.h">
       <Filter>Header Files\QueryPreprocessor</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\QueryPreprocessorWithParser.h">
-      <Filter>Header Files\QueryPreprocessor</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\ResultCache.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -298,6 +295,9 @@
     </ClInclude>
     <ClInclude Include="..\Source\PatternSwitch.h">
       <Filter>Header Files\Clauses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\QueryPreprocessorWithParser.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
