@@ -18,7 +18,7 @@ SPA::~SPA() {
 int SPA::parse(std::string filename) {
 	int result = parser->parse(filename, *pkb);
 	if (result != 0) {
-		cout << parser->getErrorMessage() << endl;
+		std::cout << parser->getErrorMessage() << std::endl;
 		exit(1);
 	}
 }

@@ -9,8 +9,6 @@
 #include <unordered_map>
 #include "Type.h"
 
-using namespace std;
-
 typedef short PROC;
 
 // PKB stores information from parser and also provides API for PQL to query the database.
