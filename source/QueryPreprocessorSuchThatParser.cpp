@@ -1,4 +1,3 @@
-#include <regex>
 #include "Affects.h"
 #include "AffectsT.h"
 #include "Calls.h"
@@ -38,11 +37,10 @@ const std::unordered_map<std::string, QueryPreprocessorSuchThatParser::RelRef> Q
 };
 
 // Initializes a newly created QueryPreprocessorSuchThatParser.
-QueryPreprocessorSuchThatParser::QueryPreprocessorSuchThatParser(const string& clause, ProcessedQuery& query)
+QueryPreprocessorSuchThatParser::QueryPreprocessorSuchThatParser(const std::string& clause, ProcessedQuery& query)
 	: CLAUSE(clause), query(query) {}
 
 // Parses the such that clause.
-// Returns true if parsing is successful and false if unsucessful.
 void QueryPreprocessorSuchThatParser::parse() {
 	size_t relSize = CLAUSE.find(BRACKET_LEFT);
 	size_t closeBracketPos = CLAUSE.find(BRACKET_RIGHT);

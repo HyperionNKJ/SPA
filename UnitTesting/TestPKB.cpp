@@ -388,7 +388,7 @@ namespace UnitTesting {
 
 		// PQL side
 		TEST_METHOD(TestGetParentChildrenPairs) {
-			unordered_map<int, unordered_set<int>>expectedMap, testMap;
+			std::unordered_map<int, std::unordered_set<int>>expectedMap, testMap;
 			expectedMap = {{1, {2, 3}}};
 
 			pkb.insertStmtType(1, WHILE);
@@ -406,7 +406,7 @@ namespace UnitTesting {
 		}
 
 		TEST_METHOD(TestGetModifierUserPairs) {
-			unordered_map<int, unordered_set<int>> expectedMap, testMap;
+			std::unordered_map<int, std::unordered_set<int>> expectedMap, testMap;
 			expectedMap = {
 				{1, {4, 8, 10, 12}},
 				{2, {6, 10}},

@@ -1,4 +1,3 @@
-#include <regex>
 #include "PatternAssign.h"
 #include "PatternIf.h"
 #include "PatternSwitch.h"
@@ -16,10 +15,10 @@ constexpr char UNDERSCOR = '_';
 
 // Regular Expressions
 constexpr char EXPRESSION[] = "^[a-zA-z0-9()*/%+\\- ]+$";
-const regex QueryPreprocessorPatternParser::EXPRESSION_REGEX(EXPRESSION);
+const std::regex QueryPreprocessorPatternParser::EXPRESSION_REGEX(EXPRESSION);
 
 // Initializes a newly created QueryPreprocessorPatternParser.
-QueryPreprocessorPatternParser::QueryPreprocessorPatternParser(string& clause, ProcessedQuery& query) 
+QueryPreprocessorPatternParser::QueryPreprocessorPatternParser(std::string& clause, ProcessedQuery& query) 
 	: CLAUSE(clause), query(query) {}
 
 // Parses the pattern clause.

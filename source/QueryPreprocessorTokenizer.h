@@ -1,12 +1,15 @@
 #pragma once
-
 #include <regex>
-#include <unordered_set>
 
 class QueryPreprocessorTokenizer {
 public:
+	// Initializes a newly created QueryPreprocessorFormatterTokenizer.
 	QueryPreprocessorTokenizer(const std::string& query);
+	
+	// Tokenises the query into statements.
 	void tokenize();
+
+	// Return a vector of statements.
 	std::vector<std::string> getStatements();
 private:
 	static const std::regex DECLARE_REGEX_STMT;

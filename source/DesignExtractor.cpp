@@ -2,18 +2,15 @@
 
 #include <stdio.h>
 #include <iostream>
-#include <string>
-#include <vector>
 
 #include "DesignExtractor.h"
-#include "PKB.h"
 
-bool DesignExtractor::insertProc(string procName) {
+bool DesignExtractor::insertProc(std::string procName) {
 	return procList.insert(procName).second;
 	return true;
 }
 
-bool DesignExtractor::insertCall(string procCalling, string procCalled) {
+bool DesignExtractor::insertCall(std::string procCalling, std::string procCalled) {
 	if (callGraph.count(procCalling) < 1) {
 		callGraph[procCalling] = { procCalled };
 		return true;
@@ -21,7 +18,7 @@ bool DesignExtractor::insertCall(string procCalling, string procCalled) {
 	return callGraph[procCalling].insert(procCalled).second;
 }
 
-bool DesignExtractor::insertProcUses(string procName, string varName) {
+bool DesignExtractor::insertProcUses(std::string procName, std::string varName) {
 	if (procUsesTable.count(procName) < 1) {
 		procUsesTable[procName] = { varName };
 		return true;
@@ -29,7 +26,7 @@ bool DesignExtractor::insertProcUses(string procName, string varName) {
 	return procUsesTable[procName].insert(varName).second;
 }
 
-bool DesignExtractor::insertProcModifies(string procName, string varName) {
+bool DesignExtractor::insertProcModifies(std::string procName, std::string varName) {
 	if (procModifiesTable.count(procName) < 1) {
 		procModifiesTable[procName] = { varName };
 		return true;
@@ -43,8 +40,8 @@ bool DesignExtractor::processCalls() {
 		return false;
 	}
 	for (unsigned int i = 0; i < topoSortedProc.size(); i++) {
-		string currProc = topoSortedProc[i];
-		unordered_set<string> calledByProc = callGraph[currProc];
+		std::string currProc = topoSortedProc[i];
+		std::unordered_set<std::string> calledByProc = callGraph[currProc];
 		for (const auto &proc : calledByProc) {
 			updateProcModifies(currProc, proc);
 			updateProcUses(currProc, proc);
@@ -54,8 +51,8 @@ bool DesignExtractor::processCalls() {
 }
 
 bool DesignExtractor::topologicalSortCalls() {
-	unordered_set<string> visitedProc;
-	unordered_set<string> currentDFSVisited;
+	std::unordered_set<std::string> visitedProc;
+	std::unordered_set<std::string> currentDFSVisited;
 	for (const auto &elem : procList) {
 		if (visitedProc.count(elem) < 1) {
 			bool result = topologicalVisit(elem, &visitedProc, &currentDFSVisited);
@@ -67,7 +64,7 @@ bool DesignExtractor::topologicalSortCalls() {
 	return true;
 }
 
-bool DesignExtractor::topologicalVisit(string procName, unordered_set<string>* visitedProc, unordered_set<string>* currentDFSVisited) {
+bool DesignExtractor::topologicalVisit(std::string procName, std::unordered_set<std::string>* visitedProc, std::unordered_set<std::string>* currentDFSVisited) {
 	if (visitedProc->count(procName) > 0) {
 		return true;
 	}
@@ -95,34 +92,34 @@ bool DesignExtractor::topologicalVisit(string procName, unordered_set<string>* v
 	return true;
 }
 
-void DesignExtractor::updateProcModifies(string procToUpdate, string procCalled) {
+void DesignExtractor::updateProcModifies(std::string procToUpdate, std::string procCalled) {
 	for (const auto &elem : procModifiesTable[procCalled]) {
 		procModifiesTable[procToUpdate].insert(elem);
 	}
 }
 
-void DesignExtractor::updateProcUses(string procToUpdate, string procCalled) {
+void DesignExtractor::updateProcUses(std::string procToUpdate, std::string procCalled) {
 	for (const auto &elem : procUsesTable[procCalled]) {
 		procUsesTable[procToUpdate].insert(elem);
 	}
 }
 
-unordered_map<string, unordered_set<string>> DesignExtractor::getProcUsesTable() {
+std::unordered_map<std::string, std::unordered_set<std::string>> DesignExtractor::getProcUsesTable() {
 	return procUsesTable;
 }
 
-unordered_map<string, unordered_set<string>> DesignExtractor::getProcModifiesTable() {
+std::unordered_map<std::string, std::unordered_set<std::string>> DesignExtractor::getProcModifiesTable() {
 	return procModifiesTable;
 }
 
-unordered_map<string, unordered_set<string>> DesignExtractor::getCallGraph() {
+std::unordered_map<std::string, std::unordered_set<std::string>> DesignExtractor::getCallGraph() {
 	return callGraph;
 }
 
-unordered_set<string> DesignExtractor::getProcList() {
+std::unordered_set<std::string> DesignExtractor::getProcList() {
 	return procList;
 }
 
-string DesignExtractor::getErrorMessage() {
+std::string DesignExtractor::getErrorMessage() {
 	return errorMessage;
 }

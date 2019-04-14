@@ -10,6 +10,7 @@
 #include <utility>
 #include "Type.h"
 #include "DesignExtractor.h"
+#include "PKB.h"
 
 enum Container { WHILEC, IFC, ELSEC, NONEC, SWITCHC };
 enum Statement_Key {
@@ -21,7 +22,7 @@ class Parser {
 	PKB * pkb;
 	DesignExtractor de;
 
-	string errorMessage = "";
+	std::string errorMessage = "";
 	bool withinProcedure = false;
 	bool emptyProcedure = true;
 	bool expectElse = false;
@@ -32,7 +33,7 @@ class Parser {
 	std::string currProcedure;
 	std::vector<std::string> sourceCode = std::vector<std::string>();
 	int statementNumber = 1;
-	unordered_set<std::string> procNames = unordered_set<std::string>();
+	std::unordered_set<std::string> procNames = std::unordered_set<std::string>();
 	
 	//trackers for parent, follows
 	std::vector<int> parentVector = std::vector<int>();
@@ -41,13 +42,13 @@ class Parser {
 	std::vector<Container> containerTracker = std::vector<Container>();
 	
 	//trackers for calls
-	unordered_map<int, std::string> procCalledByTable;
-	unordered_map<int, std::vector<int>> callParentTable;
+	std::unordered_map<int, std::string> procCalledByTable;
+	std::unordered_map<int, std::vector<int>> callParentTable;
 	
 	//trackers for next
 	bool firstInProc = false;
 	bool firstInElse = false;
-	std::vector<pair<int, int>>  lastInIfElseTracker = std::vector<pair<int, int>>();
+	std::vector<std::pair<int, int>>  lastInIfElseTracker = std::vector<std::pair<int, int>>();
 	int closedIfCount = 0;
 	int lastStmtInFlow = -1;
 
@@ -83,8 +84,8 @@ private:
 
 	std::vector<std::string> loadFile(std::string);
 
-	string leftTrim(std::string, std::string);
-	string rightTrim(std::string, std::string);
+	std::string leftTrim(std::string, std::string);
+	std::string rightTrim(std::string, std::string);
 	bool isValidVarName(std::string);
 	bool isValidConstant(std::string);
 	std::vector<std::string> tokeniseString(std::string, std::string);
@@ -142,7 +143,7 @@ public:
 	std::vector<int> getCurrentFollowVector();
 	std::vector<std::vector<int>> getAllFollowStack();
 	std::string getCurrentProcedure();
-	unordered_set<std::string> getProcNames();
-	unordered_map<int, std::string> getProcCalledByTable();
+	std::unordered_set<std::string> getProcNames();
+	std::unordered_map<int, std::string> getProcCalledByTable();
 	std::string getErrorMessage();
 };

@@ -62,7 +62,7 @@ std::list<std::string> ResultProjector::getResults(std::vector<DesignEntity> sel
 			for (std::string result : results) {
 				for (DesignEntity selectedSyn : selectedSynonym.second) {
 					if (selectedSyn.getType() == Type::READ || selectedSyn.getType() == Type::PRINT || selectedSyn.getType() == Type::CALL) {
-						std::string key = selectedSyn.getValue() + to_string(selectedSyn.getAttrRef());
+						std::string key = selectedSyn.getValue() + std::to_string(selectedSyn.getAttrRef());
 						rowResult[key] = convertSynonymResultToRequired(type, result, selectedSyn.getAttrRef(), pkb);
 					}
 					else {
@@ -86,7 +86,7 @@ std::list<std::string> ResultProjector::getResults(std::vector<DesignEntity> sel
 			for (auto selectedSyn : tableMap.second) {
 				std::string convertedResult = convertSynonymResultToRequired(selectedSyn.getType(), result.at(selectedSyn.getValue()), selectedSyn.getAttrRef(), pkb);
 				if (selectedSyn.getType() == Type::READ || selectedSyn.getType() == Type::PRINT || selectedSyn.getType() == Type::CALL) {
-					std::string key = selectedSyn.getValue() + to_string(selectedSyn.getAttrRef());
+					std::string key = selectedSyn.getValue() + std::to_string(selectedSyn.getAttrRef());
 					rowResult[key] = convertedResult;
 				}
 				else {
@@ -134,7 +134,7 @@ std::list<std::string> ResultProjector::getResults(std::vector<DesignEntity> sel
 
 			DesignEntity firstSelectedSyn = selectedSynonyms.at(0);
 			if (firstSelectedSyn.getType() == Type::READ || firstSelectedSyn.getType() == Type::PRINT || firstSelectedSyn.getType() == Type::CALL) {
-				std::string key = firstSelectedSyn.getValue() + to_string(firstSelectedSyn.getAttrRef());
+				std::string key = firstSelectedSyn.getValue() + std::to_string(firstSelectedSyn.getAttrRef());
 				resultString = finalMap[key];
 			}
 			else {
@@ -144,7 +144,7 @@ std::list<std::string> ResultProjector::getResults(std::vector<DesignEntity> sel
 			for (size_t i = 1; i < selectedSynonyms.size(); i++) {
 				Type selectedSynType = selectedSynonyms.at(i).getType();
 				if (selectedSynType == Type::READ || selectedSynType == Type::PRINT || selectedSynType == Type::CALL) {
-					std::string key = selectedSynonyms.at(i).getValue() + to_string(selectedSynonyms.at(i).getAttrRef());
+					std::string key = selectedSynonyms.at(i).getValue() + std::to_string(selectedSynonyms.at(i).getAttrRef());
 					resultString += " " + finalMap[key];
 				}
 				else {
@@ -204,7 +204,7 @@ std::unordered_set<std::string> ResultProjector::getAllResults(Type type, PKB pk
 std::unordered_set<std::string> ResultProjector::convertSetToString(std::unordered_set<int> resultSet) {
 	std::unordered_set<std::string> convertedSet;
 	for (int result : resultSet) {
-		convertedSet.insert(to_string(result));
+		convertedSet.insert(std::to_string(result));
 	}
 	return convertedSet;
 }
@@ -259,7 +259,7 @@ std::string ResultProjector::convertSynonymResultToRequired(Type type, int resul
 			convertedResult = pkb.getCallAtStmtNum(result);
 		}
 		else {
-			convertedResult = to_string(result);
+			convertedResult = std::to_string(result);
 		}
 		break;
 	case Type::READ:
@@ -267,7 +267,7 @@ std::string ResultProjector::convertSynonymResultToRequired(Type type, int resul
 			convertedResult = pkb.getReadAtStmtNum(result);
 		}
 		else {
-			convertedResult = to_string(result);
+			convertedResult = std::to_string(result);
 		}
 		break;
 	case Type::PRINT:
@@ -275,11 +275,11 @@ std::string ResultProjector::convertSynonymResultToRequired(Type type, int resul
 			convertedResult = pkb.getPrintAtStmtNum(result);
 		}
 		else {
-			convertedResult = to_string(result);
+			convertedResult = std::to_string(result);
 		}
 		break;
 	default: // EVERYTHING ELSE
-		convertedResult = to_string(result);
+		convertedResult = std::to_string(result);
 		break;
 	}
 	return convertedResult;
