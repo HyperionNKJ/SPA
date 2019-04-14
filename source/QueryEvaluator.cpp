@@ -1,7 +1,7 @@
 #include "QueryEvaluator.h"
 #include "Clause.h"
 
-std::list<std::string> QueryEvaluator::evaluate(ProcessedQuery& processedQuery, const PKB& pkb) {
+std::list<std::string> QueryEvaluator::evaluate(ProcessedQuery& processedQuery, PKB& pkb) {
 	ResultProjector resultProjector;
 
 	resultProjector.resetResults(); // Reset old query's intermediate table and cache

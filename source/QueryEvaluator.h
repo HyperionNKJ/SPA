@@ -16,5 +16,5 @@ public:
 	void sortWithinEachGroup(std::vector<std::pair<std::unordered_set<std::string>, std::vector<Clause*>>>&);
 	std::vector<Clause*> combineClauses(std::vector<std::pair<std::unordered_set<std::string>, std::vector<Clause*>>>&);
 
-	std::list<std::string> evaluate(ProcessedQuery&, const PKB&);
+	std::list<std::string> evaluate(ProcessedQuery&, PKB&);
 };
